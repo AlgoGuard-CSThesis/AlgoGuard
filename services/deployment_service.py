@@ -1,6 +1,5 @@
 import math
 import os
-import shutil
 import threading
 from datetime import datetime, timezone
 from uuid import uuid4
@@ -197,8 +196,9 @@ def _deploy_model_unlocked(model_id, admin_id):
 
     os.makedirs(os.path.dirname(ACTIVE_MODEL_PATH), exist_ok=True)
     operation_id = uuid4().hex
-    temporary_path = f"{ACTIVE_MODEL_PATH}.{operation_id}.tmp"
-    backup_path = f"{ACTIVE_MODEL_PATH}.{operation_id}.backup"
+    base_path, extension = os.path.splitext(ACTIVE_MODEL_PATH)
+    published_path = f"{base_path}.{operation_id}{extension or '.joblib'}"
+    temporary_path = f"{published_path}.tmp"
 
     try:
         joblib.dump(artifact, temporary_path)
@@ -211,42 +211,23 @@ def _deploy_model_unlocked(model_id, admin_id):
         _remove_temporary_file(temporary_path)
         raise DeploymentError(f"Deployment artifact validation failed: {error}") from error
 
-    had_active_file = os.path.exists(ACTIVE_MODEL_PATH)
-    backup_created = False
-    active_replaced = False
-
     try:
-        if had_active_file:
-            shutil.copy2(ACTIVE_MODEL_PATH, backup_path)
-            backup_created = True
-        os.replace(temporary_path, ACTIVE_MODEL_PATH)
-        active_replaced = True
+        # Published files are immutable. Readers that already fetched the old
+        # deployment record can keep loading it while SQLite activates this one.
+        os.replace(temporary_path, published_path)
         deployment = record_deployment(
             model["model_id"],
             model["run_id"],
             admin_id,
-            ACTIVE_MODEL_PATH,
+            published_path,
         )
     except Exception as error:
-        rollback_error = None
-        try:
-            if active_replaced:
-                if backup_created:
-                    os.replace(backup_path, ACTIVE_MODEL_PATH)
-                elif not had_active_file:
-                    _remove_temporary_file(ACTIVE_MODEL_PATH)
-        except OSError as restore_error:
-            rollback_error = restore_error
-
-        message = f"Model deployment failed: {error}"
-        if rollback_error:
-            message += f" Previous artifact restoration also failed: {rollback_error}"
-        raise DeploymentError(message) from error
+        _remove_temporary_file(published_path)
+        raise DeploymentError(f"Model deployment failed: {error}") from error
     finally:
         _remove_temporary_file(temporary_path)
-        _remove_temporary_file(backup_path)
 
-    return {"model": model, "deployment": deployment, "artifact_path": ACTIVE_MODEL_PATH}
+    return {"model": model, "deployment": deployment, "artifact_path": published_path}
 
 
 def deploy_model(model_id, admin_id):

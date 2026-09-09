@@ -1,4 +1,6 @@
 import joblib
+import pandas as pd
+import pytest
 from sklearn.base import clone
 from sklearn.ensemble import StackingClassifier
 from sklearn.linear_model import LogisticRegression
@@ -26,8 +28,6 @@ def test_registry_contains_exactly_six_models():
 
 
 def test_removed_soft_voting_identifier_cannot_create_an_artifact_name():
-    import pytest
-
     with pytest.raises(ValueError, match="Unknown AlgoGuard model identifier"):
         safe_model_filename("soft_voting")
 
@@ -98,3 +98,25 @@ def test_training_reports_start_and_completion_for_each_model(trained_bundle):
     assert len(completed) == 6
     assert [event[0] for event in completed] == list(range(1, 7))
     assert all(event[1] == 6 for event in events)
+
+
+@pytest.mark.parametrize("rows_per_class", [3, 4, 5])
+def test_small_valid_datasets_train_all_six_models(tmp_path, rows_per_class):
+    from services.preprocessing_service import prepare_dataset
+    from services.training_service import train_and_compare_models
+
+    csv_path = tmp_path / "small.csv"
+    pd.DataFrame(
+        {
+            "value": list(range(rows_per_class)) + list(range(100, 100 + rows_per_class)),
+            "label": ["Normal"] * rows_per_class + ["Attack"] * rows_per_class,
+        }
+    ).to_csv(csv_path, index=False)
+    prepared = prepare_dataset(csv_path)
+
+    result = train_and_compare_models(prepared, str(tmp_path / "models"), 1)
+
+    assert len(result["model_results"]) == 6
+    assert all(row["status"] == "completed" for row in result["model_results"]), result
+    pipeline = joblib.load(result["stacking_result"]["model_path"])["pipeline"]
+    assert len(pipeline.predict(prepared.X_test)) == len(prepared.y_test)

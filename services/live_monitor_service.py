@@ -22,6 +22,8 @@ import os
 import threading
 import time
 from collections import deque
+from contextlib import ExitStack
+from uuid import uuid4
 
 import numpy as np
 import pandas as pd
@@ -93,6 +95,7 @@ class LiveMonitorError(RuntimeError):
 
 def _new_session(source_type, source_name, dataset, speed, order, persist, admin_id):
     return {
+        "session_id": uuid4().hex,
         "state": "starting",
         "source_type": source_type,
         "source_name": source_name,
@@ -137,6 +140,7 @@ def _public_session(session):
     """Copy session state without internal bookkeeping fields."""
     if not session:
         return {
+            "session_id": None,
             "state": "idle",
             "source_type": DEFAULT_SOURCE_TYPE,
             "source_name": None,
@@ -167,6 +171,7 @@ def _public_session(session):
     totals = dict(session["totals"])
     flows = totals["flows"]
     return {
+        "session_id": session["session_id"],
         "state": session["state"],
         "source_type": session["source_type"],
         "source_name": session["source_name"],
@@ -225,18 +230,18 @@ def _build_flow_row(record, feature_columns, numeric_columns, defaults):
     row = {}
     for column in feature_columns:
         value = record.get(column, defaults.get(column))
-        if isinstance(value, float) and pd.isna(value):
-            value = defaults.get(column)
         if column in numeric_columns:
             if value in (None, ""):
                 row[column] = np.nan
             else:
                 try:
                     row[column] = float(value)
-                except (TypeError, ValueError):
+                except (TypeError, ValueError, OverflowError):
+                    row[column] = np.nan
+                if not np.isfinite(row[column]):
                     row[column] = np.nan
         else:
-            row[column] = None if value in (None, "") else str(value)
+            row[column] = np.nan if pd.isna(value) or value == "" else str(value)
     return row
 
 
@@ -287,7 +292,53 @@ def _make_source(session, cancel_event=None):
     return LiveCaptureSource(session["source_name"])
 
 
+def _record_worker_failure(session, error):
+    with _LOCK:
+        session["error_message"] = session["error_message"] or str(error)
+    try:
+        log_system_event(
+            session["admin_id"], "Live Monitor", "monitor_failed", "Failed", message=str(error)
+        )
+    except Exception:
+        # The database may be the cause of the failure. The in-memory status
+        # still reports it, and logging must never prevent capture cleanup.
+        pass
+
+
 def _worker(session, stop_event, pause_event):
+    """Own capture resources even when startup, persistence, or logging fails."""
+    global _THREAD
+
+    resources = {"source": None, "capture_id": None}
+    final_state = "error"
+    try:
+        with ExitStack() as cleanup:
+            final_state = _run_worker(session, stop_event, pause_event, cleanup, resources)
+    except Exception as error:
+        final_state = "error"
+        _record_worker_failure(session, error)
+    finally:
+        if resources["capture_id"] is not None:
+            try:
+                stats = resources["source"].stats()
+                with _LOCK:
+                    session["capture"] = stats
+                finalize_capture_session(
+                    resources["capture_id"], stats.get("packets", 0),
+                    stats.get("dropped", 0), stats.get("flows", 0), final_state,
+                )
+            except Exception as error:
+                final_state = "error"
+                _record_worker_failure(session, error)
+        with _LOCK:
+            # Publish completion only after capture cleanup and all database
+            # writes finish, so a visible terminal state is safe to restart.
+            session["state"] = final_state
+            if _THREAD is threading.current_thread():
+                _THREAD = None
+
+
+def _run_worker(session, stop_event, pause_event, cleanup, resources):
     """Stream the selected source through the deployed model until stopped."""
     admin_id = session["admin_id"]
     paced_interval = SPEED_CHOICES[session["speed"]]
@@ -300,15 +351,12 @@ def _worker(session, stop_event, pause_event):
         artifact, deployment = load_active_artifact()
     except DeploymentError as error:
         with _LOCK:
-            session["state"] = "error"
             session["error_message"] = str(error)
         log_system_event(admin_id, "Live Monitor", "monitor_failed", "Failed", message=str(error))
-        return
+        return "error"
 
     if stop_event.is_set():
-        with _LOCK:
-            session["state"] = "stopped"
-        return
+        return "stopped"
 
     feature_columns = list(artifact.get("feature_columns") or [])
     numeric_columns = set(artifact.get("numeric_columns") or [])
@@ -324,35 +372,43 @@ def _worker(session, stop_event, pause_event):
     source = None
     try:
         source = _make_source(session, cancel_event=stop_event)
-        source.prepare()
+        resources["source"] = source
+        cleanup.callback(source.close)
+        # CSV columns are known after reading its header. Packet sources have
+        # a fixed schema, which we can check before opening a capture handle.
         if source_type == "csv":
-            missing = [column for column in feature_columns if column not in source.columns]
-            if missing:
-                raise LiveMonitorError(
-                    f"The traffic sample is missing required columns: {', '.join(missing)}."
+            source.prepare()
+        missing = [column for column in feature_columns if column not in source.columns]
+        if missing:
+            if source_type == "csv":
+                message = f"The traffic sample is missing required columns: {', '.join(missing)}."
+            else:
+                message = (
+                    "The deployed model requires features unavailable from packet capture: "
+                    f"{', '.join(missing)}. Train and deploy using the bundled traffic "
+                    "features before starting packet monitoring."
                 )
+            raise LiveMonitorError(message)
+        if source_type != "csv":
+            source.prepare()
     except TrafficSourceCancelled:
-        with _LOCK:
-            session["state"] = "stopped"
         if source is not None:
-            source.close()
-        return
+            cleanup.close()
+        return "stopped"
     except (LiveMonitorError, TrafficSourceError) as error:
         with _LOCK:
-            session["state"] = "error"
             session["error_message"] = str(error)
         log_system_event(admin_id, "Live Monitor", "monitor_failed", "Failed", message=str(error))
         if source is not None:
-            source.close()
-        return
+            cleanup.close()
+        return "error"
     except Exception as error:
         with _LOCK:
-            session["state"] = "error"
             session["error_message"] = str(error)
         log_system_event(admin_id, "Live Monitor", "monitor_failed", "Failed", message=str(error))
         if source is not None:
-            source.close()
-        return
+            cleanup.close()
+        return "error"
 
     # The stack's first prediction pays a one-off warm-up cost. Spend it here,
     # while the page still shows "starting", so the feed opens at full speed and
@@ -364,14 +420,11 @@ def _worker(session, stop_event, pause_event):
         pass
 
     if stop_event.is_set():
-        source.close()
-        with _LOCK:
-            session["state"] = "stopped"
-        return
+        cleanup.close()
+        return "stopped"
 
-    capture_id = None
     if source_type == "live":
-        capture_id = insert_capture_session(
+        resources["capture_id"] = insert_capture_session(
             admin_id, session["source_name"], getattr(source, "bpf_filter", "")
         )
 
@@ -456,7 +509,7 @@ def _worker(session, stop_event, pause_event):
             if source_type == "live" and event_data.get("flow_last_ts"):
                 detection_lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
 
-            flow_data = dict(flow_row)
+            flow_data = {column: _json_safe(value) for column, value in flow_row.items()}
             flow_data["source_ip"] = event_data["source_ip"]
             flow_data["destination_ip"] = event_data["destination_ip"]
             flow_data["source_port"] = event_data["source_port"]
@@ -542,7 +595,6 @@ def _worker(session, stop_event, pause_event):
                 break
     except Exception as error:
         with _LOCK:
-            session["state"] = "error"
             session["error_message"] = str(error)
         log_system_event(
             admin_id,
@@ -552,21 +604,11 @@ def _worker(session, stop_event, pause_event):
             message=f"Live monitoring stopped after an error: {error}",
             model_name=deployment_summary["model_name"],
         )
-        source.close()
-        if capture_id is not None:
-            stats = source.stats()
-            finalize_capture_session(
-                capture_id,
-                stats.get("packets", 0),
-                stats.get("dropped", 0),
-                stats.get("flows", 0),
-                "error",
-            )
-        return
+        cleanup.close()
+        return "error"
 
-    source.close()
+    cleanup.close()
     with _LOCK:
-        session["state"] = final_state
         if source_type == "pcap" and final_state == "completed":
             session["row_total"] = session["totals"]["flows"]
         if source_type == "live":
@@ -574,14 +616,6 @@ def _worker(session, stop_event, pause_event):
         totals = dict(session["totals"])
 
     capture_stats = source.stats()
-    if capture_id is not None:
-        finalize_capture_session(
-            capture_id,
-            capture_stats.get("packets", 0),
-            capture_stats.get("dropped", 0),
-            capture_stats.get("flows", 0),
-            final_state,
-        )
     capture_note = (
         f" Capture: {capture_stats.get('packets', 0):,} packets, "
         f"{capture_stats.get('dropped', 0):,} dropped."
@@ -601,6 +635,7 @@ def _worker(session, stop_event, pause_event):
         run_id=deployment_summary["run_id"],
         model_name=deployment_summary["model_name"],
     )
+    return final_state
 
 
 def start_session(
@@ -693,14 +728,12 @@ def stop_session():
     if thread and thread.is_alive():
         thread.join(timeout=5)
     with _LOCK:
-        if thread and thread.is_alive():
-            session["state"] = "stopping"
-        elif session["state"] in ACTIVE_STATES:
-            session["state"] = "stopped"
+        if session["state"] in ACTIVE_STATES:
+            session["state"] = "stopping" if thread and thread.is_alive() else "stopped"
         return _public_session(session)
 
 
-def get_status(since_seq=0):
+def get_status(since_seq=0, session_id=None):
     """Return the session snapshot plus classification events newer than ``since_seq``."""
     try:
         since_seq = int(since_seq or 0)
@@ -709,10 +742,12 @@ def get_status(since_seq=0):
 
     with _LOCK:
         session = _public_session(_SESSION)
+        last_seq = _SESSION["seq"] if _SESSION else 0
+        if (session_id is not None and session_id != session["session_id"]) or since_seq > last_seq:
+            since_seq = 0
         events = [event for event in _EVENTS if event["seq"] > since_seq]
         if len(events) > MAX_EVENTS_PER_POLL:
             events = events[-MAX_EVENTS_PER_POLL:]
-        last_seq = _SESSION["seq"] if _SESSION else 0
     return {"session": session, "events": events, "last_seq": last_seq}
 
 

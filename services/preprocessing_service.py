@@ -1,3 +1,4 @@
+import csv
 from dataclasses import dataclass
 
 import numpy as np
@@ -8,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-NORMAL_LABELS = {"0", "normal", "benign", "legitimate", "clean"}
+NORMAL_LABELS = {"0", "0.0", "normal", "benign", "legitimate", "clean"}
 
 
 @dataclass
@@ -75,7 +76,15 @@ def build_feature_preprocessor(numeric_columns, categorical_columns):
 
 def _read_and_validate_csv(file_path):
     try:
-        dataframe = pd.read_csv(file_path)
+        with open(file_path, encoding="utf-8-sig", newline="") as csv_file:
+            # Pandas silently renames duplicate and unnamed headers. Retain the
+            # original names so those validation errors cannot be hidden.
+            header = next(
+                (row for row in csv.reader(csv_file) if row and (len(row) > 1 or row[0].strip())),
+                [],
+            )
+            csv_file.seek(0)
+            dataframe = pd.read_csv(csv_file)
     except Exception as error:
         raise ValueError(f"Unable to read the CSV file. Details: {error}") from error
 
@@ -86,11 +95,11 @@ def _read_and_validate_csv(file_path):
         raise ValueError(
             "The dataset must contain at least one feature column and one target column."
         )
-    if dataframe.columns.duplicated().any():
+    if len(header) != len(set(header)):
         raise ValueError("The CSV contains duplicate column names.")
 
     target_column = dataframe.columns[-1]
-    if not str(target_column).strip():
+    if not header[-1].strip():
         raise ValueError("The final target column must have a name.")
 
     usable_features = dataframe.iloc[:, :-1].dropna(axis=1, how="all")
@@ -101,19 +110,33 @@ def _read_and_validate_csv(file_path):
     return dataframe
 
 
-def _encode_binary_target(raw_target):
+def encode_binary_target(raw_target, *, allow_single_class=False):
+    """Use the same class meaning for training and labelled traffic replay."""
     if raw_target.isna().any() or raw_target.astype(str).str.strip().eq("").any():
         raise ValueError("The target label column contains missing values.")
 
     cleaned = raw_target.astype(str).str.strip()
     labels = list(cleaned.value_counts().index)
+    if allow_single_class and len(labels) == 1:
+        label = labels[0]
+        is_normal = label.lower() in NORMAL_LABELS
+        if not is_normal and label.lower() not in {"1", "1.0", "attack"}:
+            raise ValueError("Rename the target values to Normal and Attack (or 0 and 1).")
+        return cleaned.map({label: 0 if is_normal else 1}).astype(int), {
+            "normal_label": label if is_normal else None,
+            "attack_label": None if is_normal else label,
+            "output_labels": {"0": "Normal", "1": "Attack"},
+        }
     if len(labels) != 2:
         raise ValueError("AlgoGuard requires exactly two target classes: Normal and Attack.")
 
-    normal_label = next(
-        (label for label in labels if label.lower() in NORMAL_LABELS),
-        sorted(labels, key=str.lower)[0],
-    )
+    normal_labels = [label for label in labels if label.lower() in NORMAL_LABELS]
+    if len(normal_labels) != 1:
+        raise ValueError(
+            "Cannot identify exactly one Normal class. Rename the target values "
+            "to Normal and Attack (or 0 and 1) before training."
+        )
+    normal_label = normal_labels[0]
     attack_label = next(label for label in labels if label != normal_label)
     encoded = cleaned.map({normal_label: 0, attack_label: 1}).astype(int)
     return encoded, {
@@ -139,7 +162,7 @@ def prepare_dataset(file_path, test_size=0.25, random_state=42):
     dataframe = _read_and_validate_csv(file_path)
     target_column = dataframe.columns[-1]
     X = dataframe.iloc[:, :-1].copy().replace([np.inf, -np.inf], np.nan)
-    y, label_mapping = _encode_binary_target(dataframe[target_column])
+    y, label_mapping = encode_binary_target(dataframe[target_column])
 
     class_counts = y.value_counts().sort_index()
     if class_counts.min() < 3:

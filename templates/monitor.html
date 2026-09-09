@@ -240,8 +240,13 @@
     }
 
     let lastSeq = 0;
+    let sessionId = null;
     let pollTimer = null;
     let pollInFlight = false;
+    let controlInFlight = false;
+    let pollHadError = false;
+    const REQUEST_TIMEOUT_MS = 10000;
+    let requestVersion = 0;
     let buckets = [];
     let pendingBucket = { normal: 0, attack: 0 };
 
@@ -443,6 +448,36 @@
         drawChart();
     }
 
+    function acceptSession(session) {
+        const nextId = session.session_id || null;
+        if (nextId === sessionId) {
+            return;
+        }
+        sessionId = nextId;
+        lastSeq = 0;
+        buckets = [];
+        pendingBucket = { normal: 0, attack: 0 };
+        const row = document.createElement("tr");
+        row.className = "feed-empty-row";
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.textContent = "Waiting for classified traffic…";
+        row.appendChild(cell);
+        feedBody.replaceChildren(row);
+        drawChart();
+    }
+
+    async function requestJson(url, options) {
+        const controller = new AbortController();
+        const timeout = window.setTimeout(function () { controller.abort(); }, REQUEST_TIMEOUT_MS);
+        try {
+            const response = await fetch(url, { ...options, signal: controller.signal });
+            return { ok: response.ok, status: response.status, data: await response.json() };
+        } finally {
+            window.clearTimeout(timeout);
+        }
+    }
+
     function stopPolling() {
         if (pollTimer) {
             window.clearInterval(pollTimer);
@@ -457,28 +492,48 @@
     }
 
     function poll() {
-        if (pollInFlight) {
+        if (pollInFlight || controlInFlight) {
             return;
         }
         pollInFlight = true;
-        fetch("{{ url_for('monitor_status') }}?since=" + lastSeq, { credentials: "same-origin" })
-            .then(function (response) { return response.json(); })
-            .then(function (data) {
-                if (data.status !== "success") {
+        const version = requestVersion;
+        const query = "?since=" + lastSeq + "&session_id=" + encodeURIComponent(sessionId || "");
+        return requestJson("{{ url_for('monitor_status') }}" + query, { credentials: "same-origin" })
+            .then(function (result) {
+                if (version !== requestVersion) {
                     return;
                 }
+                const data = result.data;
+                if (!result.ok || data.status !== "success") {
+                    if (result.status === 401 || result.status === 403) {
+                        pollHadError = false;
+                        setMessage(data.message || "Log in again to refresh monitoring.", true);
+                        stopPolling();
+                    } else {
+                        pollHadError = true;
+                        setMessage((data.message || "Monitoring could not be refreshed.") + " Retrying…", true);
+                    }
+                    return;
+                }
+                if (pollHadError) {
+                    setMessage("", false);
+                    pollHadError = false;
+                }
+                acceptSession(data.session);
                 if (data.events && data.events.length) {
                     addFeedRows(data.events);
-                    lastSeq = data.last_seq;
                 }
-                pushBucket();
-                if (!renderState(data.session)) {
-                    stopPolling();
+                lastSeq = data.last_seq;
+                if (data.session.state === "running" || (data.events && data.events.length)) {
+                    pushBucket();
                 }
+                renderState(data.session);
             })
             .catch(function () {
-                setMessage("Lost contact with the monitoring session.", true);
-                stopPolling();
+                if (version === requestVersion) {
+                    pollHadError = true;
+                    setMessage("Lost contact with the monitoring session. Retrying…", true);
+                }
             })
             .finally(function () {
                 pollInFlight = false;
@@ -486,7 +541,14 @@
     }
 
     function control(url, body) {
-        return fetch(url, {
+        if (controlInFlight) {
+            return Promise.resolve();
+        }
+        controlInFlight = true;
+        pollHadError = false;
+        // Discard status responses issued before this control action.
+        requestVersion += 1;
+        return requestJson(url, {
             method: "POST",
             credentials: "same-origin",
             headers: {
@@ -495,37 +557,28 @@
             },
             body: JSON.stringify(body || {}),
         })
-            .then(function (response) {
-                return response.json().then(function (data) {
-                    return { ok: response.ok, data: data };
-                });
-            })
             .then(function (result) {
                 if (!result.ok || result.data.status !== "success") {
                     setMessage(result.data.message || "The monitoring session could not be updated.", true);
                     return;
                 }
                 setMessage("", false);
+                acceptSession(result.data.session);
                 renderState(result.data.session);
                 startPolling();
             })
             .catch(function () {
-                setMessage("The monitoring session could not be updated.", true);
+                setMessage("The monitoring response was lost. Checking the session status…", true);
+                pollHadError = true;
+            })
+            .finally(function () {
+                controlInFlight = false;
+                startPolling();
+                poll();
             });
     }
 
     startButton.addEventListener("click", function () {
-        lastSeq = 0;
-        buckets = [];
-        pendingBucket = { normal: 0, attack: 0 };
-        const startingRow = document.createElement("tr");
-        startingRow.className = "feed-empty-row";
-        const startingCell = document.createElement("td");
-        startingCell.colSpan = 7;
-        startingCell.textContent = "Starting the traffic stream…";
-        startingRow.appendChild(startingCell);
-        feedBody.replaceChildren(startingRow);
-        drawChart();
         control("{{ url_for('monitor_start') }}", {
             source_type: controls.source.value,
             dataset: controls.dataset.value,
@@ -553,12 +606,13 @@
     // Re-attach to a session that is already running, so a page reload never
     // orphans the monitor.
     const initial = {{ initial_status|tojson }};
+    acceptSession(initial.session);
     lastSeq = initial.last_seq || 0;
     addFeedRows(initial.events || []);
     drawChart();
-    if (renderState(initial.session)) {
-        startPolling();
-    }
+    renderState(initial.session);
+    // Keep observing while idle so a session started in another tab is discovered.
+    startPolling();
 })();
 </script>
 {% endif %}

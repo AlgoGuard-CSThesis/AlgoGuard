@@ -74,20 +74,22 @@ def binary_dataframe():
     rows_per_class = 48
     normal = pd.DataFrame(
         {
-            "duration": rng.normal(1.0, 0.15, rows_per_class),
-            "packet_rate": rng.normal(30, 4, rows_per_class),
-            "source_bytes": rng.normal(500, 60, rows_per_class),
-            "protocol": rng.choice(["tcp", "udp"], rows_per_class),
+            "dur": rng.normal(1.0, 0.15, rows_per_class),
+            "rate": rng.normal(30, 4, rows_per_class),
+            "sbytes": rng.normal(500, 60, rows_per_class),
+            "dbytes": rng.normal(300, 40, rows_per_class),
+            "proto": rng.choice(["tcp", "udp"], rows_per_class),
             "state": rng.choice(["CON", "FIN"], rows_per_class),
             "label": "Normal",
         }
     )
     attack = pd.DataFrame(
         {
-            "duration": rng.normal(5.5, 0.25, rows_per_class),
-            "packet_rate": rng.normal(900, 45, rows_per_class),
-            "source_bytes": rng.normal(9000, 400, rows_per_class),
-            "protocol": rng.choice(["tcp", "icmp"], rows_per_class),
+            "dur": rng.normal(5.5, 0.25, rows_per_class),
+            "rate": rng.normal(900, 45, rows_per_class),
+            "sbytes": rng.normal(9000, 400, rows_per_class),
+            "dbytes": rng.normal(4000, 200, rows_per_class),
+            "proto": rng.choice(["tcp", "icmp"], rows_per_class),
             "state": rng.choice(["REQ", "INT"], rows_per_class),
             "label": "Attack",
         }

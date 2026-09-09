@@ -198,12 +198,17 @@ restart; it is not a permanent login token.
 ## CSV Contract
 
 This contract applies to datasets passed to `train.py` and to any CSV replayed by the Live Monitor.
+Replay also accepts fewer rows or a single recognized class, since it does not train a model.
 
 - Use one `.csv` file per run.
 - Include a header row.
 - Put all input features before the target.
 - Put the target label in the final column.
 - Use exactly two target classes representing Normal and Attack.
+- Prefer `Normal` / `Attack` or `0` / `1`. Exactly one class must be a recognized
+  Normal label (`normal`, `benign`, `legitimate`, `clean`, `0`, or `0.0`, ignoring
+  case and surrounding whitespace); the other class represents Attack. Ambiguous
+  labels are rejected. Rename them explicitly rather than relying on alphabetical order.
 - Include at least three rows per class; realistic evaluation requires substantially more.
 - Numeric and text features are accepted. Missing feature values are imputed.
 - Target values cannot be missing.
@@ -244,7 +249,25 @@ Open **Live Monitor** and choose a traffic source:
 
 For packet sources the flow tracker computes the same 15 features the model was trained on (`dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sttl`, `dttl`, `sload`, `dload`, `sinpkt`, `dinpkt`). `service` is inferred from well-known ports and `state` from observed TCP flags, which approximate how the original UNSW-NB15 features were generated; the closer your training data is to your own network's traffic, the better the verdicts (see Retrain and Deploy).
 
+CSV replay uses the same Normal/Attack label mapping as training, including numeric
+labels and recognized Normal aliases. Missing or ambiguous labels report an error.
+Missing feature values and invalid numeric values are imputed by the saved pipeline;
+stored records preserve those missing values as `null`.
+
+If live capture fails after starting, the monitor reports an error and closes the
+capture. A session becomes completed, stopped, or failed only after cleanup and
+final database writes finish, so it can be restarted as soon as that state appears.
+
+Packet monitoring checks the deployed model's required fields before opening a
+capture. If any field is outside these 15 features, it reports the missing fields
+and asks you to train with compatible data. Manual prediction remains available
+for models trained with custom fields.
+
 Then choose a storage mode and Start; Pause, Resume, and Stop control the session. The page polls for new classifications, so reloading the browser re-attaches to a session that is still running rather than orphaning it.
+
+The feed reconnects automatically after temporary connection failures. Requests
+time out after ten seconds; if a control response is lost, the page checks the
+session status without repeating the action. An expired login prompts you to log in again.
 
 **Live capture prerequisites (Windows):** install [Npcap](https://npcap.com) with the "WinPcap API-compatible mode" default, and run AlgoGuard from a terminal with Administrator rights. Without them, the monitor lists live capture as unavailable with the reason, and replay sources continue to work.
 
@@ -258,7 +281,7 @@ Storage modes bound how much the session writes to SQLite:
 
 Persisting sessions stop writing after 300 records and mark themselves capped; classification continues. Stored flows are tagged `live_monitor` (replay sources) or `live_capture` (live interface) in `network_traffic`, so monitoring traffic stays distinguishable from manual predictions. Flows from packet sources store their real endpoint addresses and ports; CSV replay rows keep cosmetic private-range endpoints, since the samples carry no addresses.
 
-One monitoring session runs per process. The artifact is loaded once when a session starts, so a redeployment mid-session is picked up the next time the monitor is started.
+One monitoring session runs per process. The artifact is loaded once when a session starts, so a redeployment mid-session is picked up the next time the monitor is started. Open monitor tabs track session IDs and reset their feeds when another tab starts a new session.
 
 ## Retrain and Deploy
 
@@ -270,7 +293,7 @@ python train.py datasets\algoguard_big.csv --deploy
 python train.py my_traffic.csv --deploy --admin your_admin
 ```
 
-Without `--deploy`, the run trains and ranks all six candidates, writes `reports/training_run_<id>_model_results.csv`, and prints the comparison table without touching the active model. With `--deploy`, the Stacking Ensemble is promoted only if it passes the quality gate; the five individual models are comparison results and can never be deployed. Deployment saves the Stacking pipeline, model identity, source run, metric summary, and deployment timestamp to `saved_models/deployed_model.joblib` and records the active deployment in SQLite.
+Without `--deploy`, the run trains and ranks all six candidates, writes `reports/training_run_<id>_model_results.csv`, and prints the comparison table without touching the active model. With `--deploy`, the Stacking Ensemble is promoted only if it passes the quality gate; the five individual models are comparison results and can never be deployed. Each deployment saves the Stacking pipeline and its metadata to a separate `saved_models/deployed_model.<unique-id>.joblib` file, then switches the active file reference in one SQLite transaction. Previous files are retained for requests already in progress and deployment history. Existing installations that reference `deployed_model.joblib` continue to work. `ALGOGUARD_DEPLOYED_MODEL_PATH` sets the folder and base filename for new deployment files.
 
 The default minimums are Accuracy 70%, F1-score 70%, and ROC-AUC 70%. They can be configured before startup with `ALGOGUARD_MIN_STACKING_ACCURACY`, `ALGOGUARD_MIN_STACKING_F1`, and `ALGOGUARD_MIN_STACKING_ROC_AUC`. Values are percentages from 0 to 100.
 
@@ -279,6 +302,16 @@ Artifacts from earlier deployment workflows are intentionally treated as legacy.
 ## Manual Prediction
 
 The Prediction page builds its fields from the active artifact's saved feature schema. A prediction stores Normal or Attack, confidence, model name, timestamp, latency, and alert status. Attack creates an alert and audit events; Normal does not create an attack alert. The same path is available as JSON at `POST /predict` for an authenticated session.
+
+The prediction and monitor-start APIs require a JSON object and the
+`Content-Type: application/json` header. Malformed JSON, arrays, and scalar values
+are rejected before any prediction is stored or monitor session is started.
+
+In the JSON API, omitted fields use the saved training defaults. Explicit `null`
+or empty numeric fields are imputed by the saved pipeline and recorded as `null`.
+Non-finite numbers such as `NaN` or `Infinity` are rejected with a validation error.
+Very large finite byte counts retain their feature values even when the optional
+packet-size summary exceeds the database's integer range; that summary is stored as `null`.
 
 ## System Logs and Alerts
 
@@ -294,6 +327,9 @@ python -m ruff check app.py train.py migrate.py services tests
 python -m pytest -q
 ```
 
+The browser polling checks use Node.js's built-in test runner (no npm packages):
+`node --test tests/monitor_poll.test.cjs`.
+
 The ruff rule set is pinned in `pyproject.toml` (`E`, `F`, `W`, `I`) so the check reports the same result on every ruff release. The test suite uses temporary database and artifact paths, so it never modifies `database/` or `saved_models/`; expect it to take under a minute because it trains small models.
 
 ## Troubleshooting
@@ -308,7 +344,7 @@ Invalid CSV: confirm the file is CSV, the target is last, exactly two target cla
 
 No active deployment: run `python train.py <csv> --deploy` and confirm Stacking passed the quality gate.
 
-Missing artifact: the database record and `saved_models/deployed_model.joblib` must agree. Redeploy with `python train.py <csv> --deploy`.
+Missing artifact: the active deployment's database record must point to an existing model file. Use the artifact path printed by `train.py` rather than assuming a fixed filename. Redeploy with `python train.py <csv> --deploy` if the referenced file is missing.
 
 Live Monitor will not start: a session is already running, so stop it first. If it reports an error immediately, the deployed artifact is missing or does not match the deployment record.
 

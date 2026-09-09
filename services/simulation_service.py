@@ -54,6 +54,8 @@ def get_simulation_schema():
 
 
 def _build_input_frame(payload, artifact):
+    if not isinstance(payload, dict):
+        raise SimulationServiceError("Prediction input must be a JSON object.")
     feature_columns = artifact.get("feature_columns") or []
     numeric_columns = set(artifact.get("numeric_columns") or [])
     defaults = artifact.get("feature_defaults") or {}
@@ -65,17 +67,23 @@ def _build_input_frame(payload, artifact):
         value = payload.get(column, defaults.get(column))
         if column in numeric_columns:
             if value in (None, ""):
-                row[column] = np.nan
+                row[column] = None
             else:
                 try:
                     row[column] = float(value)
-                except (TypeError, ValueError) as error:
+                except (TypeError, ValueError, OverflowError) as error:
                     raise SimulationServiceError(
-                        f"{column} must contain a numerical value."
+                        f"{column} must contain a finite numerical value."
                     ) from error
+                if not np.isfinite(row[column]):
+                    raise SimulationServiceError(
+                        f"{column} must contain a finite numerical value."
+                    )
         else:
             row[column] = None if value in (None, "") else str(value)
-    return pd.DataFrame([row], columns=feature_columns), row
+    # Scikit-learn imputes NaN; persistence and JSON keep missing values as null.
+    frame_row = {column: np.nan if value is None else value for column, value in row.items()}
+    return pd.DataFrame([frame_row], columns=feature_columns), row
 
 
 def run_simulation(payload):
@@ -85,7 +93,7 @@ def run_simulation(payload):
     except DeploymentError as error:
         raise SimulationServiceError(str(error)) from error
 
-    frame, flow_data = _build_input_frame(payload or {}, artifact)
+    frame, flow_data = _build_input_frame(payload, artifact)
     pipeline = artifact.get("pipeline")
     if pipeline is None:
         raise SimulationServiceError("The deployed artifact does not contain a pipeline.")

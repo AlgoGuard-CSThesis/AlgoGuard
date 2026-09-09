@@ -107,10 +107,23 @@ def _console_progress(completed, total, model_name, status):
         print(f"  [{completed}/{total}] Finished {model_name}", flush=True)
 
 
+def _default_admin_username():
+    """Match the account seeded on a fresh database.
+
+    A new database is seeded with ``ALGOGUARD_ADMIN_USERNAME`` (or ``admin``), so the
+    documented first run ``train.py <csv> --deploy`` must default to that same name.
+    """
+    return os.environ.get("ALGOGUARD_ADMIN_USERNAME", "").strip() or "admin"
+
+
 def _resolve_admin_id(username):
     admin = get_admin_by_username(username)
     if not admin:
-        print(f"Admin account '{username}' was not found.", file=sys.stderr)
+        print(
+            f"Admin account '{username}' was not found. "
+            "Pass --admin <username> with an existing account.",
+            file=sys.stderr,
+        )
         return None
     return admin["admin_id"]
 
@@ -204,8 +217,11 @@ def build_parser():
     )
     parser.add_argument(
         "--admin",
-        default="admin",
-        help="Username recorded as the owner of this run (default: admin).",
+        default=_default_admin_username(),
+        help=(
+            "Username recorded as the owner of this run "
+            "(default: ALGOGUARD_ADMIN_USERNAME if set, otherwise admin)."
+        ),
     )
     parser.add_argument(
         "--models-dir",

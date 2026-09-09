@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Database unavailable | AlgoGuard{% endblock %}
+{% block content %}
+<section class="panel unavailable-panel" aria-labelledby="error-title">
+    <i class="bi bi-exclamation-triangle" aria-hidden="true"></i>
+    <h1 id="error-title" class="h2">Database unavailable</h1>
+    <p>AlgoGuard could not complete this request. Please try again in a moment.</p>
+    <p>If this continues, check the application logs for details.</p>
+    <a class="btn btn-outline-light" href="{{ url_for('dashboard') }}">Return to dashboard</a>
+</section>
+{% endblock %}

@@ -72,7 +72,10 @@ def current_admin_role():
 def _safe_next_url(next_url):
     if not next_url:
         return url_for("dashboard")
-    parsed = urlsplit(next_url)
+    try:
+        parsed = urlsplit(next_url)
+    except ValueError:
+        return url_for("dashboard")
     if (
         parsed.scheme
         or parsed.netloc
@@ -243,7 +246,12 @@ def verify_csrf_token():
 
     expected = session.get("_csrf_token")
     provided = request.form.get("_csrf_token") or request.headers.get("X-CSRF-Token")
-    if expected and provided and hmac.compare_digest(str(expected), str(provided)):
+    if (
+        expected
+        and provided
+        and provided.isascii()
+        and hmac.compare_digest(str(expected), provided)
+    ):
         return None
 
     if request.endpoint in JSON_ENDPOINTS:
@@ -275,6 +283,20 @@ def prevent_dynamic_page_caching(response):
     return response
 
 
+@app.before_request
+def require_json_object():
+    if request.method != "POST" or request.endpoint not in {"predict_api", "monitor_start"}:
+        return None
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({
+            "status": "error",
+            "message": "Send a valid JSON object with Content-Type application/json.",
+        }), 400
+    g.json_payload = payload
+    return None
+
+
 @app.errorhandler(sqlite3.DatabaseError)
 def database_error(error):
     app.logger.error("AlgoGuard database error: %s", error)
@@ -291,8 +313,7 @@ def database_error(error):
         pass
     if request.endpoint in JSON_ENDPOINTS:
         return jsonify({"status": "error", "message": "A database operation failed."}), 500
-    flash("A database operation failed. No destructive recovery was attempted.", "danger")
-    return redirect(url_for("dashboard"))
+    return render_template("error.html"), 500
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -425,7 +446,7 @@ def _monitor_json(callback, action, success_message):
 
 @app.route("/monitor/start", methods=["POST"])
 def monitor_start():
-    payload = request.get_json(silent=True) or {}
+    payload = g.json_payload
     defaults = get_options()["defaults"]
     return _monitor_json(
         lambda: start_session(
@@ -460,7 +481,10 @@ def monitor_stop():
 
 @app.route("/monitor/status")
 def monitor_status():
-    return jsonify({"status": "success", **get_status(request.args.get("since", 0))})
+    return jsonify({
+        "status": "success",
+        **get_status(request.args.get("since", 0), request.args.get("session_id")),
+    })
 
 
 @app.route("/simulation", methods=["GET", "POST"])
@@ -487,7 +511,7 @@ def simulation_demo():
 @app.route("/predict", methods=["POST"])
 def predict_api():
     try:
-        result = _execute_prediction(request.get_json(silent=True) or {}, "Prediction API")
+        result = _execute_prediction(g.json_payload, "Prediction API")
         return jsonify({"status": "success", **result})
     except SimulationServiceError as error:
         return jsonify({"status": "error", "message": str(error)}), 400

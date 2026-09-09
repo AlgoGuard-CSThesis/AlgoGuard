@@ -90,7 +90,10 @@ def train_and_compare_models(
 
     minimum_training_class = int(prepared_dataset.y_train.value_counts().min())
     stacking_cv = min(5, minimum_training_class)
-    n_neighbors = min(5, max(len(prepared_dataset.X_train) - 1, 1))
+    training_rows = len(prepared_dataset.X_train)
+    # Stacking fits each base learner on smaller cross-validation folds.
+    smallest_fold_rows = training_rows - (training_rows + stacking_cv - 1) // stacking_cv
+    n_neighbors = min(5, max(smallest_fold_rows, 1))
     candidates = build_model_candidates(
         stacking_cv=stacking_cv,
         n_neighbors=n_neighbors,

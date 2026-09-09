@@ -138,6 +138,7 @@ def test_failed_activation_restores_previous_artifact(trained_bundle, tmp_path, 
     assert active_path.read_bytes() == previous_contents
     assert list(tmp_path.glob("*.tmp")) == []
     assert list(tmp_path.glob("*.backup")) == []
+    assert list(tmp_path.glob("*.joblib")) == [active_path]
 
 
 def test_active_artifact_with_invalid_format_fails_safely(tmp_path, monkeypatch):
@@ -280,6 +281,69 @@ def test_normal_prediction_does_not_create_alert(authenticated_client, trained_b
     assert len(db.list_alerts(limit=1000)) == before_alerts
 
 
+def reject_nonfinite_json(value):
+    raise AssertionError(f"Response contains invalid JSON number: {value}")
+
+
+@pytest.mark.parametrize("field", ["dur", "sbytes", "dbytes"])
+@pytest.mark.parametrize("missing", [None, ""])
+def test_missing_numeric_prediction_is_imputed_and_saved_as_null(
+    authenticated_client, trained_bundle, field, missing
+):
+    deploy_stacking(trained_bundle)
+    response = authenticated_client.post("/predict", json={field: missing})
+
+    assert response.status_code == 200
+    result = json.loads(response.get_data(as_text=True), parse_constant=reject_nonfinite_json)
+    assert result["prediction"] in {"Normal", "Attack"}
+    assert result["flow_data"][field] is None
+    with db.get_connection() as connection:
+        saved = connection.execute(
+            """SELECT nt.feature_payload, p.input_payload, nt.packet_size
+               FROM prediction p JOIN network_traffic nt ON nt.traffic_id = p.traffic_id
+               WHERE p.prediction_id = ?""",
+            (result["prediction_id"],),
+        ).fetchone()
+    assert saved["packet_size"] >= 0
+    for column in ("feature_payload", "input_payload"):
+        payload = json.loads(saved[column], parse_constant=reject_nonfinite_json)
+        assert payload[field] is None
+
+
+@pytest.mark.parametrize("invalid", ["NaN", "Infinity", "-Infinity", float("nan"), float("inf")])
+def test_nonfinite_prediction_input_is_rejected_without_storing(
+    authenticated_client, trained_bundle, invalid
+):
+    deploy_stacking(trained_bundle)
+    before = db.get_detection_stats()["total_flows"]
+
+    response = authenticated_client.post("/predict", json={"sbytes": invalid})
+
+    assert response.status_code == 400
+    assert "sbytes must contain a finite numerical value" in response.get_json()["message"]
+    assert db.get_detection_stats()["total_flows"] == before
+
+
+@pytest.mark.parametrize("field", ["sbytes", "dbytes"])
+def test_large_finite_prediction_values_preserve_the_flow_without_integer_overflow(
+    authenticated_client, trained_bundle, field
+):
+    deploy_stacking(trained_bundle)
+    response = authenticated_client.post("/predict", json={field: 1e20})
+
+    assert response.status_code == 200, response.get_json()
+    result = response.get_json()
+    with db.get_connection() as connection:
+        saved = connection.execute(
+            """SELECT nt.packet_size, nt.feature_payload FROM prediction p
+               JOIN network_traffic nt ON nt.traffic_id = p.traffic_id
+               WHERE p.prediction_id = ?""",
+            (result["prediction_id"],),
+        ).fetchone()
+    assert saved["packet_size"] is None
+    assert json.loads(saved["feature_payload"])[field] == 1e20
+
+
 def test_classified_flow_transaction_rolls_back_if_alert_write_fails(
     monkeypatch,
     trained_bundle,
@@ -336,7 +400,8 @@ def test_required_log_categories_are_recorded(authenticated_client, trained_bund
     from train import _deploy_stacking
 
     assert _deploy_stacking(trained_bundle["run_id"], 1) is True
-    modules = {row["module"] for row in db.list_system_logs(page=1, per_page=100)["items"]}
+    # Training events can be on older pages after other tests create predictions.
+    modules = set(db.get_log_filter_options()["modules"])
     assert {"Authentication", "Dataset", "Training", "Deployment"}.issubset(modules)
 
 

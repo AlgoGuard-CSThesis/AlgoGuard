@@ -23,6 +23,11 @@ IDLE_TIMEOUT_SECONDS = 15.0
 ACTIVE_TIMEOUT_SECONDS = 120.0
 SWEEP_INTERVAL_SECONDS = 1.0
 
+FLOW_FEATURE_COLUMNS = (
+    "dur", "proto", "service", "state", "spkts", "dpkts", "sbytes", "dbytes",
+    "rate", "sttl", "dttl", "sload", "dload", "sinpkt", "dinpkt",
+)
+
 # UNSW-NB15 uses Bro-derived service names; this port map covers the services
 # present in the bundled datasets. Unknown ports report "-", exactly as the
 # dataset does for unidentified traffic.
@@ -81,8 +86,8 @@ class _FlowState:
     dttl: int = 0
     src_intervals: list = field(default_factory=list)
     dst_intervals: list = field(default_factory=list)
-    last_src_ts: float = None
-    last_dst_ts: float = None
+    last_src_ts: float | None = None
+    last_dst_ts: float | None = None
     saw_syn: bool = False
     saw_fin: bool = False
     saw_rst: bool = False

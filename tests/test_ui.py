@@ -151,6 +151,8 @@ def test_safe_next_url_rejects_browser_normalized_redirects(app_module):
         assert app_module._safe_next_url("//example.com/path") == "/"
         assert app_module._safe_next_url("/\\example.com/path") == "/"
         assert app_module._safe_next_url("https://example.com/path") == "/"
+        assert app_module._safe_next_url("//[invalid") == "/"
+        assert app_module._safe_next_url("https://[invalid") == "/"
 
 
 def test_prediction_api_hides_unexpected_exception_details(

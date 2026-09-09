@@ -10,6 +10,23 @@ def test_parser_accepts_the_documented_flags():
     assert args.admin == "analyst1"
 
 
+def test_admin_defaults_to_the_seeded_env_username(monkeypatch):
+    # The fresh-clone docs say: set ALGOGUARD_ADMIN_USERNAME, then run
+    # `train.py <csv> --deploy` with no --admin. The default must follow the env var.
+    monkeypatch.setenv("ALGOGUARD_ADMIN_USERNAME", "qaadmin")
+    assert train.build_parser().parse_args(["data.csv"]).admin == "qaadmin"
+
+    monkeypatch.setenv("ALGOGUARD_ADMIN_USERNAME", "   ")
+    assert train.build_parser().parse_args(["data.csv"]).admin == "admin"
+
+    monkeypatch.delenv("ALGOGUARD_ADMIN_USERNAME", raising=False)
+    assert train.build_parser().parse_args(["data.csv"]).admin == "admin"
+
+    # An explicit flag still wins over the environment.
+    monkeypatch.setenv("ALGOGUARD_ADMIN_USERNAME", "qaadmin")
+    assert train.build_parser().parse_args(["data.csv", "--admin", "other"]).admin == "other"
+
+
 def test_help_exits_cleanly():
     with pytest.raises(SystemExit) as exit_info:
         train.build_parser().parse_args(["--help"])

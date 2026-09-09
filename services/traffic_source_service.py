@@ -26,7 +26,8 @@ import time
 
 import pandas as pd
 
-from services.flow_tracker_service import FlowTracker, packet_info_from_scapy
+from services.flow_tracker_service import FLOW_FEATURE_COLUMNS, FlowTracker, packet_info_from_scapy
+from services.preprocessing_service import encode_binary_target
 
 
 class TrafficSourceError(RuntimeError):
@@ -119,7 +120,13 @@ class CsvReplaySource(TrafficSource):
             frame = frame.sample(frac=1).reset_index(drop=True)
         labels = frame["label"] if "label" in frame.columns else None
         self._records = frame.to_dict("records")
-        self._labels = None if labels is None else [str(value) for value in labels]
+        self._labels = None
+        if labels is not None:
+            try:
+                encoded, _ = encode_binary_target(labels, allow_single_class=True)
+            except ValueError as error:
+                raise TrafficSourceError(f"Invalid traffic sample labels: {error}") from error
+            self._labels = encoded.map({0: "Normal", 1: "Attack"}).tolist()
         self.columns = list(frame.columns)
         self.row_total = len(self._records)
 
@@ -156,6 +163,8 @@ class PcapReplaySource(TrafficSource):
     immediately pending flows in memory. Random replay must buffer the complete
     capture because shuffling inherently requires the full flow set.
     """
+
+    columns = FLOW_FEATURE_COLUMNS
 
     def __init__(
         self,
@@ -335,6 +344,7 @@ class LiveCaptureSource(TrafficSource):
     """
 
     paced = False
+    columns = FLOW_FEATURE_COLUMNS
 
     def __init__(self, interface, bpf_filter=None, idle_timeout=None, exclude_ports=None):
         self._interface = interface
@@ -421,6 +431,14 @@ class LiveCaptureSource(TrafficSource):
             ) from error
 
     def next_event(self, timeout=0.2):
+        if self._sniffer is not None:
+            exception = getattr(self._sniffer, "exception", None)
+            thread = getattr(self._sniffer, "thread", None)
+            if exception is not None or (thread is not None and not thread.is_alive()):
+                raise TrafficSourceError(
+                    "Packet capture stopped unexpectedly. Check the interface and "
+                    f"restart monitoring. Details: {exception or 'capture thread exited'}"
+                )
         if self._pending:
             self.flows_emitted += 1
             return self._pending.pop(0)
@@ -440,11 +458,17 @@ class LiveCaptureSource(TrafficSource):
             # the driver could not compile it and capture ran unfiltered.
             with self._lock:
                 self.packets_excluded += 1
-            return None
+            info = None
         if info is not None:
             with self._lock:
                 self.packets_captured += 1
             self._pending.extend(_flow_event(flow) for flow in self._tracker.add_packet(info))
+        else:
+            # Ignored packets still advance capture time. Otherwise a steady
+            # stream of excluded traffic prevents quiet flows from expiring.
+            self._pending.extend(
+                _flow_event(flow) for flow in self._tracker.expire_idle(float(packet.time))
+            )
         return self.next_event(timeout=0) if self._pending else None
 
     def close(self):

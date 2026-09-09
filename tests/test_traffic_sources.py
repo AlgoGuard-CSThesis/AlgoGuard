@@ -1,13 +1,18 @@
 """Tests for the Live Monitor's traffic sources, including PCAP replay."""
 
+import sqlite3
 import threading
 import time
+from functools import partial
+from unittest.mock import Mock
 
+import pandas as pd
 import pytest
 import scapy.all as scapy_all
 
 from services import live_monitor_service as monitor
 from services import traffic_source_service as traffic_sources
+from services.deployment_service import load_active_artifact
 from services.traffic_source_service import (
     CsvReplaySource,
     PcapReplaySource,
@@ -19,7 +24,8 @@ from services.traffic_source_service import (
 
 def write_sample_pcap(path, sessions=3):
     """Write a small capture: N complete HTTP sessions plus one DNS exchange."""
-    Ether = scapy_all.Ether
+    # Explicit fixture MAC addresses prevent wrpcap from resolving real neighbors.
+    Ether = partial(scapy_all.Ether, src="02:00:00:00:00:01", dst="02:00:00:00:00:02")
     IP = scapy_all.IP
     TCP = scapy_all.TCP
     UDP = scapy_all.UDP
@@ -92,6 +98,7 @@ def test_pcap_source_aggregates_packets_into_flows(tmp_path):
     assert len(dns_events) == 1
 
     event = http_events[0]
+    assert set(event["record"]) == set(source.columns)
     assert event["actual"] is None
     assert event["source_ip"].startswith("192.168.1.")
     assert event["destination_ip"] == "203.0.113.7"
@@ -104,7 +111,10 @@ def test_pcap_source_aggregates_packets_into_flows(tmp_path):
 
 def test_pcap_source_rejects_captures_without_ip_flows(tmp_path):
     empty = tmp_path / "empty.pcap"
-    scapy_all.wrpcap(str(empty), [scapy_all.Ether() / scapy_all.ARP()])
+    scapy_all.wrpcap(
+        str(empty),
+        [scapy_all.Ether(src="02:00:00:00:00:01", dst="ff:ff:ff:ff:ff:ff") / scapy_all.ARP()],
+    )
     source = PcapReplaySource(str(empty))
     with pytest.raises(TrafficSourceError, match="no classifiable IP flows"):
         source.prepare()
@@ -144,6 +154,37 @@ def test_csv_source_replays_rows_with_labels(tmp_path, trained_bundle):
     assert event["actual"] in {"Normal", "Attack"}
     assert event["source_ip"].startswith("10.")
     assert event["end_reason"] == "replay"
+
+
+@pytest.mark.parametrize(
+    "labels",
+    [[0, 1], [0.0, 1.0], [" normal ", " attack "], ["BENIGN", "malicious"]],
+)
+def test_csv_source_normalizes_supported_labels(tmp_path, labels):
+    csv_path = tmp_path / "labels.csv"
+    pd.DataFrame({"value": [10, 20], "label": labels}).to_csv(csv_path, index=False)
+    source = CsvReplaySource(csv_path)
+
+    source.prepare()
+
+    assert [source.next_event()["actual"] for _ in labels] == ["Normal", "Attack"]
+
+
+@pytest.mark.parametrize("label", ["Normal", "Attack", 0, 1])
+def test_csv_source_can_replay_a_single_known_class(tmp_path, label):
+    csv_path = tmp_path / "single_class.csv"
+    pd.DataFrame({"value": [10], "label": [label]}).to_csv(csv_path, index=False)
+    source = CsvReplaySource(csv_path)
+    source.prepare()
+    assert source.next_event()["actual"] == ("Normal" if label in {"Normal", 0} else "Attack")
+
+
+@pytest.mark.parametrize("labels", [["safe", "danger"], ["Normal", None]])
+def test_csv_source_rejects_unusable_ground_truth(tmp_path, labels):
+    csv_path = tmp_path / "ambiguous.csv"
+    pd.DataFrame({"value": [10, 20], "label": labels}).to_csv(csv_path, index=False)
+    with pytest.raises(TrafficSourceError, match="label|Normal"):
+        CsvReplaySource(csv_path).prepare()
 
 
 def test_live_capture_availability_reports_a_reason_when_unavailable():
@@ -213,6 +254,100 @@ def test_monitor_replays_a_pcap_end_to_end(monkeypatch, tmp_path, deployed_stack
     assert all(event["prediction"] in {"Normal", "Attack"} for event in events)
 
 
+@pytest.mark.parametrize("source_type", ["pcap", "live"])
+def test_packet_monitor_rejects_incompatible_model_before_capture(
+    monkeypatch, deployed_stack, source_type
+):
+    artifact, deployment = load_active_artifact()
+    artifact["feature_columns"] = [*artifact["feature_columns"], "custom_feature"]
+    artifact["feature_defaults"]["custom_feature"] = 42
+    monkeypatch.setattr(monitor, "load_active_artifact", lambda: (artifact, deployment))
+    source = (
+        PcapReplaySource("unused.pcap")
+        if source_type == "pcap"
+        else traffic_sources.LiveCaptureSource(None)
+    )
+    prepare = Mock()
+    close = Mock()
+    monkeypatch.setattr(source, "prepare", prepare)
+    monkeypatch.setattr(source, "close", close)
+    monkeypatch.setattr(monitor, "_make_source", lambda *args, **kwargs: source)
+    session = monitor._new_session(
+        source_type, None, None, "fast", "sequential", "none", 1
+    )
+
+    monitor._worker(session, threading.Event(), threading.Event())
+
+    assert session["state"] == "error"
+    assert "unavailable from packet capture: custom_feature" in session["error_message"]
+    assert session["totals"]["flows"] == 0
+    prepare.assert_not_called()
+    close.assert_called_once()
+
+
+def test_packet_fixtures_do_not_resolve_network_addresses(monkeypatch, tmp_path):
+    def reject_lookup(*args, **kwargs):
+        raise AssertionError("Packet fixtures must not look up real network addresses")
+
+    monkeypatch.setattr(scapy_all.conf.neighbor, "resolve", reject_lookup)
+    write_sample_pcap(tmp_path / "offline.pcap", sessions=1)
+
+
+@pytest.mark.parametrize(
+    "failure_stage", ["capture_record", "start_log", "store_flow", "finish_log"]
+)
+def test_capture_is_closed_even_when_database_and_error_logging_fail(
+    monkeypatch, deployed_stack, failure_stage
+):
+    artifact, _ = load_active_artifact()
+    source = Mock(columns=artifact["feature_columns"], row_total=None, paced=False)
+    source.stats.return_value = {"packets": 2, "dropped": 0, "flows": 1}
+    source.next_event.side_effect = [
+        {
+            "record": dict(artifact["feature_defaults"]), "actual": None,
+            "source_ip": "192.0.2.1", "destination_ip": "198.51.100.1",
+            "source_port": 12345, "destination_port": 80, "protocol": "tcp",
+            "flow_last_ts": None,
+        },
+        StopIteration,
+    ]
+    monkeypatch.setattr(monitor, "_make_source", lambda *args, **kwargs: source)
+
+    def database_failure(*args, **kwargs):
+        raise sqlite3.DatabaseError("simulated database failure")
+
+    def log_event(admin, module, action, *args, **kwargs):
+        if action == "monitor_failed" or (
+            failure_stage == "start_log" and action == "monitor_started"
+        ) or (failure_stage == "finish_log" and action == "monitor_completed"):
+            database_failure()
+
+    monkeypatch.setattr(monitor, "log_system_event", log_event)
+    monkeypatch.setattr(
+        monitor, "insert_capture_session",
+        database_failure if failure_stage == "capture_record" else lambda *args: 42,
+    )
+    monkeypatch.setattr(monitor, "store_classified_flow", database_failure)
+    finalized = []
+
+    def finalize(*args):
+        source.close.assert_called_once()
+        finalized.append(args)
+
+    monkeypatch.setattr(monitor, "finalize_capture_session", finalize)
+    session = monitor._new_session(
+        "live", "test interface", None, "fast", "sequential",
+        "all" if failure_stage == "store_flow" else "none", 1,
+    )
+
+    monitor._worker(session, threading.Event(), threading.Event())
+
+    assert session["state"] == "error"
+    assert "database failure" in session["error_message"]
+    source.close.assert_called_once()
+    assert finalized == ([] if failure_stage == "capture_record" else [(42, 2, 0, 1, "error")])
+
+
 def test_monitor_rejects_bad_capture_selections(monkeypatch, tmp_path):
     monkeypatch.setattr(monitor, "CAPTURE_FOLDER", str(tmp_path))
     with pytest.raises(monitor.LiveMonitorError, match="captures folder"):
@@ -275,3 +410,40 @@ def test_monitor_options_advertise_all_source_types():
     assert values == {"csv", "pcap", "live"}
     assert "live_capture" in options
     assert isinstance(options["captures"], list)
+
+
+@pytest.mark.parametrize("exception", [None, OSError("capture device disconnected")])
+def test_live_source_reports_a_capture_thread_that_exits_after_startup(exception):
+    source = traffic_sources.LiveCaptureSource("test interface")
+    source._sniffer = Mock(exception=exception)
+    source._sniffer.thread.is_alive.return_value = False
+
+    with pytest.raises(TrafficSourceError, match="capture.*stopped"):
+        source.next_event(timeout=0)
+
+
+@pytest.mark.parametrize("ignored_type", ["own_traffic", "non_ip"])
+def test_ignored_packets_still_expire_idle_flows(monkeypatch, ignored_type):
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    packet = scapy_all.IP(src="192.0.2.1", dst="192.0.2.2") / scapy_all.UDP(sport=40000, dport=53)
+    packet.time = 1000.0
+    monkeypatch.setattr(traffic_sources.time, "time", lambda: 1000.0)
+    source._on_packet(packet)
+    assert source.next_event(timeout=0) is None
+
+    ignored = (
+        scapy_all.IP(src="192.0.2.1", dst="192.0.2.2") / scapy_all.TCP(dport=5000)
+        if ignored_type == "own_traffic" else scapy_all.ARP()
+    )
+    ignored.time = 1020.0
+    source._on_packet(ignored)
+    # Keep the queue nonempty: capture may constantly receive excluded traffic.
+    source._on_packet(ignored)
+    event = source.next_event(timeout=0)
+    if event is None:
+        event = source.next_event(timeout=0)
+
+    assert event is not None
+    assert event["end_reason"] == "idle_timeout"
+    assert event["destination_port"] == 53
+    assert source.packets_captured == 1

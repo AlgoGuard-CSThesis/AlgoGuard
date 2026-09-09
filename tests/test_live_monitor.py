@@ -1,3 +1,4 @@
+import json
 import threading
 import time
 
@@ -103,6 +104,36 @@ def test_since_filter_returns_only_newer_events(fast_monitor, replay_dataset):
     assert all(event["seq"] > first["last_seq"] for event in later["events"])
 
 
+@pytest.mark.parametrize("old_cursor", [1, 100])
+def test_status_resets_a_cursor_from_another_session(authenticated_client, old_cursor):
+    old_session = monitor._new_session("csv", None, DATASET, "fast", "sequential", "none", 1)
+    new_session = monitor._new_session("csv", None, DATASET, "fast", "sequential", "none", 1)
+    assert old_session["session_id"] != new_session["session_id"]
+    new_session.update(state="running", seq=3)
+    monitor._SESSION = new_session
+    monitor._EVENTS.extend({"seq": seq} for seq in range(1, 4))
+
+    response = authenticated_client.get(
+        f"/monitor/status?since={old_cursor}&session_id={old_session['session_id']}"
+    )
+    status = response.get_json()
+
+    assert status["session"]["session_id"] == new_session["session_id"]
+    assert [event["seq"] for event in status["events"]] == [1, 2, 3]
+    response = authenticated_client.get(
+        f"/monitor/status?since=3&session_id={new_session['session_id']}"
+    )
+    assert response.get_json()["events"] == []
+
+
+def test_restart_with_no_events_still_exposes_new_session_identity():
+    monitor._SESSION = monitor._new_session("csv", None, DATASET, "fast", "sequential", "none", 1)
+    status = monitor.get_status(100, "previous-session")
+    assert status["session"]["session_id"] != "previous-session"
+    assert status["last_seq"] == 0
+    assert status["events"] == []
+
+
 def test_pause_freezes_the_stream_and_resume_continues(fast_monitor, replay_dataset):
     start(speed="slow")
     assert wait_for(lambda: monitor.get_status()["session"]["totals"]["flows"] >= 1)
@@ -199,6 +230,55 @@ def test_all_mode_persists_every_flow(fast_monitor, replay_dataset):
     assert totals["alerts"] == totals["attacks"]
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("dur", None), ("sbytes", "not-a-number"), ("dbytes", float("inf")),
+     ("proto", None), ("state", "")],
+)
+def test_replay_imputes_invalid_features_and_persists_valid_json(
+    fast_monitor, replay_dataset, field, value
+):
+    frame = fast_monitor["frame"].head(1).copy()
+    frame[field] = value
+    frame.to_csv(replay_dataset, index=False)
+
+    start(persist="all")
+    assert wait_for(lambda: monitor.get_status()["session"]["state"] in {"completed", "error"})
+    status = monitor.get_status()
+    assert status["session"]["state"] == "completed", status["session"]["error_message"]
+    assert status["session"]["totals"]["persisted"] == 1
+    with db.get_connection() as connection:
+        saved = connection.execute(
+            """SELECT nt.feature_payload, p.input_payload FROM prediction p
+               JOIN network_traffic nt ON nt.traffic_id = p.traffic_id
+               WHERE p.prediction_id = ?""",
+            (status["events"][0]["prediction_id"],),
+        ).fetchone()
+    for payload in saved:
+        decoded = json.loads(payload, parse_constant=lambda value: pytest.fail(value))
+        assert decoded[field] is None
+
+
+def test_numeric_replay_labels_match_the_same_verdicts_as_text_labels(
+    fast_monitor, replay_dataset
+):
+    frame = fast_monitor["frame"].head(8).copy()
+    artifact, _ = monitor.load_active_artifact()
+    expected_predictions = artifact["pipeline"].predict(frame[artifact["feature_columns"]])
+    expected_mismatches = int(
+        (expected_predictions != (frame["label"] == "Attack").astype(int)).sum()
+    )
+    frame["label"] = (frame["label"] == "Attack").astype(int)
+    frame.to_csv(replay_dataset, index=False)
+
+    start()
+    assert wait_for(lambda: monitor.get_status()["session"]["state"] in {"completed", "error"})
+    status = monitor.get_status()
+    assert status["session"]["state"] == "completed", status["session"]["error_message"]
+    assert status["session"]["totals"]["mismatches"] == expected_mismatches
+    assert all(event["actual"] in {"Normal", "Attack"} for event in status["events"])
+
+
 def test_storage_cap_stops_writing_but_keeps_classifying(
     monkeypatch,
     fast_monitor,
@@ -229,6 +309,33 @@ def test_session_runs_to_completion(fast_monitor, replay_dataset):
     # A finished session must not block the next one.
     start()
     assert monitor.get_status()["session"]["state"] in ("starting", "running")
+
+
+def test_session_completion_waits_for_final_bookkeeping(
+    fast_monitor, replay_dataset, monkeypatch
+):
+    fast_monitor["frame"].head(1).to_csv(replay_dataset, index=False)
+    logging_started = threading.Event()
+    finish_logging = threading.Event()
+    original_log = monitor.log_system_event
+
+    def slow_completion_log(admin_id, module, action, *args, **kwargs):
+        if action == "monitor_completed":
+            logging_started.set()
+            assert finish_logging.wait(timeout=5)
+        return original_log(admin_id, module, action, *args, **kwargs)
+
+    monkeypatch.setattr(monitor, "log_system_event", slow_completion_log)
+    start()
+    try:
+        assert logging_started.wait(timeout=5)
+        assert monitor.get_status()["session"]["state"] in monitor.ACTIVE_STATES
+    finally:
+        finish_logging.set()
+
+    assert wait_for(lambda: monitor.get_status()["session"]["state"] == "completed")
+    start()
+    assert monitor.get_status()["session"]["state"] in monitor.ACTIVE_STATES
 
 
 def test_random_order_still_pairs_labels_with_flows(fast_monitor, replay_dataset):

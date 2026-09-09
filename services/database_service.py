@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import secrets
 import sqlite3
@@ -780,6 +781,9 @@ def get_model_result(model_id):
 def record_deployment(model_id, run_id, deployed_by, artifact_path):
     """Activate one deployment and preserve replacement history."""
     with get_connection() as connection:
+        # Serialize activation across independent training processes, including
+        # the read of the deployment that this transaction will replace.
+        connection.execute("BEGIN IMMEDIATE")
         previous = connection.execute(
             "SELECT * FROM model_deployment WHERE is_active = 1 LIMIT 1"
         ).fetchone()
@@ -860,7 +864,7 @@ def _insert_network_traffic_from_flow(connection, flow_data, dataset_source):
     destination_bytes = _safe_float(flow_data.get("dbytes"), 0) or 0
     packet_size = _safe_int(
         flow_data.get("packet_size"),
-        int(source_bytes + destination_bytes),
+        _safe_int(source_bytes + destination_bytes),
     )
 
     cursor = connection.execute(
@@ -1280,8 +1284,9 @@ def _safe_float(value, default=None):
     try:
         if value is None or value == "":
             return default
-        return float(value)
-    except (TypeError, ValueError):
+        number = float(value)
+        return number if math.isfinite(number) else default
+    except (TypeError, ValueError, OverflowError):
         return default
 
 
@@ -1289,6 +1294,12 @@ def _safe_int(value, default=None):
     try:
         if value is None or value == "":
             return default
-        return int(float(value))
-    except (TypeError, ValueError):
+        try:
+            number = int(value)
+        except ValueError:
+            number = int(float(value))
+        # SQLite INTEGER is signed 64-bit. Keep exact integers out of float
+        # conversion, and leave unavailable summary metadata at its fallback.
+        return number if -(2**63) <= number < 2**63 else default
+    except (TypeError, ValueError, OverflowError):
         return default
