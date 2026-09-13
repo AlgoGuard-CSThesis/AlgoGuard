@@ -7,16 +7,12 @@ from datetime import datetime, timezone
 
 from werkzeug.security import generate_password_hash
 
+from config import get_config
 from services.model_registry import MODEL_WORKFLOW_VERSION
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DATABASE_FOLDER = os.path.join(BASE_DIR, "database")
-DATABASE_PATH = os.path.abspath(
-    os.environ.get(
-        "ALGOGUARD_DATABASE_PATH",
-        os.path.join(DATABASE_FOLDER, "algoguard.sqlite3"),
-    )
-)
+_cfg = get_config()
+DATABASE_FOLDER = str(_cfg.database_folder)
+DATABASE_PATH = str(_cfg.database_path)
 
 
 class ClosingSQLiteConnection(sqlite3.Connection):
@@ -417,14 +413,15 @@ def migration_status():
 
 def seed_default_admin():
     """Create the first local admin without a predictable fallback password."""
-    username = os.environ.get("ALGOGUARD_ADMIN_USERNAME", "admin")
-    email = os.environ.get("ALGOGUARD_ADMIN_EMAIL", "admin@algoguard.local")
+    cfg = get_config()
+    username = cfg.admin_username
+    email = cfg.admin_email
 
     with get_connection() as connection:
         if connection.execute("SELECT COUNT(*) FROM admin").fetchone()[0]:
             return
 
-        password = os.environ.get("ALGOGUARD_ADMIN_PASSWORD")
+        password = cfg.admin_password
         generated_password = password is None
         if generated_password:
             password = secrets.token_urlsafe(18)
