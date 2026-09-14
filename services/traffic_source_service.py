@@ -26,6 +26,7 @@ import time
 
 import pandas as pd
 
+from config import get_config
 from services.flow_tracker_service import FLOW_FEATURE_COLUMNS, FlowTracker, packet_info_from_scapy
 from services.preprocessing_service import encode_binary_target
 
@@ -317,10 +318,7 @@ BASE_BPF_FILTER = "ip and (tcp or udp)"
 
 def algoguard_port():
     """The TCP port the web application serves on, as app.py resolves it."""
-    try:
-        return int(os.environ.get("ALGOGUARD_PORT", "5000"))
-    except (TypeError, ValueError):
-        return 5000
+    return get_config().port
 
 
 def build_capture_filter(exclude_ports=()):

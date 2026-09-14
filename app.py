@@ -37,20 +37,25 @@ from services.simulation_service import (
     run_simulation,
 )
 
+from config import get_config
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 SAVED_MODEL_FOLDER = os.path.join(BASE_DIR, "saved_models")
 ADMIN_ROLES = ("Administrator", "Analyst")
 
 
 app = Flask(__name__)
-_configured_secret = os.environ.get("ALGOGUARD_SECRET_KEY")
-app.config["SECRET_KEY"] = _configured_secret or secrets.token_hex(32)
-app.config["SECRET_KEY_EPHEMERAL"] = _configured_secret is None
+_cfg = get_config()
+app.config["SECRET_KEY"] = _cfg.secret_key or secrets.token_hex(32)
+app.config["SECRET_KEY_EPHEMERAL"] = _cfg.secret_key_ephemeral
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
-app.config["SESSION_COOKIE_SECURE"] = os.environ.get("ALGOGUARD_SECURE_COOKIES", "0") == "1"
-app.config["SAVED_MODEL_FOLDER"] = SAVED_MODEL_FOLDER
+app.config["SESSION_COOKIE_SECURE"] = _cfg.secure_cookies
+app.config["SAVED_MODEL_FOLDER"] = str(_cfg.saved_model_folder)
 app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
+
+SAVED_MODEL_FOLDER = str(_cfg.saved_model_folder)  # keep name if referenced elsewhere in app.py
+ADMIN_ROLES = _cfg.admin_roles
 
 _DUMMY_PASSWORD_HASH = generate_password_hash(secrets.token_urlsafe(32))
 

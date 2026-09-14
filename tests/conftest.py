@@ -12,6 +12,17 @@ os.environ["ALGOGUARD_DEPLOYED_MODEL_PATH"] = str(TEST_RUNTIME / "models" / "dep
 os.environ["ALGOGUARD_SECRET_KEY"] = "test-secret"
 os.environ["ALGOGUARD_ADMIN_PASSWORD"] = "admin123"
 
+from config import reset_config_cache
+reset_config_cache()
+
+
+@pytest.fixture(autouse=True)
+def reset_config_between_tests():
+    """Ensure env-based configuration is fresh for each test case."""
+    reset_config_cache()
+    yield
+    reset_config_cache()
+
 
 @pytest.fixture(scope="session")
 def app_module(tmp_path_factory):

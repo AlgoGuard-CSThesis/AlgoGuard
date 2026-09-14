@@ -11,6 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.utils.validation import check_is_fitted
 
+from config import get_config
 from services.database_service import get_active_deployment, get_model_result, record_deployment
 from services.model_registry import (
     INDIVIDUAL_MODEL_IDS,
@@ -20,11 +21,10 @@ from services.model_registry import (
     build_individual_estimators,
 )
 
+_cfg = get_config()
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 DEFAULT_ACTIVE_MODEL_PATH = os.path.join(BASE_DIR, "saved_models", "deployed_model.joblib")
-ACTIVE_MODEL_PATH = os.path.abspath(
-    os.environ.get("ALGOGUARD_DEPLOYED_MODEL_PATH", DEFAULT_ACTIVE_MODEL_PATH)
-)
+ACTIVE_MODEL_PATH = str(_cfg.active_model_path)
 _DEPLOYMENT_LOCK = threading.Lock()
 
 
@@ -32,26 +32,10 @@ class DeploymentError(RuntimeError):
     pass
 
 
-def _quality_threshold(environment_name: str, default: float) -> float:
-    """Read one percentage threshold while keeping configuration safe."""
-    fallback = min(max(default, 0.0), 100.0)
-    raw_value = os.environ.get(environment_name)
-    if raw_value is None:
-        return fallback
-
-    try:
-        value = float(raw_value)
-    except ValueError:
-        return fallback
-    if not math.isfinite(value):
-        return fallback
-    return min(max(value, 0.0), 100.0)
-
-
 STACKING_QUALITY_THRESHOLDS = {
-    "accuracy": _quality_threshold("ALGOGUARD_MIN_STACKING_ACCURACY", 70.0),
-    "f1_score": _quality_threshold("ALGOGUARD_MIN_STACKING_F1", 70.0),
-    "roc_auc": _quality_threshold("ALGOGUARD_MIN_STACKING_ROC_AUC", 70.0),
+    "accuracy": _cfg.min_stacking_accuracy,
+    "f1_score": _cfg.min_stacking_f1,
+    "roc_auc": _cfg.min_stacking_roc_auc,
 }
 
 STACKING_THRESHOLD_LABELS = {

@@ -107,13 +107,16 @@ def _console_progress(completed, total, model_name, status):
         print(f"  [{completed}/{total}] Finished {model_name}", flush=True)
 
 
+from config import load_config
+
+
 def _default_admin_username():
     """Match the account seeded on a fresh database.
 
     A new database is seeded with ``ALGOGUARD_ADMIN_USERNAME`` (or ``admin``), so the
     documented first run ``train.py <csv> --deploy`` must default to that same name.
     """
-    return os.environ.get("ALGOGUARD_ADMIN_USERNAME", "").strip() or "admin"
+    return load_config().admin_username
 
 
 def _resolve_admin_id(username):
