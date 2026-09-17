@@ -7,6 +7,7 @@ from urllib.parse import urlsplit
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from config import get_config
 from services.database_service import (
     DATABASE_FOLDER,
     create_admin,
@@ -36,8 +37,6 @@ from services.simulation_service import (
     get_simulation_schema,
     run_simulation,
 )
-
-from config import get_config
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 SAVED_MODEL_FOLDER = os.path.join(BASE_DIR, "saved_models")
@@ -554,13 +553,16 @@ initialize_database()
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("ALGOGUARD_PORT", "5000"))
     # Safe local defaults: the debugger stays off and the server listens only on
     # this machine, because AlgoGuard now handles captured network traffic.
     # Set FLASK_DEBUG=1 while developing, and ALGOGUARD_HOST=0.0.0.0 only on a
     # network you control and intend to expose this prototype to.
-    debug = os.environ.get("FLASK_DEBUG", "0") == "1"
-    host = os.environ.get("ALGOGUARD_HOST", "127.0.0.1")
     # threaded=True keeps the live monitor's status polling responsive while a
     # monitoring session is classifying flows in its background thread.
-    app.run(debug=debug, host=host, port=port, use_reloader=False, threaded=True)
+    app.run(
+        debug=_cfg.debug,
+        host=_cfg.host,
+        port=_cfg.port,
+        use_reloader=False,
+        threaded=True,
+    )

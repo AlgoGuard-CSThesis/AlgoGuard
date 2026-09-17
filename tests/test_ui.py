@@ -75,13 +75,21 @@ def test_runtime_defaults_are_safe_for_local_use():
     """Debug off and loopback-only unless the operator opts in explicitly."""
     import re
 
+    from config import load_config
+
+    # Behavior check: an empty environment must produce safe defaults.
+    cfg = load_config({})
+    assert cfg.debug is False, "debug must default to off"
+    assert cfg.host == "127.0.0.1", "the server must default to loopback only"
+
+    # Wiring check: app.py's __main__ block must actually launch using
+    # those centralized settings, not a separate hardcoded/raw env read,
+    # and must never hardcode 0.0.0.0 as a literal default.
     with open("app.py") as handle:
         source = handle.read()
     main = source[source.index('if __name__ == "__main__":') :]
-    assert 'os.environ.get("FLASK_DEBUG", "0")' in main, "debug must default to off"
-    assert 'os.environ.get("ALGOGUARD_HOST", "127.0.0.1")' in main, (
-        "the server must default to loopback only"
-    )
+    assert "_cfg.debug" in main, "app.py must launch using the centralized debug setting"
+    assert "_cfg.host" in main, "app.py must launch using the centralized host setting"
     assert not re.search(r'host="0\.0\.0\.0"', main), (
         "0.0.0.0 must be opt-in via ALGOGUARD_HOST, not hardcoded"
     )

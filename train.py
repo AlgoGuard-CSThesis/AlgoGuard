@@ -15,6 +15,7 @@ import sys
 
 import pandas as pd
 
+from config import load_config
 from services.database_service import (
     create_training_run,
     get_admin_by_username,
@@ -105,9 +106,6 @@ def _console_progress(completed, total, model_name, status):
         print(f"  [{completed + 1}/{total}] Training {model_name} ...", flush=True)
     else:
         print(f"  [{completed}/{total}] Finished {model_name}", flush=True)
-
-
-from config import load_config
 
 
 def _default_admin_username():

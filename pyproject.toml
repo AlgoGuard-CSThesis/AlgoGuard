@@ -1,5 +1,8 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "integration: requires the local Supabase stack running (supabase start). Excluded from the default fast unit-test run. Invoke explicitly with `pytest -m integration`.",
+]
 filterwarnings = [
     "ignore:Setting the shape on a NumPy array has been deprecated:DeprecationWarning:joblib.numpy_pickle",
 ]

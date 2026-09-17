@@ -12,7 +12,8 @@ os.environ["ALGOGUARD_DEPLOYED_MODEL_PATH"] = str(TEST_RUNTIME / "models" / "dep
 os.environ["ALGOGUARD_SECRET_KEY"] = "test-secret"
 os.environ["ALGOGUARD_ADMIN_PASSWORD"] = "admin123"
 
-from config import reset_config_cache
+from config import reset_config_cache  # noqa: E402
+
 reset_config_cache()
 
 
