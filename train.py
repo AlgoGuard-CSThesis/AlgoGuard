@@ -15,7 +15,7 @@ import sys
 
 import pandas as pd
 
-from config import load_config
+from config import get_config, load_config
 from services.database_service import (
     create_training_run,
     get_admin_by_username,
@@ -36,13 +36,11 @@ from services.model_registry import STACKING_MODEL_NAME
 from services.preprocessing_service import prepare_dataset
 from services.training_service import train_and_compare_models
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-SAVED_MODEL_FOLDER = os.path.join(BASE_DIR, "saved_models")
-REPORT_FOLDER = os.path.join(BASE_DIR, "reports")
 
-
-def save_report(run_id, model_results, report_folder=REPORT_FOLDER):
+def save_report(run_id, model_results, report_folder=None):
     """Write the per-run model comparison CSV that the web app used to produce."""
+    if report_folder is None:
+        report_folder = get_config().report_folder
     rows = []
     for result in model_results:
         normalized = result.get("normalized_metrics") or {}
@@ -226,7 +224,7 @@ def build_parser():
     )
     parser.add_argument(
         "--models-dir",
-        default=SAVED_MODEL_FOLDER,
+        default=str(get_config().saved_model_folder),
         help="Directory that receives the per-run model artifacts.",
     )
     return parser
@@ -324,7 +322,7 @@ def main(argv=None):
         print(f"Top individual model: {results['best_model']['model_name']}")
     else:
         print("No candidate completed every required metric.")
-    print(f"Report: {os.path.join(REPORT_FOLDER, report_name)}")
+    print(f"Report: {get_config().report_folder / report_name}")
 
     if args.deploy and not _deploy_stacking(run_id, admin_id):
         return 1

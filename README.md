@@ -100,7 +100,7 @@ AlgoGuard/
 
 `app.py` serves detection only; the training services are reached through `train.py`. `uploads/` is retained for historical runtime files and is no longer written to.
 
-`research/` is an archived notebook workspace and is not imported by the Flask application. `REFACTOR_PLAN.md` documents the packet-capture refactor and its remaining research phases; `ALGOGUARD_USER_MANUAL.txt` is the end-user and demo guide.
+`research/` is an archived notebook workspace and is not imported by the Flask application. `AlgoGuard Iterations (plan).md` documents the completed Iterations 1–4 and the architecture for the cloud migration; `AlgoGuard Migration (backlog).md` is the stage-by-stage task list for Iterations 5–6; `ALGOGUARD_USER_MANUAL.txt` is the end-user and demo guide.
 
 ## Installation on Windows PowerShell
 

@@ -8,8 +8,8 @@ from unittest.mock import Mock
 
 import pandas as pd
 import pytest
-import scapy.all as scapy_all
 
+import config
 from services import live_monitor_service as monitor
 from services import traffic_source_service as traffic_sources
 from services.deployment_service import load_active_artifact
@@ -19,6 +19,21 @@ from services.traffic_source_service import (
     TrafficSourceCancelled,
     TrafficSourceError,
     live_capture_available,
+)
+
+# The application imports scapy lazily on purpose, so the web app starts and
+# both replay modes keep working on a machine with no capture stack (see
+# services/traffic_source_service's module docstring). A hard `import
+# scapy.all` here broke that contract: without scapy, pytest failed during
+# COLLECTION and took the entire run down with it -- zero results instead of
+# every other test still reporting. Skipping just this module keeps the
+# suite's dependency story matching the application's.
+#
+# Placed after the imports above, which need no capture stack, so every
+# import still sits at module top and ruff's E402 stays quiet.
+scapy_all = pytest.importorskip(
+    "scapy.all",
+    reason="PCAP and live-capture tests need scapy: python -m pip install -r requirements.txt",
 )
 
 
@@ -232,7 +247,10 @@ def deployed_stack(monkeypatch, trained_bundle):
 
 def test_monitor_replays_a_pcap_end_to_end(monkeypatch, tmp_path, deployed_stack):
     write_sample_pcap(tmp_path / "office.pcap", sessions=3)
-    monkeypatch.setattr(monitor, "CAPTURE_FOLDER", str(tmp_path))
+    # live_monitor_service now resolves the capture folder from configuration at
+    # use time, so there is no module-level CAPTURE_FOLDER left to patch.
+    monkeypatch.setenv("ALGOGUARD_CAPTURE_FOLDER", str(tmp_path))
+    config.reset_config_cache()
 
     monitor.start_session(
         1, source_type="pcap", capture_file="office.pcap", speed="fast", persist="none"
@@ -349,7 +367,8 @@ def test_capture_is_closed_even_when_database_and_error_logging_fail(
 
 
 def test_monitor_rejects_bad_capture_selections(monkeypatch, tmp_path):
-    monkeypatch.setattr(monitor, "CAPTURE_FOLDER", str(tmp_path))
+    monkeypatch.setenv("ALGOGUARD_CAPTURE_FOLDER", str(tmp_path))
+    config.reset_config_cache()
     with pytest.raises(monitor.LiveMonitorError, match="captures folder"):
         monitor.start_session(1, source_type="pcap", capture_file="../evil.pcap")
     with pytest.raises(monitor.LiveMonitorError, match="recordings"):

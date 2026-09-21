@@ -8,20 +8,28 @@ not just that their containers are running.
 Requires:
     - Docker + `supabase start` already running
     - `supabase status -o env > .env.supabase.local` already run
-    - pip install requests psycopg2-binary
+    - python -m pip install -r requirements-maintainer.txt
 
 Run with:
-    pytest -m integration -v
+    python -m pytest -m integration -v
 
 These tests never touch the real cloud pilot project. All test data is
 prefixed to be unmistakably disposable and is cleaned up after each test.
 """
+
 import time
 import uuid
 
-import psycopg2
 import pytest
-import requests
+from stack_support import cleanup_storage, connect_local_database, require_status
+
+# pytest imports this module during collection even when the integration
+# marker is deselected, so these must not be hard imports: an analyst clone
+# with only requirements-dev.txt installed would fail `pytest -q` outright.
+psycopg2 = pytest.importorskip(
+    "psycopg2",
+    reason="integration lane needs: python -m pip install -r requirements-maintainer.txt",
+)
 
 pytestmark = pytest.mark.integration
 
@@ -30,12 +38,13 @@ pytestmark = pytest.mark.integration
 # Data API (PostgREST)
 # ---------------------------------------------------------------------
 
-def test_data_api_insert_and_select(local_stack):
+
+def test_data_api_insert_and_select(local_stack, local_http):
     """Create a disposable table via direct DB connection, then prove the
     Data API (PostgREST) can insert/select against it over HTTP."""
     table_name = f"zz_migration_smoke_{uuid.uuid4().hex[:8]}"
 
-    conn = psycopg2.connect(local_stack["db_url"], sslmode="prefer")
+    conn = connect_local_database(psycopg2.connect, local_stack["db_url"])
     conn.autocommit = True
     cur = conn.cursor()
     try:
@@ -71,22 +80,22 @@ def test_data_api_insert_and_select(local_stack):
             "Prefer": "return=representation",
         }
 
-        insert_resp = requests.post(
+        insert_resp = local_http.post(
             f"{local_stack['rest_url']}/{table_name}",
             json={"note": "5a3-smoke-test"},
             headers=headers,
             timeout=10,
         )
-        assert insert_resp.status_code == 201, insert_resp.text
+        require_status(insert_resp, (201,), "Data API insert")
         inserted = insert_resp.json()[0]
         assert inserted["note"] == "5a3-smoke-test"
 
-        select_resp = requests.get(
+        select_resp = local_http.get(
             f"{local_stack['rest_url']}/{table_name}",
             headers=headers,
             timeout=10,
         )
-        assert select_resp.status_code == 200, select_resp.text
+        require_status(select_resp, (200,), "Data API select")
         rows = select_resp.json()
         assert any(r["note"] == "5a3-smoke-test" for r in rows)
     finally:
@@ -99,14 +108,15 @@ def test_data_api_insert_and_select(local_stack):
 # Auth
 # ---------------------------------------------------------------------
 
-def test_auth_signup_and_cleanup(local_stack):
+
+def test_auth_signup_and_cleanup(local_stack, local_http):
     """Prove local GoTrue (Auth) accepts a signup, then clean the user up
     via the admin API so no disposable accounts pile up in the local
     stack across repeated test runs."""
     test_email = f"algoguard.test+{uuid.uuid4().hex[:8]}@algoguard.invalid"
     test_password = "SmokeTest!" + uuid.uuid4().hex[:8]
 
-    signup_resp = requests.post(
+    signup_resp = local_http.post(
         f"{local_stack['api_url']}/auth/v1/signup",
         json={"email": test_email, "password": test_password},
         headers={
@@ -115,13 +125,13 @@ def test_auth_signup_and_cleanup(local_stack):
         },
         timeout=10,
     )
-    assert signup_resp.status_code in (200, 201), signup_resp.text
+    require_status(signup_resp, (200, 201), "Auth signup")
     body = signup_resp.json()
     user_id = (body.get("user") or body).get("id")
-    assert user_id, f"No user id in signup response: {body}"
+    assert user_id, "No user id in signup response."
 
     # Cleanup: delete the disposable user via the admin endpoint.
-    delete_resp = requests.delete(
+    delete_resp = local_http.delete(
         f"{local_stack['api_url']}/auth/v1/admin/users/{user_id}",
         headers={
             "apikey": local_stack["secret_key"],
@@ -129,14 +139,15 @@ def test_auth_signup_and_cleanup(local_stack):
         },
         timeout=10,
     )
-    assert delete_resp.status_code in (200, 204), delete_resp.text
+    require_status(delete_resp, (200, 204), "Auth cleanup")
 
 
 # ---------------------------------------------------------------------
 # Storage
 # ---------------------------------------------------------------------
 
-def test_storage_upload_download_cleanup(local_stack):
+
+def test_storage_upload_download_cleanup(local_stack, local_http):
     """Create a disposable private bucket, upload a small object, confirm
     the bytes round-trip correctly, then remove both."""
     bucket_name = f"zz-smoke-{uuid.uuid4().hex[:8]}"
@@ -149,16 +160,16 @@ def test_storage_upload_download_cleanup(local_stack):
         "Content-Type": "application/json",
     }
 
-    create_bucket_resp = requests.post(
+    create_bucket_resp = local_http.post(
         f"{local_stack['api_url']}/storage/v1/bucket",
         json={"name": bucket_name, "public": False},
         headers=admin_headers,
         timeout=10,
     )
-    assert create_bucket_resp.status_code in (200, 201), create_bucket_resp.text
+    require_status(create_bucket_resp, (200, 201), "Storage bucket creation")
 
     try:
-        upload_resp = requests.post(
+        upload_resp = local_http.post(
             f"{local_stack['api_url']}/storage/v1/object/{bucket_name}/{object_path}",
             data=content,
             headers={
@@ -168,9 +179,9 @@ def test_storage_upload_download_cleanup(local_stack):
             },
             timeout=10,
         )
-        assert upload_resp.status_code in (200, 201), upload_resp.text
+        require_status(upload_resp, (200, 201), "Storage upload")
 
-        download_resp = requests.get(
+        download_resp = local_http.get(
             f"{local_stack['api_url']}/storage/v1/object/{bucket_name}/{object_path}",
             headers={
                 "apikey": local_stack["secret_key"],
@@ -178,31 +189,23 @@ def test_storage_upload_download_cleanup(local_stack):
             },
             timeout=10,
         )
-        assert download_resp.status_code == 200
+        require_status(download_resp, (200,), "Storage download")
         assert download_resp.content == content
     finally:
-        requests.delete(
-            f"{local_stack['api_url']}/storage/v1/object/{bucket_name}/{object_path}",
-            headers=admin_headers,
-            timeout=10,
-        )
-        requests.delete(
-            f"{local_stack['api_url']}/storage/v1/bucket/{bucket_name}",
-            headers=admin_headers,
-            timeout=10,
-        )
+        cleanup_storage(local_http, local_stack["api_url"], bucket_name, object_path, admin_headers)
 
 
 # ---------------------------------------------------------------------
 # Edge Functions
 # ---------------------------------------------------------------------
 
-def test_edge_function_smoke(local_stack):
+
+def test_edge_function_smoke(local_stack, local_http):
     """Invoke the disposable smoke_test Edge Function
     (supabase/functions/smoke_test) and confirm it responds. Requires
     `supabase start` to have picked up the function from the repo's
     supabase/functions directory."""
-    resp = requests.post(
+    resp = local_http.post(
         f"{local_stack['functions_url']}/smoke_test",
         headers={
             "apikey": local_stack["publishable_key"],
@@ -210,6 +213,6 @@ def test_edge_function_smoke(local_stack):
         },
         timeout=10,
     )
-    assert resp.status_code == 200, resp.text
+    require_status(resp, (200,), "Edge Function invocation")
     body = resp.json()
     assert body.get("message") == "ok"

@@ -10,10 +10,6 @@ from werkzeug.security import generate_password_hash
 from config import get_config
 from services.model_registry import MODEL_WORKFLOW_VERSION
 
-_cfg = get_config()
-DATABASE_FOLDER = str(_cfg.database_folder)
-DATABASE_PATH = str(_cfg.database_path)
-
 
 class ClosingSQLiteConnection(sqlite3.Connection):
     """Commit or roll back, then release the SQLite file handle."""
@@ -82,9 +78,10 @@ def utc_now():
 
 def get_connection():
     """Open a SQLite connection with foreign keys and dictionary-like rows."""
-    os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
+    database_path = get_config().database_path
+    os.makedirs(database_path.parent, exist_ok=True)
     connection = sqlite3.connect(
-        DATABASE_PATH,
+        database_path,
         timeout=30,
         factory=ClosingSQLiteConnection,
     )

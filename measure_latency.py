@@ -1,64 +1,78 @@
 """
-measure_latency.py
-Measures round-trip latency from this machine to the Supabase pilot project's
-Postgres endpoint, for Stage 5A.3 documentation purposes.
+measure_latency.py — MAINTAINER-ONLY tool.
+
+Measures round-trip latency from this machine to the Postgres endpoint named
+by DATABASE_URL, for Stage 5A.3 documentation purposes.
+
+Credentials come from `.env.maintainer`, never from the analyst `.env`.
+TLS is explicit: `require` for remote targets, `prefer` only for the local
+Docker stack, overridable with ALGOGUARD_DB_SSLMODE.
 
 Usage:
-    pip install psycopg2-binary python-dotenv
-    Set DATABASE_URL (the pooler connection string) via env var or .env,
-    then: python measure_latency.py
+    1. python -m pip install -r requirements-maintainer.txt
+    2. Copy .env.maintainer.example to .env.maintainer and set DATABASE_URL
+    3. python measure_latency.py
 """
 
-import os
+import statistics
 import sys
 import time
 
+from maintainer_env import describe_target, require_database_url, resolve_sslmode, safe
+
 try:
-    from dotenv import load_dotenv
-    load_dotenv()
+    import psycopg2
 except ImportError:
-    pass
-
-import psycopg2
-
-connection_string = os.environ.get("DATABASE_URL")
-
-if not connection_string:
-    print("DATABASE_URL is not set.")
-    sys.exit(1)
+    print(
+        "psycopg2 is not installed. Run: "
+        "python -m pip install -r requirements-maintainer.txt",
+        file=sys.stderr,
+    )
+    raise SystemExit(1) from None
 
 SAMPLE_COUNT = 10
 
-try:
-    conn = psycopg2.connect(connection_string, sslmode="prefer")
-    cur = conn.cursor()
 
-    # Warm-up query (excluded from measurement, avoids counting connection setup)
-    cur.execute("select 1;")
-    cur.fetchone()
+def main() -> int:
+    connection_string = require_database_url()
+    print(f"Measuring latency to {describe_target(connection_string)} ...")
 
-    samples = []
-    for i in range(SAMPLE_COUNT):
-        start = time.perf_counter()
-        cur.execute("select 1;")
-        cur.fetchone()
-        elapsed_ms = (time.perf_counter() - start) * 1000
-        samples.append(elapsed_ms)
-        print(f"  sample {i + 1}/{SAMPLE_COUNT}: {elapsed_ms:.1f} ms")
+    conn = None
+    try:
+        conn = psycopg2.connect(
+            connection_string,
+            sslmode=resolve_sslmode(connection_string),
+        )
+        with conn.cursor() as cur:
+            # Warm-up query, excluded from the measurement so connection and
+            # TLS setup are not counted as round-trip latency.
+            cur.execute("select 1;")
+            cur.fetchone()
 
-    cur.close()
-    conn.close()
+            samples = []
+            for index in range(SAMPLE_COUNT):
+                start = time.perf_counter()
+                cur.execute("select 1;")
+                cur.fetchone()
+                elapsed_ms = (time.perf_counter() - start) * 1000
+                samples.append(elapsed_ms)
+                print(f"  sample {index + 1}/{SAMPLE_COUNT}: {elapsed_ms:.1f} ms")
 
-    samples.sort()
-    avg = sum(samples) / len(samples)
-    median = samples[len(samples) // 2]
+        samples.sort()
+        print("\n--- Results ---")
+        print(f"Samples: {len(samples)}")
+        print(f"Min:     {samples[0]:.1f} ms")
+        print(f"Median:  {statistics.median(samples):.1f} ms")
+        print(f"Avg:     {statistics.fmean(samples):.1f} ms")
+        print(f"Max:     {samples[-1]:.1f} ms")
+        return 0
+    except Exception as error:
+        print("Latency measurement failed:", safe(error), file=sys.stderr)
+        return 1
+    finally:
+        if conn is not None:
+            conn.close()
 
-    print("\n--- Results ---")
-    print(f"Min:    {samples[0]:.1f} ms")
-    print(f"Median: {median:.1f} ms")
-    print(f"Avg:    {avg:.1f} ms")
-    print(f"Max:    {samples[-1]:.1f} ms")
 
-except Exception as e:
-    print("❌ Latency measurement failed:", e)
-    sys.exit(1)
+if __name__ == "__main__":
+    sys.exit(main())

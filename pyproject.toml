@@ -1,5 +1,10 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# The integration lane needs Docker (`supabase start`) and is excluded from
+# the default run rather than merely skipped, so `pytest -q` stays fast and
+# honest about what it covered. A CLI `-m` wins over this one, so
+# `pytest -m integration` still selects exactly that lane.
+addopts = "-m 'not integration'"
 markers = [
     "integration: requires the local Supabase stack running (supabase start). Excluded from the default fast unit-test run. Invoke explicitly with `pytest -m integration`.",
 ]

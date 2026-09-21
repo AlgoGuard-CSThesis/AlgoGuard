@@ -9,7 +9,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import get_config
 from services.database_service import (
-    DATABASE_FOLDER,
     create_admin,
     get_active_deployment,
     get_admin_by_username,
@@ -38,12 +37,9 @@ from services.simulation_service import (
     run_simulation,
 )
 
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-SAVED_MODEL_FOLDER = os.path.join(BASE_DIR, "saved_models")
-ADMIN_ROLES = ("Administrator", "Analyst")
-
-
 app = Flask(__name__)
+# Flask's cookie settings are fixed for this app instance. Services read the
+# current config at use time so test path overrides do not need module reloads.
 _cfg = get_config()
 app.config["SECRET_KEY"] = _cfg.secret_key or secrets.token_hex(32)
 app.config["SECRET_KEY_EPHEMERAL"] = _cfg.secret_key_ephemeral
@@ -53,15 +49,14 @@ app.config["SESSION_COOKIE_SECURE"] = _cfg.secure_cookies
 app.config["SAVED_MODEL_FOLDER"] = str(_cfg.saved_model_folder)
 app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
 
-SAVED_MODEL_FOLDER = str(_cfg.saved_model_folder)  # keep name if referenced elsewhere in app.py
 ADMIN_ROLES = _cfg.admin_roles
 
 _DUMMY_PASSWORD_HASH = generate_password_hash(secrets.token_urlsafe(32))
 
 
 def ensure_runtime_folders():
-    capture_folder = os.path.join(BASE_DIR, "captures")
-    for folder in (SAVED_MODEL_FOLDER, DATABASE_FOLDER, capture_folder):
+    cfg = get_config()
+    for folder in (cfg.saved_model_folder, cfg.database_folder, cfg.capture_folder):
         os.makedirs(folder, exist_ok=True)
 
 
@@ -487,7 +482,7 @@ def monitor_stop():
 def monitor_status():
     return jsonify({
         "status": "success",
-        **get_status(request.args.get("since", 0), request.args.get("session_id")),
+        **get_status(request.args.get("since", 0, type=int), request.args.get("session_id")),
     })
 
 

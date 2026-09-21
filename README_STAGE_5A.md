@@ -1,14 +1,15 @@
 # AlgoGuard Cloud Migration — Progress Guide (Stage 5A)
 
-**Last updated:** 2026-09-14
+**Last updated:** 2026-09-21
 **Audience:** teammates picking up or reviewing this work
 **Reference:** `AlgoGuard Migration (backlog).md` — this guide covers Stage 5A only.
+**Evidence doc:** `docs/migration/05a-foundations.md` — the formal stage record.
 
 ---
 
 ## TL;DR — where we are
 
-We're partway through **Stage 5A: Configuration and test infrastructure**.
+We're near the end of **Stage 5A: Configuration and test infrastructure**.
 This stage does **not** touch real application data or wire the app to the
 cloud — it's entirely prep work: cleaning up configuration, and standing up
 disposable infrastructure to safely test cloud features later.
@@ -17,8 +18,18 @@ disposable infrastructure to safely test cloud features later.
 |---|---|
 | 5A.1 — Typed configuration | ✅ Done |
 | 5A.2 — Analyst/maintainer config split | ✅ Done |
-| 5A.3 — Cloud + local test infrastructure | 🔶 In progress |
-| 5A.4 — Baseline evidence + test isolation | ⏳ Not started |
+| 5A.3 — Cloud + local test infrastructure | ✅ Done — private `models` bucket created 2026-09-22 |
+| 5A.4 — Baseline evidence + test isolation | ✅ Done — see `docs/migration/05a-foundations.md` §5 |
+
+**Stage 5A is complete.** Suite green, lint clean, bucket in place. 5B may begin.
+
+**Measured baseline:** `323 passed, 17 skipped` in 35.3 s; `ruff check .` clean;
+10/10 Node tests. The suite grew from 197 at 5A.1 to 340 collected, the increase
+being new coverage for `config`, `redaction`, `maintainer_env` and the local
+stack helpers. Every skip is a declared optional dependency, never an error.
+
+One item remains and it isn't a code change: **create the private model bucket**
+in the cloud pilot project. See §4.
 
 The Flask app **still runs on local SQLite** and behaves exactly as before.
 Nothing here is live yet.
@@ -43,16 +54,35 @@ centralized in a new **`config.py`** at the repo root.
 - `reset_config_cache()` — clears that cache. **Must be called after any
   test mutates `os.environ`**, or you'll read stale values (see §3, "gotchas").
 - `redact_for_logging(text)` — strips passwords/tokens/signed-URL params
-  out of a string before logging it. Not yet wired into any logger, but
-  available for maintainer tooling in later stages.
-- `ConfigError` — raised (not silently swallowed) if `ALGOGUARD_DB_MODE` is
-  invalid, or set to `"supabase"` without the required Supabase URL/key.
-  **This is deliberate**: cloud mode must never quietly fall back to the
-  legacy SQLite database.
+  out of a string before logging it. Now lives in **`redaction.py`** and is
+  wired into the error paths of both maintainer scripts. It moved out of
+  `config.py` because importing `config` runs `load_dotenv()` on the
+  *analyst* `.env`, and maintainer tooling must not pull analyst config into
+  its process just to reach a helper. `config.py` re-exports it.
+- `ConfigError` — raised (not silently swallowed) for an invalid
+  `ALGOGUARD_DB_MODE`, an unrecognized boolean, a non-integer or
+  out-of-range `ALGOGUARD_PORT`, or `"supabase"` without the required
+  Supabase URL/key. **This is deliberate**: invalid configuration must never
+  quietly degrade into a default nobody asked for.
 
 Every default in `config.py` was checked line-by-line against the old
 hardcoded/fallback values, so an empty `.env` reproduces today's exact
-local behavior. Full test suite (197 tests) passes unmodified.
+local behavior.
+
+**Two validation fixes since the first pass:**
+
+- Booleans accepted only the literal `"1"`, so `ALGOGUARD_SECURE_COOKIES=true`
+  silently evaluated to `False`. They now accept `1/true/yes/on` and
+  `0/false/no/off`, and reject anything else outright — a security flag that
+  fails quietly to "off" is the worst possible default.
+- `ALGOGUARD_PORT` silently fell back to 5000 on a malformed value, hiding
+  typos like `500O`. It now validates as an integer in 1–65535.
+
+**Cloud mode is validated but refused.** Nothing reads `db_mode` yet — the
+repository layer is 5D work. Accepting `ALGOGUARD_DB_MODE=supabase` and then
+running on SQLite anyway would be precisely the silent fallback the check
+exists to prevent, so `load_config()` raises for that mode until 5D. Remove
+the refusal in 5D.1, not before.
 
 ### 1.2 Split analyst vs. maintainer configuration
 
@@ -68,6 +98,25 @@ Two new file **pairs** exist at the repo root:
 **Rule of thumb:** anything an ordinary analyst install needs goes in
 `.env`. Anything privileged (DB password, secret key, direct migration
 access) goes in `.env.maintainer` and is never read by the Flask app itself.
+
+**Enforced by `maintainer_env.py`.** The split used to be documentation
+only: `check_db_connection.py` and `measure_latency.py` both called a bare
+`load_dotenv()`, which loads the *analyst* `.env` — so `DATABASE_URL` had to
+be written into the file that ships to analysts for those scripts to work.
+Both now import `maintainer_env`, which loads `.env.maintainer` by explicit
+path and never falls back. The Flask app must never import that module.
+
+**TLS is now explicit** (`maintainer_env.resolve_sslmode`): `require` for
+remote targets, `prefer` only for loopback, overridable with
+`ALGOGUARD_DB_SSLMODE`. Both scripts previously hardcoded `prefer`, which
+was the right fix for the local Docker stack (§3) but wrong to apply to the
+cloud pilot — `prefer` silently continues in plaintext if TLS negotiation
+fails, which over the public internet means this file's password on the
+wire in the clear.
+
+**Maintainer dependencies** now live in `requirements-maintainer.txt`
+(`psycopg2-binary`, `python-dotenv`, `requests`), not in the analyst
+requirements. The integration lane needs them too.
 
 ### 1.3 `.gitignore` fix
 
@@ -164,19 +213,23 @@ stack to be running.
     small object, verifies bytes match, deletes both.
   - **Edge Functions:** calls a minimal smoke-test function
     (`supabase/functions/smoke_test`) and checks the response.
-- `pytest.ini` (new, repo root) — registers the `integration` marker so
-  pytest doesn't warn about it.
+- `pyproject.toml` — registers the `integration` marker **and** excludes it
+  from the default run via `addopts = "-m 'not integration'"`. (An earlier
+  draft of this guide said `pytest.ini`; the settings went into
+  `pyproject.toml` instead, and the exclusion was missing — so `pytest -q`
+  was still *collecting* the integration tests and they skipped only
+  because credentials were absent. The doc and the behavior now agree.)
 
 **Run the integration suite explicitly:**
 ```powershell
-pip install requests
+python -m pip install -r requirements-maintainer.txt
 supabase functions deploy smoke_test --no-verify-jwt
-pytest -m integration -v
+python -m pytest -m integration -v
 ```
 
 **Run the normal fast unit suite** (unaffected, still the default):
 ```powershell
-pytest -q
+python -m pytest -q
 ```
 
 All test data created by the integration suite is prefixed
@@ -195,7 +248,7 @@ so it's unmistakably disposable, and every test cleans up after itself.
 | `train.py` CLI default not picking up a second `monkeypatch.setenv` in the same test | Same caching issue, but *within* one test body — the between-test fixture doesn't help there | Switched `_default_admin_username()` to call `load_config()` (uncached) instead of `get_config()`, since it's a rare, correctness-sensitive call, not a hot path |
 | `npm install -g supabase` silently does nothing | Supabase CLI explicitly blocks global npm installs | Use Scoop (Windows) — see §2.2 |
 | `supabase start` fails with `429 Too Many Requests` / DNS lookup errors mid-pull | AWS public ECR registry rate-limiting or a transient DNS hiccup | The CLI's built-in retry/backoff usually recovers on its own after a few minutes; no action needed unless it never recovers |
-| `psycopg2` connection to local stack fails: `server does not support SSL, but SSL was required` | The local Docker Postgres doesn't run SSL; the cloud pilot does | Use `sslmode="prefer"` instead of `"require"` — works against both local and cloud |
+| `psycopg2` connection to local stack fails: `server does not support SSL, but SSL was required` | The local Docker Postgres doesn't run SSL; the cloud pilot does | **Don't hardcode `prefer` for both.** `maintainer_env.resolve_sslmode()` now picks `prefer` for loopback and `require` for remote. `prefer` against the cloud means "silently fall back to plaintext" — the fix that unblocks local dev is a credential leak in production |
 | Pasting a `postgresql://...` connection string into a browser does nothing | It's a database connection string, not a URL — browsers can't speak the Postgres wire protocol | Use a DB client (`psycopg2`, `psql`, DBeaver) or the Studio web UI (`http://127.0.0.1:54323`), never paste a `postgresql://` string into the address bar |
 | `.env`/`.env.maintainer` files not being ignored by git | Filenames were missing their leading dot (`env.maintainer` instead of `.env.maintainer`) | Rename with the leading dot; re-check `git status` |
 
@@ -203,20 +256,34 @@ so it's unmistakably disposable, and every test cleans up after itself.
 
 ## 4. What's left in Stage 5A
 
-**5A.3 remaining:**
-- [ ] Create the private model bucket in the **cloud pilot project**
-  (Storage → New bucket → private), left with no policies/access until
-  Stage 5B installs them.
-- [ ] Formal confirmation that test fixtures are disposable/distinguishable
-  from real data (the integration suite above already follows this
-  convention — needs a short written note in the stage doc).
+Nothing. The stage is closed — see `docs/migration/05a-foundations.md` §6.
 
-**5A.4 (not started):**
-- [ ] Record baseline Python/Node/lint versions and runtimes.
-- [ ] Confirm tests don't depend on execution order and don't impersonate
-  ordinary users through owner/admin credentials.
-- [ ] Finalize `docs/migration/05a-foundations.md` with full evidence
-  before the Stage 5A manual commit.
+Optional, and not a gate on 5B: `05a-foundations.md` §5.2 repeats the measured
+baseline on the Windows dev machine. §5.1 already records a full measured
+baseline, so this confirms it on the primary platform rather than
+establishing it.
+
+**Next: Stage 5B — Identity, schema, and authorization.** The `models` bucket
+exists with no policies, which is deliberate: 5B starts from "nothing is
+permitted" and adds explicit grants, rather than starting open and trying to
+close it afterwards.
+
+Optional follow-up: `05a-foundations.md` §5.2 repeats the measured baseline on
+the Windows dev machine. §5.1 already records a full measured baseline, so this
+confirms it on the primary platform rather than establishing it.
+
+**Closed since the first pass:**
+- [x] Record baseline versions and runtimes — `05a-foundations.md` §5.1:
+  323 passed / 17 skipped in 35.3 s, ruff clean, 10/10 Node.
+- [x] Fix `tests/test_traffic_sources.py` hard-importing scapy, which made a
+  missing capture stack abort the whole run instead of skipping one module.
+- [x] Formal confirmation that test fixtures are disposable and
+  distinguishable from real data — `05a-foundations.md` §4.2.
+- [x] Confirm tests don't depend on execution order and don't impersonate
+  ordinary users through owner credentials — §4.3 and §4.4.
+- [x] Write `docs/migration/05a-foundations.md`.
+- [x] Document local state locations (outbox, node identity, model cache,
+  temporary user sessions) — §2.4.
 
 **After 5A closes**, next is **Stage 5B — Identity, schema, and
 authorization**: the real versioned Supabase schema, Auth configuration,
@@ -229,8 +296,15 @@ and row-level security policies. That's a substantially bigger effort than
 
 ```
 AlgoGuard/
-├── config.py                              # centralized typed configuration
-├── pytest.ini                             # registers the `integration` marker
+├── config.py                              # centralized typed configuration (analyst side)
+├── maintainer_env.py                      # .env.maintainer loader + explicit sslmode
+├── redaction.py                           # secret redaction, shared by both sides
+├── pyproject.toml                         # pytest markers + integration exclusion + ruff
+├── requirements.txt                       # analyst runtime
+├── requirements-dev.txt                   # + pytest, ruff (fast unit lane)
+├── requirements-maintainer.txt            # psycopg2, dotenv, requests (privileged + integration)
+├── check_db_connection.py                 # MAINTAINER ONLY
+├── measure_latency.py                     # MAINTAINER ONLY
 ├── .env.example                           # analyst template (committed)
 ├── .env                                   # analyst real values (gitignored)
 ├── .env.maintainer.example                # maintainer template (committed)
@@ -244,5 +318,5 @@ AlgoGuard/
 │       ├── conftest.py                    # loads local stack credentials
 │       └── test_local_supabase_stack.py   # Auth/Data API/Storage/Functions tests
 └── docs/migration/
-    └── 05a-foundations.md                 # Stage 5A evidence doc (in progress)
+    └── 05a-foundations.md                 # Stage 5A evidence doc
 ```

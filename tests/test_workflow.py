@@ -5,9 +5,9 @@ import joblib
 import pytest
 from werkzeug.security import check_password_hash
 
+from config import reset_config_cache
 from services import database_service as db
 from services.deployment_service import (
-    STACKING_QUALITY_THRESHOLDS,
     DeploymentError,
     deploy_model,
     stacking_deployment_eligibility,
@@ -26,8 +26,9 @@ def test_database_context_manager_closes_connection():
 
 def test_first_admin_gets_random_one_time_password(monkeypatch, tmp_path, capsys):
     database_path = tmp_path / "fresh.sqlite3"
-    monkeypatch.setattr(db, "DATABASE_PATH", str(database_path))
+    monkeypatch.setenv("ALGOGUARD_DATABASE_PATH", str(database_path))
     monkeypatch.delenv("ALGOGUARD_ADMIN_PASSWORD", raising=False)
+    reset_config_cache()
 
     db.initialize_database()
 
@@ -125,7 +126,8 @@ def test_failed_activation_restores_previous_artifact(trained_bundle, tmp_path, 
     active_path.write_bytes(previous_contents)
     model_id = model_id_for(trained_bundle["run_id"], "Stacking Ensemble")
 
-    monkeypatch.setattr(deployment_service, "ACTIVE_MODEL_PATH", str(active_path))
+    monkeypatch.setenv("ALGOGUARD_DEPLOYED_MODEL_PATH", str(active_path))
+    reset_config_cache()
 
     def fail_record_deployment(*_args, **_kwargs):
         raise RuntimeError("database activation failed")
@@ -170,7 +172,8 @@ def test_deployed_stacking_can_predict(trained_bundle):
 
 
 def test_stacking_quality_gate_blocks_low_results(monkeypatch):
-    monkeypatch.setitem(STACKING_QUALITY_THRESHOLDS, "accuracy", 70.0)
+    monkeypatch.setenv("ALGOGUARD_MIN_STACKING_ACCURACY", "70.0")
+    reset_config_cache()
     eligible, reason = stacking_deployment_eligibility(
         {
             "model_name": "Stacking Ensemble",

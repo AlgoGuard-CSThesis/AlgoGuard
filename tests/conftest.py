@@ -7,13 +7,25 @@ import pandas as pd
 import pytest
 
 TEST_RUNTIME = Path(tempfile.mkdtemp(prefix="algoguard-tests-"))
+# Tests use their own configuration source and paths, even when the developer's
+# shell or .env selects a different admin, quality gate, or cloud mode.
+for name in list(os.environ):
+    if name.startswith("ALGOGUARD_") or name in (
+        "FLASK_DEBUG", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+    ):
+        os.environ.pop(name)
 os.environ["ALGOGUARD_DATABASE_PATH"] = str(TEST_RUNTIME / "test.sqlite3")
 os.environ["ALGOGUARD_DEPLOYED_MODEL_PATH"] = str(TEST_RUNTIME / "models" / "deployed_model.joblib")
+os.environ["ALGOGUARD_SAVED_MODEL_FOLDER"] = str(TEST_RUNTIME / "models")
+os.environ["ALGOGUARD_REPORT_FOLDER"] = str(TEST_RUNTIME / "reports")
+os.environ["ALGOGUARD_CAPTURE_FOLDER"] = str(TEST_RUNTIME / "captures")
 os.environ["ALGOGUARD_SECRET_KEY"] = "test-secret"
 os.environ["ALGOGUARD_ADMIN_PASSWORD"] = "admin123"
 
+import config  # noqa: E402
 from config import reset_config_cache  # noqa: E402
 
+config.ENV_FILE = TEST_RUNTIME / ".env"
 reset_config_cache()
 
 

@@ -1,40 +1,62 @@
 """
-test_connection.py
+check_db_connection.py — MAINTAINER-ONLY tool.
+
+Verifies that a maintainer can reach the Postgres endpoint named by
+DATABASE_URL (the Supabase pooler connection string, transaction mode,
+port 6543).
+
+Credentials come from `.env.maintainer`, never from the analyst `.env`.
+TLS is explicit: `require` for remote targets, `prefer` only for the local
+Docker stack, overridable with ALGOGUARD_DB_SSLMODE.
+
 Usage:
-    1. pip install psycopg2-binary python-dotenv
-    2. Make sure DATABASE_URL is set in your .env file, or exported in your shell
-    3. python test_connection.py
+    1. python -m pip install -r requirements-maintainer.txt
+    2. Copy .env.maintainer.example to .env.maintainer and set DATABASE_URL
+    3. python check_db_connection.py
 """
 
-import os
 import sys
 
+from maintainer_env import describe_target, require_database_url, resolve_sslmode, safe
+
 try:
-    from dotenv import load_dotenv
-    load_dotenv()
+    import psycopg2
 except ImportError:
-    pass  # dotenv is optional; will just rely on shell env vars if not installed
+    print(
+        "psycopg2 is not installed. Run: "
+        "python -m pip install -r requirements-maintainer.txt",
+        file=sys.stderr,
+    )
+    raise SystemExit(1) from None
 
-import psycopg2
 
-connection_string = os.environ.get("DATABASE_URL")
+def main() -> int:
+    connection_string = require_database_url()
+    print(f"Connecting to {describe_target(connection_string)} ...")
 
-if not connection_string:
-    print("DATABASE_URL is not set. Add it to your .env file or export it in your shell.")
-    sys.exit(1)
+    conn = None
+    try:
+        conn = psycopg2.connect(
+            connection_string,
+            sslmode=resolve_sslmode(connection_string),
+        )
+        with conn.cursor() as cur:
+            cur.execute("select now() as server_time, version() as pg_version;")
+            server_time, pg_version = cur.fetchone()
 
-try:
-    conn = psycopg2.connect(connection_string, sslmode="prefer")
-    cur = conn.cursor()
-    cur.execute("select now() as server_time, version() as pg_version;")
-    server_time, pg_version = cur.fetchone()
+        print("Connected successfully.")
+        print("Server time:", server_time)
+        print("Postgres version:", pg_version.split(",")[0])
+        return 0
+    except Exception as error:
+        # safe() strips the password out of any connection string echoed
+        # back inside the driver's error message.
+        print("Connection failed:", safe(error), file=sys.stderr)
+        return 1
+    finally:
+        if conn is not None:
+            conn.close()
 
-    print("✅ Connected successfully via pooler.")
-    print("Server time:", server_time)
-    print("Postgres version:", pg_version.split(",")[0])
 
-    cur.close()
-    conn.close()
-except Exception as e:
-    print("❌ Connection failed:", e)
-    sys.exit(1)
+if __name__ == "__main__":
+    sys.exit(main())

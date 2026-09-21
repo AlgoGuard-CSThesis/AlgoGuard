@@ -1,0 +1,12 @@
+# MAINTAINER-ONLY dependencies.
+#
+# Needed by privileged tooling (check_db_connection.py, measure_latency.py)
+# and by the Stage 5A.3 integration lane (`pytest -m integration`), which
+# talks to the local Supabase stack over HTTP and direct Postgres.
+#
+# Deliberately NOT part of requirements.txt: an analyst installation never
+# connects to Postgres directly and must not carry the driver or the
+# expectation that it should.
+psycopg2-binary>=2.9.9
+python-dotenv>=1.0.0
+requests>=2.31.0

@@ -21,10 +21,6 @@ from services.model_registry import (
     build_individual_estimators,
 )
 
-_cfg = get_config()
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DEFAULT_ACTIVE_MODEL_PATH = os.path.join(BASE_DIR, "saved_models", "deployed_model.joblib")
-ACTIVE_MODEL_PATH = str(_cfg.active_model_path)
 _DEPLOYMENT_LOCK = threading.Lock()
 
 
@@ -32,11 +28,14 @@ class DeploymentError(RuntimeError):
     pass
 
 
-STACKING_QUALITY_THRESHOLDS = {
-    "accuracy": _cfg.min_stacking_accuracy,
-    "f1_score": _cfg.min_stacking_f1,
-    "roc_auc": _cfg.min_stacking_roc_auc,
-}
+def stacking_quality_thresholds():
+    """Read the current configuration rather than an import-time snapshot."""
+    cfg = get_config()
+    return {
+        "accuracy": cfg.min_stacking_accuracy,
+        "f1_score": cfg.min_stacking_f1,
+        "roc_auc": cfg.min_stacking_roc_auc,
+    }
 
 STACKING_THRESHOLD_LABELS = {
     "accuracy": "Accuracy",
@@ -59,7 +58,7 @@ def stacking_deployment_eligibility(model):
         return False, "Stacking must complete training and evaluation before deployment."
 
     failures = []
-    for metric_name, minimum in STACKING_QUALITY_THRESHOLDS.items():
+    for metric_name, minimum in stacking_quality_thresholds().items():
         value = model.get(metric_name)
         if not isinstance(value, (int, float)) or not math.isfinite(float(value)):
             failures.append(f"{STACKING_THRESHOLD_LABELS[metric_name]} is unavailable")
@@ -178,9 +177,10 @@ def _deploy_model_unlocked(model_id, admin_id):
     artifact["metric_summary"] = metric_summary
     artifact["deployment_timestamp"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
-    os.makedirs(os.path.dirname(ACTIVE_MODEL_PATH), exist_ok=True)
+    active_model_path = get_config().active_model_path
+    os.makedirs(active_model_path.parent, exist_ok=True)
     operation_id = uuid4().hex
-    base_path, extension = os.path.splitext(ACTIVE_MODEL_PATH)
+    base_path, extension = os.path.splitext(active_model_path)
     published_path = f"{base_path}.{operation_id}{extension or '.joblib'}"
     temporary_path = f"{published_path}.tmp"
 
@@ -230,7 +230,7 @@ def load_active_artifact():
             "The active deployment is not Stacking. Deploy an eligible Stacking run."
         )
 
-    artifact_path = deployment.get("artifact_path") or ACTIVE_MODEL_PATH
+    artifact_path = deployment.get("artifact_path") or get_config().active_model_path
     if not os.path.exists(artifact_path):
         raise DeploymentError("The active deployed model artifact is missing.")
 

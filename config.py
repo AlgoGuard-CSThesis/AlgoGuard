@@ -9,9 +9,8 @@ Precedence (highest to lowest):
 1. Explicit process environment variables (os.environ) at the time
    `load_config()` is called — this includes variables set by tests
    (see conftest.py) or shell exports. This always wins.
-2. Values from a loaded `.env` file (via python-dotenv), if present —
-   python-dotenv never overrides a variable already set in the real
-   environment, so this naturally sits below (1).
+2. Values from the repository's `.env` file (via python-dotenv), if present.
+   The file is read on each load without changing the process environment.
 3. Built-in defaults matching today's hardcoded/fallback behavior.
 
 Import-time caching:
@@ -31,33 +30,108 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Mapping, Optional
 
-try:
-    from dotenv import load_dotenv
-    load_dotenv()  # no-op if no .env file is found; never overrides existing env vars
-except ImportError:
-    pass
+from dotenv import dotenv_values
+
+from redaction import redact_for_logging  # re-exported; see redaction.py
+
+__all__ = [
+    "AppConfig",
+    "ConfigError",
+    "get_config",
+    "load_config",
+    "redact_for_logging",
+    "reset_config_cache",
+]
 
 # NOTE: this file is expected to live at the repo root, alongside app.py.
 # BASE_DIR must resolve to the same directory that app.py / database_service.py
 # / deployment_service.py currently compute as their repo-root BASE_DIR.
 BASE_DIR = Path(__file__).resolve().parent
+ENV_FILE = BASE_DIR / ".env"
+
+
+class ConfigError(RuntimeError):
+    """Raised when configuration is present but invalid, as opposed to
+    simply absent. Invalid configuration must fail loudly here rather than
+    silently degrading to a default the operator did not ask for."""
+
+
+_TRUE_VALUES = frozenset({"1", "true", "yes", "on"})
+_FALSE_VALUES = frozenset({"0", "false", "no", "off"})
+
+
+def _raw(env: Mapping[str, str], name: str) -> Optional[str]:
+    """Read a setting, treating a blank value as absent.
+
+    `.env` files conventionally use `KEY=` to mean "not set" — our own
+    `.env.example` ships `NEXT_PUBLIC_SUPABASE_URL=` exactly that way. Every
+    getter routes through here so a blank value falls back to the documented
+    default instead of propagating an empty string, which previously caused:
+
+      * ALGOGUARD_ADMIN_PASSWORD= -> the first Administrator was created with
+        an EMPTY password, and the "store this generated password" notice was
+        suppressed because the value was not None
+      * ALGOGUARD_HOST=           -> app.run(host="") binds every interface,
+        contradicting the loopback-only default app.py documents
+      * ALGOGUARD_DATABASE_PATH=  -> the database path resolved to the repo
+        root directory rather than a file (same for the model artifact path)
+      * ALGOGUARD_SECRET_KEY=     -> reported as non-ephemeral while actually
+        falling back to a per-process random key
+    """
+    value = env.get(name)
+    if value is None:
+        return None
+    return value if value.strip() else None
 
 
 def _get_bool(env: Mapping[str, str], name: str, default: bool) -> bool:
-    raw = env.get(name)
+    """Parse a boolean setting, accepting the spellings people actually
+    write in a `.env` file.
+
+    Previously this accepted only the literal string "1", so a reasonable
+    `ALGOGUARD_SECURE_COOKIES=true` silently evaluated to False. For a
+    security-relevant flag that is the worst possible failure mode, so an
+    unrecognized value is now a hard error rather than a silent False.
+    """
+    raw = _raw(env, name)
     if raw is None:
         return default
-    return raw == "1"
+    normalized = raw.strip().lower()
+    if normalized in _TRUE_VALUES:
+        return True
+    if normalized in _FALSE_VALUES:
+        return False
+    raise ConfigError(
+        f"{name}={raw!r} is not a recognized boolean. "
+        f"Use one of {sorted(_TRUE_VALUES)} or {sorted(_FALSE_VALUES)}, "
+        "or leave it blank to use the default."
+    )
 
 
-def _get_int(env: Mapping[str, str], name: str, default: int) -> int:
-    raw = env.get(name)
+def _get_int(
+    env: Mapping[str, str],
+    name: str,
+    default: int,
+    minimum: Optional[int] = None,
+    maximum: Optional[int] = None,
+) -> int:
+    """Parse an integer setting, validating type and range.
+
+    Previously a malformed value silently fell back to the default, which
+    hid typos such as ALGOGUARD_PORT=500O.
+    """
+    raw = _raw(env, name)
     if raw is None:
         return default
     try:
-        return int(raw)
-    except (TypeError, ValueError):
-        return default
+        value = int(str(raw).strip())
+    except (TypeError, ValueError) as error:
+        raise ConfigError(f"{name}={raw!r} is not a valid integer.") from error
+    if minimum is not None and value < minimum:
+        raise ConfigError(f"{name}={value} is below the minimum of {minimum}.")
+    if maximum is not None and value > maximum:
+        raise ConfigError(f"{name}={value} is above the maximum of {maximum}.")
+    return value
 
 
 def _get_percentage(env: Mapping[str, str], name: str, default: float) -> float:
@@ -65,7 +139,7 @@ def _get_percentage(env: Mapping[str, str], name: str, default: float) -> float:
     invalid/non-finite values fall back to the clamped default; valid
     values are clamped into [0, 100]."""
     fallback = min(max(default, 0.0), 100.0)
-    raw = env.get(name)
+    raw = _raw(env, name)
     if raw is None:
         return fallback
     try:
@@ -78,11 +152,14 @@ def _get_percentage(env: Mapping[str, str], name: str, default: float) -> float:
 
 
 def _get_str(env: Mapping[str, str], name: str, default: str) -> str:
-    return env.get(name, default)
+    """Return the configured string, or the default when absent or blank."""
+    raw = _raw(env, name)
+    return default if raw is None else raw
 
 
 def _get_optional_str(env: Mapping[str, str], name: str) -> Optional[str]:
-    return env.get(name)
+    """Return the configured string, or None when absent or blank."""
+    return _raw(env, name)
 
 
 @dataclass(frozen=True)
@@ -101,6 +178,8 @@ class AppConfig:
     database_path: Path
     saved_model_folder: Path
     active_model_path: Path
+    report_folder: Path
+    capture_folder: Path
 
     # --- Admin bootstrap (train.py / database_service.seed_default_admin) ---
     admin_username: str
@@ -121,20 +200,17 @@ class AppConfig:
     supabase_publishable_key: Optional[str] = None
 
 
-class ConfigError(RuntimeError):
-    """Raised when configuration is present but invalid, as opposed to
-    simply absent. Cloud mode misconfiguration must fail loudly here rather
-    than silently falling back to the legacy SQLite database."""
-
-
 def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
     """Build a validated AppConfig from the given environment mapping.
 
-    Defaults to `os.environ`. Pass an explicit mapping in tests if you want
-    to build a config from something other than the live process env
-    without touching os.environ at all.
+    Merge the repository's `.env` beneath `os.environ`. An explicit mapping
+    bypasses both sources, giving tests a fully isolated configuration.
+    Dotenv values are literal (no interpolation of other environment variables).
     """
-    env = os.environ if env is None else env
+    if env is None:
+        file_values = dotenv_values(ENV_FILE, interpolate=False, encoding="utf-8-sig")
+        env = {key: value for key, value in file_values.items() if value is not None}
+        env.update(os.environ)
 
     db_mode = _get_str(env, "ALGOGUARD_DB_MODE", "sqlite").strip().lower()
     supabase_url = _get_optional_str(env, "NEXT_PUBLIC_SUPABASE_URL")
@@ -146,20 +222,36 @@ def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
             "Use 'sqlite' or 'supabase'."
         )
 
-    if db_mode == "supabase" and (not supabase_url or not supabase_publishable_key):
+    if db_mode == "supabase":
         # Deliberately a hard error, not a fallback to sqlite: silently
         # degrading to the legacy local database when cloud mode was
         # requested would violate Stage 5A.2's requirement that cloud mode
         # never quietly falls back to the legacy business database.
+        if not supabase_url or not supabase_publishable_key:
+            raise ConfigError(
+                "ALGOGUARD_DB_MODE=supabase requires both NEXT_PUBLIC_SUPABASE_URL "
+                "and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY to be set. Refusing to "
+                "silently fall back to the local SQLite database."
+            )
+        # No code path reads `db_mode` yet: the application still persists
+        # exclusively to SQLite until Stage 5D wires the cloud repository
+        # layer. Accepting this setting here and then running on SQLite
+        # anyway would be exactly the silent fallback the check above
+        # exists to prevent, so refuse until 5D lands.
         raise ConfigError(
-            "ALGOGUARD_DB_MODE=supabase requires both NEXT_PUBLIC_SUPABASE_URL "
-            "and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY to be set. Refusing to "
-            "silently fall back to the local SQLite database."
+            "ALGOGUARD_DB_MODE=supabase is not implemented yet. The cloud "
+            "persistence path lands in Stage 5D; until then the application "
+            "reads and writes local SQLite only. Set ALGOGUARD_DB_MODE=sqlite. "
+            "(Configuration is validated now so the switch is ready to use.)"
         )
 
-    database_folder = BASE_DIR / "database"
-    default_database_path = database_folder / "algoguard.sqlite3"
-    saved_model_folder = BASE_DIR / "saved_models"
+    default_database_path = BASE_DIR / "database" / "algoguard.sqlite3"
+    database_path = Path(
+        _get_str(env, "ALGOGUARD_DATABASE_PATH", str(default_database_path))
+    ).resolve()
+    saved_model_folder = Path(
+        _get_str(env, "ALGOGUARD_SAVED_MODEL_FOLDER", str(BASE_DIR / "saved_models"))
+    ).resolve()
     default_model_path = saved_model_folder / "deployed_model.joblib"
 
     secret_key = _get_optional_str(env, "ALGOGUARD_SECRET_KEY")
@@ -169,17 +261,21 @@ def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
         secret_key_ephemeral=secret_key is None,
         secure_cookies=_get_bool(env, "ALGOGUARD_SECURE_COOKIES", False),
         host=_get_str(env, "ALGOGUARD_HOST", "127.0.0.1"),
-        port=_get_int(env, "ALGOGUARD_PORT", 5000),
+        port=_get_int(env, "ALGOGUARD_PORT", 5000, minimum=1, maximum=65535),
         debug=_get_bool(env, "FLASK_DEBUG", False),
 
         base_dir=BASE_DIR,
-        database_folder=database_folder,
-        database_path=Path(
-            _get_str(env, "ALGOGUARD_DATABASE_PATH", str(default_database_path))
-        ).resolve(),
+        database_folder=database_path.parent,
+        database_path=database_path,
         saved_model_folder=saved_model_folder,
         active_model_path=Path(
             _get_str(env, "ALGOGUARD_DEPLOYED_MODEL_PATH", str(default_model_path))
+        ).resolve(),
+        report_folder=Path(
+            _get_str(env, "ALGOGUARD_REPORT_FOLDER", str(BASE_DIR / "reports"))
+        ).resolve(),
+        capture_folder=Path(
+            _get_str(env, "ALGOGUARD_CAPTURE_FOLDER", str(BASE_DIR / "captures"))
         ).resolve(),
 
         admin_username=_get_str(env, "ALGOGUARD_ADMIN_USERNAME", "admin").strip() or "admin",
@@ -205,31 +301,6 @@ def get_config() -> AppConfig:
     """Return the process-wide cached config singleton. This is what
     application modules should call."""
     return _cached_config()
-
-
-_REDACT_KEYWORDS = ("key", "secret", "password", "token", "signature")
-
-
-def redact_for_logging(text: str) -> str:
-    """Best-effort redaction of secrets, tokens, and signed URL query
-    parameters before writing a string to any log. Not a substitute for
-    simply not logging privileged values in the first place — use this as
-    a defense-in-depth backstop in maintainer tooling (5B/5C/5D), where
-    connection strings and signed download URLs are more likely to appear
-    in error messages.
-    """
-    import re
-
-    # postgresql://user:PASSWORD@host -> postgresql://user:***@host
-    text = re.sub(r"(://[^:/@]+:)[^@]+(@)", r"\1***\2", text)
-    # query params like ?token=... or &signature=... -> redacted value
-    text = re.sub(
-        r"([?&](?:" + "|".join(_REDACT_KEYWORDS) + r")[^=]*=)[^&\s]+",
-        r"\1***",
-        text,
-        flags=re.IGNORECASE,
-    )
-    return text
 
 
 def reset_config_cache() -> None:

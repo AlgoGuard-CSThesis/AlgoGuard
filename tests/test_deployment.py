@@ -6,6 +6,7 @@ from pathlib import Path
 import joblib
 import pytest
 
+from config import reset_config_cache
 from services import database_service as db
 from services import deployment_service as deployment
 
@@ -38,7 +39,8 @@ def test_readers_keep_working_across_activation(
 ):
     first, second = deployment_models
     base_path = tmp_path / "deployed_model.joblib"
-    monkeypatch.setattr(deployment, "ACTIVE_MODEL_PATH", str(base_path))
+    monkeypatch.setenv("ALGOGUARD_DEPLOYED_MODEL_PATH", str(base_path))
+    reset_config_cache()
     initial = deployment.deploy_model(first["model_id"], 1)
     if legacy:
         shutil.copy2(initial["artifact_path"], base_path)
@@ -71,7 +73,8 @@ def test_failed_activation_keeps_working_model_and_removes_staged_files(
     deployment_models, tmp_path, monkeypatch
 ):
     first, second = deployment_models
-    monkeypatch.setattr(deployment, "ACTIVE_MODEL_PATH", str(tmp_path / "active.joblib"))
+    monkeypatch.setenv("ALGOGUARD_DEPLOYED_MODEL_PATH", str(tmp_path / "active.joblib"))
+    reset_config_cache()
     deployment.deploy_model(first["model_id"], 1)
     previous = db.get_active_deployment()
     files_before = set(tmp_path.iterdir())
@@ -91,7 +94,8 @@ def test_failed_activation_keeps_working_model_and_removes_staged_files(
 def test_independent_writers_preserve_one_active_deployment_and_history(
     deployment_models, tmp_path, monkeypatch
 ):
-    monkeypatch.setattr(deployment, "ACTIVE_MODEL_PATH", str(tmp_path / "active.joblib"))
+    monkeypatch.setenv("ALGOGUARD_DEPLOYED_MODEL_PATH", str(tmp_path / "active.joblib"))
+    reset_config_cache()
     barrier = threading.Barrier(2)
     original_record = deployment.record_deployment
 

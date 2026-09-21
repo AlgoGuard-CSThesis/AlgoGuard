@@ -28,6 +28,7 @@ from uuid import uuid4
 import numpy as np
 import pandas as pd
 
+from config import get_config
 from services.database_service import (
     finalize_capture_session,
     insert_capture_session,
@@ -37,7 +38,6 @@ from services.database_service import (
 )
 from services.deployment_service import DeploymentError, load_active_artifact
 from services.traffic_source_service import (
-    CAPTURE_FOLDER,
     CsvReplaySource,
     LiveCaptureSource,
     PcapReplaySource,
@@ -208,7 +208,7 @@ def _resolve_capture_path(filename):
         raise LiveMonitorError("Select a capture file from the captures folder.")
     if not name.lower().endswith((".pcap", ".pcapng", ".cap")):
         raise LiveMonitorError("Capture files must be .pcap, .pcapng, or .cap recordings.")
-    path = os.path.join(CAPTURE_FOLDER, name)
+    path = os.path.join(get_config().capture_folder, name)
     if not os.path.isfile(path):
         raise LiveMonitorError(f"The capture file {name} is missing from captures/.")
     return path

@@ -321,8 +321,20 @@ def algoguard_port():
     return get_config().port
 
 
-def build_capture_filter(exclude_ports=()):
-    """Build the BPF filter, excluding AlgoGuard's own web traffic by default."""
+def build_capture_filter(exclude_ports=None):
+    """Build the BPF filter, excluding AlgoGuard's own web traffic by default.
+
+    ``None`` means "apply the default exclusion", which is AlgoGuard's own web
+    port read from current configuration. Pass an explicit empty collection to
+    build an unfiltered capture.
+
+    The default used to be ``()``, so calling this with no arguments produced a
+    filter that excluded nothing — the docstring's "by default" was only true
+    because :class:`LiveCaptureSource` passed the port in itself. Reading the
+    port here keeps the promise at the level that makes it.
+    """
+    if exclude_ports is None:
+        exclude_ports = {algoguard_port()}
     clauses = [BASE_BPF_FILTER]
     for port in sorted({int(port) for port in exclude_ports if port}):
         clauses.append(f"not port {port}")
@@ -545,13 +557,9 @@ def list_capture_interfaces():
         return [{"value": name, "label": name} for name in get_if_list()]
 
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-CAPTURE_FOLDER = os.path.join(BASE_DIR, "captures")
-
-
 def list_capture_files(folder=None):
     """List replayable .pcap/.pcapng recordings from the captures folder."""
-    target = folder or CAPTURE_FOLDER
+    target = folder or get_config().capture_folder
     if not os.path.isdir(target):
         return []
     names = [
