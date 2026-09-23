@@ -63,3 +63,6 @@ ENV/
 Thumbs.db
 
 node_modules/
+
+# Disposable Stage 5A Supabase working directory
+.local/supabase-5a/

@@ -287,27 +287,54 @@ Dependency degradation verified in both directions:
 | scapy present | 323 passed, 17 skipped |
 | scapy absent | 289 passed, 18 skipped — the module skips, the run survives |
 
-### 5.2 Development machine (Windows) — to record
+### 5.2 Development machine (Windows) — recorded 2026-09-23 / 2026-09-24
 
-§5.1 is a second data point, not a substitute for the primary development
-environment, which runs Windows on Python 3.14. Run these and add a row set:
+The Windows checkout was checked with its existing `venv` on 2026-09-23.
+Unfinished, untracked Stage 5B files were excluded from the 5A review. Integration
+was then verified on 2026-09-24 against the isolated `AlgoGuard5A` stack prepared
+using `README_STAGE_5A.md` §2. To repeat the checks after that setup:
 
 ```powershell
-python --version ; python -m pytest --version ; python -m ruff --version ; node --version
-python -m ruff check .
-Measure-Command { python -m pytest -q } | Select-Object TotalSeconds
-python -m pytest -q
+.\venv\Scripts\python.exe --version
+.\venv\Scripts\python.exe -m pytest --version
+.\venv\Scripts\python.exe -m ruff --version
+node --version
+.\venv\Scripts\python.exe -m ruff check . --exclude cloud_migrate.py --exclude tests/test_cloud_migrate.py --exclude tests/integration/test_cloud_schema.py
+.\venv\Scripts\python.exe -m pytest -q --ignore=tests/test_cloud_migrate.py --ignore=tests/integration/test_cloud_schema.py
 node --test tests/monitor_poll.test.cjs
+.\venv\Scripts\python.exe -m pytest -m integration tests/integration/test_local_supabase_stack.py -q -rs
 ```
 
 | Measurement | Value |
 | --- | --- |
-| Python version | _pending_ |
-| pytest / ruff / Node versions | _pending_ |
-| `ruff check .` | _pending_ |
-| Unit suite result and runtime | _pending_ |
-| Node monitor tests | _pending_ |
-| Integration lane (`-m integration`, stack running) | _pending_ |
+| Python version | 3.14.6 |
+| pytest / ruff / Node versions | 9.1.1 / 0.15.22 / 22.15.0 |
+| Stage 5A lint check | Passed; runtime not separately measured |
+| Unit suite result and runtime | 339 passed, 4 deselected in 123.59 s |
+| Node monitor tests | 10 passed, 0 failed in 0.156 s |
+| Stage 5A integration lane | 4 passed, 0 skipped in 15.77 s on 2026-09-24 |
+
+Docker Desktop 4.91.0 (Engine 29.8.0) and the project-pinned Supabase CLI 2.117.0
+were used. The operator completed Docker's first-run setup, and credentials were
+generated into the ignored `.env.supabase.local`. The original run without local
+credentials skipped all four tests; the passing run above supersedes that gap.
+
+`scripts/prepare-local-5a.ps1` copies the project configuration and smoke function
+into `.local/supabase-5a`, uses project ID `AlgoGuard5A`, and omits later-stage
+migrations and seed files. PostgreSQL, Data API, Auth, Storage, and Edge Functions
+were exercised against this local stack. The smoke function was served locally
+with JWT verification disabled; no function was deployed to the cloud.
+After the run, direct local checks found zero leftover `zz_migration_smoke_*`
+tables, `algoguard.test+*@algoguard.invalid` users, or `zz-smoke-*` buckets.
+
+Startup from the root project also exposed a separate unfinished Stage 5B issue:
+`20260922010000_baseline_deny_by_default.sql` fails with SQLSTATE `42501` when
+changing default privileges for `supabase_admin`. That migration was left
+untouched. The passing 5A smoke run does not establish Stage 5B schema readiness.
+
+The analyst `.env` had a stray bare-hostname line and a privileged `DATABASE_URL`.
+An ignored backup was preserved, the stray line was commented, and the database
+credential was moved to `.env.maintainer`. No cloud connection was made.
 
 ### 5.3 Additional functional checks
 
@@ -334,18 +361,13 @@ Beyond the test suite, run against the same tree:
 | --- | --- |
 | 5A.1 Typed configuration | Complete |
 | 5A.2 Analyst/maintainer separation | Complete |
-| 5A.3 Isolated cloud and local test infrastructure | Complete |
-| 5A.4 Baseline evidence and test isolation | Complete; §5.2 optional on Windows |
+| 5A.3 Isolated cloud and local test infrastructure | Local-stack tests pass; pilot bucket recorded in §3.3 |
+| 5A.4 Baseline evidence and test isolation | Unit and integration evidence recorded in §5.2 |
 
-**Stage 5A is complete.** The exit criterion — *the current local app remains
-usable, configuration is explicit, and a disposable Supabase stack can exercise
-the complete future application path* — is met, with the suite green and the
-private `models` bucket in place.
-
-§5.2 asks for the same measurements repeated on the Windows development
-machine. §5.1 already records a full, reproducible measured baseline, so this
-confirms the numbers on the primary platform rather than establishing them; it
-does not gate 5B.
+**Stage 5A local verification is complete.** The local application checks and
+all four service integration tests pass. The cloud pilot bucket remains recorded
+in §3.3; it was not rechecked or modified during this local setup. Stage 5B's
+migration failure is separate and remains open.
 
 ### 6.1 Fixes applied while closing the stage
 
@@ -361,7 +383,8 @@ configuration at use time. That refactor left three defects, fixed here:
 | `build_capture_filter()` defaulted to `exclude_ports=()`, so calling it with no arguments excluded nothing — its docstring's "by default" was only true because `LiveCaptureSource` passed the port in itself | The default is now `None`, meaning "apply the default exclusion", resolved from current configuration. An explicit empty collection still builds an unfiltered capture |
 | Two `I001` unsorted-import errors in `services/database_service.py` and `train.py` | `ruff check --fix` |
 
-Stage 5B may begin.
+The local fixes above pass the Windows unit checks, and §5.2 now records a
+successful isolated-stack integration run as well.
 
 ---
 
