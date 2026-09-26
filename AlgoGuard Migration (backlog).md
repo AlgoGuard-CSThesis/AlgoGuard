@@ -178,48 +178,48 @@ the application starts using shared deployment records.
 
 ### 5C.1 Define the model manifest and compatible runtime
 
-- [ ] Store immutable object path, SHA-256, model/deployment IDs, workflow and
+- [x] Store immutable object path, SHA-256, model/deployment IDs, workflow and
   feature-schema versions, and compatible Python/dependency information.
-- [ ] Lock training/inference dependencies including scikit-learn, NumPy, SciPy,
+- [x] Lock training/inference dependencies including scikit-learn, NumPy, SciPy,
   pandas, and joblib; record the lock identifier in the manifest.
-- [ ] Analysts and application Administrators cannot publish/change manifests;
+- [x] Analysts and application Administrators cannot publish/change manifests;
   authorized reads expose no private training-machine path.
-- [ ] Preserve historical deployments without activating incompatible artifacts;
+- [x] Preserve historical deployments without activating incompatible artifacts;
   the maintainer retrains when an old artifact cannot pass current requirements.
 
 ### 5C.2 Publish immutable artifacts and serialize activation
 
-- [ ] Failed existing quality gates upload nothing. Passing runs publish an
+- [x] Failed existing quality gates upload nothing. Passing runs publish an
   immutable object and verify remote bytes before activation.
-- [ ] Activation locks a permanent singleton row in a PostgreSQL transaction,
+- [x] Activation locks a permanent singleton row in a PostgreSQL transaction,
   updates replacement history, and enforces at most one active deployment.
-- [ ] Two independent simultaneous publishers preserve exactly one active model
+- [x] Two independent simultaneous publishers preserve exactly one active model
   and consistent history, including an initially empty deployment table.
-- [ ] Upload success/activation failure preserves the previous model and leaves
+- [x] Upload success/activation failure preserves the previous model and leaves
   an identifiable orphan. Reconcile ambiguous responses; cleanup never deletes
   an active or in-use artifact.
 
 ### 5C.3 Implement authorized download and atomic cache promotion
 
-- [ ] User-authorized Storage access obtains a short-lived URL; clients without
+- [x] User-authorized Storage access obtains a short-lived URL; clients without
   a valid authorized identity cannot retrieve private models.
-- [ ] Check manifest compatibility and SHA-256 before `joblib.load`; download
+- [x] Check manifest compatibility and SHA-256 before `joblib.load`; download
   to a temporary path, then atomically promote verified bytes.
-- [ ] Refuse partial, corrupted, incompatible, and wrong-manifest artifacts.
+- [x] Refuse partial, corrupted, incompatible, and wrong-manifest artifacts.
   Expected hashes come from protected manifests, not caller-supplied values.
-- [ ] Reuse verified cached bytes without redundant downloads. A cache failure
+- [x] Reuse verified cached bytes without redundant downloads. A cache failure
   does not silently substitute a different active deployment.
-- [ ] Expose metadata for pinning a model for a capture's lifetime. Possessing
+- [x] Expose metadata for pinning a model for a capture's lifetime. Possessing
   cached bytes alone grants no offline login permission.
 
 ### 5C.4 Verify the distribution lifecycle
 
-- [ ] Exercise empty cache, repeat load, expired URL, corruption, interrupted
+- [x] Exercise empty cache, repeat load, expired URL, corruption, interrupted
   download, concurrent publication, and activation failure.
-- [ ] A failed update preserves the verified model already used by a capture,
+- [x] A failed update preserves the verified model already used by a capture,
   while future-session startup clearly reports the failed update.
-- [ ] The analyst package needs no privileged key or training command.
-- [ ] Write `docs/migration/05c-models.md` with integrity assumptions, failure
+- [x] The analyst package needs no privileged key or training command.
+- [x] Write `docs/migration/05c-models.md` with integrity assumptions, failure
   behavior, and evidence before the stage commit.
 
 ---

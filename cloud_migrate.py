@@ -436,6 +436,9 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"applied  {migration.path.name}")
             else:
                 print(f"skipped  {migration.path.name} (applied concurrently)")
+        with connection:
+            with connection.cursor() as cursor:
+                cursor.execute("NOTIFY pgrst, 'reload schema'")
         print("Done.")
         return 0
     except MigrationError as exc:

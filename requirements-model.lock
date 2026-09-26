@@ -1,0 +1,11 @@
+# Model serialization runtime: Python 3.14.6 (64-bit).
+# Keep training and inference on the same lock; manifests record its SHA-256.
+numpy==2.5.1
+scipy==1.18.0
+pandas==3.0.3
+scikit-learn==1.9.0
+joblib==1.5.3
+threadpoolctl==3.6.0
+python-dateutil==2.9.0.post0
+tzdata==2026.2
+six==1.17.0

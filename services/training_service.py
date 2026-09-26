@@ -5,6 +5,7 @@ import joblib
 import numpy as np
 from sklearn.pipeline import Pipeline
 
+from model_runtime import training_runtime
 from services.evaluation_service import (
     calculate_metrics,
     identify_best_model,
@@ -61,6 +62,7 @@ def _artifact_payload(
 ):
     return {
         "artifact_version": 2,
+        "training_runtime": training_runtime(),
         "workflow_version": MODEL_WORKFLOW_VERSION,
         "pipeline": pipeline,
         "model_id": model_id,
