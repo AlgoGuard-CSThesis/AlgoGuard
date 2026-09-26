@@ -2,3 +2,4 @@ models/*.pkl filter=lfs diff=lfs merge=lfs -text
 *.pkl filter=lfs diff=lfs merge=lfs -text
 *.npy filter=lfs diff=lfs merge=lfs -text
 legacy_simulation/*.pkl filter=lfs diff=lfs merge=lfs -text
+*.cmd text eol=crlf

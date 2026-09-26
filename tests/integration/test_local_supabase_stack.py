@@ -109,37 +109,60 @@ def test_data_api_insert_and_select(local_stack, local_http):
 # ---------------------------------------------------------------------
 
 
-def test_auth_signup_and_cleanup(local_stack, local_http):
-    """Prove local GoTrue (Auth) accepts a signup, then clean the user up
-    via the admin API so no disposable accounts pile up in the local
-    stack across repeated test runs."""
+def test_auth_admin_can_create_sign_in_and_delete_a_user(local_stack, local_http):
+    """Prove local GoTrue (Auth) works end to end: create a disposable
+    user, sign in as them, then remove them.
+
+    Stage 5B.2 turned public sign-up off, so this no longer uses the
+    signup endpoint — the refusal of that endpoint is itself asserted in
+    tests/integration/test_auth_configuration.py. Accounts now come from
+    trusted maintenance (bootstrap_admin.py) or, from 5B.3, an
+    Administrator calling a checked Edge Function.
+    """
     test_email = f"algoguard.test+{uuid.uuid4().hex[:8]}@algoguard.invalid"
-    test_password = "SmokeTest!" + uuid.uuid4().hex[:8]
+    test_password = "SmokeTest!" + uuid.uuid4().hex[:12]
 
-    signup_resp = local_http.post(
-        f"{local_stack['api_url']}/auth/v1/signup",
-        json={"email": test_email, "password": test_password},
-        headers={
-            "apikey": local_stack["publishable_key"],
-            "Content-Type": "application/json",
-        },
+    admin_headers = {
+        "apikey": local_stack["secret_key"],
+        "Authorization": f"Bearer {local_stack['secret_key']}",
+        "Content-Type": "application/json",
+    }
+
+    create_resp = local_http.post(
+        f"{local_stack['api_url']}/auth/v1/admin/users",
+        json={"email": test_email, "password": test_password, "email_confirm": True},
+        headers=admin_headers,
         timeout=10,
     )
-    require_status(signup_resp, (200, 201), "Auth signup")
-    body = signup_resp.json()
-    user_id = (body.get("user") or body).get("id")
-    assert user_id, "No user id in signup response."
+    require_status(create_resp, (200, 201), "Auth admin user creation")
+    user_id = create_resp.json().get("id")
+    assert user_id, "No user id in the admin create response."
 
-    # Cleanup: delete the disposable user via the admin endpoint.
-    delete_resp = local_http.delete(
-        f"{local_stack['api_url']}/auth/v1/admin/users/{user_id}",
-        headers={
-            "apikey": local_stack["secret_key"],
-            "Authorization": f"Bearer {local_stack['secret_key']}",
-        },
-        timeout=10,
-    )
-    require_status(delete_resp, (200, 204), "Auth cleanup")
+    try:
+        # A created account must actually be able to sign in: a user row
+        # nobody can authenticate as would pass a weaker test than this.
+        sign_in_resp = local_http.post(
+            f"{local_stack['api_url']}/auth/v1/token",
+            params={"grant_type": "password"},
+            json={"email": test_email, "password": test_password},
+            headers={
+                "apikey": local_stack["publishable_key"],
+                "Content-Type": "application/json",
+            },
+            timeout=10,
+        )
+        require_status(sign_in_resp, (200,), "Auth password sign-in")
+        assert sign_in_resp.json().get("access_token"), "No access token returned."
+    finally:
+        delete_resp = local_http.delete(
+            f"{local_stack['api_url']}/auth/v1/admin/users/{user_id}",
+            headers={
+                "apikey": local_stack["secret_key"],
+                "Authorization": f"Bearer {local_stack['secret_key']}",
+            },
+            timeout=10,
+        )
+        require_status(delete_resp, (200, 204), "Auth cleanup")
 
 
 # ---------------------------------------------------------------------

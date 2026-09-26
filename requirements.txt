@@ -6,3 +6,9 @@ joblib>=1.3.0
 psutil>=5.9.0
 scapy>=2.5.0
 python-dotenv
+# Stage 5B.2: verifying Supabase access tokens against the project's
+# published JWKS. The [crypto] extra pulls in `cryptography`, which is
+# what actually checks an ES256/RS256 signature. An analyst install
+# needs this to VERIFY a token; it still holds no key that could mint
+# one. Used by token_verification.py; wired into the app in 5D.
+PyJWT[crypto]>=2.8.0

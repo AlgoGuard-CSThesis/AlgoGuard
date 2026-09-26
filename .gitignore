@@ -14,6 +14,7 @@ research/models/*
 # Test and lint output
 .pytest_cache/
 .ruff_cache/
+check-output/
 .coverage
 htmlcov/
 
@@ -51,6 +52,12 @@ ENV/
 .env.*
 !.env.example
 !.env.maintainer.example
+
+# Stage 5B.2: the local stack's JWT signing keys. This file contains
+# PRIVATE keys — anything holding it can mint access tokens for that
+# stack. `.env.*` does not cover it, so it is named explicitly.
+supabase/signing_keys.json
+signing_keys.json
 
 # IDE files
 .vscode/

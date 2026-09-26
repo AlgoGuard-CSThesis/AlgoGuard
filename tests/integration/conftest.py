@@ -24,6 +24,8 @@ from stack_support import (
     load_local_env,
 )
 
+from .cloud_fixtures import cloud, scope  # noqa: F401
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ENV_FILE = REPO_ROOT / ".env.supabase.local"
 

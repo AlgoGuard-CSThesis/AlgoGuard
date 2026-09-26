@@ -100,55 +100,55 @@ Port the eleven application tables and migration history deliberately. Add
 node, membership, protected role, event-deduplication, and manifest structures
 required by later stages, with deny-by-default permissions.
 
-- [ ] Trusted tooling applies repeatable/checksummed migrations, serializes
+- [x] Trusted tooling applies repeatable/checksummed migrations, serializes
   concurrent migration attempts, and rolls back failed schema changes.
-- [ ] Preserve intended keys, relationships, nullability, indexes, and SQLite
+- [x] Preserve intended keys, relationships, nullability, indexes, and SQLite
   64-bit numeric ranges. Required IDs and counters use BIGINT.
-- [ ] Legacy timestamps retain canonical UTC text and integer flags; new
+- [x] Legacy timestamps retain canonical UTC text and integer flags; new
   lifecycle/authorization times use `timestamptz` with explicit serialization.
-- [ ] Profiles preserve historical attribution through legacy IDs and an optional
+- [x] Profiles preserve historical attribution through legacy IDs and an optional
   unique Auth UUID. Cloud profiles contain no password hashes.
-- [ ] Every exposed table starts with explicit least-privilege grants and RLS;
+- [x] Every exposed table starts with explicit least-privilege grants and RLS;
   unimplemented access paths remain denied.
 
 ### 5B.2 Configure Auth and protected account roles
 
-- [ ] Disable and test public sign-up. Trusted maintenance creates the first
+- [x] Disable and test public sign-up. Trusted maintenance creates the first
   Administrator without a shared default password.
-- [ ] Configure asymmetric signing/JWKS; verification tests cover algorithm,
+- [x] Configure asymmetric signing/JWKS; verification tests cover algorithm,
   issuer, audience, expiry, tampering, unknown keys, and key rotation.
-- [ ] Protected current role records govern authorization. Token metadata may
+- [x] Protected current role records govern authorization. Token metadata may
   mirror display roles but cannot override a removed privilege.
-- [ ] Record access/refresh lifetimes and memory-only token handling. Cloud login
+- [x] Record access/refresh lifetimes and memory-only token handling. Cloud login
   uses email/password; historical usernames remain display names.
-- [ ] No JWT signing secret is required on analyst installations.
+- [x] No JWT signing secret is required on analyst installations.
 
 ### 5B.3 Implement approved enrollment and account administration
 
 A local UUID identifies an installation. Administrator approval binds users to
 nodes; hostname, IP address, or a submitted node ID does not grant access.
 
-- [ ] Define pending enrollment, approval, reassignment, and revocation states.
+- [x] Define pending enrollment, approval, reassignment, and revocation states.
   Repeated startup/enrollment does not duplicate a node.
-- [ ] Support multiple approved memberships, with the local node as default.
-- [ ] A checked Edge Function creates accounts and changes memberships only for
+- [x] Support multiple approved memberships, with the local node as default.
+- [x] A checked Edge Function creates accounts and changes memberships only for
   a caller whose current protected role is Administrator.
-- [ ] Analysts, anonymous callers, and demoted admins fail direct function calls;
+- [x] Analysts, anonymous callers, and demoted admins fail direct function calls;
   invalid input and duplicate requests receive controlled responses.
-- [ ] Privileged keys remain hosted/in trusted tooling. Partial Auth/profile
+- [x] Privileged keys remain hosted/in trusted tooling. Partial Auth/profile
   creation is recoverable; retries do not create duplicate accounts.
 
 ### 5B.4 Enforce access across the complete relational schema
 
-- [ ] Analysts read/write assigned nodes. Administrators read all nodes while
+- [x] Analysts read/write assigned nodes. Administrators read all nodes while
   ordinary operational writes remain scoped to their assigned node.
-- [ ] Traffic, predictions, alerts, sessions, logs, reports, and report joins have
+- [x] Traffic, predictions, alerts, sessions, logs, reports, and report joins have
   direct or enforced inherited scope; direct API writes cannot link other nodes.
-- [ ] Profiles, roles, memberships, training results, manifests, Storage, views,
+- [x] Profiles, roles, memberships, training results, manifests, Storage, views,
   and function execution all have explicit policies/grants.
-- [ ] Test SELECT/INSERT/UPDATE/DELETE and forged user/node/relationship IDs
+- [x] Test SELECT/INSERT/UPDATE/DELETE and forged user/node/relationship IDs
   through the real API with two users, including self-promotion attempts.
-- [ ] Hidden reads return no rows; errors expose no private contents. Protected
+- [x] Hidden reads return no rows; errors expose no private contents. Protected
   current records revoke stale access; helpers avoid recursive RLS and unsafe
   search paths. Policies and grants live in version-controlled migrations.
 
@@ -157,16 +157,16 @@ nodes; hostname, IP address, or a submitted node ID does not grant access.
 Inventory current service operations and map them to authenticated reads or SQL
 functions called through HTTPS. Replacing a connection helper is insufficient.
 
-- [ ] Define explicit user/node context, stable results, pagination, validation,
+- [x] Define explicit user/node context, stable results, pagination, validation,
   timeouts, and application-level error categories.
-- [ ] A flow transaction creates traffic, prediction, optional alert, and required
+- [x] A flow transaction creates traffic, prediction, optional alert, and required
   audit records atomically. Batch failure leaves no partial flow groups.
-- [ ] Immutable event UUIDs deduplicate retries, including lost acknowledgements;
+- [x] Immutable event UUIDs deduplicate retries, including lost acknowledgements;
   an existing UUID with different content is rejected.
-- [ ] Ordinary functions use `SECURITY INVOKER`. Privileged exceptions have
+- [x] Ordinary functions use `SECURITY INVOKER`. Privileged exceptions have
   narrow owners, qualified objects, safe search paths, caller checks, and minimal
   execute grants. Constraints still protect direct table-write paths.
-- [ ] Auth/API/RLS tests pass; write `docs/migration/05b-access.md` with permission
+- [x] Auth/API/RLS tests pass; write `docs/migration/05b-access.md` with permission
   matrix and evidence before the stage commit.
 
 ---
