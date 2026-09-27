@@ -218,7 +218,7 @@ def test_windows_without_pcap_provider_disables_live_capture(monkeypatch):
     available, reason = live_capture_available()
 
     assert available is False
-    assert "Npcap" in reason
+    assert reason is not None and "Npcap" in reason
 
 
 def wait_for(condition, timeout=10.0):
@@ -402,7 +402,8 @@ def test_live_source_defaults_to_excluding_algoguards_own_traffic(monkeypatch):
 
 def test_own_traffic_is_dropped_even_when_the_bpf_filter_did_not_apply():
     """The Python-side guard is what protects unfiltered fallback captures."""
-    from scapy.all import IP, TCP, Ether
+    from scapy.layers.inet import IP, TCP
+    from scapy.layers.l2 import Ether
 
     from services.traffic_source_service import LiveCaptureSource
 

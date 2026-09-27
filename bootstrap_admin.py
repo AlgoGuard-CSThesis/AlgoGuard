@@ -289,7 +289,9 @@ def bootstrap(args, environment) -> Outcome:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        description=(__doc__ or "AlgoGuard maintenance").splitlines()[0]
+    )
     parser.add_argument("--email", required=True, help="the Administrator's login email")
     parser.add_argument("--username", help="display name (defaults to the email's local part)")
     parser.add_argument("--api-url", help="https://<project-ref>.supabase.co")

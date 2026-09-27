@@ -265,6 +265,8 @@ class PcapReplaySource(TrafficSource):
             self.row_total = self.flows_emitted
             raise StopIteration
 
+        if self._reader is None or self._tracker is None:
+            raise TrafficSourceError("Prepare the packet capture before reading flows.")
         while True:
             self._raise_if_cancelled()
             try:

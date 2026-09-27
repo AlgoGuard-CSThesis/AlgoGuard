@@ -39,6 +39,7 @@ from dataclasses import dataclass
 
 RETENTION_SECONDS = 120.0  # Bounded late-packet retention, independent of OS TCP timers.
 MAX_ENTRIES = 4096
+_DEFAULT_TIMEOUT = getattr(socket, "_GLOBAL_DEFAULT_TIMEOUT")
 
 
 def _canonical_ip(value):
@@ -158,7 +159,7 @@ class OwnedConnections:
     def create_connection(
         self,
         address,
-        timeout=socket._GLOBAL_DEFAULT_TIMEOUT,
+        timeout=_DEFAULT_TIMEOUT,
         source_address=None,
     ):
         """``socket.create_connection`` that registers the socket before connecting."""
@@ -171,7 +172,7 @@ class OwnedConnections:
             key = None
             try:
                 sock = socket.socket(family, kind, proto)
-                if timeout is not socket._GLOBAL_DEFAULT_TIMEOUT:
+                if timeout is not _DEFAULT_TIMEOUT:
                     sock.settimeout(timeout)
                 wildcard = "::" if family == socket.AF_INET6 else "0.0.0.0"
                 sock.bind(source_address or (wildcard, 0))
@@ -229,10 +230,11 @@ class _OwnedHTTPHandler(urllib.request.HTTPHandler):
 
 class _OwnedHTTPSHandler(urllib.request.HTTPSHandler):
     def __init__(self):
-        super().__init__(context=ssl.create_default_context())
+        self._tls_context = ssl.create_default_context()
+        super().__init__(context=self._tls_context)
 
     def https_open(self, req):
-        return self.do_open(_OwnedHTTPSConnection, req, context=self._context)
+        return self.do_open(_OwnedHTTPSConnection, req, context=self._tls_context)
 
 
 def owned_opener(*handlers):

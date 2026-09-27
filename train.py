@@ -138,7 +138,7 @@ def _deploy_stacking(run_id, admin_id):
         None,
     )
     eligible, reason = stacking_deployment_eligibility(stacking)
-    if not eligible:
+    if not eligible or stacking is None:
         print(f"\nDeployment refused by the quality gate: {reason}", file=sys.stderr)
         log_system_event(
             admin_id,

@@ -55,7 +55,7 @@ def _digest(stream):
 
 
 class ModelCache:
-    def __init__(self, repository, directory: Path):
+    def __init__(self, repository, directory: str | Path):
         self.repository = repository
         self.directory = Path(directory)
         self._opener = owned_opener(_NoRedirect())

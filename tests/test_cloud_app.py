@@ -172,7 +172,9 @@ def test_enrollment_on_login_and_administrator_approval(tmp_path, stacking_artif
         admin = signed_in(env.app, ADMIN)
         queue = admin.get("/nodes").get_data(as_text=True)
         assert "Pending Requests" in queue and "analyst" in queue
-        request_id = re.search(r'name="request_id" value="([^"]+)"', queue).group(1)
+        match = re.search(r'name="request_id" value="([^"]+)"', queue)
+        assert match is not None
+        request_id = match.group(1)
         response = admin.post("/nodes", data={
             "_csrf_token": admin.csrf, "request_id": request_id, "action": "membership",
             "status": "approved", "node_id": env.node,
@@ -494,7 +496,9 @@ def test_alert_selection_creates_one_report_with_its_evidence(cloud):
             f"/api/events/{event_uuid}").get_json().get("synced"))
     page = client.get("/alerts").get_data(as_text=True)
     alert_ids = re.findall(r'name="alert_id" value="(\d+)"', page)
-    request_id = re.search(r'name="request_id" value="([^"]+)"', page).group(1)
+    match = re.search(r'name="request_id" value="([^"]+)"', page)
+    assert match is not None
+    request_id = match.group(1)
     assert len(alert_ids) == 2
     form = {"_csrf_token": client.csrf, "request_id": request_id, "alert_id": alert_ids}
     created = client.post("/reports", data=form)
@@ -527,7 +531,9 @@ def test_log_filters_and_audit_entries_are_scoped_and_idempotent(cloud):
 def test_administrator_account_management_uses_the_checked_function(cloud):
     admin = signed_in(cloud.app, ADMIN)
     page = admin.get("/admins").get_data(as_text=True)
-    request_id = re.search(r'name="request_id" value="([^"]+)"', page).group(1)
+    match = re.search(r'name="request_id" value="([^"]+)"', page)
+    assert match is not None
+    request_id = match.group(1)
     weak = admin.post("/admins", data={
         "_csrf_token": admin.csrf, "request_id": request_id, "action": "create_account",
         "email": "new@example.test", "username": "new", "role": "analyst",

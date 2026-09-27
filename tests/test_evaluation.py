@@ -56,7 +56,8 @@ def test_invalid_metric_is_excluded_from_winner_selection():
     normalize_model_results([valid, invalid])
     assert invalid["status"] == "incomplete"
     assert invalid["overall_score"] is None
-    assert identify_best_model([valid, invalid])["model_name"] == "Valid"
+    best = identify_best_model([valid, invalid])
+    assert best is not None and best["model_name"] == "Valid"
 
 
 def test_overall_score_is_average_of_exactly_nine_metrics():
@@ -91,4 +92,5 @@ def test_recommended_winner_is_driven_by_metrics():
         "Naive Bayes", accuracy=90, precision=90, recall=90, f1_score=90, roc_auc=90
     )
     normalize_model_results([first, second])
-    assert identify_best_model([first, second])["model_name"] == "Naive Bayes"
+    best = identify_best_model([first, second])
+    assert best is not None and best["model_name"] == "Naive Bayes"

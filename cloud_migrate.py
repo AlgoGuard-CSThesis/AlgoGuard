@@ -351,7 +351,9 @@ def is_remote(dsn: str) -> bool:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        description=(__doc__ or "AlgoGuard maintenance").splitlines()[0]
+    )
     parser.add_argument("--status", action="store_true",
                         help="show applied/pending migrations and exit")
     parser.add_argument("--dry-run", action="store_true",

@@ -20,3 +20,11 @@ extend-exclude = ["research/notebooks"]
 [tool.ruff.lint]
 # Pin the rule set so `ruff check` gives the same answer on every ruff version.
 select = ["E", "F", "W", "I"]
+
+[tool.pyright]
+include = ["*.py", "services", "scripts", "tests"]
+exclude = ["**/__pycache__"]
+venvPath = "."
+venv = "venv"
+pythonVersion = "3.10"
+typeCheckingMode = "standard"

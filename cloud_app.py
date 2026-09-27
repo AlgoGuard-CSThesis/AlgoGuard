@@ -32,12 +32,14 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import cast
 from urllib.parse import urlsplit
 from uuid import UUID, uuid4
 
-from flask import Flask, flash, g, jsonify, redirect, render_template, request, session, url_for
+from flask import Flask, flash, g, jsonify, redirect, render_template, request, url_for
+from flask import session as flask_session
 
-from cloud_auth import CloudAuth, MemorySessionInterface
+from cloud_auth import CloudAuth, MemorySession, MemorySessionInterface
 from cloud_monitor import CloudMonitor, LiveMonitorError, deployment_summary, flow_event
 from cloud_outbox import Outbox, restrict_owner
 from cloud_repository import RepositoryError
@@ -51,6 +53,9 @@ from services.simulation_service import (
     predict_with_artifact,
     schema_for_artifact,
 )
+
+# Keep Flask's request-local proxy while exposing the cloud session's extra fields.
+session = cast(MemorySession, flask_session)
 
 JSON_ENDPOINTS = {
     "predict_api",
@@ -200,7 +205,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         SESSION_COOKIE_SECURE=bool(cfg.secure_cookies),
         MAX_CONTENT_LENGTH=1024 * 1024,
     )
-    app.session_interface = MemorySessionInterface()
+    session_interface = MemorySessionInterface()
+    app.session_interface = session_interface
     services = services or build_services(cfg)
     app.extensions["algoguard_cloud"] = services
     if start_workers:
@@ -455,7 +461,7 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             previous = session.identity
             if previous is not None:
                 end_identity(previous, "account_switched")
-            app.session_interface.rotate(session)
+            session_interface.rotate(session)
             session.clear()
             session.identity = identity
             session["_csrf_token"] = secrets.token_urlsafe(32)
@@ -482,7 +488,7 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         end_identity(g.identity)
         session.identity = None
         session.clear()
-        app.session_interface.forget(session)
+        session_interface.forget(session)
         response = redirect(url_for("login", logged_out="1"))
         response.delete_cookie(app.config["SESSION_COOKIE_NAME"], path="/")
         return response

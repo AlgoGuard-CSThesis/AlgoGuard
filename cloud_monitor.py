@@ -232,7 +232,7 @@ class CloudMonitor:
     def pause(self, identity):
         with self.lock:
             session = self._owned(identity)
-            if not session or session["state"] != "running":
+            if not session or session["state"] != "running" or self.pause_event is None:
                 raise LiveMonitorError("No running monitoring session to pause.")
             self.pause_event.set()
             session["state"] = "paused"
@@ -241,7 +241,7 @@ class CloudMonitor:
     def resume(self, identity):
         with self.lock:
             session = self._owned(identity)
-            if not session or session["state"] != "paused":
+            if not session or session["state"] != "paused" or self.pause_event is None:
                 raise LiveMonitorError("No paused monitoring session to resume.")
             self.pause_event.clear()
             session["state"] = "running"
@@ -264,6 +264,8 @@ class CloudMonitor:
         return public
 
     def _halt_locked(self, session, message=None):
+        if self.stop_event is None or self.pause_event is None:
+            raise LiveMonitorError("No monitoring session is running.")
         self.stop_event.set()
         self.pause_event.clear()
         if session["state"] in legacy.ACTIVE_STATES:

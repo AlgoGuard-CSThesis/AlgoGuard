@@ -23,6 +23,7 @@ import threading
 import time
 from collections import deque
 from contextlib import ExitStack
+from typing import TypedDict
 from uuid import uuid4
 
 import numpy as np
@@ -305,11 +306,16 @@ def _record_worker_failure(session, error):
         pass
 
 
+class _WorkerResources(TypedDict):
+    source: CsvReplaySource | PcapReplaySource | LiveCaptureSource | None
+    capture_id: int | None
+
+
 def _worker(session, stop_event, pause_event):
     """Own capture resources even when startup, persistence, or logging fails."""
     global _THREAD
 
-    resources = {"source": None, "capture_id": None}
+    resources: _WorkerResources = {"source": None, "capture_id": None}
     final_state = "error"
     try:
         with ExitStack() as cleanup:
@@ -320,7 +326,10 @@ def _worker(session, stop_event, pause_event):
     finally:
         if resources["capture_id"] is not None:
             try:
-                stats = resources["source"].stats()
+                source = resources["source"]
+                if source is None:
+                    raise LiveMonitorError("Capture source is unavailable.")
+                stats = source.stats()
                 with _LOCK:
                     session["capture"] = stats
                 finalize_capture_session(
@@ -697,7 +706,7 @@ def start_session(
 
 def pause_session():
     with _LOCK:
-        if not _SESSION or _SESSION["state"] != "running":
+        if not _SESSION or _SESSION["state"] != "running" or _PAUSE_EVENT is None:
             raise LiveMonitorError("No running monitoring session to pause.")
         _PAUSE_EVENT.set()
         _SESSION["state"] = "paused"
@@ -706,7 +715,7 @@ def pause_session():
 
 def resume_session():
     with _LOCK:
-        if not _SESSION or _SESSION["state"] != "paused":
+        if not _SESSION or _SESSION["state"] != "paused" or _PAUSE_EVENT is None:
             raise LiveMonitorError("No paused monitoring session to resume.")
         _PAUSE_EVENT.clear()
         _SESSION["state"] = "running"
@@ -720,7 +729,10 @@ def stop_session():
         stop_event = _STOP_EVENT
         pause_event = _PAUSE_EVENT
         thread = _THREAD
-        if not session or session["state"] in TERMINAL_STATES:
+        if (
+            not session or session["state"] in TERMINAL_STATES
+            or stop_event is None or pause_event is None
+        ):
             raise LiveMonitorError("No monitoring session is running.")
         stop_event.set()
         pause_event.clear()

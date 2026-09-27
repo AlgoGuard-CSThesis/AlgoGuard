@@ -38,6 +38,7 @@ def test_first_admin_gets_random_one_time_password(monkeypatch, tmp_path, capsys
     admin = db.get_admin_by_username("admin")
     assert generated_password != "admin123"
     assert len(generated_password) >= 20
+    assert admin is not None
     assert check_password_hash(admin["password_hash"], generated_password)
 
 
@@ -114,6 +115,7 @@ def test_eligible_stacking_can_be_deployed(trained_bundle):
     model_id = model_id_for(trained_bundle["run_id"], "Stacking Ensemble")
     deploy_model(model_id, 1)
     active = db.get_active_deployment()
+    assert active is not None
     assert active["model_id"] == model_id
     assert active["model_name"] == "Stacking Ensemble"
 

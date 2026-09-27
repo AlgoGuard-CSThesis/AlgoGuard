@@ -1,6 +1,7 @@
 import hashlib
 import io
 import urllib.error
+from email.message import Message
 from types import SimpleNamespace
 from uuid import uuid4
 
@@ -54,7 +55,7 @@ def delivery(tmp_path, monkeypatch):
         _request=request,
     )
     cache = ModelCache(repository, tmp_path)
-    cache._opener = SimpleNamespace(open=lambda *a, **k: io.BytesIO(content))
+    monkeypatch.setattr(cache, "_opener", SimpleNamespace(open=lambda *a, **k: io.BytesIO(content)))
     monkeypatch.setattr(deployment_service, "_validate_stacking_artifact", lambda value: None)
     return cache, manifest, content, signed, calls
 
@@ -77,7 +78,7 @@ def test_failed_download_never_promotes_or_deserializes(delivery, monkeypatch, f
 
     def read(*args, **kwargs):
         if fault == "expired":
-            raise urllib.error.HTTPError("hidden-signed-url", 403, "expired", {}, None)
+            raise urllib.error.HTTPError("hidden-signed-url", 403, "expired", Message(), None)
         value = {
             "partial": content[:-1],
             "corrupt": b"!" * len(content),
@@ -86,7 +87,7 @@ def test_failed_download_never_promotes_or_deserializes(delivery, monkeypatch, f
         return io.BytesIO(value)
 
     monkeypatch.setattr(joblib, "load", lambda *args: pytest.fail("unverified deserialization"))
-    cache._opener = SimpleNamespace(open=read)
+    monkeypatch.setattr(cache, "_opener", SimpleNamespace(open=read))
     with pytest.raises(ModelDeliveryError) as error:
         cache.load_active()
     assert "hidden-signed-url" not in str(error.value)

@@ -366,12 +366,18 @@ Install QA tools and run all checks:
 
 ```powershell
 python -m pip install -r requirements-dev.txt
-python -m ruff check app.py train.py migrate.py services tests
+npm ci
+npm run typecheck
+python -m ruff check .
 python -m pytest -q
 ```
 
 The browser polling checks use Node.js's built-in test runner (no npm packages):
 `node --test tests/monitor_poll.test.cjs`.
+
+The pinned Pyright checker uses the project's `venv` and checks all application,
+script, and test modules. Its scope is configured in `pyproject.toml`; generated
+reports and backup copies are not included.
 
 The ruff rule set is pinned in `pyproject.toml` (`E`, `F`, `W`, `I`) so the check reports the same result on every ruff release. The test suite uses temporary database and artifact paths, so it never modifies `database/` or `saved_models/`; the expanded cloud suite can take several minutes on Windows.
 

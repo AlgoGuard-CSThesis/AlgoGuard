@@ -61,6 +61,7 @@ def test_audit_entries_are_idempotent_scoped_and_filterable(cloud, scope, local_
     body = {"p_node_id": str(repo.context.node_id), "p_profile_id": repo.context.profile_id,
             "p_event_uuid": event_uuid, "p_values": entry}
     first = repo.rpc("append_system_log", body)
+    assert isinstance(first, dict)
     assert first["replayed"] is False
     assert repo.rpc("append_system_log", body) == {**first, "replayed": True}
     with pytest.raises(RepositoryError, match="conflict"):
@@ -90,13 +91,16 @@ def test_capture_lifecycle_and_reports_through_the_repository(cloud, scope, loca
         repo.open_capture(capture_uuid, scope["deployment"], "pcap")
     flows = [dict(event(scope), capture_id=capture_id) for _ in range(2)]
     receipts = repo.store_flows(flows)
-    assert repo.finalize_capture(capture_id, {"status": "stopped", "flows_emitted": 2})[
-        "status"] == "stopped"
-    assert repo.finalize_capture(capture_id, {"status": "completed", "flows_emitted": 5})[
-        "status"] == "stopped"
+    stopped = repo.finalize_capture(capture_id, {"status": "stopped", "flows_emitted": 2})
+    assert stopped is not None and stopped["status"] == "stopped"
+    completed = repo.finalize_capture(capture_id, {"status": "completed", "flows_emitted": 5})
+    assert completed is not None and completed["status"] == "stopped"
     with pytest.raises(RepositoryError):
         other.finalize_capture(capture_id, {"status": "error"})
-    alerts = [receipt.alert_id for receipt in receipts]
+    alerts = []
+    for receipt in receipts:
+        assert receipt.alert_id is not None
+        alerts.append(receipt.alert_id)
     request_id = uuid.uuid4()
     report_id, replayed = repo.create_report(request_id, alerts)
     assert replayed is False

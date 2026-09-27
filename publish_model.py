@@ -43,6 +43,15 @@ def _manifest(connection, publication_id):
         return row[0] if row else None
 
 
+def _required_manifest(connection, publication_id):
+    manifest = _manifest(connection, publication_id)
+    if manifest is None:
+        raise ModelDeliveryError("The publication manifest is unavailable.")
+    if not isinstance(manifest, dict):
+        raise ModelDeliveryError("The publication manifest is invalid.")
+    return manifest
+
+
 def stage_publication(connection, publication_id, model, artifact_path, created_by=None):
     """Quality check before any cloud write; durable intent precedes object upload."""
     import joblib
@@ -129,7 +138,7 @@ def stage_publication(connection, publication_id, model, artifact_path, created_
                     created_by,
                 ),
             )
-            return _manifest(connection, publication_id), content
+            return _required_manifest(connection, publication_id), content
 
 
 def publish(connection, api_url, secret_key, publication_id, model, artifact_path, created_by=None):
@@ -193,7 +202,7 @@ def publish(connection, api_url, secret_key, publication_id, model, artifact_pat
                 cursor.execute(
                     "select public.activate_model_publication(%s)", (str(publication_id),)
                 )
-        return _manifest(connection, publication_id)
+        return _required_manifest(connection, publication_id)
     except Exception as failure:
         # Never blindly delete uploaded bytes after an ambiguous commit. A fresh
         # invocation reads the durable identity and reconciles active/superseded.

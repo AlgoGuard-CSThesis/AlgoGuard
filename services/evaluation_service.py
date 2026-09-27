@@ -50,18 +50,29 @@ def calculate_metrics(
     except ValueError as error:
         raise ValueError(f"ROC-AUC could not be calculated: {error}") from error
 
+    # sklearn accepts numeric zero_division; inference from its untyped "warn"
+    # default incorrectly restricts this parameter to str.
     return {
         "accuracy": round(accuracy_score(y_true, y_pred) * 100, 6),
         "precision": round(
-            precision_score(y_true, y_pred, pos_label=1, zero_division=0) * 100,
+            precision_score(
+                y_true, y_pred, pos_label=1,
+                zero_division=0,  # pyright: ignore[reportArgumentType]
+            ) * 100,
             6,
         ),
         "recall": round(
-            recall_score(y_true, y_pred, pos_label=1, zero_division=0) * 100,
+            recall_score(
+                y_true, y_pred, pos_label=1,
+                zero_division=0,  # pyright: ignore[reportArgumentType]
+            ) * 100,
             6,
         ),
         "f1_score": round(
-            f1_score(y_true, y_pred, pos_label=1, zero_division=0) * 100,
+            f1_score(
+                y_true, y_pred, pos_label=1,
+                zero_division=0,  # pyright: ignore[reportArgumentType]
+            ) * 100,
             6,
         ),
         "roc_auc": round(float(roc_auc) * 100, 6),

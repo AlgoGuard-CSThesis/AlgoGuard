@@ -387,6 +387,8 @@ class CloudRepository:
             },
         )
         try:
+            if not isinstance(data, dict):
+                raise TypeError
             capture_id = int(data["capture_id"])
             if not 0 < capture_id <= MAX_BIGINT:
                 raise ValueError
@@ -417,6 +419,8 @@ class CloudRepository:
             },
         )
         try:
+            if not isinstance(data, dict):
+                raise TypeError
             return int(data["report_id"]), bool(data["replayed"])
         except (KeyError, TypeError, ValueError):
             raise RepositoryError("protocol") from None

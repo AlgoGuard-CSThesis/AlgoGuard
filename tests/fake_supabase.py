@@ -194,6 +194,7 @@ class FakeSupabase:
     def revoke(self, profile_id, node_id):
         with self.lock:
             membership = self._membership(profile_id, str(node_id))
+            assert membership is not None
             membership.update(status="revoked", is_default=False, decided_at=_now_text())
 
     def publish_model(self, content, compatibility):
@@ -671,7 +672,7 @@ class FakeSupabase:
                                         if row["profile_id"] == user["profile_id"])
                 if not user or user["password"] != body.get("password"):
                     raise Refusal(400, "invalid_grant")
-                if not profile["is_active"]:
+                if not profile or not profile["is_active"]:
                     raise Refusal(400, "user_banned")
                 email = str(body["email"]).lower()
             elif grant == "refresh_token":
@@ -727,7 +728,7 @@ class FakeSupabase:
         class Handler(http.server.BaseHTTPRequestHandler):
             protocol_version = "HTTP/1.1"
 
-            def log_message(self, *args):
+            def log_message(self, format, *args):
                 pass
 
             def _serve(self):

@@ -146,6 +146,8 @@ class CloudAuth:
             params={"grant_type": "password"},
             body={"email": email.strip(), "password": password},
         )
+        if not isinstance(data, dict):
+            raise RepositoryError("protocol")
         try:
             return self.authenticate_access(data["access_token"], data["refresh_token"])
         except (KeyError, TypeError):
@@ -179,6 +181,8 @@ class CloudAuth:
                         params={"grant_type": "refresh_token"},
                         body={"refresh_token": identity.refresh_token},
                     )
+                    if not isinstance(data, dict):
+                        raise RepositoryError("protocol")
                     replacement = self.authenticate_access(
                         data["access_token"], data["refresh_token"]
                     )
@@ -241,7 +245,7 @@ class MemorySession(dict, SessionMixin):
     def __init__(self, sid=None):
         super().__init__()
         self.sid = sid or secrets.token_urlsafe(32)
-        self.identity = None
+        self.identity: CloudIdentity | None = None
         self.touched = time.time()
 
 
@@ -286,6 +290,8 @@ class MemorySessionInterface(SessionInterface):
             self.sessions.pop(session.sid, None)
 
     def save_session(self, app, session, response):
+        if not isinstance(session, MemorySession):
+            raise TypeError("Cloud sessions must use MemorySession.")
         if g.get("bearer"):
             return  # API callers never receive or extend a browser session.
         if not session and session.identity is None:

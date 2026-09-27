@@ -1,5 +1,6 @@
 import csv
 from dataclasses import dataclass
+from typing import cast
 
 import numpy as np
 import pandas as pd
@@ -30,10 +31,7 @@ class PreparedDataset:
 
 
 def _make_one_hot_encoder():
-    try:
-        return OneHotEncoder(handle_unknown="ignore", sparse_output=False)
-    except TypeError:
-        return OneHotEncoder(handle_unknown="ignore", sparse=False)
+    return OneHotEncoder(handle_unknown="ignore", sparse_output=False)
 
 
 def build_feature_preprocessor(numeric_columns, categorical_columns):
@@ -188,6 +186,9 @@ def prepare_dataset(file_path, test_size=0.25, random_state=42):
     except ValueError as error:
         raise ValueError(f"Stratified train/test split failed: {error}") from error
 
+    # sklearn preserves pandas inputs, but its untyped signature also advertises arrays.
+    X_train, X_test = cast(pd.DataFrame, X_train), cast(pd.DataFrame, X_test)
+    y_train, y_test = cast(pd.Series, y_train), cast(pd.Series, y_test)
     if y_train.value_counts().min() < 2:
         raise ValueError("The training split needs at least two rows per class for stacking.")
 

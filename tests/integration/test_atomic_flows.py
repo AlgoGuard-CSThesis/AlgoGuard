@@ -69,7 +69,8 @@ def test_atomic_flow_lost_acknowledgement_and_changed_content(cloud, scope, loca
     assert counts(cloud, actor["profile"]) == [value + 1 for value in before]
     no_alert = repo.store_flows([event(scope, alert=False)])[0]
     assert no_alert.alert_id is None
-    assert repo.statistics()["total_flows"] >= 2
+    statistics = repo.statistics()
+    assert statistics is not None and statistics["total_flows"] >= 2
     assert repo.traffic_sources()
 
 
@@ -179,6 +180,7 @@ def test_repository_pagination_and_bigint_results(cloud, scope, local_stack):
     repo = repository(cloud, scope, local_stack)
     repo.store_flows([event(scope), event(scope)])
     first = repo.list_records("prediction", page_size=1)
+    assert first.next_offset is not None
     second = repo.list_records("prediction", page_size=1, offset=first.next_offset)
     assert first.rows[0]["prediction_id"] != second.rows[0]["prediction_id"]
     # Exercise actual values beyond JavaScript's exact-integer range.

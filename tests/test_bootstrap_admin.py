@@ -155,6 +155,7 @@ def test_an_existing_user_is_found_on_a_later_page_and_case_insensitively():
         ]
     )
     found = find_auth_user(session, API, "admin@example.com")
+    assert found is not None
     assert found["id"] == "b"
 
 

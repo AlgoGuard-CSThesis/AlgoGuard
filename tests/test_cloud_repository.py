@@ -1,5 +1,7 @@
 import io
 import urllib.error
+from email.message import Message
+from typing import Any
 from uuid import uuid4
 
 import pytest
@@ -39,17 +41,17 @@ def test_context_redacts_token_and_rejects_privileged_credentials():
         (503, "transient"),
     ],
 )
-def test_errors_are_stable_and_do_not_echo_server_details(status, category):
+def test_errors_are_stable_and_do_not_echo_server_details(status, category, monkeypatch):
     client = repo()
 
     class Opener:
         def open(self, request, timeout):
             assert timeout == 10
             raise urllib.error.HTTPError(
-                request.full_url, status, "SECRET DETAILS", {}, io.BytesIO(b'"HIDDEN ROW"')
+                request.full_url, status, "SECRET DETAILS", Message(), io.BytesIO(b'"HIDDEN ROW"')
             )
 
-    client._opener = Opener()
+    monkeypatch.setattr(client, "_opener", Opener())
     with pytest.raises(RepositoryError) as caught:
         client.statistics()
     assert caught.value.category == category
@@ -72,12 +74,13 @@ def test_input_limits_do_not_send_requests(monkeypatch):
     ):
         with pytest.raises(RepositoryError):
             client.store_flows(events)
-    for resource, options in (
+    cases: tuple[tuple[str, dict[str, Any]], ...] = (
         ("private", {}),
         ("alert", {"page_size": 101}),
         ("alert", {"offset": -1}),
         ("alert", {"filters": {"or": "forged"}}),
-    ):
+    )
+    for resource, options in cases:
         with pytest.raises(RepositoryError):
             client.list_records(resource, **options)
 

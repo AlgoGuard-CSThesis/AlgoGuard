@@ -375,7 +375,9 @@ class Outbox:
             memory = sum(
                 1 for item in self.memory_status.values() if item[1:3] == (user_id, node_id)
             )
-            result = {"pending": 0, "synced": 0, "rejected": 0}
+            result: dict[str, int | bool | str | None] = {
+                "pending": 0, "synced": 0, "rejected": 0,
+            }
             result.update({row[0]: row[1] for row in rows})
             result.update(
                 in_memory=memory,

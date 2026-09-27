@@ -1,13 +1,17 @@
 import time
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
+from typing import cast
 from uuid import uuid4
 
 import pytest
-from flask import Flask, session
+from flask import Flask
+from flask import session as flask_session
 
-from cloud_auth import CloudAuth, CloudIdentity, MemorySessionInterface
+from cloud_auth import CloudAuth, CloudIdentity, MemorySession, MemorySessionInterface
 from cloud_repository import RepositoryError
+
+session = cast(MemorySession, flask_session)
 
 
 def identity(**kwargs):
@@ -92,6 +96,25 @@ def test_expired_session_stops_if_refresh_unavailable(monkeypatch):
     with pytest.raises(RepositoryError, match="authentication"):
         auth.repository(original)
     assert original.refresh_token is None
+
+
+@pytest.mark.parametrize("response", [None, [], "invalid"])
+def test_malformed_auth_responses_are_controlled(monkeypatch, response):
+    auth = CloudAuth("http://localhost:54321", "sb_publishable_test", uuid4())
+    monkeypatch.setattr(
+        auth, "_transport", lambda *args: SimpleNamespace(_request=lambda *a, **k: response)
+    )
+    with pytest.raises(RepositoryError) as login_error:
+        auth.login("user@example.com", "password")
+    assert login_error.value.category == "protocol"
+
+    original = identity()
+    original.expires_at = time.time() - 1
+    with pytest.raises(RepositoryError) as refresh_error:
+        auth.repository(original)
+    assert refresh_error.value.category == "authentication"
+    assert not original.active
+    assert original.access_token == "" and original.refresh_token is None
 
 
 def test_refresh_failure_backs_off_while_the_token_is_still_valid(monkeypatch):

@@ -35,7 +35,7 @@ def json_server():
             self.end_headers()
             self.wfile.write(body)
 
-        def log_message(self, *args):
+        def log_message(self, format, *args):
             pass
 
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
@@ -63,6 +63,7 @@ def test_socket_is_registered_before_its_first_packet(json_server):
     def register(local_port, remote_ip, remote_port, owner=None):
         # Not connected yet: getpeername fails, so no SYN has been sent.
         with pytest.raises(OSError):
+            assert owner is not None
             owner.getpeername()
         seen.append((local_port, remote_ip, remote_port))
         return original(local_port, remote_ip, remote_port, owner=owner)
@@ -156,14 +157,15 @@ def test_repository_and_model_download_never_use_unregistered_sockets():
     repository = CloudRepository("https://example.supabase.co", "sb_publishable_x", context)
     cache = model_delivery.ModelCache(repository, "unused")
     for opener in (repository._opener, cache._opener):
-        kinds = {type(handler) for handler in opener.handlers}
+        handlers = getattr(opener, "handlers")
+        kinds = {type(handler) for handler in handlers}
         assert cloud_connections._OwnedHTTPSHandler in kinds
         assert cloud_connections._OwnedHTTPHandler in kinds
         assert urllib.request.HTTPSHandler not in kinds
         assert urllib.request.HTTPHandler not in kinds
-        proxies = [h for h in opener.handlers if isinstance(h, urllib.request.ProxyHandler)]
+        proxies = [h for h in handlers if isinstance(h, urllib.request.ProxyHandler)]
         # Environment proxies are never consulted: any ProxyHandler is empty.
-        assert all(not h.proxies for h in proxies)
+        assert all(not getattr(h, "proxies") for h in proxies)
 
 
 class _Captured:
@@ -249,7 +251,7 @@ def tls_server(tmp_path):
             self.end_headers()
             self.wfile.write(body)
 
-        def log_message(self, *args):
+        def log_message(self, format, *args):
             pass
 
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), Handler)
@@ -287,6 +289,7 @@ def test_windows_evidence_summary_separates_owned_and_unrelated_flows():
 
     path = Path(__file__).resolve().parents[1] / "scripts" / "check_capture_exclusion.py"
     spec = importlib.util.spec_from_file_location("check_capture_exclusion", path)
+    assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     flows = [

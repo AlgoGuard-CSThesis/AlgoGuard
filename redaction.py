@@ -66,7 +66,7 @@ def _redact_keyword_password(match: re.Match[str]) -> str:
     return match.group("prefix") + quote + "***" + closing_quote
 
 
-def redact_for_logging(text: str) -> str:
+def redact_for_logging(text: object) -> str:
     """Best-effort redaction of secrets, tokens, and signed URL query
     parameters before writing a string to any log or console.
 

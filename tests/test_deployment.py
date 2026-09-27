@@ -58,6 +58,7 @@ def test_readers_keep_working_across_activation(
 
     monkeypatch.setattr(deployment, "record_deployment", activate)
     replacement = deployment.deploy_model(second["model_id"], 1)
+    assert previous is not None
     assert reads == [first["model_id"]]
     assert replacement["artifact_path"] != previous["artifact_path"]
     artifact, active = deployment.load_active_artifact()

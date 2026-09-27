@@ -64,7 +64,9 @@ def summarize(flows, owned_ports, other_ports, remote_ips, stats):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(
+        description=(__doc__ or "Capture exclusion check").splitlines()[0]
+    )
     parser.add_argument("--interface", default=None, help="capture interface (default: Npcap's)")
     parser.add_argument("--requests", type=int, default=5)
     parser.add_argument("--settle", type=float, default=20.0,
@@ -81,7 +83,7 @@ def main(argv=None):
         parser.error("Set NEXT_PUBLIC_SUPABASE_URL in .env first.")
     available, reason = live_capture_available()
     if not available:
-        parser.error(reason)
+        parser.error(reason or "Live capture is unavailable.")
     parts = urlsplit(url)
     host = parts.hostname
     port = parts.port or (443 if parts.scheme == "https" else 80)
@@ -123,8 +125,13 @@ def main(argv=None):
         stats = source.stats()
         source.close()
     report = summarize(flows, owned_ports, other_ports, remote_ips, stats)
-    report.update(interface=args.interface or "default", host=host, remote_ips=sorted(remote_ips),
-                  attribution="bind-before-connect registration of AlgoGuard's own sockets")
+    report = {
+        **report,
+        "interface": args.interface or "default",
+        "host": host,
+        "remote_ips": sorted(remote_ips),
+        "attribution": "bind-before-connect registration of AlgoGuard's own sockets",
+    }
     print(json.dumps(report, indent=2))
     return 0 if report["passed"] else 1
 

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from pandas.core.util.hashing import hash_pandas_object
 
 DATASET_FOLDER = Path(__file__).resolve().parents[1] / "datasets"
 EXPECTED_COLUMNS = [
@@ -59,7 +60,7 @@ def test_included_datasets_are_nested_for_size_comparison():
         )
     }
     row_hashes = {
-        name: set(pd.util.hash_pandas_object(frame, index=False)) for name, frame in frames.items()
+        name: set(hash_pandas_object(frame, index=False)) for name, frame in frames.items()
     }
     assert row_hashes["algoguard_big.csv"] <= row_hashes["algoguard_bigger.csv"]
     assert row_hashes["algoguard_bigger.csv"] <= row_hashes["algoguard_biggest.csv"]

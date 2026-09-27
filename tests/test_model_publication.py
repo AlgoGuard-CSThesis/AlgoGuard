@@ -1,8 +1,21 @@
 import pytest
 
 from model_runtime import ModelDeliveryError, training_runtime, verify_artifact_contract
-from publish_model import validate_api_url
+from publish_model import _required_manifest, validate_api_url
 from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+
+
+@pytest.mark.parametrize("response", [None, [], "invalid"])
+def test_publication_requires_a_manifest_before_reporting_success(monkeypatch, response):
+    monkeypatch.setattr("publish_model._manifest", lambda *args: response)
+    with pytest.raises(ModelDeliveryError, match="manifest"):
+        _required_manifest(None, "publication-id")
+
+
+def test_required_manifest_preserves_the_database_record(monkeypatch):
+    manifest = {"manifest_id": 1, "status": "active"}
+    monkeypatch.setattr("publish_model._manifest", lambda *args: manifest)
+    assert _required_manifest(None, "publication-id") is manifest
 
 
 @pytest.mark.parametrize(
@@ -22,7 +35,7 @@ def test_publisher_rejects_unsafe_project_urls(url):
 
 
 def test_artifact_requires_producer_versions_and_exact_feature_schema():
-    artifact = {"feature_columns": list(FLOW_FEATURE_COLUMNS)}
+    artifact: dict = {"feature_columns": list(FLOW_FEATURE_COLUMNS)}
     with pytest.raises(ModelDeliveryError, match="runtime"):
         verify_artifact_contract(artifact)
     artifact["training_runtime"] = training_runtime()
