@@ -3,7 +3,7 @@
 {% block title %}System Logs | AlgoGuard{% endblock %}
 
 {% block content %}
-<header class="page-heading"><div><p class="eyebrow">Audit Trail</p><h1>System Logs</h1><p class="page-meta">{{ logs.total }} matching event{{ '' if logs.total == 1 else 's' }}</p></div></header>
+<header class="page-heading"><div><p class="eyebrow">Audit Trail</p><h1>System Logs</h1><p class="page-meta">{% if logs.total is not none %}{{ logs.total }} matching event{{ '' if logs.total == 1 else 's' }}{% else %}Newest first &middot; page {{ logs.page }}{% endif %}</p></div></header>
 
 <form class="panel filter-panel" method="get">
     <div class="filter-grid">
@@ -31,7 +31,13 @@
             </tbody>
         </table>
     </div>
-    {% if logs.pages > 1 %}
+    {% if logs.total is none and (logs.page > 1 or logs.has_next) %}
+    <nav class="pagination-bar" aria-label="System log pages">
+        <a class="btn btn-sm btn-outline-light{% if logs.page <= 1 %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page-1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-left"></i></a>
+        <span>Page {{ logs.page }}</span>
+        <a class="btn btn-sm btn-outline-light{% if not logs.has_next %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page+1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-right"></i></a>
+    </nav>
+    {% elif logs.total is not none and logs.pages > 1 %}
     <nav class="pagination-bar" aria-label="System log pages">
         <a class="btn btn-sm btn-outline-light{% if logs.page <= 1 %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page-1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-left"></i></a>
         <span>Page {{ logs.page }} of {{ logs.pages }}</span>

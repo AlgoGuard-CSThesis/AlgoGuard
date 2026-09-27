@@ -195,6 +195,49 @@ database. Login state uses a signed Flask browser session and ends when the sess
 cookie is cleared, the user logs out, or an ephemeral signing key changes after
 restart; it is not a permanent login token.
 
+## Cloud Pilot Mode (Stage 5D)
+
+Set these in `.env` to run the isolated cloud pilot instead of the SQLite application:
+
+```ini
+ALGOGUARD_DB_MODE=supabase
+NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
+```
+
+`python app.py` then serves the cloud application and never opens or creates the
+SQLite business database. Only the publishable key belongs in an analyst `.env`;
+a secret or service key, a non-HTTPS remote URL, or a non-loopback
+`ALGOGUARD_HOST` is refused at startup.
+
+- **Sign-in is online, every start.** Log in with the email and password an
+  Administrator created. Tokens live in process memory; the browser cookie is a
+  random session ID. A cached model never permits offline sign-in.
+- **Node approval.** The first sign-in enrolls this installation. An
+  Administrator approves it on the Nodes page; until then monitoring and uploads
+  are refused with an explanation.
+- **Models come from the maintainer.** The verified active model is downloaded
+  into the local cache and pinned for each capture. Analysts never train.
+- **Local state** lives in `.algoguard/` (`ALGOGUARD_STATE_DIR`): the installation
+  ID (`node-id`), the owner-restricted outbox spool, and the model cache.
+
+Persistent detections are queued locally and uploaded in the background, so a
+slow or lost connection never stalls classification. Each record reports one of
+`in_memory` (not yet saved), `durable_pending` (saved on this computer),
+`synced` (committed in the cloud), `dropped` (not stored: session cap, full
+handoff, or local capacity), or `rejected` (refused by the cloud; kept for
+export). Only `synced` means the cloud has the record. Pending records survive
+restart, upload only under the account that produced them, expire after seven
+days, and can be downloaded from the dashboard's **Export pending records**.
+
+**API change in cloud mode.** `POST /predict` returns `event_uuid` and
+`persistence`; `prediction_id` and `alert_id` are `null` until the upload is
+acknowledged. Poll `GET /api/events/<event_uuid>` for `synced: true` and the
+database IDs. JSON endpoints (`/predict`, `/api/events/...`, `/monitor/...`,
+`/outbox/export`, `/api/reports/...`) also accept
+`Authorization: Bearer <access token>` without a cookie or CSRF token; HTML pages
+accept only the browser session. See `docs/migration/05d-integration.md`.
+
 ## CSV Contract
 
 This contract applies to datasets passed to `train.py` and to any CSV replayed by the Live Monitor.
@@ -330,7 +373,7 @@ python -m pytest -q
 The browser polling checks use Node.js's built-in test runner (no npm packages):
 `node --test tests/monitor_poll.test.cjs`.
 
-The ruff rule set is pinned in `pyproject.toml` (`E`, `F`, `W`, `I`) so the check reports the same result on every ruff release. The test suite uses temporary database and artifact paths, so it never modifies `database/` or `saved_models/`; expect it to take under a minute because it trains small models.
+The ruff rule set is pinned in `pyproject.toml` (`E`, `F`, `W`, `I`) so the check reports the same result on every ruff release. The test suite uses temporary database and artifact paths, so it never modifies `database/` or `saved_models/`; the expanded cloud suite can take several minutes on Windows.
 
 ## Troubleshooting
 

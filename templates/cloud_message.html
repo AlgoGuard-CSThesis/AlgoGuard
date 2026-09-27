@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | AlgoGuard{% endblock %}
+{% block content %}
+<section class="panel unavailable-panel" aria-labelledby="message-title">
+    <i class="bi {{ icon or 'bi-cloud-slash' }}" aria-hidden="true"></i>
+    <h1 id="message-title" class="h2">{{ title }}</h1>
+    <p>{{ message }}</p>
+    {% if detail %}<p class="monitor-hint">{{ detail }}</p>{% endif %}
+    <a class="btn btn-outline-light" href="{{ url_for('dashboard') }}">Return to dashboard</a>
+</section>
+{% endblock %}

@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import os
 import tempfile
+import threading
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -12,6 +13,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
 
+from cloud_connections import owned_opener
 from cloud_repository import RepositoryError, _NoRedirect
 from model_runtime import ModelDeliveryError, verify_artifact_contract, verify_manifest
 
@@ -21,6 +23,26 @@ class PinnedModel:
     artifact: dict
     manifest: MappingProxyType
     cache_path: Path
+
+
+class ActiveModelStore:
+    """Process-wide holder of the last verified model; never skips the manifest check.
+
+    A capture pins the object it started with. Later resolutions return a new
+    object only when the protected manifest names a different release; if that
+    update fails the error is raised to the new caller and the pinned capture is
+    unaffected.
+    """
+
+    def __init__(self, directory):
+        self.directory = Path(directory)
+        self.current = None
+        self._lock = threading.Lock()
+
+    def resolve(self, repository):
+        with self._lock:
+            self.current = ModelCache(repository, self.directory).load_active(reuse=self.current)
+            return self.current
 
 
 def _digest(stream):
@@ -36,9 +58,15 @@ class ModelCache:
     def __init__(self, repository, directory: Path):
         self.repository = repository
         self.directory = Path(directory)
-        self._opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
+        self._opener = owned_opener(_NoRedirect())
 
-    def load_active(self):
+    def load_active(self, reuse=None):
+        """Resolve the current protected manifest, then load its verified bytes.
+
+        ``reuse`` is a model already verified and deserialised by this process.
+        It is returned unchanged only when the current manifest is the very same
+        release; any other manifest is verified and loaded from scratch.
+        """
         # Always fetch current protected metadata, including when bytes are cached.
         # Cached bytes are never a substitute for online authenticated startup.
         page = self.repository.list_records("model_manifest", filters={"status": "active"})
@@ -48,6 +76,12 @@ class ModelCache:
             )
         manifest = dict(page.rows[0])
         verify_manifest(manifest)
+        if reuse is not None and all(
+            reuse.manifest.get(key) == manifest[key]
+            for key in ("manifest_id", "deployment_id", "model_id", "object_sha256",
+                        "object_bytes", "object_path")
+        ):
+            return reuse
         self.directory.mkdir(parents=True, exist_ok=True)
         destination = self.directory / (
             f"{manifest['manifest_id']}-{manifest['object_sha256']}.joblib"

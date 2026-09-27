@@ -261,9 +261,9 @@ def bootstrap(args, environment) -> Outcome:
     if not auth_user_id:
         raise BootstrapError("Auth did not return a user id.")
 
-    import psycopg2
+    from maintenance_connections import connect_database
 
-    connection = psycopg2.connect(
+    connection = connect_database(
         dsn,
         sslmode=resolve_sslmode(dsn),
         connect_timeout=10,

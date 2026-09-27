@@ -19,6 +19,7 @@ os.environ["ALGOGUARD_DEPLOYED_MODEL_PATH"] = str(TEST_RUNTIME / "models" / "dep
 os.environ["ALGOGUARD_SAVED_MODEL_FOLDER"] = str(TEST_RUNTIME / "models")
 os.environ["ALGOGUARD_REPORT_FOLDER"] = str(TEST_RUNTIME / "reports")
 os.environ["ALGOGUARD_CAPTURE_FOLDER"] = str(TEST_RUNTIME / "captures")
+os.environ["ALGOGUARD_STATE_DIR"] = str(TEST_RUNTIME / "state")
 os.environ["ALGOGUARD_SECRET_KEY"] = "test-secret"
 os.environ["ALGOGUARD_ADMIN_PASSWORD"] = "admin123"
 
@@ -200,3 +201,30 @@ def trained_bundle(app_module, binary_dataframe, prepared_dataset, tmp_path_fact
         "prepared": prepared_dataset,
         "progress_events": progress_events,
     }
+
+
+# -- Stage 5D cloud application fixtures (offline fake Supabase service) -------
+
+
+@pytest.fixture(scope="session")
+def stacking_artifact_bytes(tmp_path_factory):
+    from tests.cloud_support import train_stacking_artifact
+
+    return train_stacking_artifact(tmp_path_factory.mktemp("cloud-artifact"))
+
+
+@pytest.fixture
+def fast_replay(monkeypatch):
+    from services import live_monitor_service
+
+    monkeypatch.setitem(live_monitor_service.SPEED_CHOICES, "fast", 0.001)
+
+
+@pytest.fixture
+def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+    from tests.cloud_support import make_cloud
+
+    environment = make_cloud(tmp_path, stacking_artifact_bytes)
+    yield environment
+    environment.services.close()
+    environment.fake.stop()

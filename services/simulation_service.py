@@ -33,7 +33,11 @@ def get_simulation_schema():
         artifact, deployment = load_active_artifact()
     except DeploymentError as error:
         return {"available": False, "message": str(error), "fields": [], "deployment": None}
+    return schema_for_artifact(artifact, deployment)
 
+
+def schema_for_artifact(artifact, deployment):
+    """Form metadata for one verified artifact (legacy deployment or cloud manifest)."""
     numeric_columns = set(artifact.get("numeric_columns") or [])
     defaults = artifact.get("feature_defaults") or {}
     fields = [
@@ -93,6 +97,22 @@ def run_simulation(payload):
     except DeploymentError as error:
         raise SimulationServiceError(str(error)) from error
 
+    result = predict_with_artifact(artifact, payload)
+    return {
+        "prediction": result["prediction"],
+        "confidence": result["confidence"],
+        "deployed_model_name": deployment["model_name"],
+        "deployment_id": deployment["deployment_id"],
+        "model_id": deployment["model_id"],
+        "source_run_id": deployment["run_id"],
+        "latency_ms": result["latency_ms"],
+        "alert_created": result["prediction"] == "Attack",
+        "flow_data": result["flow_data"],
+    }
+
+
+def predict_with_artifact(artifact, payload):
+    """Classify one manual record with an already verified artifact."""
     frame, flow_data = _build_input_frame(payload, artifact)
     pipeline = artifact.get("pipeline")
     if pipeline is None:
@@ -110,15 +130,9 @@ def run_simulation(payload):
         raise SimulationServiceError(f"Prediction failed: {error}") from error
     latency_ms = (time.perf_counter() - start) * 1000
 
-    prediction = "Attack" if predicted_value == 1 else "Normal"
     return {
-        "prediction": prediction,
+        "prediction": "Attack" if predicted_value == 1 else "Normal",
         "confidence": round(confidence * 100, 2),
-        "deployed_model_name": deployment["model_name"],
-        "deployment_id": deployment["deployment_id"],
-        "model_id": deployment["model_id"],
-        "source_run_id": deployment["run_id"],
         "latency_ms": round(latency_ms, 3),
-        "alert_created": prediction == "Attack",
         "flow_data": flow_data,
     }

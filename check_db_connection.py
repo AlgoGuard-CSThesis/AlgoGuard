@@ -18,25 +18,21 @@ Usage:
 import sys
 
 from maintainer_env import describe_target, require_database_url, resolve_sslmode, safe
-
-try:
-    import psycopg2
-except ImportError:
-    print(
-        "psycopg2 is not installed. Run: "
-        "python -m pip install -r requirements-maintainer.txt",
-        file=sys.stderr,
-    )
-    raise SystemExit(1) from None
+from maintenance_connections import connect_database
 
 
 def main() -> int:
+    try:
+        import psycopg2  # noqa: F401 - explicit prerequisite check for this CLI
+    except ImportError:
+        print("Install requirements-maintainer.txt to run this tool.", file=sys.stderr)
+        return 1
     connection_string = require_database_url()
     print(f"Connecting to {describe_target(connection_string)} ...")
 
     conn = None
     try:
-        conn = psycopg2.connect(
+        conn = connect_database(
             connection_string,
             sslmode=resolve_sslmode(connection_string),
         )

@@ -8,7 +8,7 @@
     <div class="login-identity">
         <span class="brand-mark login-brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
         <div>
-            <p class="eyebrow">Administrator Access</p>
+            <p class="eyebrow">{{ 'Cloud Pilot Access' if config.CLOUD_MODE else 'Administrator Access' }}</p>
             <h1>AlgoGuard</h1>
             <p class="header-copy">Real-time network anomaly detection with a quality-gated Stacking Ensemble.</p>
         </div>
@@ -37,10 +37,17 @@
         </div>
         {% endif %}
 
+        {% if config.CLOUD_MODE %}
+        <div>
+            <label class="form-label" for="email">Email</label>
+            <input class="form-control" id="email" name="email" type="email" value="{{ username or '' }}" autocomplete="username" maxlength="254" required autofocus>
+        </div>
+        {% else %}
         <div>
             <label class="form-label" for="username">Username</label>
             <input class="form-control" id="username" name="username" type="text" value="{{ username or '' }}" required autofocus>
         </div>
+        {% endif %}
 
         <div>
             <label class="form-label" for="password">Password</label>
@@ -52,7 +59,11 @@
             Sign In
         </button>
 
+        {% if config.CLOUD_MODE %}
+        <div class="login-note"><strong>Online cloud sign-in</strong><span>An internet connection is required every time AlgoGuard starts. A cached model does not permit offline sign-in. Usernames are display names only.</span></div>
+        {% else %}
         <div class="login-note"><strong>Local administrator access</strong><span>Credentials are configured on the server.</span></div>
+        {% endif %}
     </form>
 </section>
 {% endblock %}

@@ -50,6 +50,44 @@
         </div>
     </section>
 
+    {% if config.CLOUD_MODE %}
+    <section class="panel cloud-status-panel" aria-labelledby="cloudStatusTitle">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">Cloud Pilot</p>
+                <h2 id="cloudStatusTitle">Node and Synchronization</h2>
+            </div>
+            {% if node_approved %}
+                <span class="status-pill active">Node approved</span>
+            {% elif node_approved is none %}
+                <span class="status-pill">Status unavailable</span>
+            {% else %}
+                <span class="status-pill warning-pill">Awaiting approval</span>
+            {% endif %}
+        </div>
+        <dl class="detail-list cloud-detail-list">
+            <div><dt>This installation</dt><dd><code>{{ node_id }}</code></dd></div>
+            <div><dt>Upload status</dt><dd>{{ upload.state|replace('_', ' ')|capitalize }}{% if upload.reason %} ({{ upload.reason|replace('_', ' ') }}){% endif %}</dd></div>
+            <div><dt>Pending upload</dt><dd>{{ '{:,}'.format(sync_status.pending) }} durable{% if sync_status.in_memory %}, {{ '{:,}'.format(sync_status.in_memory) }} in memory (not yet saved){% endif %}</dd></div>
+            <div><dt>Synced</dt><dd>{{ '{:,}'.format(sync_status.synced) }} committed in the cloud</dd></div>
+            <div><dt>Rejected</dt><dd>{{ '{:,}'.format(sync_status.rejected) }}</dd></div>
+            <div><dt>Not stored</dt><dd>{{ '{:,}'.format(sync_status.dropped) }}{% if sync_status.disk_failed %} &middot; local storage stopped ({{ sync_status.loss_reason }}){% endif %}</dd></div>
+        </dl>
+        {% if not node_approved and node_approved is not none %}
+        <p class="monitor-hint">An administrator must approve this installation for your account before monitoring or uploads can run. Give them the installation ID above.</p>
+        {% endif %}
+        <div class="panel-actions">
+            <a class="btn btn-outline-light" href="{{ url_for('outbox_export') }}"><i class="bi bi-download"></i> Export pending records</a>
+            {% if upload.state == 'blocked' %}
+            <form method="post" action="{{ url_for('sync_retry') }}" class="d-inline">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-outline-light" type="submit"><i class="bi bi-arrow-repeat"></i> Retry uploads</button>
+            </form>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+
     <section class="dashboard-layout">
         <div class="panel">
             <div class="panel-heading">
@@ -69,12 +107,12 @@
                 <span class="deployed-model-mark" aria-hidden="true"><i class="bi bi-cpu"></i></span>
                 <div>
                     <strong>{{ active_deployment.model_name }}</strong>
-                    <small>{{ active_deployment.model_type }} &middot; source run #{{ active_deployment.run_id }}</small>
+                    <small>{{ active_deployment.model_type or 'Stacking' }}{% if active_deployment.run_id %} &middot; source run #{{ active_deployment.run_id }}{% endif %}{% if active_deployment.deployment_id and config.CLOUD_MODE %} &middot; deployment #{{ active_deployment.deployment_id }}{% endif %}</small>
                 </div>
             </div>
             <dl class="detail-list">
-                <div><dt>Trained on</dt><dd>{{ active_deployment.filename }}</dd></div>
-                <div><dt>Deployed at</dt><dd>{{ active_deployment.deployed_at }}</dd></div>
+                <div><dt>Trained on</dt><dd>{{ active_deployment.filename or 'N/A' }}</dd></div>
+                <div><dt>Deployed at</dt><dd>{{ active_deployment.deployed_at or 'N/A' }}</dd></div>
                 <div><dt>Accuracy</dt><dd>{{ percent(active_deployment.accuracy) }}</dd></div>
                 <div><dt>Precision</dt><dd>{{ percent(active_deployment.precision_score) }}</dd></div>
                 <div><dt>Recall</dt><dd>{{ percent(active_deployment.recall) }}</dd></div>
@@ -89,6 +127,13 @@
                     <i class="bi bi-broadcast"></i>
                     Start Monitoring
                 </a>
+            </div>
+            {% elif config.CLOUD_MODE %}
+            <div class="empty-state">
+                <i class="bi bi-database-lock"></i>
+                <h2>No verified model available</h2>
+                <p>{{ model_message or 'No active compatible model is published.' }}</p>
+                <p>Models are published by the maintainer. Analyst installations never train locally; contact your administrator.</p>
             </div>
             {% else %}
             <div class="empty-state">

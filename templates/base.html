@@ -26,10 +26,14 @@
                     <li class="nav-item"><a class="nav-link{% if request.endpoint == 'simulation_demo' %} active{% endif %}" href="{{ url_for('simulation_demo') }}"><i class="bi bi-activity"></i> Predict</a></li>
                     <li class="nav-item"><a class="nav-link{% if request.endpoint == 'alert_history' %} active{% endif %}" href="{{ url_for('alert_history') }}"><i class="bi bi-exclamation-triangle-fill"></i> Alerts</a></li>
                     <li class="nav-item"><a class="nav-link{% if request.endpoint == 'system_logs' %} active{% endif %}" href="{{ url_for('system_logs') }}"><i class="bi bi-journal-text"></i> Logs</a></li>
-                    {% if session.get("admin_role") == "Administrator" %}
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'manage_admins' %} active{% endif %}" href="{{ url_for('manage_admins') }}"><i class="bi bi-people-fill"></i> Admins</a></li>
+                    {% if config.CLOUD_MODE %}
+                    <li class="nav-item"><a class="nav-link{% if request.endpoint in ('reports', 'report_detail') %} active{% endif %}" href="{{ url_for('reports') }}"><i class="bi bi-file-earmark-text"></i> Reports</a></li>
+                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'nodes' %} active{% endif %}" href="{{ url_for('nodes') }}"><i class="bi bi-hdd-network"></i> Nodes</a></li>
                     {% endif %}
-                    <li class="nav-item nav-admin"><span class="nav-link"><i class="bi bi-person-badge"></i> {{ session.get("admin_username", "Admin") }}</span></li>
+                    {% if session.get("admin_role") == "Administrator" %}
+                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'manage_admins' %} active{% endif %}" href="{{ url_for('manage_admins') }}"><i class="bi bi-people-fill"></i> {{ 'Accounts' if config.CLOUD_MODE else 'Admins' }}</a></li>
+                    {% endif %}
+                    <li class="nav-item nav-admin"><span class="nav-link"><i class="bi bi-person-badge"></i> {{ session.get("admin_username", "Admin") }}{% if config.CLOUD_MODE %} <span class="status-badge cloud-badge" title="Cloud pilot mode: records are uploaded to the shared project">Cloud</span>{% endif %}</span></li>
                     <li class="nav-item">
                         <button class="nav-link nav-logout-button" type="button" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal" aria-haspopup="dialog">
                             <i class="bi bi-box-arrow-right"></i> Logout
@@ -54,7 +58,7 @@
                     <button class="btn-close btn-close-white" type="button" data-bs-dismiss="modal" aria-label="Close logout confirmation"></button>
                 </div>
                 <div class="modal-body">
-                    <p id="logoutConfirmDescription">Your current session will end and you will need to enter your credentials to access the console again.</p>
+                    <p id="logoutConfirmDescription">Your current session will end and you will need to enter your credentials to access the console again.{% if config.CLOUD_MODE %} A running capture stops now; records already queued stay on this computer and upload after you next sign in.{% endif %}</p>
                     <div class="logout-session-user">
                         <span class="logout-session-avatar" aria-hidden="true"><i class="bi bi-person-badge"></i></span>
                         <span>

@@ -1,11 +1,13 @@
-"""Authenticated HTTPS repository contract. Stage 5D will integrate its consumers.
+"""Authenticated HTTPS repository contract used by the cloud application.
 
 No database driver, privileged key, token persistence, or SQLite fallback.
+Every socket is opened through cloud_connections so live capture can exclude it.
 """
 
 from __future__ import annotations
 
 import json
+import re
 import socket
 import urllib.error
 import urllib.parse
@@ -13,6 +15,8 @@ import urllib.request
 from dataclasses import dataclass, field
 from typing import Any
 from uuid import UUID
+
+from cloud_connections import owned_opener
 
 TIMEOUT_SECONDS = 10
 MAX_RESPONSE_BYTES = 4 * 1024 * 1024
@@ -77,6 +81,7 @@ RESOURCES = {
     "network_traffic": ("traffic_id", True),
     "prediction": ("prediction_id", True),
     "alert": ("alert_id", True),
+    "alert_detail": ("alert_id", True),
     "report": ("report_id", True),
     "report_alert": ("report_id,alert_id", True),
     "system_log": ("log_id", True),
@@ -105,6 +110,23 @@ FILTERS = {
     "is_active",
     "dataset_source",
 }
+ID_FILTERS = {
+    "profile_id",
+    "run_id",
+    "model_id",
+    "deployment_id",
+    "capture_id",
+    "traffic_id",
+    "prediction_id",
+    "alert_id",
+    "report_id",
+}
+# Inclusive text ranges on the legacy canonical UTC columns ("YYYY-MM-DD HH:MM:SS").
+RANGE_COLUMNS = {"system_log": "timestamp", "alert_detail": "detected_at", "report": "generated_at"}
+SEARCH_COLUMNS = {"system_log": ("message", "action", "dataset_filename", "model_name")}
+_TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}")
+_RPC_NAME = re.compile(r"[a-z_]{1,63}")
+
 INSERTS = {
     "capture_session": {"interface", "bpf_filter", "started_at"},
     "report": {"report_type", "date_range_start", "date_range_end", "run_id", "generated_at"},
@@ -142,7 +164,7 @@ class CloudRepository:
         self.base_url = project_url.rstrip("/")
         self.publishable_key = publishable_key
         self.context = context
-        self._opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), _NoRedirect())
+        self._opener = owned_opener(_NoRedirect())
 
     def _request(self, method: str, path: str, *, params=None, body=None):
         try:
@@ -197,11 +219,16 @@ class CloudRepository:
         offset=0,
         filters: dict | None = None,
         all_visible_nodes=False,
+        descending=False,
+        between: tuple[str | None, str | None] | None = None,
+        search: str | None = None,
     ) -> Page:
         """Offset pagination ordered by immutable keys; concurrent inserts may shift pages.
 
         all_visible_nodes removes only the convenience node filter. RLS still
         limits analysts to assigned nodes and permits Administrator observation.
+        ``between`` bounds the resource's canonical UTC text column inclusively;
+        ``search`` is a case-insensitive substring over fixed text columns.
         """
         if (
             resource not in RESOURCES
@@ -212,15 +239,52 @@ class CloudRepository:
         ):
             raise RepositoryError("validation")
         key, scoped = RESOURCES[resource]
-        params = {"select": "*", "order": key, "limit": page_size + 1, "offset": offset}
+        order = ",".join(part + (".desc" if descending else ".asc") for part in key.split(","))
+        params = {"select": "*", "order": order, "limit": page_size + 1, "offset": offset}
         if scoped and not all_visible_nodes:
             params["node_id"] = "eq." + str(self.context.node_id)
         for name, value in (filters or {}).items():
-            if name not in FILTERS or not isinstance(value, (str, int, bool)):
+            if name not in FILTERS:
+                raise RepositoryError("validation")
+            if isinstance(value, (list, tuple)):
+                if (
+                    name not in ID_FILTERS
+                    or not 1 <= len(value) <= 100
+                    or any(type(item) is not int or not 0 < item <= MAX_BIGINT for item in value)
+                ):
+                    raise RepositoryError("validation")
+                params[name] = "in.(" + ",".join(str(item) for item in value) + ")"
+                continue
+            if not isinstance(value, (str, int, bool)):
                 raise RepositoryError("validation")
             params[name] = (
                 "eq." + str(value).lower() if isinstance(value, bool) else "eq." + str(value)
             )
+        if between is not None:
+            column = RANGE_COLUMNS.get(resource)
+            lower, upper = between
+            if column is None or any(
+                bound is not None and not _TIMESTAMP.fullmatch(str(bound))
+                for bound in (lower, upper)
+            ):
+                raise RepositoryError("validation")
+            # Quoted: ":" is reserved inside PostgREST logic trees.
+            bounds = [f'{column}.gte."{lower}"'] if lower else []
+            bounds += [f'{column}.lte."{upper}"'] if upper else []
+            if bounds:
+                params["and"] = "(" + ",".join(bounds) + ")"
+        if search:
+            columns = SEARCH_COLUMNS.get(resource)
+            if (
+                columns is None
+                or not isinstance(search, str)
+                or len(search) > 100
+                or any(ord(character) < 32 for character in search)
+            ):
+                raise RepositoryError("validation")
+            # PostgREST quoted value: only backslash and double quote need escaping.
+            quoted = '"*' + search.replace("\\", "\\\\").replace('"', '\\"') + '*"'
+            params["or"] = "(" + ",".join(f"{column}.ilike.{quoted}" for column in columns) + ")"
         rows = self._request("GET", "/rest/v1/" + resource, params=params)
         if not isinstance(rows, list) or not all(isinstance(row, dict) for row in rows):
             raise RepositoryError("protocol")
@@ -301,6 +365,71 @@ class CloudRepository:
             raise RepositoryError("not_found")  # Hidden and absent records stay indistinguishable.
         return result
 
+    def rpc(self, name: str, body: dict):
+        if not isinstance(name, str) or not _RPC_NAME.fullmatch(name) or not isinstance(body, dict):
+            raise RepositoryError("validation")
+        return self._request("POST", "/rest/v1/rpc/" + name, body=body)
+
+    def node_access(self) -> bool:
+        """Current protected membership check for this installation (never cached here)."""
+        return self.rpc("current_node_access", {"p_node_id": str(self.context.node_id)}) is True
+
+    def open_capture(self, capture_uuid: UUID, deployment_id: int, source: str, bpf_filter=""):
+        data = self.rpc(
+            "open_cloud_capture",
+            {
+                "p_capture_uuid": str(capture_uuid),
+                "p_node_id": str(self.context.node_id),
+                "p_profile_id": self.context.profile_id,
+                "p_deployment_id": deployment_id,
+                "p_source": source,
+                "p_filter": bpf_filter or "",
+            },
+        )
+        try:
+            capture_id = int(data["capture_id"])
+            if not 0 < capture_id <= MAX_BIGINT:
+                raise ValueError
+            return capture_id
+        except (KeyError, TypeError, ValueError):
+            raise RepositoryError("protocol") from None
+
+    def finalize_capture(self, capture_id: int, values: dict):
+        if type(capture_id) is not int or not 0 < capture_id <= MAX_BIGINT:
+            raise RepositoryError("validation")
+        return self.rpc("finalize_cloud_capture", {"p_capture_id": capture_id, "p_values": values})
+
+    def create_report(self, request_id: UUID, alert_ids: list[int]):
+        if (
+            not isinstance(request_id, UUID)
+            or not isinstance(alert_ids, list)
+            or not 1 <= len(alert_ids) <= 250
+            or any(type(value) is not int or not 0 < value <= MAX_BIGINT for value in alert_ids)
+        ):
+            raise RepositoryError("validation")
+        data = self.rpc(
+            "create_operational_report",
+            {
+                "p_node_id": str(self.context.node_id),
+                "p_profile_id": self.context.profile_id,
+                "p_request_id": str(request_id),
+                "p_alert_ids": alert_ids,
+            },
+        )
+        try:
+            return int(data["report_id"]), bool(data["replayed"])
+        except (KeyError, TypeError, ValueError):
+            raise RepositoryError("protocol") from None
+
+    def log_filter_options(self):
+        data = self.rpc("system_log_filter_options", {"p_node_id": str(self.context.node_id)})
+        if not isinstance(data, dict):
+            raise RepositoryError("protocol")
+        return {
+            key: [str(value) for value in data.get(key) or [] if value is not None][:200]
+            for key in ("modules", "statuses", "models")
+        }
+
     def enroll(self, display_name: str, hostname_hint: str | None = None):
         return self._request(
             "POST",
@@ -320,15 +449,7 @@ class CloudRepository:
         )
 
     def statistics(self):
-        return self._request(
-            "POST",
-            "/rest/v1/rpc/detection_statistics",
-            body={"p_node_id": str(self.context.node_id)},
-        )
+        return self.rpc("detection_statistics", {"p_node_id": str(self.context.node_id)})
 
     def traffic_sources(self):
-        return self._request(
-            "POST",
-            "/rest/v1/rpc/traffic_source_counts",
-            body={"p_node_id": str(self.context.node_id)},
-        )
+        return self.rpc("traffic_source_counts", {"p_node_id": str(self.context.node_id)})

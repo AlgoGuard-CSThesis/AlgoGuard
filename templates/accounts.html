@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Accounts | AlgoGuard{% endblock %}
+
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">Access Control</p><h1>Accounts</h1><p class="page-meta">{{ accounts|length }} account{{ '' if accounts|length == 1 else 's' }} on this page &middot; roles are checked against protected records on every request</p></div></header>
+
+<section class="admin-layout">
+    <form class="panel admin-form" method="post" autocomplete="off">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="request_id" value="{{ request_id }}">
+        <input type="hidden" name="action" value="create_account">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">New Account</p>
+                <h2>Create Cloud Account</h2>
+            </div>
+            <span class="status-badge success">Email sign-in</span>
+        </div>
+
+        <div>
+            <label class="form-label" for="email">Email</label>
+            <input class="form-control" id="email" name="email" type="email" value="{{ form_data.email }}" maxlength="254" required>
+        </div>
+
+        <div>
+            <label class="form-label" for="username">Display name</label>
+            <input class="form-control" id="username" name="username" type="text" value="{{ form_data.username }}" minlength="1" maxlength="80" required>
+        </div>
+
+        <div>
+            <label class="form-label" for="role">Role</label>
+            <select class="form-select" id="role" name="role">
+                {% for value, label in (('analyst', 'Analyst'), ('administrator', 'Administrator')) %}
+                    <option value="{{ value }}" {% if form_data.role == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label" for="password">Initial password</label>
+            <input class="form-control" id="password" name="password" type="password" minlength="12" maxlength="128" required aria-describedby="passwordRules">
+        </div>
+
+        <div>
+            <label class="form-label" for="confirm_password">Confirm password</label>
+            <input class="form-control" id="confirm_password" name="confirm_password" type="password" minlength="12" maxlength="128" required>
+        </div>
+
+        <p class="password-rules" id="passwordRules">12&ndash;128 characters with upper- and lower-case letters, a digit, and a symbol. The password goes to the hosted account function only and is never stored by AlgoGuard.</p>
+
+        <button class="btn btn-accent w-100" type="submit">
+            <i class="bi bi-person-plus"></i>
+            Create Account
+        </button>
+        <p class="password-rules">The new user signs in on their own installation, which then appears on the Nodes page for approval.</p>
+    </form>
+
+    <div class="panel">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">Directory</p>
+                <h2>Cloud Profiles</h2>
+            </div>
+            <span class="status-badge">{{ accounts|length }} shown</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table data-table align-middle account-table mb-0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Display name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td>{{ account.profile_id }}</td>
+                        <td><strong>{{ account.username }}</strong>{% if not account.auth_user_id %}<small>Historical, no sign-in</small>{% endif %}</td>
+                        <td>{{ account.email or "Not set" }}</td>
+                        <td><span class="status-badge {% if 'administrator' in account.roles %}success{% endif %}">{{ account.roles|join(', ')|capitalize or 'None' }}</span></td>
+                        <td><span class="status-badge {{ 'success' if account.is_active else 'danger' }}">{{ 'Active' if account.is_active else 'Deactivated' }}</span></td>
+                        <td>
+                            {% if account.profile_id == current_profile_id %}
+                            <small>Your own account cannot change itself.</small>
+                            {% elif account.auth_user_id %}
+                            <form class="inline-form" method="post">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="request_id" value="{{ account.role_request_id }}">
+                                <input type="hidden" name="action" value="role">
+                                <input type="hidden" name="profile_id" value="{{ account.profile_id }}">
+                                <label class="visually-hidden" for="role_{{ account.profile_id }}">Role for {{ account.username }}</label>
+                                <select class="form-select form-select-sm" id="role_{{ account.profile_id }}" name="role">
+                                    <option value="analyst"{% if 'administrator' not in account.roles %} selected{% endif %}>Analyst</option>
+                                    <option value="administrator"{% if 'administrator' in account.roles %} selected{% endif %}>Administrator</option>
+                                </select>
+                                <button class="btn btn-sm btn-outline-light" type="submit">Set role</button>
+                            </form>
+                            <form class="inline-form" method="post">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="request_id" value="{{ account.status_request_id }}">
+                                <input type="hidden" name="action" value="account_status">
+                                <input type="hidden" name="profile_id" value="{{ account.profile_id }}">
+                                <input type="hidden" name="is_active" value="{{ 'false' if account.is_active else 'true' }}">
+                                <button class="btn btn-sm btn-outline-light" type="submit">{{ 'Deactivate' if account.is_active else 'Reactivate' }}</button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6"><div class="empty-state"><i class="bi bi-people"></i><h2>No visible profiles</h2></div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if next_offset or offset %}
+        <nav class="pagination-bar" aria-label="Account pages">
+            {% if offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('manage_admins', offset=[offset - 50, 0]|max) }}"><i class="bi bi-chevron-left"></i></a>{% endif %}
+            {% if next_offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('manage_admins', offset=next_offset) }}"><i class="bi bi-chevron-right"></i></a>{% endif %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

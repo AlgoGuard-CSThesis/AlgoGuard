@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Report #{{ report.report_id }} | AlgoGuard{% endblock %}
+
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">Operational Report</p><h1>Report #{{ report.report_id }}</h1><p class="page-meta">{{ report.report_type }} &middot; generated {{ report.generated_at }} UTC &middot; {{ alerts|length }} alert{{ '' if alerts|length == 1 else 's' }} of evidence</p></div><a class="btn btn-outline-light" href="{{ url_for('report_json', report_id=report.report_id) }}"><i class="bi bi-filetype-json"></i> JSON</a></header>
+
+<section class="panel">
+    <div class="table-responsive">
+        <table class="table data-table align-middle mb-0">
+            <thead><tr><th>Alert</th><th>Detected</th><th>Prediction</th><th>Endpoints</th><th>Model</th><th>Confidence</th><th>Severity</th><th>Status</th></tr></thead>
+            <tbody>
+                {% for alert in alerts %}
+                <tr><td><strong>#{{ alert.alert_id }}</strong></td><td>{{ alert.detected_at }}</td><td>#{{ alert.prediction_id }}<small>{{ alert.predicted_label }}</small></td><td>{{ alert.source_ip or '-' }} &rarr; {{ alert.destination_ip or '-' }}</td><td>{{ alert.model_name or 'Legacy model' }}</td><td>{{ '%.2f%%'|format(alert.confidence_score) if alert.confidence_score is not none else 'N/A' }}</td><td><span class="status-badge danger">{{ alert.severity_level }}</span></td><td><span class="status-badge">{{ alert.alert_status }}</span></td></tr>
+                {% else %}
+                <tr><td colspan="8"><div class="empty-state"><i class="bi bi-shield-check"></i><h2>No visible evidence</h2></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+<p><a class="text-link" href="{{ url_for('reports') }}">Back to reports</a></p>
+{% endblock %}

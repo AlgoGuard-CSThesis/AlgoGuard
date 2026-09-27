@@ -205,9 +205,9 @@ def build_plan(
 
 
 def connect(dsn: str):
-    import psycopg2
+    from maintenance_connections import connect_database
 
-    return psycopg2.connect(
+    return connect_database(
         dsn,
         sslmode=resolve_sslmode(dsn),
         connect_timeout=10,

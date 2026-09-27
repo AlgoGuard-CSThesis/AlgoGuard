@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Reports | AlgoGuard{% endblock %}
+
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">Evidence</p><h1>Operational Reports</h1><p class="page-meta">A report and its alert evidence are saved together in one transaction. Create one by selecting alerts on the Alerts page.</p></div><a class="btn btn-outline-light" href="{{ url_for('alert_history') }}"><i class="bi bi-exclamation-triangle-fill"></i> Select alerts</a></header>
+
+<section class="panel">
+    <div class="table-responsive">
+        <table class="table data-table align-middle mb-0">
+            <thead><tr><th>Report</th><th>Type</th><th>Generated (UTC)</th><th>Owner</th><th>Installation</th><th></th></tr></thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td><strong>#{{ report.report_id }}</strong></td>
+                    <td>{{ report.report_type }}</td>
+                    <td class="text-nowrap">{{ report.generated_at }}</td>
+                    <td>{{ usernames.get(report.owner_profile_id, 'Profile #' ~ report.owner_profile_id) }}</td>
+                    <td><code>{{ (report.node_id or '')[:8] }}</code></td>
+                    <td><a class="text-link" href="{{ url_for('report_detail', report_id=report.report_id) }}">Evidence</a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6"><div class="empty-state"><i class="bi bi-file-earmark-text"></i><h2>No reports yet</h2><p>Select alerts on the Alerts page and choose "Create report from selected".</p></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if next_offset or offset %}
+    <nav class="pagination-bar" aria-label="Report pages">
+        {% if offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('reports', offset=[offset - 50, 0]|max) }}"><i class="bi bi-chevron-left"></i> Newer</a>{% endif %}
+        {% if next_offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('reports', offset=next_offset) }}">Older <i class="bi bi-chevron-right"></i></a>{% endif %}
+    </nav>
+    {% endif %}
+</section>
+{% endblock %}

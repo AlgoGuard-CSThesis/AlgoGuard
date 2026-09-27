@@ -126,9 +126,12 @@ def jwks_url_for(project_url: str) -> str:
 
 
 def _fetch_json(url: str, timeout: float) -> dict:
+    # Stage 5D.4: register the socket so live capture never classifies it.
+    from cloud_connections import owned_opener
+
     request = urllib.request.Request(url, headers={"Accept": "application/json"})
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
+        with owned_opener().open(request, timeout=timeout) as response:
             if response.status != 200:
                 raise SigningKeysUnavailable(f"JWKS endpoint returned HTTP {response.status}.")
             return json.loads(response.read().decode("utf-8"))

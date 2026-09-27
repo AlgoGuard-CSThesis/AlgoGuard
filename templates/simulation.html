@@ -20,7 +20,11 @@
     <i class="bi bi-cloud-slash"></i>
     <h2>No active deployment</h2>
     <p>{{ schema.message }}</p>
+    {% if config.CLOUD_MODE %}
+    <p class="monitor-hint">The maintainer publishes verified models; analyst installations never train locally.</p>
+    {% else %}
     <p class="monitor-hint">Deploy the Stacking Ensemble from a terminal with <code>python train.py datasets/algoguard_big.csv --deploy</code>.</p>
+    {% endif %}
     <a class="btn btn-accent" href="{{ url_for('dashboard') }}">Back to Dashboard</a>
 </section>
 {% else %}
@@ -73,6 +77,18 @@
                 <strong>{{ result.confidence }}%</strong>
                 <small>Model confidence</small>
             </div>
+            {% if config.CLOUD_MODE %}
+            <dl class="detail-list simulation-detail-list">
+                <div><dt>Model</dt><dd>{{ result.deployed_model_name }}</dd></div>
+                <div><dt>Deployment</dt><dd>#{{ result.deployment_id }}</dd></div>
+                <div><dt>Latency</dt><dd>{{ result.latency_ms }} ms</dd></div>
+                <div><dt>Event</dt><dd><code>{{ result.event_uuid }}</code></dd></div>
+                <div><dt>Saved</dt><dd>{{ result.persistence_label }}</dd></div>
+                <div><dt>Prediction</dt><dd>{{ '#' ~ result.prediction_id if result.prediction_id else 'Assigned after upload' }}</dd></div>
+                <div><dt>Alert</dt><dd>{% if result.alert_id %}Created #{{ result.alert_id }}{% elif result.prediction == 'Attack' and result.persistence in ('in_memory', 'durable_pending') %}Created when the record uploads{% else %}Not created{% endif %}</dd></div>
+            </dl>
+            <p class="monitor-hint">Records are committed in the cloud only after upload. Queued records stay on this computer if the connection drops.</p>
+            {% else %}
             <dl class="detail-list simulation-detail-list">
                 <div><dt>Model</dt><dd>{{ result.deployed_model_name }}</dd></div>
                 <div><dt>Source run</dt><dd>#{{ result.source_run_id }}</dd></div>
@@ -80,6 +96,7 @@
                 <div><dt>Prediction</dt><dd>#{{ result.prediction_id }}</dd></div>
                 <div><dt>Alert</dt><dd>{{ 'Created #' ~ result.alert_id if result.alert_created else 'Not created' }}</dd></div>
             </dl>
+            {% endif %}
         {% else %}
             <div class="empty-state simulation-empty">
                 <i class="bi bi-shield-check"></i>

@@ -26,7 +26,9 @@ import time
 
 import pandas as pd
 
+from cloud_connections import REGISTRY as OWNED_CLOUD_CONNECTIONS
 from config import get_config
+from maintenance_connections import SharedConnections
 from services.flow_tracker_service import FLOW_FEATURE_COLUMNS, FlowTracker, packet_info_from_scapy
 from services.preprocessing_service import encode_binary_target
 
@@ -351,13 +353,28 @@ class LiveCaptureSource(TrafficSource):
     twice on purpose - once in the BPF filter, and again per packet in Python,
     because a capture driver without a libpcap backend cannot compile the
     filter and falls back to unfiltered capture.
+
+    Stage 5D.4: the application's own cloud API/Auth/Storage connections are
+    excluded per packet by exact TCP connection (see ``cloud_connections``).
+    Their ephemeral ports are unknown when the BPF filter is compiled, so this
+    check runs in Python for filtered and fallback captures alike. Other HTTPS
+    to the same provider, including the same IP address, stays visible.
     """
 
     paced = False
     columns = FLOW_FEATURE_COLUMNS
 
-    def __init__(self, interface, bpf_filter=None, idle_timeout=None, exclude_ports=None):
+    def __init__(
+        self,
+        interface,
+        bpf_filter=None,
+        idle_timeout=None,
+        exclude_ports=None,
+        owned_connections=None,
+    ):
         self._interface = interface
+        self._owned = OWNED_CLOUD_CONNECTIONS if owned_connections is None else owned_connections
+        self._maintenance = SharedConnections(get_config().state_dir)
         self.exclude_ports = (
             {algoguard_port()} if exclude_ports is None else {int(p) for p in exclude_ports if p}
         )
@@ -371,12 +388,23 @@ class LiveCaptureSource(TrafficSource):
         self.packets_captured = 0
         self.packets_dropped = 0
         self.packets_excluded = 0
+        self.packets_excluded_cloud = 0
         self.flows_emitted = 0
         self._pending = []
         self._last_idle_check = 0.0
 
     def _is_own_traffic(self, info):
-        return info.src_port in self.exclude_ports or info.dst_port in self.exclude_ports
+        return self._own_traffic_kind(info) is not None
+
+    def _own_traffic_kind(self, info):
+        if info.src_port in self.exclude_ports or info.dst_port in self.exclude_ports:
+            return "web"
+        if self._owned.matches(info.proto, info.src_ip, info.src_port, info.dst_ip, info.dst_port):
+            return "cloud"
+        if self._maintenance.matches(
+                info.proto, info.src_ip, info.src_port, info.dst_ip, info.dst_port):
+            return "cloud"
+        return None
 
     def _on_packet(self, packet):
         try:
@@ -463,11 +491,15 @@ class LiveCaptureSource(TrafficSource):
             return None
 
         info = packet_info_from_scapy(packet)
-        if info is not None and self._is_own_traffic(info):
-            # The BPF filter normally keeps these out; this catches them when
-            # the driver could not compile it and capture ran unfiltered.
+        own = self._own_traffic_kind(info) if info is not None else None
+        if own is not None:
+            # The BPF filter normally keeps web-port packets out; this catches
+            # them when the driver could not compile it and capture ran
+            # unfiltered. Cloud connections are only recognisable here.
             with self._lock:
                 self.packets_excluded += 1
+                if own == "cloud":
+                    self.packets_excluded_cloud += 1
             info = None
         if info is not None:
             with self._lock:
@@ -481,13 +513,14 @@ class LiveCaptureSource(TrafficSource):
             )
         return self.next_event(timeout=0) if self._pending else None
 
-    def close(self):
+    def close(self, wait=True):
         if self._sniffer is not None:
             try:
-                self._sniffer.stop()
+                self._sniffer.stop() if wait else self._sniffer.stop(join=False)
             except Exception:
                 pass
             self._sniffer = None
+        self._maintenance.close()
 
     def stats(self):
         with self._lock:
@@ -495,6 +528,7 @@ class LiveCaptureSource(TrafficSource):
                 "packets": self.packets_captured,
                 "dropped": self.packets_dropped,
                 "excluded": self.packets_excluded,
+                "excluded_cloud": self.packets_excluded_cloud,
                 "flows": self.flows_emitted,
                 "active_flows": self._tracker.active_flows,
             }

@@ -231,70 +231,70 @@ bounded offline contract. Existing-installation cutover remains a later gate.
 
 ### 5D.1 Integrate cloud login and scoped application reads
 
-- [ ] Login/logout, profiles, account management, enrollment, and role checks
+- [x] Login/logout, profiles, account management, enrollment, and role checks
   use cloud identity; historical profiles have no login.
-- [ ] Browser cookies hold an opaque HttpOnly/SameSite session identifier;
+- [x] Browser cookies hold an opaque HttpOnly/SameSite session identifier;
   tokens stay in process memory. CSRF still guards cookie-authenticated writes.
-- [ ] Bearer API authentication is independent. Shared mutable SDK state cannot
+- [x] Bearer API authentication is independent. Shared mutable SDK state cannot
   replace one user's token with another's during concurrent requests.
-- [ ] Dashboard, alerts, logs, reports, filters, and prediction workflows use
+- [x] Dashboard, alerts, logs, reports, filters, and prediction workflows use
   authenticated repository operations with explicit local-node defaults.
-- [ ] Controlled UI/API states handle network failures without recursive database
+- [x] Controlled UI/API states handle network failures without recursive database
   logging failures. Restart needs online login, even with a cached model.
 
 ### 5D.2 Build the bounded local outbox and upload worker
 
-- [ ] Use a separate owner-restricted SQLite spool. Each immutable event records
+- [x] Use a separate owner-restricted SQLite spool. Each immutable event records
   UUID, original user, node, session, deployment, and timestamps.
-- [ ] Initial limits: 1,000 handoff events, 100 MiB total spool including journals,
+- [x] Initial limits: 1,000 handoff events, 100 MiB total spool including journals,
   batches up to 50 flow events, one-second flush, ten-second request deadlines.
-- [ ] Distinguish in-memory, durable pending, synced, dropped, and rejected.
+- [x] Distinguish in-memory, durable pending, synced, dropped, and rejected.
   Reserve the 300-flow session cap before enqueue; retries use no extra slots.
   Lifecycle/error summaries have separate bounded reserved capacity.
-- [ ] Retry transient failures with capped exponential backoff/jitter, reconcile
+- [x] Retry transient failures with capped exponential backoff/jitter, reconcile
   lost acknowledgements through server deduplication, and stop treating permanent
   permission/validation failures as retryable.
-- [ ] Overflow/disk failure stops additional persistent flow acceptance and
+- [x] Overflow/disk failure stops additional persistent flow acceptance and
   reports loss while classification continues. Durable events survive restart;
   memory-only events are never labelled saved.
 
 ### 5D.3 Integrate capture lifecycle, refresh, and synchronization
 
-- [ ] CSV, PCAP, live capture, and manual prediction share the atomic event
+- [x] CSV, PCAP, live capture, and manual prediction share the atomic event
   contract; cloud latency does not block the capture inference loop.
-- [ ] Manual/API responses include an event UUID and explicit persistence status;
+- [x] Manual/API responses include an event UUID and explicit persistence status;
   database IDs may be absent until acknowledgement. Queued work is never reported
   as cloud-committed, and callers/tests adopt the documented response change.
-- [ ] Pin a verified deployment per capture. Reload reattaches; polling/upload
+- [x] Pin a verified deployment per capture. Reload reattaches; polling/upload
   refresh operations serialize for that user.
-- [ ] Close capture immediately on stop; local drain has a five-second deadline.
+- [x] Close capture immediately on stop; local drain has a five-second deadline.
   Capture status is terminal independently of pending synchronization.
-- [ ] At expiry without refresh, stop locally and require online login.
+- [x] At expiry without refresh, stop locally and require online login.
   Logout/account switch stops the old capture and clears its tokens.
-- [ ] Restart/reconnect reconciles final metadata and pending events without
+- [x] Restart/reconnect reconciles final metadata and pending events without
   reopening a closed capture or replaying under another user's identity.
-- [ ] Revocation/permanent rejection is actionable. Pending events remain bounded
+- [x] Revocation/permanent rejection is actionable. Pending events remain bounded
   by seven days/size limits and exportable without privileged fallback access.
 
 ### 5D.4 Exclude AlgoGuard's cloud connections narrowly
 
-- [ ] Identify app-owned API/Auth/Storage connections and monitored maintainer
+- [x] Identify app-owned API/Auth/Storage connections and monitored maintainer
   database connections, including reconnect and capture-fallback behavior.
-- [ ] Preserve web-port exclusion; do not exclude all HTTPS or a shared cloud IP.
-- [ ] Show that cloud upload/download traffic does not feed its own classification
+- [x] Preserve web-port exclusion; do not exclude all HTTPS or a shared cloud IP.
+- [x] Show that cloud upload/download traffic does not feed its own classification
   loop while unrelated HTTPS to the same provider remains visible.
-- [ ] Record the Windows attribution method, races/limitations, and excluded
+- [x] Record the Windows attribution method, races/limitations, and excluded
   packet counts. Unresolved exclusion limitations block pilot claims.
 
 ### 5D.5 Verify the integrated cloud application
 
-- [ ] All pages/sources work against the actual local/pilot API with real Auth
+- [x] All pages/sources work against the actual local/pilot API with real Auth
   users. No application path requires privileged database access.
-- [ ] Test network loss, expiry, disk/queue full, stop deadline, lost response,
+- [x] Test network loss, expiry, disk/queue full, stop deadline, lost response,
   refresh concurrency, and restart with pending events.
-- [ ] Maintain the old baseline until cutover; pilot mode cannot mix stores or
+- [x] Maintain the old baseline until cutover; pilot mode cannot mix stores or
   apply schema migrations with a user's credentials.
-- [ ] Run relevant Python, Node, lint, and browser checks; write
+- [x] Run relevant Python, Node, lint, and browser checks; write
   `docs/migration/05d-integration.md` before the stage commit.
 
 ---

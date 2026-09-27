@@ -162,6 +162,43 @@ def _get_optional_str(env: Mapping[str, str], name: str) -> Optional[str]:
     return _raw(env, name)
 
 
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
+
+
+def _validate_cloud_settings(url: str, key: str, host: str) -> None:
+    """Reject cloud settings an analyst installation must never run with."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(url.strip())
+    hostname = (parts.hostname or "").lower()
+    if (
+        parts.scheme not in {"http", "https"}
+        or not hostname
+        or parts.username
+        or parts.password
+        or parts.query
+        or parts.fragment
+        or parts.path not in {"", "/"}
+        or (parts.scheme == "http" and hostname not in _LOOPBACK_HOSTS)
+    ):
+        raise ConfigError(
+            "ALGOGUARD_DB_MODE=supabase needs NEXT_PUBLIC_SUPABASE_URL to be the "
+            "project's https:// URL (plain http is accepted only for the local "
+            "loopback stack)."
+        )
+    if not key.strip().startswith("sb_publishable_") or any(c.isspace() for c in key.strip()):
+        raise ConfigError(
+            "ALGOGUARD_DB_MODE=supabase needs NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY to be "
+            "the project's publishable key (sb_publishable_...). Secret or service keys "
+            "never belong in an analyst .env file."
+        )
+    if host.strip().lower() not in _LOOPBACK_HOSTS:
+        raise ConfigError(
+            "ALGOGUARD_DB_MODE=supabase serves the console over plain HTTP, so "
+            "ALGOGUARD_HOST must be a loopback address (127.0.0.1, localhost, or ::1)."
+        )
+
+
 @dataclass(frozen=True)
 class AppConfig:
     # --- Flask / web ---
@@ -194,10 +231,13 @@ class AppConfig:
     # --- Fixed, centralized constants (previously hardcoded in app.py) ---
     admin_roles: tuple = field(default=("Administrator", "Analyst"))
 
-    # --- Cloud mode (Stage 5D+ analyst-facing switch; enforced starting 5A.2) ---
+    # --- Cloud mode (Stage 5D pilot switch; validated since 5A.2) ---
     db_mode: str = "sqlite"
     supabase_url: Optional[str] = None
     supabase_publishable_key: Optional[str] = None
+
+    # --- Local cloud-mode state (Stage 5D): node identity, outbox, model cache ---
+    state_dir: Path = BASE_DIR / ".algoguard"
 
 
 def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
@@ -233,16 +273,13 @@ def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
                 "and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY to be set. Refusing to "
                 "silently fall back to the local SQLite database."
             )
-        # No code path reads `db_mode` yet: the application still persists
-        # exclusively to SQLite until Stage 5D wires the cloud repository
-        # layer. Accepting this setting here and then running on SQLite
-        # anyway would be exactly the silent fallback the check above
-        # exists to prevent, so refuse until 5D lands.
-        raise ConfigError(
-            "ALGOGUARD_DB_MODE=supabase is not implemented yet. The cloud "
-            "persistence path lands in Stage 5D; until then the application "
-            "reads and writes local SQLite only. Set ALGOGUARD_DB_MODE=sqlite. "
-            "(Configuration is validated now so the switch is ready to use.)"
+        # Stage 5D: app.py runs the isolated cloud application in this mode and
+        # never opens the legacy business database. Validate what an analyst
+        # installation may contain before anything starts.
+        _validate_cloud_settings(
+            supabase_url,
+            supabase_publishable_key,
+            _get_str(env, "ALGOGUARD_HOST", "127.0.0.1"),
         )
 
     default_database_path = BASE_DIR / "database" / "algoguard.sqlite3"
@@ -287,8 +324,13 @@ def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
         min_stacking_roc_auc=_get_percentage(env, "ALGOGUARD_MIN_STACKING_ROC_AUC", 70.0),
 
         db_mode=db_mode,
-        supabase_url=supabase_url,
-        supabase_publishable_key=supabase_publishable_key,
+        supabase_url=supabase_url.strip().rstrip("/") if supabase_url else None,
+        supabase_publishable_key=(
+            supabase_publishable_key.strip() if supabase_publishable_key else None
+        ),
+        state_dir=Path(
+            _get_str(env, "ALGOGUARD_STATE_DIR", str(BASE_DIR / ".algoguard"))
+        ).resolve(),
     )
 
 

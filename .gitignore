@@ -73,3 +73,6 @@ node_modules/
 
 # Disposable Stage 5A Supabase working directory
 .local/supabase-5a/
+
+# Stage 5D cloud-mode local state: node identity, outbox spool, model cache.
+.algoguard/

@@ -48,6 +48,7 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 app.config["SESSION_COOKIE_SECURE"] = _cfg.secure_cookies
 app.config["SAVED_MODEL_FOLDER"] = str(_cfg.saved_model_folder)
 app.config["MAX_CONTENT_LENGTH"] = 1024 * 1024
+app.config["CLOUD_MODE"] = False
 
 ADMIN_ROLES = _cfg.admin_roles
 
@@ -543,8 +544,17 @@ def system_logs():
     )
 
 
-ensure_runtime_folders()
-initialize_database()
+if _cfg.db_mode == "supabase":
+    # Stage 5D cloud pilot. The SQLite routes above stay importable for tests
+    # and tooling but are not served, and the legacy business database is never
+    # opened or created: one run never mixes local and cloud business records.
+    from cloud_app import create_cloud_app
+
+    legacy_app = app
+    app = create_cloud_app(_cfg)
+else:
+    ensure_runtime_folders()
+    initialize_database()
 
 
 if __name__ == "__main__":

@@ -21,7 +21,11 @@
     <i class="bi bi-cloud-slash"></i>
     <h2>No active deployment</h2>
     <p>{{ unavailable_message }}</p>
+    {% if config.CLOUD_MODE %}
+    <p class="monitor-hint">The maintainer publishes verified models; analyst installations never train locally. Monitoring also needs an online sign-in and an approved node.</p>
+    {% else %}
     <p class="monitor-hint">Deploy the Stacking Ensemble from a terminal with <code>python train.py datasets/algoguard_big.csv --deploy</code>.</p>
+    {% endif %}
     <a class="btn btn-accent" href="{{ url_for('dashboard') }}">Back to Dashboard</a>
 </section>
 {% else %}
@@ -129,7 +133,7 @@
         <small>Classified as benign</small>
     </div>
     <div class="metric-card">
-        <span class="metric-label">Alerts Raised</span>
+        <span class="metric-label">{{ 'Alerts Queued' if config.CLOUD_MODE else 'Alerts Raised' }}</span>
         <strong id="statAlerts">0</strong>
         <small id="statLatency">Average latency N/A</small>
     </div>
@@ -145,7 +149,7 @@
             <span class="status-pill active">{{ deployment.model_name }}</span>
         </div>
         <div class="table-responsive monitor-feed-scroll">
-            <table class="table table-dark table-hover align-middle mb-0 feed-table">
+            <table class="table table-dark table-hover align-middle mb-0 feed-table{% if config.CLOUD_MODE %} cloud-feed{% endif %}">
                 <thead>
                     <tr>
                         <th>Time</th>
@@ -155,10 +159,11 @@
                         <th>Verdict</th>
                         <th>Confidence</th>
                         <th>Actual</th>
+                        {% if config.CLOUD_MODE %}<th>Saved</th>{% endif %}
                     </tr>
                 </thead>
                 <tbody id="feedBody">
-                    <tr class="feed-empty-row"><td colspan="7">Start a session to see classified traffic.</td></tr>
+                    <tr class="feed-empty-row"><td colspan="{{ 8 if config.CLOUD_MODE else 7 }}">Start a session to see classified traffic.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -178,9 +183,18 @@
         </div>
         <dl class="detail-list monitor-detail-list">
             <div><dt>Model</dt><dd>{{ deployment.model_name }}</dd></div>
-            <div><dt>Source run</dt><dd>#{{ deployment.run_id }}</dd></div>
+            <div><dt>Source run</dt><dd>{{ '#' ~ deployment.run_id if deployment.run_id else 'N/A' }}</dd></div>
+            {% if config.CLOUD_MODE %}
+            <div><dt>Pinned deployment</dt><dd id="statDeployment">#{{ deployment.deployment_id }} (next capture)</dd></div>
+            {% endif %}
             <div><dt>Label mismatches</dt><dd id="statMismatches">0</dd></div>
-            <div><dt>Stored flows</dt><dd id="statPersisted">0</dd></div>
+            <div><dt>{{ 'Queued for upload' if config.CLOUD_MODE else 'Stored flows' }}</dt><dd id="statPersisted">0</dd></div>
+            {% if config.CLOUD_MODE %}
+            <div><dt>Synced to cloud</dt><dd id="statSynced">0</dd></div>
+            <div><dt>Pending upload</dt><dd id="statPending">0</dd></div>
+            <div><dt>Not stored</dt><dd id="statDropped">0</dd></div>
+            <div><dt>Upload status</dt><dd id="statUpload">N/A</dd></div>
+            {% endif %}
             <div hidden id="statLagRow"><dt>Detection lag</dt><dd id="statLag">N/A</dd></div>
             <div hidden id="statCaptureRow"><dt>Packets captured</dt><dd id="statCapture">0</dd></div>
         </dl>
@@ -224,6 +238,16 @@
     const liveHint = document.getElementById("liveUnavailableHint");
     const liveAvailable = {{ options.live_capture.available|tojson }};
     const canvas = document.getElementById("monitorChart");
+    const CLOUD_MODE = {{ (config.CLOUD_MODE or False)|tojson }};
+    // Short labels keep the feed within its panel; the title carries the meaning.
+    const PERSISTENCE_LABELS = {
+        session_only: ["Session", "Classified only; not selected for storage"],
+        in_memory: ["Memory", "In memory only - not yet saved"],
+        durable_pending: ["Pending", "Saved on this computer - pending upload"],
+        synced: ["Synced", "Committed in the cloud"],
+        dropped: ["Not stored", "Not stored"],
+        rejected: ["Rejected", "Rejected by the cloud; kept for export"],
+    };
     let monitorIsActive = false;
 
     function updateSourceFields() {
@@ -318,13 +342,50 @@
                 formatNumber(capture.packets) + (notes.length ? " (" + notes.join(", ") + ")" : "");
         }
 
+        if (CLOUD_MODE) {
+            renderCloudState(session);
+        }
         if (session.error_message) {
             setMessage(session.error_message, true);
+        } else if (session.other_account_active) {
+            setMessage("A capture started by another account is running on this installation.", true);
+        } else if (session.storage_stopped) {
+            setMessage("Local storage stopped accepting records. Flows are still classified but no longer saved.", true);
         } else if (state === "completed") {
             setMessage("The traffic source finished streaming.", false);
         }
         updateSourceFields();
         return isActive;
+    }
+
+    function renderCloudState(session) {
+        const sync = session.synchronization || {};
+        document.getElementById("statSynced").textContent = formatNumber(sync.synced);
+        document.getElementById("statPending").textContent = formatNumber(sync.pending)
+            + (sync.in_memory ? " (+" + formatNumber(sync.in_memory) + " in memory)" : "");
+        document.getElementById("statDropped").textContent = formatNumber(sync.dropped)
+            + (sync.rejected ? ", " + formatNumber(sync.rejected) + " rejected" : "");
+        const upload = session.upload || {};
+        const uploadText = upload.state ? upload.state.replace(/_/g, " ") : "N/A";
+        document.getElementById("statUpload").textContent = uploadText
+            + (upload.reason ? " (" + String(upload.reason).replace(/_/g, " ") + ")" : "")
+            + (upload.retry_in_seconds ? ", retry in " + upload.retry_in_seconds + " s" : "");
+        if (session.deployment && session.deployment.deployment_id) {
+            document.getElementById("statDeployment").textContent =
+                "#" + session.deployment.deployment_id + " (pinned for this capture)";
+        }
+    }
+
+    function persistenceCell(event) {
+        const cell = document.createElement("td");
+        const badge = document.createElement("span");
+        const state = String(event.persistence || "session_only");
+        const label = PERSISTENCE_LABELS[state] || [state, state];
+        badge.className = "persistence-badge persistence-" + state.replace(/_/g, "-");
+        badge.textContent = label[0];
+        badge.title = label[1] + (event.reason ? " (" + String(event.reason).replace(/_/g, " ") + ")" : "");
+        cell.appendChild(badge);
+        return cell;
     }
 
     function addFeedRows(events) {
@@ -385,6 +446,10 @@
                 actualCell.appendChild(actualBadge);
             }
             row.appendChild(actualCell);
+            if (CLOUD_MODE) {
+                row.dataset.eventUuid = String(event.event_uuid || "");
+                row.appendChild(persistenceCell(event));
+            }
             feedBody.insertBefore(row, feedBody.firstChild);
         });
         while (feedBody.children.length > MAX_FEED_ROWS) {
@@ -460,11 +525,21 @@
         const row = document.createElement("tr");
         row.className = "feed-empty-row";
         const cell = document.createElement("td");
-        cell.colSpan = 7;
+        cell.colSpan = CLOUD_MODE ? 8 : 7;
         cell.textContent = "Waiting for classified traffic…";
         row.appendChild(cell);
         feedBody.replaceChildren(row);
         drawChart();
+    }
+
+    function applyUpdates(updates) {
+        // Rows already in the feed move from in-memory to saved/synced here.
+        Object.keys(updates).forEach(function (eventUuid) {
+            const row = feedBody.querySelector('tr[data-event-uuid="' + eventUuid.replace(/[^0-9a-f-]/gi, "") + '"]');
+            if (row && row.lastChild) {
+                row.replaceChild(persistenceCell(updates[eventUuid]), row.lastChild);
+            }
+        });
     }
 
     async function requestJson(url, options) {
@@ -522,6 +597,9 @@
                 acceptSession(data.session);
                 if (data.events && data.events.length) {
                     addFeedRows(data.events);
+                }
+                if (data.updates && Object.keys(data.updates).length) {
+                    applyUpdates(data.updates);
                 }
                 lastSeq = data.last_seq;
                 if (data.session.state === "running" || (data.events && data.events.length)) {

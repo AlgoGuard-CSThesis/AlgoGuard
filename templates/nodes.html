@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Nodes | AlgoGuard{% endblock %}
+
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">Enrollment</p><h1>Nodes and Membership</h1><p class="page-meta">Approval binds a person to an installation. Hostnames, IP addresses, and installation IDs never grant access by themselves.</p></div></header>
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">This Installation</p>
+            <h2><code>{{ node_id }}</code></h2>
+        </div>
+        {% if node_approved %}
+            <span class="status-pill active">Approved for you</span>
+        {% elif node_approved is none %}
+            <span class="status-pill">Status unavailable</span>
+        {% else %}
+            <span class="status-pill warning-pill">Awaiting approval</span>
+        {% endif %}
+    </div>
+    {% if not node_approved %}
+    <p class="monitor-hint">Your sign-in requested enrollment for this installation. An administrator approves it here on their own installation; capture and uploads start working after approval, without restarting.</p>
+    {% endif %}
+</section>
+
+{% if administrator and pending %}
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">Approval Queue</p>
+            <h2>Pending Requests</h2>
+        </div>
+        <span class="status-badge warning">{{ pending|length }} pending</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table data-table align-middle node-table mb-0">
+            <thead><tr><th>Account</th><th>Installation</th><th>Hostname hint</th><th>Requested</th><th>Decision</th></tr></thead>
+            <tbody>
+                {% for item in pending %}
+                <tr>
+                    <td><strong>{{ item.username }}</strong><small>Profile #{{ item.profile_id }}</small></td>
+                    <td><code>{{ item.node_id }}</code><small>{{ item.display_name }}</small></td>
+                    <td>{{ item.hostname_hint or 'Not reported' }}</td>
+                    <td>{{ item.requested_at }}</td>
+                    <td>
+                        <form class="inline-form" method="post">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="request_id" value="{{ item.approve_request_id }}">
+                            <input type="hidden" name="action" value="membership">
+                            <input type="hidden" name="status" value="approved">
+                            <input type="hidden" name="node_id" value="{{ item.node_id }}">
+                            <input type="hidden" name="profile_id" value="{{ item.profile_id }}">
+                            <label class="form-check-label"><input class="form-check-input" type="checkbox" name="is_default" value="true" checked> Default node</label>
+                            <button class="btn btn-sm btn-accent" type="submit">Approve</button>
+                        </form>
+                        <form class="inline-form" method="post">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="request_id" value="{{ item.revoke_request_id }}">
+                            <input type="hidden" name="action" value="membership">
+                            <input type="hidden" name="status" value="revoked">
+                            <input type="hidden" name="node_id" value="{{ item.node_id }}">
+                            <input type="hidden" name="profile_id" value="{{ item.profile_id }}">
+                            <button class="btn btn-sm btn-outline-light" type="submit">Deny</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">{{ 'All Visible Memberships' if administrator else 'Your Memberships' }}</p>
+            <h2>Memberships</h2>
+        </div>
+        <span class="status-badge">{{ memberships|length }} shown</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table data-table align-middle node-table mb-0">
+            <thead><tr><th>Account</th><th>Installation</th><th>Status</th><th>Default</th><th>Decided</th>{% if administrator %}<th>Change</th>{% endif %}</tr></thead>
+            <tbody>
+                {% for item in memberships %}
+                <tr>
+                    <td><strong>{{ item.username }}</strong><small>Profile #{{ item.profile_id }}</small></td>
+                    <td><code>{{ item.node_id }}</code>{% if item.node_id == node_id %}<small>This installation</small>{% endif %}</td>
+                    <td><span class="status-badge status-{{ item.status }}{% if item.status == 'approved' %} success{% elif item.status == 'revoked' %} danger{% endif %}">{{ item.status|capitalize }}</span></td>
+                    <td>{{ 'Yes' if item.is_default else 'No' }}</td>
+                    <td>{{ item.decided_at or 'N/A' }}</td>
+                    {% if administrator %}
+                    <td>
+                        {% if item.status == 'approved' %}
+                        <form class="inline-form" method="post">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="request_id" value="{{ item.revoke_request_id }}">
+                            <input type="hidden" name="action" value="membership">
+                            <input type="hidden" name="status" value="revoked">
+                            <input type="hidden" name="node_id" value="{{ item.node_id }}">
+                            <input type="hidden" name="profile_id" value="{{ item.profile_id }}">
+                            <button class="btn btn-sm btn-outline-light" type="submit">Revoke</button>
+                        </form>
+                        {% elif item.status == 'revoked' %}
+                        <form class="inline-form" method="post">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="request_id" value="{{ item.approve_request_id }}">
+                            <input type="hidden" name="action" value="membership">
+                            <input type="hidden" name="status" value="approved">
+                            <input type="hidden" name="node_id" value="{{ item.node_id }}">
+                            <input type="hidden" name="profile_id" value="{{ item.profile_id }}">
+                            <input type="hidden" name="is_default" value="true">
+                            <button class="btn btn-sm btn-outline-light" type="submit">Restore</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr><td colspan="{{ 6 if administrator else 5 }}"><div class="empty-state"><i class="bi bi-hdd-network"></i><h2>No visible memberships</h2></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

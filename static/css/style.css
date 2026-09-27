@@ -823,3 +823,89 @@ code {
 .deployed-model-name small {
     color: var(--muted);
 }
+
+/* Stage 5D cloud pilot states. Persistence labels never call memory-only
+   records saved; only "synced" uses the success color. */
+.cloud-badge {
+    margin-left: 0.35rem;
+    border-color: rgba(34, 211, 238, 0.45);
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.1);
+    font-size: 0.68rem;
+    vertical-align: middle;
+}
+
+.cloud-status-panel {
+    margin-bottom: 1.25rem;
+}
+
+.cloud-detail-list code {
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+
+.status-pill.warning-pill {
+    border-color: rgba(242, 184, 75, 0.45);
+    color: var(--amber);
+}
+
+.persistence-badge {
+    display: inline-block;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid rgba(141, 164, 174, 0.35);
+    color: var(--muted);
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.persistence-in-memory,
+.persistence-durable-pending {
+    border-color: rgba(242, 184, 75, 0.4);
+    color: var(--amber);
+}
+
+.persistence-synced {
+    border-color: rgba(55, 214, 122, 0.4);
+    color: var(--green);
+}
+
+.persistence-dropped,
+.persistence-rejected {
+    border-color: rgba(255, 92, 114, 0.42);
+    color: var(--red);
+}
+
+.inline-form {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.inline-form .form-select {
+    width: auto;
+    min-width: 7.5rem;
+}
+
+.account-table td,
+.node-table td {
+    vertical-align: middle;
+}
+
+.password-rules {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+/* The cloud feed adds a Saved column; endpoints wrap at the arrow to make room. */
+.feed-table.cloud-feed .feed-endpoints {
+    white-space: normal;
+    line-height: 1.25;
+}
+
+.feed-table.cloud-feed td,
+.feed-table.cloud-feed th {
+    padding-right: 0.26rem;
+    padding-left: 0.26rem;
+}

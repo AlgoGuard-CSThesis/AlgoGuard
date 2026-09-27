@@ -15,8 +15,8 @@ function snapshot(id, lastSeq, events = [], state = 'running') {
     return {status: 'success', session: {session_id: id, state}, last_seq: lastSeq, events};
 }
 
-function harness(respond) {
-    const observed = {requests: [], feed: [{seq: 100}], rendered: [], stops: 0};
+function harness(respond, {cloud = false, rows = {}} = {}) {
+    const observed = {requests: [], feed: [{seq: 100}], rendered: [], stops: 0, replaced: []};
     const intervals = new Map();
     const timeouts = new Map();
     let nextTimer = 2;
@@ -25,8 +25,20 @@ function harness(respond) {
         controlInFlight: false, requestVersion: 0, pollHadError: false,
         buckets: [], pendingBucket: {},
         POLL_INTERVAL_MS: 1000, REQUEST_TIMEOUT_MS: 10000, AbortController,
+        CLOUD_MODE: cloud,
+        persistenceCell: event => ({persistence: event.persistence}),
         document: {createElement: () => ({appendChild() {}})},
-        feedBody: {replaceChildren: () => { observed.feed = []; }},
+        feedBody: {
+            replaceChildren: () => { observed.feed = []; },
+            querySelector: selector => {
+                const match = selector.match(/data-event-uuid="([^"]*)"/);
+                const row = match && rows[match[1]];
+                return row ? {
+                    lastChild: row,
+                    replaceChild: cell => observed.replaced.push([match[1], cell.persistence]),
+                } : null;
+            },
+        },
         drawChart() {}, pushBucket() {},
         addFeedRows: events => observed.feed.push(...events),
         renderState: session => {
@@ -196,4 +208,15 @@ test('a stalled control request releases the controls and checks status without 
     assert.equal(observed.requests.filter(request => request.options.method === 'POST').length, 1);
     assert.equal(context.sessionId, 'new');
     assert.deepEqual(observed.feed.map(row => row.seq), [1]);
+});
+
+test('cloud mode updates the saved state of rows already in the feed', async () => {
+    const eventId = '6f1c2d3e-0000-4000-8000-000000000001';
+    const {context, observed} = harness(() => ({
+        ...snapshot('old', 100),
+        updates: {[eventId]: {persistence: 'synced'}, 'not-rendered': {persistence: 'synced'}},
+    }), {cloud: true, rows: {[eventId]: {}}});
+    await context.poll();
+    assert.deepEqual(observed.replaced, [[eventId, 'synced']]);
+    assert.deepEqual(observed.feed.map(row => row.seq), [100]);
 });
