@@ -365,15 +365,20 @@ the local Edge Runtime was restarted; earlier failures are retained in the
 **Exit:** two installations share the system safely, with measured performance
 and documented limits. Research claims remain limited until 6A.
 
+A local two-client smoke now passes. Physical two-installation capture, network
+measurements, and performance limits remain open; see
+[the two-computer runbook](docs/migration/05f-two-computer-runbook.md) and
+[the Stage 5F record](docs/migration/05f-pilot.md).
+
 ### 5F.1 Run the simultaneous two-node acceptance scenario
 
 - [ ] Two Windows installations retain distinct UUIDs across restart, require
   approved membership, and default to their own node's ordinary views.
 - [ ] Each downloads a verified model into an empty cache and runs CSV, PCAP,
   live capture, and manual/API prediction without local training.
-- [ ] Direct cross-node read/write, relationship, membership, role, and manifest
+- [x] Direct cross-node read/write, relationship, membership, role, and manifest
   probes fail as specified. An Administrator can read both nodes.
-- [ ] Revoke access with an unexpired token present; protected current records
+- [x] Revoke access with an unexpired token present; protected current records
   block subsequent cloud operations.
 
 ### 5F.2 Measure throughput, delay, and resource limits
@@ -382,18 +387,31 @@ and documented limits. Research claims remain limited until 6A.
   before tuning. Include slow and unavailable endpoints.
 - [ ] Measure packet loss, flow throughput, event-to-verdict lag, local spool
   latency, backlog age, sync delay, and total disk/RAM use.
-- [ ] Test the 300-flow cap with pending writes, growth across sessions, bounded
-  shutdown, unrelated HTTPS visibility, and session summary behavior.
+- [x] Local regression tests verify the 300-event cap with pending writes,
+  pending-event replay under the original user after restart, lifecycle-summary
+  preservation, terminal stop under stalled local storage, and capture
+  close/count reconciliation. Synthetic packet checks keep unrelated HTTPS to
+  the same provider address visible for classification.
+- [x] On this Npcap-equipped computer, real loopback capture reached cloud
+  persistence, and the maintenance-capture test excluded owned database
+  connections while leaving a separate connection to that endpoint visible.
+- [ ] Verify cap and pending-write behavior across physical-client restarts,
+  bounded shutdown against slow/unavailable network endpoints, unrelated HTTPS
+  visibility during Npcap live capture, and session summaries on both clients.
 - [ ] Measure projected shared storage/backup growth against actual capacity;
   changes to defaults require evidence and corresponding document/test updates.
 
 ### 5F.3 Close Iteration 5 with pilot evidence
 
-- [ ] Repeat relevant suites and cutover/recovery smoke checks.
-- [ ] Record actual totals, expected error responses, limitations, and remaining
-  research gates; no unexplained UI/server failures remain.
-- [ ] Write `docs/migration/05f-pilot.md` and an Iteration 5 summary linking all
-  six stage records before the manual stage commit.
+- [x] Repeat relevant offline/integration suites and cutover/recovery smoke
+  checks (508 offline passed; all 67 integration tests passed with Windows Npcap
+  checks enabled on this machine).
+- [x] Record actual local totals, expected skips, limitations, and remaining
+  physical-pilot gates in [the Stage 5F record](docs/migration/05f-pilot.md).
+- [x] Write `docs/migration/05f-pilot.md` with local results and remaining
+  physical-pilot gates.
+- [ ] After the physical pilot is reviewed, write an Iteration 5 summary linking
+  all six stage records before the manual stage commit.
 
 ---
 

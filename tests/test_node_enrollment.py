@@ -18,6 +18,15 @@ def test_parallel_startups_share_one_persistent_identity(tmp_path):
     assert path.read_text() == "corrupted"
 
 
+def test_independent_installations_keep_distinct_stable_identities(tmp_path):
+    first = local_node_id(tmp_path / "installation-a")
+    second = local_node_id(tmp_path / "installation-b")
+
+    assert first != second
+    assert local_node_id(tmp_path / "installation-a") == first
+    assert local_node_id(tmp_path / "installation-b") == second
+
+
 def test_local_default_and_explicit_approved_alternative():
     local, other = uuid4(), uuid4()
     memberships = [
