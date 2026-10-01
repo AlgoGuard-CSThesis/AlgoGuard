@@ -238,6 +238,16 @@ database IDs. JSON endpoints (`/predict`, `/api/events/...`, `/monitor/...`,
 `Authorization: Bearer <access token>` without a cookie or CSRF token; HTML pages
 accept only the browser session. See `docs/migration/05d-integration.md`.
 
+## Legacy Import and Recovery (Stage 5E)
+
+Maintainers can inventory and consistently back up an existing installation with
+`legacy_backup.py`, import a verified snapshot with `legacy_import.py`, and export
+or restore cloud business data and pending events with `cloud_recovery.py`.
+Imports preserve historical identities and evidence while leaving cloud writes
+disabled until explicitly enabled. These tools do not switch the active app.
+Follow [the cutover and recovery procedure](docs/migration/05e-cutover.md),
+including the separate Auth/platform recovery requirements, before using them.
+
 ## CSV Contract
 
 This contract applies to datasets passed to `train.py` and to any CSV replayed by the Live Monitor.

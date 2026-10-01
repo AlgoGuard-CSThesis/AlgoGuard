@@ -316,7 +316,9 @@ records; no application migration or model publication was applied remotely.
 ## 8. Recovery and rollback
 
 - **Code rollback:** set `ALGOGUARD_DB_MODE=sqlite` and restart. The SQLite
-  application and its database are untouched by cloud mode.
+  application and its database are untouched by cloud mode. This does not
+  recover records written in cloud mode; after cutover, follow the forward
+  recovery procedure in [Stage 5E](05e-cutover.md) before changing authority.
 - **Pending records:** use the dashboard's **Export pending records** (JSON
   with events and queued summaries) while signed in. The spool at
   `.algoguard/outbox/outbox.sqlite3` is owner-restricted and can also be copied

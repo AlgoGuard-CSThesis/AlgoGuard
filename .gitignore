@@ -15,6 +15,7 @@ research/models/*
 .pytest_cache/
 .ruff_cache/
 check-output/
+backups/
 .coverage
 htmlcov/
 

@@ -106,7 +106,7 @@ class CloudAuth:
             params={
                 "auth_user_id": "eq." + str(user_id),
                 "is_active": "eq.true",
-                "select": "profile_id,username,is_active",
+                "select": "profile_id,username,legacy_username,is_active",
             },
         )
         if not isinstance(profiles, list) or len(profiles) != 1:
@@ -115,7 +115,7 @@ class CloudAuth:
         profile = profiles[0]
         try:
             profile_id = int(profile["profile_id"])
-            username = str(profile["username"])
+            username = str(profile.get("legacy_username") or profile["username"])
         except (KeyError, TypeError, ValueError):
             raise RepositoryError("protocol") from None
         roles = repo.list_records("user_role", filters={"profile_id": profile_id})

@@ -372,7 +372,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                 if error.category == "authentication":
                     raise
                 rows = ()
-            names.update({row["profile_id"]: row["username"] for row in rows})
+            names.update({row["profile_id"]: row.get("legacy_username") or row["username"]
+                          for row in rows})
         return names
 
     def active_deployment(repo):
@@ -930,7 +931,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                                            page_size=100).rows:
                 roles.setdefault(row["profile_id"], []).append(row["role"])
         accounts = [
-            {**row, "roles": sorted(roles.get(row["profile_id"], [])),
+            {**row, "username": row.get("legacy_username") or row["username"],
+             "roles": sorted(roles.get(row["profile_id"], [])),
              "role_request_id": str(uuid4()), "status_request_id": str(uuid4())}
             for row in page.rows
         ]

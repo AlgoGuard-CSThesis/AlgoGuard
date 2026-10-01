@@ -40,29 +40,33 @@ research, ui, docs.
 **Exit:** the current local app remains usable, configuration is explicit, and a
 disposable Supabase stack can exercise the complete future application path.
 
+Stage 5A local verification is complete; see
+[the Stage 5A record](docs/migration/05a-foundations.md). The original Singapore
+region target was changed to Tokyo and recorded there as an accepted deviation.
+
 ### 5A.1 Introduce typed configuration without changing local behavior
 
 Load `.env` predictably and centralize settings for Flask, training, databases,
 artifacts, and capture. Preserve process-environment overrides for tests and
 automation; document precedence and avoid freezing fixture values at import.
 
-- [ ] Empty optional configuration retains today's local defaults.
-- [ ] Parse and validate types, ranges, and required combinations.
-- [ ] Move direct configuration reads out of application modules, including
+- [x] Empty optional configuration retains today's local defaults.
+- [x] Parse and validate types, ranges, and required combinations.
+- [x] Move direct configuration reads out of application modules, including
   `services/traffic_source_service.py`; capture-port exclusion still works.
-- [ ] Tests redirect all database, model, and spool paths safely.
+- [x] Tests redirect all database, model, and spool paths safely.
 
 ### 5A.2 Separate analyst and maintainer configuration
 
 Create analyst `.env.example` and a separate maintainer configuration example.
 Local and cloud-pilot operation are explicit modes during migration.
 
-- [ ] Analyst settings contain project URL, publishable key, and local options;
+- [x] Analyst settings contain project URL, publishable key, and local options;
   no database password, service/secret key, or JWT signing secret is required.
-- [ ] Privileged tools load a separate credential source, excluded from packaging
+- [x] Privileged tools load a separate credential source, excluded from packaging
   and version control. Logs redact tokens, credentials, and signed URLs.
-- [ ] Cloud mode cannot silently fall back to the legacy business database.
-- [ ] Document local state locations: outbox, node identity, model cache, and
+- [x] Cloud mode cannot silently fall back to the legacy business database.
+- [x] Document local state locations: outbox, node identity, model cache, and
   temporary user sessions.
 
 ### 5A.3 Provision isolated cloud and local test infrastructure
@@ -70,21 +74,21 @@ Local and cloud-pilot operation are explicit modes during migration.
 Use the local Supabase CLI stack with Docker Desktop/WSL as necessary. Plain
 PostgreSQL alone cannot validate Auth, Data API, Storage, or API permissions.
 
-- [ ] Local Auth, Data API, PostgreSQL, Storage, and Edge Function tests work.
-- [ ] A separate pilot project uses Singapore initially; measure actual endpoint
+- [x] Local Auth, Data API, PostgreSQL, Storage, and Edge Function tests work.
+- [x] A separate pilot project uses Singapore initially; measure actual endpoint
   latency. Development tests never use production data or credentials.
-- [ ] Maintenance migrates local/pilot databases with explicit TLS and connection
+- [x] Maintenance migrates local/pilot databases with explicit TLS and connection
   mode settings; those credentials never enter analyst configuration.
-- [ ] Create the private model bucket with access denied until 5B policies are
+- [x] Create the private model bucket with access denied until 5B policies are
   installed. Test fixtures are disposable and distinguishable from real data.
 
 ### 5A.4 Establish baseline evidence and test isolation
 
-- [ ] Record current Python, Node, and lint results and actual runtimes.
-- [ ] Preserve fast unit tests and add an isolated local-stack integration lane.
-- [ ] Reset integration state or serialize scoped fixtures; tests do not depend
+- [x] Record current Python, Node, and lint results and actual runtimes.
+- [x] Preserve fast unit tests and add an isolated local-stack integration lane.
+- [x] Reset integration state or serialize scoped fixtures; tests do not depend
   on ordering or impersonate ordinary users through owner credentials.
-- [ ] Write `docs/migration/05a-foundations.md` with setup, architecture, evidence,
+- [x] Write `docs/migration/05a-foundations.md` with setup, architecture, evidence,
   and reproducible test commands before the manual stage commit.
 
 ---
@@ -304,50 +308,54 @@ bounded offline contract. Existing-installation cutover remains a later gate.
 **Exit:** existing data is accounted for and recovery is demonstrated, including
 records written after switching to the cloud.
 
+Local Stage 5E acceptance passed. The later full integration rerun passed after
+the local Edge Runtime was restarted; earlier failures are retained in the
+[Stage 5E record](docs/migration/05e-cutover.md) for history.
+
 ### 5E.1 Inventory and consistently back up legacy installations
 
-- [ ] Inventory source installations, schema versions, counts, account IDs,
+- [x] Inventory source installations, schema versions, counts, account IDs,
   deployment references, and artifact hashes without printing credentials.
-- [ ] Take consistent SQLite backups and copy referenced artifacts; verify
+- [x] Take consistent SQLite backups and copy referenced artifacts; verify
   backups open and required relationships resolve.
-- [ ] Map source-installation/source-ID pairs so identical local IDs cannot collide.
-- [ ] Preserve records by default; unresolved attribution is recorded for
+- [x] Map source-installation/source-ID pairs so identical local IDs cannot collide.
+- [x] Preserve records by default; unresolved attribution is recorded for
   administrator-only handling instead of guessed or discarded.
 
 ### 5E.2 Implement repeatable legacy import
 
-- [ ] A maintainer importer preserves dependency order, relationships, timestamps,
+- [x] A maintainer importer preserves dependency order, relationships, timestamps,
   flags, numeric ranges, and report-alert evidence.
-- [ ] Local accounts become historical non-login profiles; optional mappings to
+- [x] Local accounts become historical non-login profiles; optional mappings to
   fresh Auth users are explicit. Never copy password hashes into cloud tables.
-- [ ] Attribute operational records to enrolled legacy nodes; global research
+- [x] Attribute operational records to enrolled legacy nodes; global research
   and deployment records retain their distinct access policy.
-- [ ] Import/resume is idempotent by source identity. Check sequences and counts;
+- [x] Import/resume is idempotent by source identity. Check sequences and counts;
   repeated imports do not create duplicates.
-- [ ] Preserve deployment history and publish the active compatible model through
+- [x] Preserve deployment history and publish the active compatible model through
   5C rather than activating a path copied from another machine.
 
 ### 5E.3 Rehearse controlled cutover
 
-- [ ] In an isolated project, stop legacy writers, take the final snapshot,
+- [x] In an isolated project, stop legacy writers, take the final snapshot,
   import/reconcile, verify counts/relationships, then enable cloud writes.
-- [ ] Compare representative predictions, alerts, reports, filters, and historical
+- [x] Compare representative predictions, alerts, reports, filters, and historical
   profile names before and after migration.
-- [ ] Import failure leaves the old app usable and cloud activation disabled;
+- [x] Import failure leaves the old app usable and cloud activation disabled;
   partial import is resumable or cleanly reversible in the rehearsal.
-- [ ] Record the authoritative store at each step and the exact point after
+- [x] Record the authoritative store at each step and the exact point after
   which code rollback alone is insufficient.
 
 ### 5E.4 Rehearse recovery before and after cloud writes
 
-- [ ] Before the first cloud write, demonstrate restore of the old application
+- [x] Before the first cloud write, demonstrate restore of the old application
   and consistent snapshot.
-- [ ] After sample cloud writes, freeze writers, export cloud changes and local
+- [x] After sample cloud writes, freeze writers, export cloud changes and local
   pending events, then restore forward or reconcile into a compatible recovery
   database; verify no lost or double-counted records.
-- [ ] Record reverse-conversion limits. Preserve unsupported fields in exports
+- [x] Record reverse-conversion limits. Preserve unsupported fields in exports
   rather than calling an old SQLite snapshot a lossless rollback.
-- [ ] Restore-test cloud backup/export together with artifacts; write
+- [x] Restore-test cloud backup/export together with artifacts; write
   `docs/migration/05e-cutover.md` before the stage commit.
 
 ---
