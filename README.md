@@ -1,5 +1,10 @@
 # AlgoGuard
 
+---
+Kanban Board
+https://github.com/users/pqauoz/projects/5/views/1
+---
+
 AlgoGuard is a local Flask application that detects anomalies in network traffic using a deployed Stacking Ensemble. The web application is **inference-only**: it classifies traffic flow by flow in the Live Monitor, or one record at a time on the Prediction page. Model training and deployment happen offline through `train.py`, so the running detector is never disturbed by a training job.
 
 The Live Monitor accepts three traffic sources through one pipeline: **live packet capture** from a network interface (data packets are aggregated into flows in real time and classified the moment each flow ends), **recorded packet captures** (`.pcap` files replayed through the same flow tracker, reproducibly), and the original **labelled CSV replay** of the bundled UNSW-NB15 samples, which keeps ground-truth labels visible for accuracy demonstrations. Live capture requires the Npcap driver and elevated privileges on Windows; when they are absent, both replay modes keep working and the monitor explains why live mode is unavailable. AlgoGuard observes and classifies traffic; it never blocks it, and it stores flow metadata only, never packet payloads. Capture live traffic only on networks you are authorized to monitor.
