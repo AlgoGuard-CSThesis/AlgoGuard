@@ -195,7 +195,9 @@ key before exposing the app or running more than one server process.
 
 Multiple accounts are supported. Administrators can create Administrator or
 Analyst accounts from the Admins page. Password hashes and accounts persist in
-SQLite. These first-run settings do not replace an account already stored in the
+SQLite. New passwords need 12 to 128 characters with upper- and lower-case
+letters, a digit, and a symbol, the same rule as cloud accounts. Sign-in pauses
+for 15 minutes after 5 failures for one account or 20 from one address. These first-run settings do not replace an account already stored in the
 database. Login state uses a signed Flask browser session and ends when the session
 cookie is cleared, the user logs out, or an ephemeral signing key changes after
 restart; it is not a permanent login token.
@@ -373,7 +375,9 @@ packet-size summary exceeds the database's integer range; that summary is stored
 
 ## System Logs and Alerts
 
-Alert History contains anomalous predictions from both the Live Monitor and manual prediction. System Logs contain authentication, validation, preprocessing, training, ranking, deployment, live monitoring, prediction, reporting, and application events. Logs are newest first and support date, module, status, model, run ID, and text filters.
+Alert History contains anomalous predictions from both the Live Monitor and manual prediction, with the source and destination of each flow. Severity follows the model's confidence: High at 90% or more, Medium from 75%, Low below that (`services/alert_policy.py`). Alerts start Open and are moved to Acknowledged or Resolved (or reopened) from the Alerts page in both SQLite and cloud mode; the dashboard's Open Alerts counts only Open alerts, and every change is logged.
+
+System Logs contain authentication, validation, preprocessing, training, ranking, deployment, live monitoring, prediction, reporting, and application events. Logs are newest first and support date, module, status, model, run ID, and text filters.
 
 ## Quality Assurance
 
@@ -389,6 +393,10 @@ python -m pytest -q
 
 The browser polling checks use Node.js's built-in test runner (no npm packages):
 `node --test tests/monitor_poll.test.cjs`.
+
+GitHub Actions (`.github/workflows/ci.yml`) runs the same lint, type, unit, and
+polling checks on Windows for every push to `main` and every pull request. The
+Supabase integration lane stays a local run because it needs Docker.
 
 The pinned Pyright checker uses the project's `venv` and checks all application,
 script, and test modules. Its scope is configured in `pyproject.toml`; generated

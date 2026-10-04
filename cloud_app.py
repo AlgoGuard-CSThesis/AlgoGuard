@@ -24,7 +24,6 @@ from __future__ import annotations
 import atexit
 import hmac
 import json
-import re
 import secrets
 import socket
 from collections import namedtuple
@@ -47,7 +46,9 @@ from cloud_sync import SyncWorker, audit
 from model_delivery import ActiveModelStore
 from model_runtime import ModelDeliveryError, verify_manifest
 from node_enrollment import local_node_id
+from services.alert_policy import ALERT_STATUSES
 from services.live_monitor_service import get_options
+from services.password_policy import PASSWORD_RULE_TEXT, password_is_strong
 from services.simulation_service import (
     SimulationServiceError,
     predict_with_artifact,
@@ -92,7 +93,6 @@ PERSISTENCE_LABELS = {
     "dropped": "Not stored",
     "rejected": "Rejected by the cloud",
 }
-PASSWORD_RULE = re.compile(r"(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,128}", re.S)
 PAGE_SIZE = 50
 LOG_PAGE_SIZE = 25
 MAX_OFFSET = 1_000_000
@@ -532,7 +532,6 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             active_deployment=deployment,
             model_message=model_message,
             stats=stats,
-            latest_prediction=None,
             latest_alerts=results["alerts"],
             latest_logs=results["logs"],
             node_id=str(services.node_id),
@@ -648,8 +647,34 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         return render_template(
             "alerts.html", alerts=page.rows, next_offset=page.next_offset, offset=offset,
             page_size=PAGE_SIZE, alert_status=alert_status, report_request_id=str(uuid4()),
-            node_id=str(services.node_id),
+            node_id=str(services.node_id), alert_statuses=ALERT_STATUSES,
         )
+
+    @app.post("/alerts/<int:alert_id>/status")
+    def update_alert(alert_id):
+        alert_status = request.form.get("alert_status", "")
+        status_filter = request.form.get("filter")
+        # Return to the same page and filter the reviewer was looking at.
+        back = url_for(
+            "alert_history",
+            offset=min(max(0, request.form.get("offset", 0, type=int)), MAX_OFFSET),
+            alert_status=status_filter if status_filter in ALERT_STATUSES else None,
+        )
+        if alert_status not in ALERT_STATUSES:
+            flash("Choose Open, Acknowledged, or Resolved.", "danger")
+            return redirect(back)
+        try:
+            # Row-level security limits the update to alerts on nodes this account may write.
+            g.repo.update_record("alert", alert_id, {"alert_status": alert_status})
+        except RepositoryError as error:
+            if error.category not in ("not_found", "validation"):
+                raise
+            flash(f"Alert #{alert_id} is unavailable on this installation.", "warning")
+            return redirect(back)
+        audit(services.outbox, g.repo.context, "Alerts", "alert_status_changed", "Success",
+              f"Alert {alert_id} marked {alert_status}.")
+        flash(f"Alert #{alert_id} marked {alert_status}.", "success")
+        return redirect(back)
 
     @app.get("/logs")
     def system_logs():
@@ -877,9 +902,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                     flash("Choose Analyst or Administrator.", "danger")
                 elif password != request.form.get("confirm_password", ""):
                     flash("Passwords do not match.", "danger")
-                elif not PASSWORD_RULE.fullmatch(password):
-                    flash("Passwords need 12 to 128 characters with upper- and lower-case "
-                          "letters, a digit, and a symbol.", "danger")
+                elif not password_is_strong(password):
+                    flash(PASSWORD_RULE_TEXT, "danger")
                 else:
                     try:
                         g.repo.administer(_form_uuid(), {"action": "create_account",

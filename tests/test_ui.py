@@ -208,6 +208,94 @@ def test_pages_work_offline_without_external_assets(client, app_module):
         assert client.get("/" + asset).status_code == 200
 
 
+def test_login_form_cooperates_with_password_managers(client):
+    html = client.get("/login").get_data(as_text=True)
+
+    assert 'autocomplete="off"' not in html
+    assert 'autocomplete="username"' in html
+    assert 'autocomplete="current-password"' in html
+
+
+def test_navigation_marks_the_current_page_and_confirms_destructive_forms(authenticated_client):
+    html = authenticated_client.get("/alerts").get_data(as_text=True)
+
+    assert 'href="/alerts" aria-current="page"' in html
+    assert html.count('aria-current="page"') == 1
+    assert 'event.target.getAttribute("data-confirm")' in html
+
+
+def test_log_pagination_links_have_accessible_names(authenticated_client):
+    from services import database_service as db
+
+    for index in range(30):
+        db.log_system_event(1, "Test", "pagination_probe", "Success", "127.0.0.1",
+                            message=f"Pagination probe {index}.")
+    html = authenticated_client.get("/logs?search=Pagination probe").get_data(as_text=True)
+
+    assert 'aria-label="Previous page" aria-disabled="true" tabindex="-1"' in html
+    assert 'aria-label="Next page"' in html
+    assert "page=2" in html
+
+
+def test_local_accounts_need_a_strong_password(authenticated_client):
+    import pytest
+
+    from services import database_service as db
+
+    with pytest.raises(ValueError, match="12 to 128 characters"):
+        db.create_admin("policy_weak", "short-1A", "", "Analyst")
+
+    form = authenticated_client.get("/admins").get_data(as_text=True)
+    assert 'minlength="12"' in form and 'autocomplete="new-password"' in form
+    weak = authenticated_client.post("/admins", data={
+        "username": "policy_weak", "email": "", "role": "Analyst",
+        "password": "password1", "confirm_password": "password1",
+    }, follow_redirects=True).get_data(as_text=True)
+    assert "12 to 128 characters" in weak
+    assert db.get_admin_by_username("policy_weak") is None
+
+    strong = authenticated_client.post("/admins", data={
+        "username": "policy_strong", "email": "", "role": "Analyst",
+        "password": "Strong-Pass-2026!", "confirm_password": "Strong-Pass-2026!",
+    }, follow_redirects=True).get_data(as_text=True)
+    assert "New admin account created successfully." in strong
+
+
+def test_prediction_form_explains_the_unsw_features(authenticated_client, trained_bundle):
+    from services import database_service as db
+    from services.deployment_service import deploy_model
+    from services.simulation_service import schema_for_artifact
+
+    schema = schema_for_artifact(
+        {"feature_columns": ["sbytes", "custom_field"], "numeric_columns": ["sbytes"]}, {}
+    )
+    fields = {field["name"]: field for field in schema["fields"]}
+    assert fields["sbytes"]["label"] == "Source bytes"
+    assert fields["sbytes"]["hint"] == "Bytes sent by the source."
+    assert fields["custom_field"]["label"] == "Custom Field"
+    assert fields["custom_field"]["hint"] is None
+
+    with db.get_connection() as connection:
+        model_id = connection.execute(
+            "SELECT model_id FROM detection_model WHERE run_id = ? AND model_name = ?",
+            (trained_bundle["run_id"], "Stacking Ensemble"),
+        ).fetchone()["model_id"]
+    deploy_model(model_id, 1)
+    html = authenticated_client.get("/simulation").get_data(as_text=True)
+    assert "Duration" in html and "Flow length in seconds." in html
+    assert 'aria-describedby="field_1_hint"' in html
+
+
+def test_live_monitor_stops_polling_in_hidden_tabs():
+    with open("templates/monitor.html", encoding="utf-8") as handle:
+        source = handle.read()
+
+    handler = source[source.index('document.addEventListener("visibilitychange"'):]
+    assert "stopPolling();" in handler.split("} else {")[0]
+    # The tested polling core (tests/monitor_poll.test.cjs) stays unchanged.
+    assert source.index("visibilitychange") > source.index("startButton.addEventListener(")
+
+
 def test_prediction_defaults_render_without_float_noise():
     from services.simulation_service import _display_default
 

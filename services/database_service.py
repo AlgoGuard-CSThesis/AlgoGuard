@@ -8,7 +8,9 @@ from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash
 
 from config import get_config
+from services.alert_policy import ALERT_STATUSES, severity_for_confidence
 from services.model_registry import MODEL_WORKFLOW_VERSION
+from services.password_policy import PASSWORD_RULE_TEXT, password_is_strong
 
 
 class ClosingSQLiteConnection(sqlite3.Connection):
@@ -472,8 +474,8 @@ def create_admin(username, password, email="", role="Administrator"):
 
     if len(username) < 3:
         raise ValueError("Username must be at least 3 characters.")
-    if len(password) < 6:
-        raise ValueError("Password must be at least 6 characters.")
+    if not password_is_strong(password):
+        raise ValueError(PASSWORD_RULE_TEXT)
     if role not in {"Administrator", "Analyst"}:
         raise ValueError("Invalid admin role.")
 
@@ -1037,10 +1039,14 @@ def store_classified_flow(
     model_name=None,
     latency_ms=None,
     create_alert=False,
-    alert_severity="High",
+    alert_severity=None,
     alert_description=None,
 ):
-    """Atomically store a classified flow, its prediction, and optional alert."""
+    """Atomically store a classified flow, its prediction, and optional alert.
+
+    Without an explicit ``alert_severity`` the alert's severity follows the
+    prediction's confidence.
+    """
     with get_connection() as connection:
         traffic_id = _insert_network_traffic_from_flow(
             connection,
@@ -1064,21 +1070,23 @@ def store_classified_flow(
             alert_id = _insert_alert(
                 connection,
                 prediction_id,
-                alert_severity,
+                alert_severity or severity_for_confidence(confidence_score),
                 alert_description or f"{predicted_label} traffic detected.",
             )
         return traffic_id, prediction_id, alert_id
 
 
 def list_alerts(limit=100):
-    """Return newest anomalous prediction alerts."""
+    """Return newest anomalous prediction alerts with the endpoints of their flow."""
     with get_connection() as connection:
         rows = connection.execute(
             """
             SELECT a.*, p.predicted_label, p.confidence_score, p.model_name,
-                   p.prediction_timestamp
+                   p.prediction_timestamp, t.source_ip, t.destination_ip,
+                   t.source_port, t.destination_port, t.protocol, t.dataset_source
             FROM alert a
             JOIN prediction p ON p.prediction_id = a.prediction_id
+            LEFT JOIN network_traffic t ON t.traffic_id = p.traffic_id
             ORDER BY a.alert_id DESC
             LIMIT ?
             """,
@@ -1087,17 +1095,16 @@ def list_alerts(limit=100):
         return [dict(row) for row in rows]
 
 
-def get_latest_prediction():
-    """Return the newest manual prediction."""
+def update_alert_status(alert_id, alert_status):
+    """Move one alert through the review workflow; False when the alert does not exist."""
+    if alert_status not in ALERT_STATUSES:
+        raise ValueError("Choose Open, Acknowledged, or Resolved.")
     with get_connection() as connection:
-        row = connection.execute(
-            """
-            SELECT * FROM prediction
-            ORDER BY prediction_id DESC
-            LIMIT 1
-            """
-        ).fetchone()
-        return dict(row) if row else None
+        cursor = connection.execute(
+            "UPDATE alert SET alert_status = ? WHERE alert_id = ?",
+            (alert_status, int(alert_id)),
+        )
+        return cursor.rowcount == 1
 
 
 def get_detection_stats():

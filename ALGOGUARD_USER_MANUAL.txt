@@ -145,6 +145,9 @@ settings do not change an account already stored in the database.
 
 After logging in with an Administrator account, open the Admins page to create
 more admin accounts. Each new admin is stored in SQLite with a hashed password.
+New passwords need 12 to 128 characters with upper- and lower-case letters, a
+digit, and a symbol. After 5 failed sign-ins for one account (or 20 from one
+computer) within 15 minutes, sign-in is paused for the rest of that window.
 
 If port 5000 is busy (PowerShell):
 
@@ -362,7 +365,13 @@ If the Predict page or the Live Monitor classifies a flow as Attack:
 6. An alert record is created in the alert table.
 
 Alert History lets admins review saved Attack prediction alerts directly in
-the web interface.
+the web interface. Each alert shows the source and destination of its flow
+("Manual entry" for hand-typed predictions) and a severity taken from the
+model's confidence: High at 90% or more, Medium from 75%, Low below 75%.
+
+Every alert starts Open. Press Acknowledge when you start looking into it and
+Resolve when it is handled; Reopen puts it back. The dashboard's Open Alerts
+count only includes alerts still Open, and each change is written to the logs.
 
 
 9. WHAT HAPPENS WHEN TRAFFIC IS NORMAL
@@ -491,9 +500,10 @@ captured traffic cannot do because nobody has labelled it yet.
 If asked what happens when an anomaly is detected:
 
 The verdict and confidence appear immediately in the feed, the attack counter
-and timeline chart update, and the traffic record, prediction record, and a
-High-severity alert are written to SQLite. The alert appears on the Alerts
-page, and the whole sequence is recorded in the audit log.
+and timeline chart update, and the traffic record, prediction record, and an
+alert (High, Medium, or Low severity depending on the model's confidence) are
+written to SQLite. The alert appears on the Alerts page as Open until someone
+acknowledges or resolves it, and the whole sequence is recorded in the audit log.
 
 
 13. QUICK CHECKLIST BEFORE DEMO

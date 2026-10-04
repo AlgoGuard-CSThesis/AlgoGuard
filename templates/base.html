@@ -20,18 +20,21 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
+                {% macro nav_link(current, endpoints, target, icon, label) -%}
+                    <li class="nav-item"><a class="nav-link{% if current in endpoints %} active{% endif %}" href="{{ url_for(target) }}"{% if current in endpoints %} aria-current="page"{% endif %}><i class="bi {{ icon }}" aria-hidden="true"></i> {{ label }}</a></li>
+                {%- endmacro %}
                 <ul class="navbar-nav ms-auto gap-xl-1">
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'dashboard' %} active{% endif %}" href="{{ url_for('dashboard') }}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'live_monitor' %} active{% endif %}" href="{{ url_for('live_monitor') }}"><i class="bi bi-broadcast"></i> Live Monitor</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'simulation_demo' %} active{% endif %}" href="{{ url_for('simulation_demo') }}"><i class="bi bi-activity"></i> Predict</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'alert_history' %} active{% endif %}" href="{{ url_for('alert_history') }}"><i class="bi bi-exclamation-triangle-fill"></i> Alerts</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'system_logs' %} active{% endif %}" href="{{ url_for('system_logs') }}"><i class="bi bi-journal-text"></i> Logs</a></li>
+                    {{ nav_link(request.endpoint, ('dashboard',), 'dashboard', 'bi-grid-1x2', 'Dashboard') }}
+                    {{ nav_link(request.endpoint, ('live_monitor',), 'live_monitor', 'bi-broadcast', 'Live Monitor') }}
+                    {{ nav_link(request.endpoint, ('simulation_demo',), 'simulation_demo', 'bi-activity', 'Predict') }}
+                    {{ nav_link(request.endpoint, ('alert_history',), 'alert_history', 'bi-exclamation-triangle-fill', 'Alerts') }}
+                    {{ nav_link(request.endpoint, ('system_logs',), 'system_logs', 'bi-journal-text', 'Logs') }}
                     {% if config.CLOUD_MODE %}
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint in ('reports', 'report_detail') %} active{% endif %}" href="{{ url_for('reports') }}"><i class="bi bi-file-earmark-text"></i> Reports</a></li>
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'nodes' %} active{% endif %}" href="{{ url_for('nodes') }}"><i class="bi bi-hdd-network"></i> Nodes</a></li>
+                    {{ nav_link(request.endpoint, ('reports', 'report_detail'), 'reports', 'bi-file-earmark-text', 'Reports') }}
+                    {{ nav_link(request.endpoint, ('nodes',), 'nodes', 'bi-hdd-network', 'Nodes') }}
                     {% endif %}
                     {% if session.get("admin_role") == "Administrator" %}
-                    <li class="nav-item"><a class="nav-link{% if request.endpoint == 'manage_admins' %} active{% endif %}" href="{{ url_for('manage_admins') }}"><i class="bi bi-people-fill"></i> {{ 'Accounts' if config.CLOUD_MODE else 'Admins' }}</a></li>
+                    {{ nav_link(request.endpoint, ('manage_admins',), 'manage_admins', 'bi-people-fill', 'Accounts' if config.CLOUD_MODE else 'Admins') }}
                     {% endif %}
                     <li class="nav-item nav-admin"><span class="nav-link"><i class="bi bi-person-badge"></i> {{ session.get("admin_username", "Admin") }}{% if config.CLOUD_MODE %} <span class="status-badge cloud-badge" title="Cloud pilot mode: records are uploaded to the shared project">Cloud</span>{% endif %}</span></li>
                     <li class="nav-item">
@@ -104,6 +107,13 @@
             const restoredFromHistory = navigationEntries.length > 0 && navigationEntries[0].type === "back_forward";
             if (event.persisted || restoredFromHistory) {
                 window.location.reload();
+            }
+        });
+        // Forms that take away someone's access ask first. Inline handlers are blocked by the CSP.
+        document.addEventListener("submit", function (event) {
+            const message = event.target.getAttribute("data-confirm");
+            if (message && !window.confirm(message)) {
+                event.preventDefault();
             }
         });
     </script>

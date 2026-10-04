@@ -31,17 +31,20 @@
             </tbody>
         </table>
     </div>
+    {% macro page_link(page, label, icon, disabled) -%}
+        <a class="btn btn-sm btn-outline-light{% if disabled %} disabled{% endif %}" href="{{ url_for('system_logs', page=page, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}" aria-label="{{ label }}"{% if disabled %} aria-disabled="true" tabindex="-1"{% endif %}><i class="bi {{ icon }}" aria-hidden="true"></i></a>
+    {%- endmacro %}
     {% if logs.total is none and (logs.page > 1 or logs.has_next) %}
     <nav class="pagination-bar" aria-label="System log pages">
-        <a class="btn btn-sm btn-outline-light{% if logs.page <= 1 %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page-1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-left"></i></a>
+        {{ page_link(logs.page - 1, 'Previous page', 'bi-chevron-left', logs.page <= 1) }}
         <span>Page {{ logs.page }}</span>
-        <a class="btn btn-sm btn-outline-light{% if not logs.has_next %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page+1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-right"></i></a>
+        {{ page_link(logs.page + 1, 'Next page', 'bi-chevron-right', not logs.has_next) }}
     </nav>
     {% elif logs.total is not none and logs.pages > 1 %}
     <nav class="pagination-bar" aria-label="System log pages">
-        <a class="btn btn-sm btn-outline-light{% if logs.page <= 1 %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page-1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-left"></i></a>
+        {{ page_link(logs.page - 1, 'Previous page', 'bi-chevron-left', logs.page <= 1) }}
         <span>Page {{ logs.page }} of {{ logs.pages }}</span>
-        <a class="btn btn-sm btn-outline-light{% if logs.page >= logs.pages %} disabled{% endif %}" href="{{ url_for('system_logs', page=logs.page+1, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}"><i class="bi bi-chevron-right"></i></a>
+        {{ page_link(logs.page + 1, 'Next page', 'bi-chevron-right', logs.page >= logs.pages) }}
     </nav>
     {% endif %}
 </section>

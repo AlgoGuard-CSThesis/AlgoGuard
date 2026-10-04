@@ -1,0 +1,55 @@
+# Runs the README's Quality Assurance checks on every push to main and every pull request.
+# The Supabase integration lane needs Docker and stays a local, explicit run (pytest -m integration).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    # AlgoGuard targets Windows (Npcap, PowerShell setup), so the checks run there too.
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          # Must match the runtime recorded in requirements-model.lock.
+          python-version: "3.14"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Python dependencies
+        # pyproject.toml points Pyright at ./venv, so CI uses the same layout.
+        run: |
+          python -m venv venv
+          .\venv\Scripts\python.exe -m pip install --upgrade pip
+          .\venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Lint
+        run: .\venv\Scripts\python.exe -m ruff check .
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: .\venv\Scripts\python.exe -m pytest -q
+
+      - name: Browser polling tests
+        run: node --test tests/monitor_poll.test.cjs

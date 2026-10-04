@@ -720,7 +720,28 @@ class FakeSupabase:
             if profile is None and subject is not None:
                 return 200, []
             return 200, self._select(path[len("/rest/v1/"):], query, profile)
+        if path.startswith("/rest/v1/") and method == "PATCH":
+            return 200, self._update(path[len("/rest/v1/"):], query, body or {}, profile)
         raise Refusal(404, "not found")
+
+    def _update(self, table, query, values, profile):
+        """The alert_update policy: column grants, then writers on the row's node only.
+
+        Like PostgREST with return=representation, rows hidden by the policy are
+        simply not updated and the response is an empty list.
+        """
+        if (table != "alert" or profile is None or not isinstance(values, dict) or not values
+                or set(values) - {"alert_status", "description"}):
+            raise Refusal(403, "permission denied")
+        filters = dict(query)
+        updated = []
+        for row in self.tables["alert"]:
+            if (filters.get("alert_id") == f"eq.{row['alert_id']}"
+                    and filters.get("node_id") == f"eq.{row['node_id']}"
+                    and self._can_write(profile, row["node_id"])):
+                row.update(values)
+                updated.append(dict(row))
+        return updated
 
     def _handler(self):
         fake = self

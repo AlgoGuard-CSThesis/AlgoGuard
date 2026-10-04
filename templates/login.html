@@ -8,7 +8,7 @@
     <div class="login-identity">
         <span class="brand-mark login-brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
         <div>
-            <p class="eyebrow">{{ 'Cloud Pilot Access' if config.CLOUD_MODE else 'Administrator Access' }}</p>
+            <p class="eyebrow">{{ 'Cloud Pilot Access' if config.CLOUD_MODE else 'Local Console Access' }}</p>
             <h1>AlgoGuard</h1>
             <p class="header-copy">Real-time network anomaly detection with a quality-gated Stacking Ensemble.</p>
         </div>
@@ -19,13 +19,13 @@
         </div>
     </div>
 
-    <form class="login-panel" method="post" autocomplete="off">
+    <form class="login-panel" method="post">
         <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
         <input type="hidden" name="next" value="{{ next_url }}">
         <div class="panel-heading">
             <div>
                 <p class="eyebrow">Login</p>
-                <h2>Admin Console</h2>
+                <h2>Sign In</h2>
             </div>
             <span class="status-badge success">Protected</span>
         </div>
@@ -45,13 +45,13 @@
         {% else %}
         <div>
             <label class="form-label" for="username">Username</label>
-            <input class="form-control" id="username" name="username" type="text" value="{{ username or '' }}" required autofocus>
+            <input class="form-control" id="username" name="username" type="text" value="{{ username or '' }}" autocomplete="username" required autofocus>
         </div>
         {% endif %}
 
         <div>
             <label class="form-label" for="password">Password</label>
-            <input class="form-control" id="password" name="password" type="password" required>
+            <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" required>
         </div>
 
         <button class="btn btn-accent w-100" type="submit">
@@ -62,7 +62,7 @@
         {% if config.CLOUD_MODE %}
         <div class="login-note"><strong>Online cloud sign-in</strong><span>An internet connection is required every time AlgoGuard starts. A cached model does not permit offline sign-in. Usernames are display names only.</span></div>
         {% else %}
-        <div class="login-note"><strong>Local administrator access</strong><span>Credentials are configured on the server.</span></div>
+        <div class="login-note"><strong>Local accounts</strong><span>Administrators create Administrator and Analyst accounts on the Admins page. Repeated failed sign-ins are paused for 15 minutes.</span></div>
         {% endif %}
     </form>
 </section>

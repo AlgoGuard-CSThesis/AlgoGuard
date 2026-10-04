@@ -180,12 +180,12 @@
                 <div class="event-list">
                     {% for alert in latest_alerts[:4] %}
                     <div class="event-row">
-                        <span class="event-mark"><i class="bi bi-exclamation-triangle-fill"></i></span>
+                        <span class="event-mark danger" aria-hidden="true"><i class="bi bi-exclamation-triangle-fill"></i></span>
                         <div>
                             <strong>{{ alert.severity_level }} severity &middot; {{ '%.2f'|format(alert.confidence_score) if alert.confidence_score is not none else 'N/A' }}%</strong>
-                            <small>{{ alert.detected_at }} &middot; {{ alert.model_name or 'Unknown model' }}</small>
+                            <small>{{ alert.detected_at }} &middot; {% if alert.source_ip and alert.source_ip != 'manual' %}{{ alert.source_ip }} &rarr; {{ alert.destination_ip or '-' }}{% else %}{{ alert.model_name or 'Unknown model' }}{% endif %}</small>
                         </div>
-                        <span class="status-badge {{ 'warning' if alert.alert_status == 'Open' else 'success' }}">{{ alert.alert_status }}</span>
+                        <span class="status-badge review-{{ (alert.alert_status or 'unknown')|lower }}">{{ alert.alert_status }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -206,7 +206,7 @@
                 <div class="event-list">
                     {% for log in latest_logs[:3] %}
                     <div class="event-row">
-                        <span class="event-mark"><i class="bi bi-journal-check"></i></span>
+                        <span class="event-mark" aria-hidden="true"><i class="bi bi-journal-check"></i></span>
                         <div>
                             <strong>{{ log.message or log.action }}</strong>
                             <small>{{ log.timestamp }} &middot; {{ log.module }}</small>

@@ -1,19 +1,22 @@
 import hmac
+import math
 import os
 import secrets
 import sqlite3
+import threading
+import time
 from urllib.parse import urlsplit
 
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from config import get_config
+from services.alert_policy import ALERT_STATUSES
 from services.database_service import (
     create_admin,
     get_active_deployment,
     get_admin_by_username,
     get_detection_stats,
-    get_latest_prediction,
     get_log_filter_options,
     initialize_database,
     list_admins,
@@ -21,6 +24,7 @@ from services.database_service import (
     list_system_logs,
     log_system_event,
     store_classified_flow,
+    update_alert_status,
 )
 from services.live_monitor_service import (
     LiveMonitorError,
@@ -54,6 +58,16 @@ ADMIN_ROLES = _cfg.admin_roles
 
 _DUMMY_PASSWORD_HASH = generate_password_hash(secrets.token_urlsafe(32))
 
+# Failed sign-ins are limited per account and per client address, so a password
+# cannot be guessed from another machine when ALGOGUARD_HOST exposes the console.
+LOGIN_ATTEMPT_WINDOW_SECONDS = 15 * 60
+LOGIN_ATTEMPTS_PER_ACCOUNT = 5
+LOGIN_ATTEMPTS_PER_ADDRESS = 20
+_MAX_TRACKED_LOGIN_KEYS = 4096
+_login_failures = {}
+_login_failures_lock = threading.Lock()
+_monotonic = time.monotonic
+
 
 def ensure_runtime_folders():
     cfg = get_config()
@@ -86,6 +100,60 @@ def _safe_next_url(next_url):
     ):
         return url_for("dashboard")
     return next_url
+
+
+def _login_failure_keys(username):
+    address = request.remote_addr or "unknown"
+    return (
+        (("account", address, username.casefold()), LOGIN_ATTEMPTS_PER_ACCOUNT),
+        (("address", address), LOGIN_ATTEMPTS_PER_ADDRESS),
+    )
+
+
+def _recent_failures_locked(key, now):
+    recent = [
+        stamp
+        for stamp in _login_failures.get(key, ())
+        if now - stamp < LOGIN_ATTEMPT_WINDOW_SECONDS
+    ]
+    if recent:
+        _login_failures[key] = recent
+    else:
+        _login_failures.pop(key, None)
+    return recent
+
+
+def _login_retry_after(username):
+    """Seconds until this address may try this account again; 0 when allowed."""
+    now = _monotonic()
+    wait = 0.0
+    with _login_failures_lock:
+        for key, limit in _login_failure_keys(username):
+            recent = _recent_failures_locked(key, now)
+            if len(recent) >= limit:
+                wait = max(wait, LOGIN_ATTEMPT_WINDOW_SECONDS - (now - recent[-limit]))
+    return math.ceil(wait)
+
+
+def _record_login_failure(username):
+    """Count one failed sign-in; True when it starts a lockout."""
+    now = _monotonic()
+    locked = False
+    with _login_failures_lock:
+        if len(_login_failures) >= _MAX_TRACKED_LOGIN_KEYS:
+            for key in list(_login_failures):
+                _recent_failures_locked(key, now)
+        for key, limit in _login_failure_keys(username):
+            recent = _recent_failures_locked(key, now)
+            recent.append(now)
+            _login_failures[key] = recent
+            locked = locked or len(recent) == limit
+    return locked
+
+
+def _clear_login_failures(username):
+    with _login_failures_lock:
+        _login_failures.pop(_login_failure_keys(username)[0][0], None)
 
 
 def csrf_token():
@@ -326,10 +394,22 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+        retry_after = _login_retry_after(username)
+        if retry_after:
+            # The password is not checked while locked, so the response reveals nothing.
+            minutes = max(1, math.ceil(retry_after / 60))
+            flash(
+                "Too many failed sign-in attempts. "
+                f"Try again in {minutes} minute{'' if minutes == 1 else 's'}.",
+                "danger",
+            )
+            return render_template("login.html", next_url=next_url, username=username), 429
+
         admin = get_admin_by_username(username)
         password_hash = admin["password_hash"] if admin else _DUMMY_PASSWORD_HASH
         password_valid = check_password_hash(password_hash, password)
         if admin and password_valid:
+            _clear_login_failures(username)
             session.clear()
             csrf_token()
             session["admin_id"] = admin["admin_id"]
@@ -352,6 +432,18 @@ def login():
             request.remote_addr,
             message=f"Failed login attempt for {username or 'unknown'}.",
         )
+        if _record_login_failure(username):
+            log_system_event(
+                admin["admin_id"] if admin else None,
+                "Authentication",
+                "login_throttled",
+                "Warning",
+                request.remote_addr,
+                message=(
+                    f"Sign-in for {username or 'unknown'} blocked for "
+                    f"{LOGIN_ATTEMPT_WINDOW_SECONDS // 60} minutes after repeated failures."
+                ),
+            )
         flash("Invalid username or password.", "danger")
     return render_template("login.html", next_url=next_url, username=username)
 
@@ -414,7 +506,6 @@ def dashboard():
         "dashboard.html",
         active_deployment=get_active_deployment(),
         stats=get_detection_stats(),
-        latest_prediction=get_latest_prediction(),
         latest_alerts=list_alerts(limit=5),
         latest_logs=logs["items"],
     )
@@ -498,8 +589,9 @@ def simulation_demo():
             result = _execute_prediction(form_data, "Prediction")
         except SimulationServiceError as error:
             flash(str(error), "danger")
-        except Exception as error:
-            flash(f"Prediction failed safely: {error}", "danger")
+        except Exception:
+            # The detail is recorded in System Logs; it can include local file paths.
+            flash("Prediction failed safely. See System Logs for details.", "danger")
     return render_template(
         "simulation.html",
         schema=schema,
@@ -521,7 +613,30 @@ def predict_api():
 
 @app.route("/alerts")
 def alert_history():
-    return render_template("alerts.html", alerts=list_alerts(limit=250))
+    return render_template(
+        "alerts.html", alerts=list_alerts(limit=250), alert_statuses=ALERT_STATUSES
+    )
+
+
+@app.route("/alerts/<int:alert_id>/status", methods=["POST"])
+def update_alert(alert_id):
+    alert_status = request.form.get("alert_status", "")
+    try:
+        updated = update_alert_status(alert_id, alert_status)
+    except ValueError as error:
+        flash(str(error), "danger")
+        return redirect(url_for("alert_history"))
+    if not updated:
+        flash(f"Alert #{alert_id} no longer exists.", "warning")
+        return redirect(url_for("alert_history"))
+    _log(
+        "Alerts",
+        "alert_status_changed",
+        "Success",
+        message=f"Alert {alert_id} marked {alert_status}.",
+    )
+    flash(f"Alert #{alert_id} marked {alert_status}.", "success")
+    return redirect(url_for("alert_history"))
 
 
 @app.route("/logs")

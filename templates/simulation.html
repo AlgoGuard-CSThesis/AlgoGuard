@@ -42,7 +42,7 @@
         <div class="form-grid">
             {% for field in schema.fields %}
             <div>
-                <label class="form-label" for="field_{{ loop.index }}">{{ field.label }}</label>
+                <label class="form-label" for="field_{{ loop.index }}">{{ field.label }} <code class="field-code">{{ field.name }}</code></label>
                 <input
                     class="form-control"
                     id="field_{{ loop.index }}"
@@ -50,8 +50,10 @@
                     type="{{ field.type }}"
                     {% if field.type == 'number' %}step="any"{% endif %}
                     value="{{ form_data.get(field.name, field.default) }}"
+                    {% if field.hint %}aria-describedby="field_{{ loop.index }}_hint"{% endif %}
                     required
                 >
+                {% if field.hint %}<small class="form-hint" id="field_{{ loop.index }}_hint">{{ field.hint }}</small>{% endif %}
             </div>
             {% endfor %}
         </div>

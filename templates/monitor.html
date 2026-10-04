@@ -176,7 +176,7 @@
                 <h2>Detection Timeline</h2>
             </div>
         </div>
-        <canvas id="monitorChart" class="monitor-chart" height="220" aria-label="Attack and normal flow counts over time"></canvas>
+        <canvas id="monitorChart" class="monitor-chart" height="220" role="img" aria-label="Attack and normal flow counts over time"></canvas>
         <div class="monitor-legend">
             <span><i class="legend-swatch legend-normal"></i> Normal</span>
             <span><i class="legend-swatch legend-attack"></i> Attack</span>
@@ -434,7 +434,7 @@
             row.appendChild(verdictCell);
 
             const confidence = Number(event.confidence);
-            appendTextCell((Number.isFinite(confidence) ? confidence.toFixed(2) : "0.00") + "%");
+            appendTextCell(Number.isFinite(confidence) ? confidence.toFixed(2) + "%" : "—");
 
             const actualCell = document.createElement("td");
             if (event.actual === null || event.actual === undefined) {
@@ -680,6 +680,16 @@
     });
 
     window.addEventListener("resize", drawChart);
+
+    // A hidden tab stops polling and resumes from its event cursor when shown again.
+    document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            startPolling();
+            poll();
+        }
+    });
 
     // Re-attach to a session that is already running, so a page reload never
     // orphans the monitor.

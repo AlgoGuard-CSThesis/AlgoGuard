@@ -32,6 +32,7 @@ from cloud_repository import RepositoryError
 from cloud_sync import audit
 from model_runtime import ModelDeliveryError
 from services import live_monitor_service as legacy
+from services.alert_policy import severity_for_confidence
 from services.traffic_source_service import (
     LiveCaptureSource,
     TrafficSourceCancelled,
@@ -90,7 +91,7 @@ def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=
     }
     if result["prediction"] == "Attack":
         body["alert"] = {
-            "severity_level": "High",
+            "severity_level": severity_for_confidence(result["confidence"]),
             "alert_status": "Open",
             "description": (
                 f"Attack detected by {body['prediction']['model_name']} "

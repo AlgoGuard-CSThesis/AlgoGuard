@@ -10,6 +10,27 @@ class SimulationServiceError(RuntimeError):
     """Raised when manual prediction cannot safely use the active deployment."""
 
 
+# Readable labels and hints for the UNSW-NB15 features the bundled models use.
+# Units follow services/flow_tracker_service.py, which computes the same features.
+FEATURE_GUIDE = {
+    "dur": ("Duration", "Flow length in seconds."),
+    "proto": ("Protocol", "Transport protocol, for example tcp, udp, or icmp."),
+    "service": ("Service", "Application service such as http, dns, or ftp; - when unknown."),
+    "state": ("Connection state", "Connection state, for example FIN, CON, INT, or REQ."),
+    "spkts": ("Source packets", "Packets sent by the source."),
+    "dpkts": ("Destination packets", "Packets sent by the destination."),
+    "sbytes": ("Source bytes", "Bytes sent by the source."),
+    "dbytes": ("Destination bytes", "Bytes sent by the destination."),
+    "rate": ("Packet rate", "Packets per second across both directions."),
+    "sttl": ("Source TTL", "Time-to-live of the source's packets."),
+    "dttl": ("Destination TTL", "Time-to-live of the destination's packets."),
+    "sload": ("Source load", "Source bits per second."),
+    "dload": ("Destination load", "Destination bits per second."),
+    "sinpkt": ("Source packet gap", "Mean time between source packets, in milliseconds."),
+    "dinpkt": ("Destination packet gap", "Mean time between destination packets, in milliseconds."),
+}
+
+
 def _display_default(value, is_numeric):
     """Render a stored feature default without float noise (0.0045000000000000005)."""
     if value is None:
@@ -40,15 +61,17 @@ def schema_for_artifact(artifact, deployment):
     """Form metadata for one verified artifact (legacy deployment or cloud manifest)."""
     numeric_columns = set(artifact.get("numeric_columns") or [])
     defaults = artifact.get("feature_defaults") or {}
-    fields = [
-        {
+    fields = []
+    for column in artifact.get("feature_columns", []):
+        # Custom datasets keep their own column names, shown title-cased without a hint.
+        label, hint = FEATURE_GUIDE.get(column, (str(column).replace("_", " ").title(), None))
+        fields.append({
             "name": column,
-            "label": str(column).replace("_", " ").title(),
+            "label": label,
+            "hint": hint,
             "type": "number" if column in numeric_columns else "text",
             "default": _display_default(defaults.get(column), column in numeric_columns),
-        }
-        for column in artifact.get("feature_columns", [])
-    ]
+        })
     return {
         "available": True,
         "message": None,

@@ -39,12 +39,12 @@
 
         <div>
             <label class="form-label" for="password">Initial password</label>
-            <input class="form-control" id="password" name="password" type="password" minlength="12" maxlength="128" required aria-describedby="passwordRules">
+            <input class="form-control" id="password" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required aria-describedby="passwordRules">
         </div>
 
         <div>
             <label class="form-label" for="confirm_password">Confirm password</label>
-            <input class="form-control" id="confirm_password" name="confirm_password" type="password" minlength="12" maxlength="128" required>
+            <input class="form-control" id="confirm_password" name="confirm_password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
         </div>
 
         <p class="password-rules" id="passwordRules">12&ndash;128 characters with upper- and lower-case letters, a digit, and a symbol. The password goes to the hosted account function only and is never stored by AlgoGuard.</p>
@@ -101,7 +101,7 @@
                                 </select>
                                 <button class="btn btn-sm btn-outline-light" type="submit">Set role</button>
                             </form>
-                            <form class="inline-form" method="post">
+                            <form class="inline-form" method="post"{% if account.is_active %} data-confirm="Deactivate {{ account.username }}? They cannot sign in until an administrator reactivates the account."{% endif %}>
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="request_id" value="{{ account.status_request_id }}">
                                 <input type="hidden" name="action" value="account_status">
@@ -120,8 +120,8 @@
         </div>
         {% if next_offset or offset %}
         <nav class="pagination-bar" aria-label="Account pages">
-            {% if offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('manage_admins', offset=[offset - 50, 0]|max) }}"><i class="bi bi-chevron-left"></i></a>{% endif %}
-            {% if next_offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('manage_admins', offset=next_offset) }}"><i class="bi bi-chevron-right"></i></a>{% endif %}
+            {% if offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('manage_admins', offset=[offset - 50, 0]|max) }}" aria-label="Previous page"><i class="bi bi-chevron-left" aria-hidden="true"></i></a>{% endif %}
+            {% if next_offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('manage_admins', offset=next_offset) }}" aria-label="Next page"><i class="bi bi-chevron-right" aria-hidden="true"></i></a>{% endif %}
         </nav>
         {% endif %}
     </div>

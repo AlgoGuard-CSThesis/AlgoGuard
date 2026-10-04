@@ -37,13 +37,15 @@
 
         <div>
             <label class="form-label" for="password">Password</label>
-            <input class="form-control" id="password" name="password" type="password" minlength="6" required>
+            <input class="form-control" id="password" name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required aria-describedby="passwordRules">
         </div>
 
         <div>
             <label class="form-label" for="confirm_password">Confirm Password</label>
-            <input class="form-control" id="confirm_password" name="confirm_password" type="password" minlength="6" required>
+            <input class="form-control" id="confirm_password" name="confirm_password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required>
         </div>
+
+        <p class="password-rules" id="passwordRules">12&ndash;128 characters with upper- and lower-case letters, a digit, and a symbol.</p>
 
         <button class="btn btn-accent w-100" type="submit">
             <i class="bi bi-person-plus"></i>

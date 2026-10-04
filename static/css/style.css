@@ -8,6 +8,40 @@
  */
 @import url("./legacy-ui.css");
 
+/* Native controls (date pickers, select menus, scrollbars) follow the dark theme. */
+:root {
+    color-scheme: dark;
+}
+
+.form-control::placeholder {
+    color: var(--muted);
+    opacity: 1;
+}
+
+/* Bootstrap reads disabled and focus colors from these variables. The custom accent
+   button defined none, so a disabled one fell back to a bright white outline and an
+   enabled one had no keyboard focus ring. */
+.btn-accent {
+    --bs-btn-disabled-color: #03130a;
+    --bs-btn-disabled-bg: var(--green);
+    --bs-btn-disabled-border-color: rgba(55, 214, 122, 0.55);
+    --bs-btn-disabled-opacity: 0.4;
+    --bs-btn-focus-shadow-rgb: 55, 214, 122;
+}
+
+.app-nav .nav-link:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
+.app-nav .nav-link.active {
+    box-shadow: inset 0 -2px 0 var(--cyan);
+}
+
+.text-muted-soft {
+    color: var(--muted);
+}
+
 .heading-actions {
     display: flex;
     flex: 0 0 auto;
@@ -15,6 +49,10 @@
 }
 
 .btn-outline-light {
+    --bs-btn-disabled-color: var(--muted);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--line);
+    --bs-btn-focus-shadow-rgb: 34, 211, 238;
     border-color: var(--line);
     color: var(--text);
     background: rgba(255, 255, 255, 0.02);
@@ -27,6 +65,45 @@
     background: rgba(34, 211, 238, 0.1);
 }
 
+/* The legacy theme only colored badges; give every badge the same pill shape. */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.16rem 0.55rem;
+    border-width: 1px;
+    border-style: solid;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    white-space: nowrap;
+}
+
+.status-badge.severity-high,
+.status-badge.review-open {
+    border-color: rgba(255, 92, 114, 0.42);
+    color: var(--red);
+    background: rgba(255, 92, 114, 0.1);
+}
+
+.status-badge.severity-medium {
+    border-color: rgba(242, 184, 75, 0.4);
+    color: var(--amber);
+    background: rgba(242, 184, 75, 0.1);
+}
+
+.status-badge.severity-low,
+.status-badge.review-acknowledged {
+    border-color: rgba(34, 211, 238, 0.42);
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.08);
+}
+
+.status-badge.review-resolved {
+    border-color: rgba(55, 214, 122, 0.38);
+    color: var(--green);
+    background: rgba(55, 214, 122, 0.1);
+}
+
 .status-badge.success,
 .status-badge.status-completed,
 .status-badge.status-success,
@@ -37,6 +114,7 @@
 }
 
 .status-badge.warning,
+.status-badge.status-warning,
 .status-badge.status-pending,
 .status-badge.status-started,
 .status-badge.status-in_progress,
@@ -193,7 +271,7 @@
 
 .filter-grid {
     display: grid;
-    grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(125px, 0.75fr)) 90px 130px 130px auto;
+    grid-template-columns: minmax(220px, 1.6fr) repeat(3, minmax(125px, 0.75fr)) 90px minmax(150px, 0.8fr) minmax(150px, 0.8fr) auto;
     align-items: end;
     gap: 0.65rem;
 }
@@ -908,4 +986,37 @@ code {
 .feed-table.cloud-feed th {
     padding-right: 0.26rem;
     padding-left: 0.26rem;
+}
+
+.field-code {
+    margin-left: 0.3rem;
+    padding: 0;
+    border: 0;
+    color: var(--muted);
+    background: none;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+.form-hint {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.alert-table .inline-form {
+    flex-wrap: nowrap;
+}
+
+/* Honor the operating system's reduced-motion setting (pulsing LIVE dot, signal panel). */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
