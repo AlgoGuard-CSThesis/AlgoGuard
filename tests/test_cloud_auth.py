@@ -1,17 +1,24 @@
+import json
 import time
 from concurrent.futures import ThreadPoolExecutor
 from types import SimpleNamespace
 from typing import cast
 from uuid import uuid4
 
+import jwt
 import pytest
+from cryptography.hazmat.primitives.asymmetric import ec
 from flask import Flask
 from flask import session as flask_session
+from jwt.algorithms import ECAlgorithm
 
 from cloud_auth import CloudAuth, CloudIdentity, MemorySession, MemorySessionInterface
 from cloud_repository import RepositoryError
+from token_verification import JwksCache, issuer_for
 
 session = cast(MemorySession, flask_session)
+
+PROJECT_URL = "http://localhost:54321"
 
 
 def identity(**kwargs):
@@ -134,3 +141,58 @@ def test_refresh_failure_backs_off_while_the_token_is_still_valid(monkeypatch):
     original.refresh_after = 0.0
     auth.repository(original)
     assert len(calls) == 2
+
+
+def signed_auth(monkeypatch):
+    """A CloudAuth that verifies real signatures and finds one active analyst."""
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    public_jwk = json.loads(ECAlgorithm.to_jwk(private_key.public_key()))
+    public_jwk.update({"kid": "ec-key-1", "alg": "ES256", "use": "sig"})
+    keys = JwksCache(PROJECT_URL, fetcher=lambda *a: {"keys": [public_jwk]})
+    auth = CloudAuth(PROJECT_URL, "sb_publishable_test", uuid4(), jwks=keys)
+    profile = {"profile_id": 1, "username": "user", "is_active": True}
+    repo = SimpleNamespace(
+        _request=lambda *a, **k: [profile],
+        list_records=lambda *a, **k: SimpleNamespace(rows=[{"role": "analyst"}]),
+    )
+    monkeypatch.setattr(auth, "_transport", lambda *a: repo)
+
+    def mint(*, issued_at, expires_at):
+        claims = {
+            "sub": str(uuid4()),
+            "aud": "authenticated",
+            "iss": issuer_for(PROJECT_URL),
+            "iat": int(issued_at),
+            "exp": int(expires_at),
+        }
+        return jwt.encode(claims, private_key, algorithm="ES256", headers={"kid": "ec-key-1"})
+
+    return auth, mint
+
+
+def test_sign_in_survives_a_computer_clock_a_few_seconds_slow(monkeypatch):
+    # Stage 5F pilot: PC A ran 2-7 s behind Supabase, so every fresh token's
+    # issue time looked like the future and correct passwords were refused.
+    auth, mint = signed_auth(monkeypatch)
+    now = time.time()
+    token = mint(issued_at=now + 7, expires_at=now + 3607)
+    signed_in = auth.authenticate_access(token, "refresh")
+    assert signed_in.username == "user" and signed_in.active
+
+
+def test_clock_tolerance_is_bounded(monkeypatch):
+    auth, mint = signed_auth(monkeypatch)
+    now = time.time()
+    with pytest.raises(RepositoryError, match="authentication"):
+        auth.authenticate_access(mint(issued_at=now + 60, expires_at=now + 3660))
+
+
+def test_clock_tolerance_never_extends_an_expired_token(monkeypatch):
+    # Verification tolerates skew, but the identity keeps the real expiry,
+    # and every request is checked against it without tolerance.
+    auth, mint = signed_auth(monkeypatch)
+    now = time.time()
+    bearer = auth.authenticate_access(mint(issued_at=now - 3605, expires_at=now - 5))
+    with pytest.raises(RepositoryError, match="authentication"):
+        auth.repository(bearer)
+    assert not bearer.active

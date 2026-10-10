@@ -88,9 +88,12 @@ class CloudAuth:
         )
 
     def _verify(self, token):
+        # The default leeway absorbs a few seconds of clock skew, so a computer
+        # running slow does not see a fresh token's `iat` as the future. Expiry
+        # stays exact: identities keep the real `exp`, which repository() enforces.
         try:
             with self.key_lock:
-                return verify_token(token, keys=self.keys, issuer=issuer_for(self.url), leeway=0)
+                return verify_token(token, keys=self.keys, issuer=issuer_for(self.url))
         except SigningKeysUnavailable:
             raise RepositoryError("transient") from None
         except TokenError:
