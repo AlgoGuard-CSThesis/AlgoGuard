@@ -4,6 +4,8 @@
 Kanban Board
 https://github.com/users/pqauoz/projects/5/views/1
 ---
+Testing Kanban Board
+https://github.com/users/bry22191919-hash/projects/4/views/2
 
 AlgoGuard is a local Flask application that detects anomalies in network traffic using a deployed Stacking Ensemble. The web application is **inference-only**: it classifies traffic flow by flow in the Live Monitor, or one record at a time on the Prediction page. Model training and deployment happen offline through `train.py`, so the running detector is never disturbed by a training job.
 
