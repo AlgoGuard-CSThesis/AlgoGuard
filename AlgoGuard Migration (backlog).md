@@ -365,28 +365,37 @@ the local Edge Runtime was restarted; earlier failures are retained in the
 **Exit:** two installations share the system safely, with measured performance
 and documented limits. Research claims remain limited until 6A.
 
-A local two-client smoke now passes. Physical two-installation capture, network
-measurements, and performance limits remain open; see
-[the two-computer runbook](docs/migration/05f-two-computer-runbook.md) and
-[the Stage 5F record](docs/migration/05f-pilot.md).
+Accepted with documented limits on 2026-10-16. The physical two-computer pilot
+ran against the hosted pilot from 2026-10-08 to 2026-10-16; see
+[the Stage 5F record](docs/migration/05f-pilot.md) and
+[the corrected runbook](docs/migration/05f-two-computer-runbook.md). Limits
+L1–L6 in the record are carried into Iteration 6.
 
 ### 5F.1 Run the simultaneous two-node acceptance scenario
 
-- [ ] Two Windows installations retain distinct UUIDs across restart, require
+- [x] Two Windows installations retain distinct UUIDs across restart, require
   approved membership, and default to their own node's ordinary views.
-- [ ] Each downloads a verified model into an empty cache and runs CSV, PCAP,
-  live capture, and manual/API prediction without local training.
+- [x] Each downloads a verified model into an empty cache and runs CSV, PCAP,
+  live capture, and manual/API prediction without local training. (PC A's live
+  run used the Administrator account; limit L5.)
 - [x] Direct cross-node read/write, relationship, membership, role, and manifest
-  probes fail as specified. An Administrator can read both nodes.
+  probes fail as specified. An Administrator can read both nodes. (Also checked
+  on the hosted pilot with each account's own access, 2026-10-16.)
 - [x] Revoke access with an unexpired token present; protected current records
-  block subsequent cloud operations.
+  block subsequent cloud operations. (Physical Test F, 2026-10-16. After restore,
+  the client needs Retry uploads or a new sign-in; finding 5.)
 
 ### 5F.2 Measure throughput, delay, and resource limits
 
-- [ ] Record hardware, traffic rates, network latency, and acceptance budgets
-  before tuning. Include slow and unavailable endpoints.
-- [ ] Measure packet loss, flow throughput, event-to-verdict lag, local spool
-  latency, backlog age, sync delay, and total disk/RAM use.
+- [x] Record hardware, traffic rates, network latency, and acceptance budgets
+  before tuning. Include slow and unavailable endpoints. (Budgets agreed
+  2026-10-08 before Test A. Unavailable endpoint tested in Test E; slow endpoint
+  not exercised, limit L5.)
+- [x] Measure packet loss, flow throughput, event-to-verdict lag, local spool
+  latency, backlog age, sync delay, and total disk/RAM use. (Two budgets not met
+  as agreed: sustained ≥ 20 events/s not demonstrated (L1), and p95 upload
+  exceeded 5 s on one live run (L2). Live lag recorded on PC B only; local
+  enqueue time not measured separately.)
 - [x] Local regression tests verify the 300-event cap with pending writes,
   pending-event replay under the original user after restart, lifecycle-summary
   preservation, terminal stop under stalled local storage, and capture
@@ -395,11 +404,15 @@ measurements, and performance limits remain open; see
 - [x] On this Npcap-equipped computer, real loopback capture reached cloud
   persistence, and the maintenance-capture test excluded owned database
   connections while leaving a separate connection to that endpoint visible.
-- [ ] Verify cap and pending-write behavior across physical-client restarts,
+- [x] Verify cap and pending-write behavior across physical-client restarts,
   bounded shutdown against slow/unavailable network endpoints, unrelated HTTPS
   visibility during Npcap live capture, and session summaries on both clients.
-- [ ] Measure projected shared storage/backup growth against actual capacity;
+  (Shutdown with the endpoint unreachable took under 10 s. An interrupted
+  capture can stay `running` in the cloud, limit L4.)
+- [x] Measure projected shared storage/backup growth against actual capacity;
   changes to defaults require evidence and corresponding document/test updates.
+  (About 3.6 KB per stored event; 23.1 MB of the Free plan's 500 MB used. No
+  defaults were changed.)
 
 ### 5F.3 Close Iteration 5 with pilot evidence
 
@@ -410,8 +423,9 @@ measurements, and performance limits remain open; see
   physical-pilot gates in [the Stage 5F record](docs/migration/05f-pilot.md).
 - [x] Write `docs/migration/05f-pilot.md` with local results and remaining
   physical-pilot gates.
-- [ ] After the physical pilot is reviewed, write an Iteration 5 summary linking
-  all six stage records before the manual stage commit.
+- [x] After the physical pilot is reviewed, write an Iteration 5 summary linking
+  all six stage records before the manual stage commit
+  ([Iteration 5 summary](docs/migration/05-iteration-summary.md)).
 
 ---
 

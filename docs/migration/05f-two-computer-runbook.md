@@ -2,8 +2,11 @@
 
 Use this after the local checks in `05f-pilot.md`. It is written for two
 separate Windows computers and the isolated hosted pilot project. It does not
-need a Git commit. Stage 5F remains open until the results are recorded and
-reviewed.
+need a Git commit.
+
+This runbook was used for the 2026-10-08 to 2026-10-16 pilot, which accepted
+Stage 5F with documented limits. It has since been corrected with what that
+pilot found. The results are in [the Stage 5F record](05f-pilot.md).
 
 ## What this pilot should prove
 
@@ -19,6 +22,49 @@ classifies flow metadata; do not select a shared/public network interface for
 this test. Never send a service-role key, database password, JWT signing secret,
 access token, password, signed Storage URL, or `.env` file to anyone. Only the
 project URL and publishable key belong in an analyst `.env`.
+
+## 0. Provision the hosted pilot (maintainer, once)
+
+The 2026-10-08 pilot found the hosted project empty: no migrations, no
+Administrator, no Edge Function and no model. Analysts cannot fix any of that.
+The maintainer does it once, on PC A, with `.env.maintainer` (never on PC B,
+and never shared):
+
+1. Apply the schema and confirm nothing is pending:
+
+   ```powershell
+   .\venv\Scripts\python.exe cloud_migrate.py --status
+   .\venv\Scripts\python.exe cloud_migrate.py --dry-run
+   .\venv\Scripts\python.exe cloud_migrate.py --yes
+   .\venv\Scripts\python.exe cloud_migrate.py --status
+   ```
+
+2. Deploy the account-administration Edge Function. It verifies the caller's
+   bearer token itself, so the gateway JWT check is turned off:
+
+   ```powershell
+   supabase functions deploy account_admin --project-ref <pilot-ref> --no-verify-jwt
+   ```
+
+3. In the dashboard, under **Authentication**, disable public sign-up and keep
+   the email provider enabled.
+4. Create the first Administrator. The generated password is printed once:
+
+   ```powershell
+   .\venv\Scripts\python.exe bootstrap_admin.py --email <admin email> --username <name>
+   ```
+
+5. Publish exactly one model. Only models trained after Stage 5C carry the
+   runtime stamp that publication requires, so retrain first if
+   `publish_model.py` refuses an older one. Pick a new UUID once and reuse it if
+   you retry:
+
+   ```powershell
+   .\venv\Scripts\python.exe publish_model.py --model-id <id> --publication-id <uuid> --yes
+   ```
+
+6. Open `/simulation` as the Administrator and confirm it shows one active
+   deployment.
 
 ## 1. Confirm the target before installing
 
@@ -46,13 +92,20 @@ project URL and publishable key belong in an analyst `.env`.
    drop fraction, CPU/RAM limits, and allowed local/shared storage growth. If a
    target is not yet known, write `TBD` and leave that gate open rather than
    choosing a threshold after seeing the results.
+6. Synchronise both clocks before anyone signs in. In an Administrator
+   PowerShell window on each PC, run `w32tm /resync`, then
+   `w32tm /query /status`. If **Source** says `Local CMOS Clock`, Windows is not
+   syncing: start the Windows Time service and resync. In the 2026-10-08 pilot,
+   PC A's clock was 7 s slow and sign-in failed with a generic message. Since
+   `940e082` the app tolerates 10 s of skew, but upload-delay figures still
+   include any offset.
 
 ## 2. Put identical source code on both computers
 
-The working tree for this stage contains uncommitted changes. PC B needs the
-same source snapshot as PC A; cloning only the last committed revision would
-test older code. Transfer the current source folder over a private, trusted
-method. Do not transfer machine-specific state or credentials. Exclude:
+Both PCs must run the same commit. Check with `git rev-parse --short HEAD` on
+each. If PC A has uncommitted changes, cloning would test older code on PC B.
+In that case, transfer PC A's current source folder over a private, trusted
+method instead. Do not transfer machine-specific state or credentials. Exclude:
 
 - `.git`, `venv`, `node_modules`, `.algoguard`, `.local`, `backups`,
   `check-output`, `database`, `saved_models`, `reports`, and `captures`;
@@ -108,7 +161,10 @@ ALGOGUARD_STATE_DIR=C:\AlgoGuardPilot\state-PC-A
 ```
 
 On PC B, change only the final path to `C:\AlgoGuardPilot\state-PC-B` (or
-another unique local directory). Keep the URL and publishable key identical on
+another unique local directory). Do change it: in the 2026-10-08 pilot, PC B
+kept `state-PC-A`. That was harmless because the folder sits on PC B's own disk,
+but it made the records confusing. Do not rename a state folder after first
+sign-in, because that gives the PC a new node identity. Keep the URL and publishable key identical on
 both. The URL must be HTTPS. Never put a secret/service key in either file.
 Each app intentionally serves only on `127.0.0.1`; open it on that computer at
 `http://127.0.0.1:5000`. Do not expose the Flask console to the LAN.
@@ -172,7 +228,8 @@ the starts. Complete one test type on both PCs before moving to the next.
    durable, `durable_pending` means only on this PC, and only `synced` means the
    cloud has acknowledged it.
 3. Repeat once on the other PC. Verify each event is attributed to that PC's
-   analyst/node in the Administrator views. The two event UUIDs must differ.
+   analyst/node (maintainer, read-only by event UUID; see Test C). The two event
+   UUIDs must differ.
 
 ### B. PCAP replay, together
 
@@ -208,9 +265,10 @@ were saved. After replay, wait for the queue to drain and record each PC's
 `flows`, `persisted`, `synced`, `pending`, `dropped`, completion time, and
 average inference latency. Do not expect all 5,000 flows to be persisted.
 
-In the Administrator view, check that events from both node UUIDs exist, that
-each node has its own owner, and that no row has been assigned to the other
-client. Compare cloud-acknowledged totals with the clients' `synced` counts.
+Check that events from both node UUIDs exist, that each node has its own owner,
+and that no row has been assigned to the other client. Ordinary pages show only
+the local node until 6B.1, so the maintainer checks this read-only by capture
+ID. Compare cloud-acknowledged totals with the clients' `synced` counts.
 
 ### D. Live capture and cloud-traffic exclusion, once on each PC
 
@@ -222,6 +280,10 @@ dashboard in a second browser tab). Stop from the Monitor page. Record packets
 captured/dropped, excluded own traffic, flows, average detection lag, and final
 queue state. The app should not classify its own cloud requests as unrelated
 traffic.
+
+Keep each live run well under an hour. Once a capture reaches its 300-record
+cap, nothing refreshes the sign-in, so the capture stops when the access token
+expires, about 1 hour after sign-in. That is Stage 5F limit L3, owned by 6C.1.
 
 Then run the stronger same-provider check in an Administrator PowerShell window
 on **each** PC, using the exact interface name shown in that PC's Monitor list:
@@ -245,27 +307,34 @@ PC B is approved, signed in, and has downloaded the active model. Use the CSV
 source so this outage does not depend on seeing traffic on a disconnected
 network adapter.
 
-1. Start **CSV** / `algoguard_biggest.csv` (20,000 data rows) / **Fast** /
-   **All** on PC B. Immediately disconnect PC B from the Internet using
-   Windows Wi-Fi off/Airplane mode.
+1. **Practise disconnecting first.** Turn off the Wi-Fi tile in the taskbar's
+   network panel, unplug any network cable, and confirm that a website fails to
+   load. Airplane mode alone did not disconnect PC B on 2026-10-16, because
+   Windows remembers Wi-Fi being switched on during Airplane mode.
+   Reconnect afterwards.
+2. Start **CSV** / `algoguard_biggest.csv` (20,000 data rows) / **Fast** /
+   **Save every flow** on PC B **while online**: starting registers the
+   capture in the cloud and is refused offline. As soon as the first rows
+   appear, about 2 seconds later, disconnect PC B as in step 1.
    Do not disable PC A. AlgoGuard should continue classifying locally; records
-   should become **Pending** on PC B. The UI can show upload retries or cloud
-   unavailable while offline. Record the time disconnected and the pending
-   count. Stop the capture from its local page if it is still running. If this
-   replay finishes before you can disconnect, repeat once with the larger file
-   and disconnect sooner after pressing Start.
-2. In PC B's server PowerShell window, press **Ctrl+C** and wait for the app to
-   exit. Leave `ALGOGUARD_STATE_DIR` untouched. Restart `app.py` while still
-   offline; sign-in is expected to fail because login is online-only. This does
-   not mean the outbox was lost.
-3. Reconnect PC B to the Internet, then sign in with the **same PC B analyst**.
+   should become **Pending** on PC B. While nothing has uploaded yet, the
+   upload status may still look normal; the cloud simply stops receiving.
+   With Fast pacing, the 300-record cap is reached about 105 s after Start.
+   After about 2 minutes, note **Pending upload** and press **Stop**.
+3. In PC B's server PowerShell window, press **Ctrl+C** and wait for the app to
+   exit; note roughly how long it takes. Leave `ALGOGUARD_STATE_DIR` untouched.
+   Restart `app.py` while still offline; sign-in is expected to fail because
+   login is online-only. This does not mean the outbox was lost.
+4. Reconnect PC B to the Internet, then sign in with the **same PC B analyst**.
    Open the dashboard and wait for upload to recover. Pending should decrease
-   to zero and become synced. Record reconnect-to-last-sync time and counts.
+   to zero and become synced. Uploads resume only after this sign-in, so time
+   recovery from the sign-in. The cloud's `received_at` values give the exact
+   times.
    Do not delete, move, or export the state directory during this test.
-4. In the Administrator views, confirm the recovered records appear once under
-   PC B's node and owner. Compare unique events/receipts before and after; a
-   retry should not create duplicates. PC A's node and records should be
-   unaffected.
+5. Confirm the recovered records appear once under PC B's node and owner. The
+   maintainer can check this read-only by capture ID. Compare unique
+   events/receipts before and after; a retry should not create duplicates.
+   PC A's node and records should be unaffected.
 
 If the test unexpectedly reports `rejected` or `blocked`, stop and preserve the
 local state directory for diagnosis; do not clear the queue or retry as another
@@ -278,11 +347,21 @@ stopped. In the Administrator **Nodes and Membership** page, revoke only PC B
 analyst's membership on PC B's node. Do not deactivate the account.
 
 Without logging out on PC B, try one manual prediction and try to start a new
-capture. Both should be refused for missing approved membership. PC B should
-remain signed in so the blocked state and any exportable pending data remain
-visible. Confirm PC A still works and the Administrator can still review both
-nodes' old records. Then use the **Restore** action for that exact PC B
-membership, refresh PC B, and confirm access works again. Record the result.
+capture. Both should be refused for missing approved membership. Write down the
+wording of each refusal. PC B should remain signed in so the blocked state and
+any exportable pending data remain visible. Confirm PC A still works.
+
+Ordinary pages, including the Administrator's Alert History, show only the
+installation's own node until 6B.1. So the Administrator cannot review PC B's
+records from PC A in the app. Cross-node reads are covered by the integration
+tests. On the hosted pilot, they can also be checked read-only in SQL under each
+account's own access; see §3 of the Stage 5F record.
+
+Then use the **Restore** action for that exact PC B membership. On PC B, open
+the **Dashboard** and press **Retry uploads**, or sign out and in again. The
+earlier refusal left a local permission block, and a page refresh does not
+clear it. Until then, every Start opens an empty capture in the cloud and stops
+at once. Then confirm that a capture runs. Record the result.
 
 ## 5. Capture network and resource measurements
 
@@ -347,7 +426,7 @@ show emails, passwords, tokens, or signed URLs.
 | Live + exclusion | A | Online/Npcap | | | | | | | | |
 | Live + exclusion | B | Online/Npcap | | | | | | | | |
 | Offline/restart | B | Disconnect/reconnect | | | | | | | | |
-| Revocation | B | Valid login, membership revoked/restored | | | | | | | |
+| Revocation | B | Valid login, membership revoked/restored | | | | | | | | |
 
 Also record the ten latency samples per PC, p50/p95, node UUIDs, model
 manifest/deployment IDs and object SHA-256, migration/version confirmation, and
