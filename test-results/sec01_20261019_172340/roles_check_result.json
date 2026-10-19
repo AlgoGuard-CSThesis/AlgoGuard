@@ -1,0 +1,39 @@
+{
+  "time": "2026-10-20 04:52:50",
+  "account": "cycle1_roles_test",
+  "role": "Analyst",
+  "sign_in": {
+    "final_url": "/",
+    "title": "AlgoGuard Dashboard",
+    "messages": [
+      "Welcome back to AlgoGuard."
+    ]
+  },
+  "/admins": {
+    "first_status": 302,
+    "redirect_to": "/",
+    "final_url": "/",
+    "final_status": 200,
+    "final_title": "AlgoGuard Dashboard",
+    "messages": [
+      "Only Administrator accounts can manage admin users.",
+      "Only Administrator accounts can manage admin users."
+    ]
+  },
+  "/nodes": {
+    "first_status": 404,
+    "redirect_to": "",
+    "final_url": "/nodes",
+    "final_status": 404,
+    "final_title": "404 Not Found",
+    "messages": []
+  },
+  "/dashboard": {
+    "first_status": 404,
+    "redirect_to": "",
+    "final_url": "/dashboard",
+    "final_status": 404,
+    "final_title": "404 Not Found",
+    "messages": []
+  }
+}

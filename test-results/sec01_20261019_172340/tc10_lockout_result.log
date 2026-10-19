@@ -1,0 +1,61 @@
+{'attempt': 1, 'time': '2026-10-20 04:51:21', 'http_status': 200, 'messages': ['Invalid username or password.']}
+{'attempt': 2, 'time': '2026-10-20 04:51:21', 'http_status': 200, 'messages': ['Invalid username or password.']}
+{'attempt': 3, 'time': '2026-10-20 04:51:22', 'http_status': 200, 'messages': ['Invalid username or password.']}
+{'attempt': 4, 'time': '2026-10-20 04:51:22', 'http_status': 200, 'messages': ['Invalid username or password.']}
+{'attempt': 5, 'time': '2026-10-20 04:51:23', 'http_status': 200, 'messages': ['Invalid username or password.']}
+{'attempt': 6, 'time': '2026-10-20 04:51:23', 'http_status': 429, 'messages': ['Too many failed sign-in attempts. Try again in 15 minutes.']}
+{
+  "base": "http://127.0.0.1:5001",
+  "account": "admin",
+  "passwords": "made-up wrong values only (not recorded)",
+  "attempts": [
+    {
+      "attempt": 1,
+      "time": "2026-10-20 04:51:21",
+      "http_status": 200,
+      "messages": [
+        "Invalid username or password."
+      ]
+    },
+    {
+      "attempt": 2,
+      "time": "2026-10-20 04:51:21",
+      "http_status": 200,
+      "messages": [
+        "Invalid username or password."
+      ]
+    },
+    {
+      "attempt": 3,
+      "time": "2026-10-20 04:51:22",
+      "http_status": 200,
+      "messages": [
+        "Invalid username or password."
+      ]
+    },
+    {
+      "attempt": 4,
+      "time": "2026-10-20 04:51:22",
+      "http_status": 200,
+      "messages": [
+        "Invalid username or password."
+      ]
+    },
+    {
+      "attempt": 5,
+      "time": "2026-10-20 04:51:23",
+      "http_status": 200,
+      "messages": [
+        "Invalid username or password."
+      ]
+    },
+    {
+      "attempt": 6,
+      "time": "2026-10-20 04:51:23",
+      "http_status": 429,
+      "messages": [
+        "Too many failed sign-in attempts. Try again in 15 minutes."
+      ]
+    }
+  ]
+}

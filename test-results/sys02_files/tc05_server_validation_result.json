@@ -1,0 +1,38 @@
+C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\sklearn\utils\_array_api.py:976: RuntimeWarning: overflow encountered in cast
+  array = numpy.asarray(array, order=order, dtype=dtype)
+[
+  {
+    "case": "control: TC-01 Normal row",
+    "outcome": "ACCEPTED",
+    "prediction": "Normal",
+    "confidence": 84.11
+  },
+  {
+    "case": "a. missing field (dur absent)",
+    "outcome": "ACCEPTED",
+    "prediction": "Normal",
+    "confidence": 56.67
+  },
+  {
+    "case": "a2. empty field (dur = '')",
+    "outcome": "ACCEPTED",
+    "prediction": "Normal",
+    "confidence": 56.67
+  },
+  {
+    "case": "b. text in a numeric field (spkts = 'abc')",
+    "outcome": "REJECTED",
+    "message": "spkts must contain a finite numerical value."
+  },
+  {
+    "case": "c. out-of-range number (sbytes = '1e308')",
+    "outcome": "REJECTED",
+    "message": "Prediction failed: Input X contains infinity or a value too large for dtype('float32')."
+  },
+  {
+    "case": "d. negative byte count (sbytes = '-5')",
+    "outcome": "ACCEPTED",
+    "prediction": "Normal",
+    "confidence": 86.65
+  }
+]

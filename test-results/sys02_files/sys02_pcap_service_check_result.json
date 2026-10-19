@@ -1,0 +1,37 @@
+WARNING: Pcap: packet has been truncated
+[
+  {
+    "file": "cycle1-tc04-sample.pcap",
+    "outcome_type": "read",
+    "packets": 82,
+    "flows": 11,
+    "attack": 10,
+    "normal": 1,
+    "end_reasons": [
+      "fin",
+      "flush"
+    ]
+  },
+  {
+    "file": "cycle1-bad-empty.pcap",
+    "outcome_type": "refused (TrafficSourceError)",
+    "message": "Unable to read the packet capture: No data could be read!"
+  },
+  {
+    "file": "cycle1-bad-text.pcap",
+    "outcome_type": "refused (TrafficSourceError)",
+    "message": "Unable to read the packet capture: Not a supported capture file"
+  },
+  {
+    "file": "cycle1-bad-truncated.pcap",
+    "outcome_type": "read",
+    "packets": 49,
+    "flows": 7,
+    "attack": 6,
+    "normal": 1,
+    "end_reasons": [
+      "fin",
+      "flush"
+    ]
+  }
+]
