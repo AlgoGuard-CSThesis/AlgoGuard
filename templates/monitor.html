@@ -148,7 +148,7 @@
             </div>
             <span class="status-pill active">{{ deployment.model_name }}</span>
         </div>
-        <div class="table-responsive monitor-feed-scroll">
+        <div class="table-responsive monitor-feed-scroll" tabindex="0" role="region" aria-label="Live monitor feed">
             <table class="table table-dark table-hover align-middle mb-0 feed-table{% if config.CLOUD_MODE %} cloud-feed{% endif %}">
                 <thead>
                     <tr>

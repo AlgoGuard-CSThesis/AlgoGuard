@@ -786,6 +786,12 @@ code {
     overflow-y: auto;
 }
 
+/* The feed scrolls on its own, so it takes keyboard focus; show where that focus is. */
+.monitor-feed-scroll:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 2px;
+}
+
 .feed-table td,
 .feed-table th {
     font-size: 0.82rem;
