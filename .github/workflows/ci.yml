@@ -4,7 +4,6 @@ name: CI
 
 on:
   push:
-    branches: [main]
   pull_request:
 
 permissions:
@@ -48,8 +47,8 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
-      - name: Unit tests
-        run: .\venv\Scripts\python.exe -m pytest -q
+      - name: Unit tests and coverage
+        run: .\venv\Scripts\python.exe -m pytest --cov=services --cov-report=term-missing --cov-fail-under=80 -q
 
       - name: Browser polling tests
         run: node --test tests/monitor_poll.test.cjs
