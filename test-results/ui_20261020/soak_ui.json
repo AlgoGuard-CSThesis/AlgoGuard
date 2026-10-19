@@ -1,0 +1,81 @@
+{
+  "started": "2026-10-20 06:27:23",
+  "stopped": "2026-10-20 06:57:25",
+  "elapsed_s": 1800,
+  "readings": [
+    {
+      "time": "2026-10-20 06:32:24",
+      "elapsed_s": 300,
+      "flows": "498",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 229.687 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-20 06:37:24",
+      "elapsed_s": 600,
+      "flows": "1,025",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 214.931 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-20 06:42:24",
+      "elapsed_s": 900,
+      "flows": "1,548",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 210.852 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-20 06:47:24",
+      "elapsed_s": 1201,
+      "flows": "2,043",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 216.596 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-20 06:52:24",
+      "elapsed_s": 1501,
+      "flows": "2,477",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 233.244 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-20 06:57:24",
+      "elapsed_s": 1800,
+      "flows": "2,972",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 232.813 ms",
+      "message": ""
+    }
+  ],
+  "final": {
+    "statFlows": "2,972",
+    "statProgress": "2,972 of 20,000 flows",
+    "statAttacks": "2,027",
+    "statRatio": "68.20% of the stream",
+    "statNormals": "945",
+    "statAlerts": "300",
+    "statLatency": "Average latency 232.813 ms",
+    "statDeployment": "#1 (pinned for this capture)",
+    "statMismatches": "181",
+    "statPersisted": "300 (capped)",
+    "statSynced": "300",
+    "statPending": "0",
+    "statDropped": "1,727",
+    "statUpload": "active",
+    "statLag": "12325.7 ms avg",
+    "statCapture": "8,722 (1,025 own traffic)",
+    "message": ""
+  },
+  "flows_per_second": 1.651
+}
