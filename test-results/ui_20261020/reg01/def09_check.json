@@ -1,0 +1,29 @@
+{
+  "corrupt": {
+    "time": "2026-10-20 06:59:33",
+    "file": "1-9c9f0fb185...",
+    "bytes": 8558646,
+    "changed_offset": 4279323,
+    "backup": "C:\\AlgoGuardPilot\\REG01-backup-models-20261020",
+    "backup_sha_ok": true,
+    "cache_sha_matches_now": false
+  },
+  "check_corrupt": {
+    "time": "2026-10-20 07:01:13",
+    "dashboard_model_pill": "Unavailable here",
+    "dashboard_warning": "Not usable on this computer: The cached model is corrupt. Remove it and retry.",
+    "messages": [],
+    "manual_prediction_page": "MANUAL TRAFFIC FLOW Manual Prediction Classify one network flow with the active deployed AlgoGuard model. Live Monitor No active deployment The cached model is corrupt. Remove it and retry. The maintainer publishes verified models; analyst installations never train locally. Back to Dashboard"
+  },
+  "restore": {
+    "time": "2026-10-20 07:01:18",
+    "cache_sha_ok": true
+  },
+  "check_restored": {
+    "time": "2026-10-20 07:01:27",
+    "dashboard_model_pill": "Deployed",
+    "dashboard_warning": "",
+    "messages": [],
+    "manual_prediction_page": "MANUAL TRAFFIC FLOW Manual Prediction Classify one network flow with the active deployed AlgoGuard model. Live Monitor FLOW INPUT Network Features 15 fields Duration dur Flow length in seconds. Protocol proto Transport protocol, for example tcp, udp, or icmp. Service service Application service such as http, dns, or ftp; - when unknown. Connection state state Connection state, for example FIN, CON"
+  }
+}

@@ -1,0 +1,36 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m ruff check .
+
+E501 Line too long (102 > 100)
+  --> test-results\ui_20261020\lighthouse\summarise_lighthouse.py:16:101
+   |
+14 |     for ref in refs:
+15 |         audit = audits[ref["id"]]
+16 |         if audit.get("scoreDisplayMode") in ("binary", "numeric") and audit.get("score") is not None \
+   |                                                                                                     ^^
+17 |                 and audit["score"] < 1:
+18 |             items = (audit.get("details") or {}).get("items") or []
+   |
+
+E501 Line too long (112 > 100)
+  --> test-results\ui_20261020\lighthouse\summarise_lighthouse.py:21:101
+   |
+19 |             failed.append({"id": ref["id"], "title": audit["title"], "weight": ref.get("weight"),
+20 |                            "items": len(items),
+21 |                            "examples": [((i.get("node") or {}).get("snippet") or "")[:120] for i in items[:3]]})
+   |                                                                                                     ^^^^^^^^^^^^
+22 |     sr = audits.get("scrollable-region-focusable", {})
+23 |     summary[name] = {
+   |
+
+E501 Line too long (102 > 100)
+  --> test-results\ui_20261020\lighthouse\summarise_lighthouse.py:28:101
+   |
+26 |         "accessibility_score": round(report["categories"]["accessibility"]["score"] * 100),
+27 |         "failed_audits": failed,
+28 |         "scrollable_region_focusable": {"score": sr.get("score"), "mode": sr.get("scoreDisplayMode")},
+   |                                                                                                     ^^
+29 |     }
+30 | (HERE / "lighthouse_summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False),
+   |
+
+Found 3 errors.

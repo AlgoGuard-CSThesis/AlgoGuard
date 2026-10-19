@@ -1,0 +1,6 @@
+file research\dataset\raw\UNSW_NB15_training-set.csv sha256 734fe6642edf758f...
+columns in file 45 - includes id: False attack_cat: True
+training feature columns 15 ['dur', 'proto', 'service', 'state', 'spkts', 'dpkts', 'sbytes', 'dbytes', 'rate', 'sttl', 'dttl', 'sload', 'dload', 'sinpkt', 'dinpkt']
+same set as the 15 live flow features: True
+id used: False | attack_cat used: False
+Note (2026-10-20 07:13): the file starts with a UTF-8 byte-order mark, so its first column name reads as '\ufeffid'; that is why the line above says 'includes id: False'. It is the id column, and it is not among the 15 training columns. Build 128855e.

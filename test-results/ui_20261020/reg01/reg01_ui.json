@@ -1,0 +1,293 @@
+{
+  "started": "2026-10-20 07:01:35",
+  "tc05": {
+    "flows_before": "2,277",
+    "c_1e308_form": {
+      "time": "2026-10-20 07:01:45",
+      "validation_message": "",
+      "messages": [
+        "sbytes is too large to classify; enter a smaller value."
+      ],
+      "result_shown": false,
+      "result_cards_before": 0
+    },
+    "d_negative_form": {
+      "time": "2026-10-20 07:01:50",
+      "validation_message": "Value must be greater than or equal to 0.",
+      "messages": [],
+      "result_shown": false,
+      "result_cards_before": 0
+    },
+    "d_negative_form_no_browser_check": {
+      "time": "2026-10-20 07:01:54",
+      "validation_message": "Value must be greater than or equal to 0.",
+      "messages": [
+        "sbytes cannot be negative."
+      ],
+      "result_shown": false,
+      "result_cards_before": 0
+    },
+    "api_sbytes_-5": {
+      "time": "2026-10-20 07:01:58",
+      "status": 400,
+      "body": "{\"message\":\"sbytes cannot be negative.\",\"status\":\"error\"}\n"
+    },
+    "api_dur_-1": {
+      "time": "2026-10-20 07:01:59",
+      "status": 400,
+      "body": "{\"message\":\"dur cannot be negative.\",\"status\":\"error\"}\n"
+    },
+    "api_sbytes_1e+308": {
+      "time": "2026-10-20 07:02:00",
+      "status": 400,
+      "body": "{\"message\":\"sbytes is too large to classify; enter a smaller value.\",\"status\":\"error\"}\n"
+    },
+    "flows_after": "2,277"
+  },
+  "pcap": {
+    "cycle1-bad-truncated.pcap": {
+      "started": "2026-10-20 07:02:18",
+      "read_at": "2026-10-20 07:02:21",
+      "stats": {
+        "statFlows": "0",
+        "statProgress": "Waiting to start",
+        "statAttacks": "0",
+        "statRatio": "0.00% of the stream",
+        "statNormals": "0",
+        "statAlerts": "0",
+        "statLatency": "Average latency N/A",
+        "statDeployment": "#1 (next capture)",
+        "statMismatches": "0",
+        "statPersisted": "0",
+        "statSynced": "0",
+        "statPending": "0",
+        "statDropped": "0",
+        "statUpload": "active",
+        "statLag": "N/A",
+        "statCapture": "0",
+        "message": "The packet capture is incomplete: its last packet is cut off. Use a complete capture file."
+      },
+      "messages": [
+        "The packet capture is incomplete: its last packet is cut off. Use a complete capture file."
+      ]
+    },
+    "cycle1-tc04-sample.pcap": {
+      "started": "2026-10-20 07:02:22",
+      "read_at": "2026-10-20 07:02:36",
+      "stats": {
+        "statFlows": "11",
+        "statProgress": "11 of 11 flows",
+        "statAttacks": "10",
+        "statRatio": "90.91% of the stream",
+        "statNormals": "1",
+        "statAlerts": "10",
+        "statLatency": "Average latency 298.977 ms",
+        "statDeployment": "#1 (pinned for this capture)",
+        "statMismatches": "0",
+        "statPersisted": "11",
+        "statSynced": "11",
+        "statPending": "0",
+        "statDropped": "0",
+        "statUpload": "active",
+        "statLag": "N/A",
+        "statCapture": "0",
+        "message": "The traffic source finished streaming."
+      },
+      "messages": [
+        "The traffic source finished streaming."
+      ]
+    }
+  },
+  "labels": {
+    "time": "2026-10-20 07:02:53",
+    "logs_header_utc": true,
+    "logs_flow_accepted_rows": 21,
+    "logs_message_cells_none": 0,
+    "alerts_header_utc": true,
+    "monitor_header_utc": true,
+    "dashboard_utc_suffixes": 7
+  },
+  "secrets": {
+    "time": "2026-10-20 07:03:14",
+    "patterns": [
+      "jwt",
+      "supabase_key",
+      "service_role",
+      "bearer",
+      "secret_value",
+      "env_name",
+      "email"
+    ],
+    "pages": {
+      "/": {
+        "status": 200,
+        "bytes": 16420,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/monitor": {
+        "status": 200,
+        "bytes": 44813,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/monitor/status": {
+        "status": 200,
+        "bytes": 6547,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/simulation": {
+        "status": 200,
+        "bytes": 17299,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/alerts": {
+        "status": 200,
+        "bytes": 89890,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/logs": {
+        "status": 200,
+        "bytes": 17853,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/reports": {
+        "status": 200,
+        "bytes": 7224,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/nodes": {
+        "status": 200,
+        "bytes": 7864,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/admins": {
+        "status": 200,
+        "bytes": 16871,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      },
+      "/outbox/export": {
+        "status": 200,
+        "bytes": 297,
+        "jwt": 0,
+        "supabase_key": 0,
+        "service_role": 0,
+        "bearer": 0,
+        "secret_value": 0,
+        "env_name": 0,
+        "email": 0
+      }
+    }
+  },
+  "smoke": {
+    "tc01": {
+      "time": "2026-10-20 07:03:19",
+      "screenshot": "smk_tc01_normal.png",
+      "verdict": "NORMAL",
+      "confidence": "84.11%",
+      "details": {
+        "Model": "Stacking Ensemble",
+        "Deployment": "#1",
+        "Latency": "282.678 ms",
+        "Event": "bf2c1669-12e4-4757-b339-2d088d04b132",
+        "Saved": "Saved on this computer - pending upload",
+        "Prediction": "Assigned after upload",
+        "Alert": "Not created"
+      },
+      "messages": []
+    },
+    "tc02": {
+      "time": "2026-10-20 07:03:23",
+      "screenshot": "smk_tc02_attack.png",
+      "verdict": "ATTACK",
+      "confidence": "92.95%",
+      "details": {
+        "Model": "Stacking Ensemble",
+        "Deployment": "#1",
+        "Latency": "243.555 ms",
+        "Event": "1070faf2-97d6-41b5-8541-ee7440e264d6",
+        "Saved": "Saved on this computer - pending upload",
+        "Prediction": "Assigned after upload",
+        "Alert": "Created when the record uploads"
+      },
+      "messages": []
+    },
+    "replay": {
+      "started": "2026-10-20 07:03:24",
+      "stopped": "2026-10-20 07:05:24",
+      "read_at": "2026-10-20 07:05:27",
+      "stats": {
+        "statFlows": "167",
+        "statProgress": "167 of 5,000 flows",
+        "statAttacks": "121",
+        "statRatio": "72.46% of the stream",
+        "statNormals": "46",
+        "statAlerts": "121",
+        "statLatency": "Average latency 312.461 ms",
+        "statDeployment": "#1 (pinned for this capture)",
+        "statMismatches": "6",
+        "statPersisted": "121",
+        "statSynced": "121",
+        "statPending": "0",
+        "statDropped": "0",
+        "statUpload": "active",
+        "statLag": "N/A",
+        "statCapture": "0",
+        "message": ""
+      }
+    }
+  },
+  "finished": "2026-10-20 07:05:27"
+}
