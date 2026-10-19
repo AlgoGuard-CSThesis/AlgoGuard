@@ -1,0 +1,543 @@
+From 6dbc427c13532a981648c1f5b605831109d2c330 Mon Sep 17 00:00:00 2001
+From: CelHendrix <cel.hendrix@gmail.com>
+Date: Fri, 16 Oct 2026 12:35:11 +0800
+Subject: [PATCH] test: add automated test-suite runner and model evaluation
+ scripts
+
+Restores the test tooling for test cycle 1 (Master Test Plan v0.1):
+run_test_suites.py (UNT-01, ENV-02, INT-01, SEC-01), evaluate_model.py
+(SYS-01), RUN_TESTS.cmd and START_APP.cmd. Product code is unchanged
+from 940e082.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_012ZybPdBzKWBM2MYfdJS1k8
+---
+ scripts/RUN_TESTS.cmd      |  30 ++++
+ scripts/START_APP.cmd      |   8 +
+ scripts/evaluate_model.py  | 309 +++++++++++++++++++++++++++++++++++++
+ scripts/run_test_suites.py | 145 +++++++++++++++++
+ 4 files changed, 492 insertions(+)
+ create mode 100644 scripts/RUN_TESTS.cmd
+ create mode 100644 scripts/START_APP.cmd
+ create mode 100644 scripts/evaluate_model.py
+ create mode 100644 scripts/run_test_suites.py
+
+diff --git a/scripts/RUN_TESTS.cmd b/scripts/RUN_TESTS.cmd
+new file mode 100644
+index 0000000..500ec56
+--- /dev/null
++++ b/scripts/RUN_TESTS.cmd
+@@ -0,0 +1,30 @@
++@echo off
++rem AlgoGuard test cycle 1 - runs the automated checks on this PC and saves results to test-results\
++rem Double-click to run. Right-click > "Run as administrator" to include the Npcap capture tests.
++cd /d "%~dp0\.."
++title AlgoGuard automated tests
++if not exist venv\Scripts\python.exe (
++  echo The venv folder was not found. Create it first: py -3.14 -m venv venv
++  pause
++  exit /b 1
++)
++call venv\Scripts\activate.bat
++
++echo Installing the two scan tools (pip-audit, bandit) into the venv if missing...
++python -m pip install --quiet --disable-pip-version-check pip-audit bandit
++
++set FLAGS=--security
++net session >nul 2>&1 && (set RUN_WINDOWS_CAPTURE_TESTS=1 & echo Running as administrator: Npcap capture tests included.)
++call npx --no-install supabase status >nul 2>&1 && (set FLAGS=--all & echo Local Supabase stack is running: integration tests included.)
++
++echo.
++echo === Automated test suites ===
++python scripts\run_test_suites.py %FLAGS%
++
++echo.
++echo === Detection evaluation of the cloud-deployed model (training run 3) ===
++python scripts\evaluate_model.py --model saved_models\run_3\stacking.joblib --compare-dir saved_models\run_3
++
++echo.
++echo Finished. Results are in the test-results folder. You can close this window.
++pause
+diff --git a/scripts/START_APP.cmd b/scripts/START_APP.cmd
+new file mode 100644
+index 0000000..4adead2
+--- /dev/null
++++ b/scripts/START_APP.cmd
+@@ -0,0 +1,8 @@
++@echo off
++rem Starts AlgoGuard for the manual test cases. Run as administrator to allow live capture.
++cd /d "%~dp0\.."
++title AlgoGuard app (close this window to stop the app)
++call venv\Scripts\activate.bat
++echo Starting AlgoGuard on http://127.0.0.1:5000 ...
++python app.py
++pause
+diff --git a/scripts/evaluate_model.py b/scripts/evaluate_model.py
+new file mode 100644
+index 0000000..5754163
+--- /dev/null
++++ b/scripts/evaluate_model.py
+@@ -0,0 +1,309 @@
++"""Evaluate a trained AlgoGuard model on data it has never seen (card SYS-01, test case TC-03).
++
++What it does, in order:
++  1. Loads the model artifact (.joblib) that train.py produced.
++  2. Loads an evaluation CSV with the 15 AlgoGuard features plus `label`
++     (and optionally `attack_cat`).
++  3. Removes every evaluation row whose 15 features also appear in a training CSV,
++     so the score is measured only on unseen traffic.
++  4. Predicts the remaining rows and writes the metrics, the confusion matrix,
++     recall per attack category, and a check against the test plan targets.
++
++Default data: research/dataset/raw/UNSW_NB15_training-set.csv minus every row that
++appears in the bundled datasets/*.csv (the bundled CSVs are samples of that file).
++
++Usage (from the repository folder, inside the venv):
++    python scripts/evaluate_model.py --model saved_models/deployed_model.<id>.joblib
++    python scripts/evaluate_model.py --model <file> --compare-dir saved_models/run_<id>
++
++Results go to test-results/evaluation_<timestamp>/.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import platform
++import subprocess
++import sys
++import time
++from datetime import datetime
++from pathlib import Path
++from typing import Any
++
++import joblib
++import numpy as np
++import pandas as pd
++import sklearn
++from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score
++
++ROOT = Path(__file__).resolve().parents[1]
++FEATURES = ["dur", "proto", "service", "state", "spkts", "dpkts", "sbytes", "dbytes",
++            "rate", "sttl", "dttl", "sload", "dload", "sinpkt", "dinpkt"]
++NORMAL_LABELS = {"0", "0.0", "normal", "benign", "legitimate", "clean"}
++COMPARE_KEYS = ("accuracy", "precision", "recall", "f1", "false_positive_rate", "roc_auc",
++                "prediction_ms_per_row")
++
++# Exit criteria from the Master Test Plan v1.0, section 3.3 (edit only by team agreement).
++TARGETS = {
++    "accuracy": (">=", 0.90),
++    "f1": (">=", 0.90),
++    "recall": (">=", 0.90),
++    "false_positive_rate": ("<=", 0.08),
++    "roc_auc": (">=", 0.95),
++}
++
++
++def sha256(path: Path) -> str:
++    digest = hashlib.sha256()
++    with open(path, "rb") as handle:
++        for chunk in iter(lambda: handle.read(1 << 20), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def git_commit() -> str:
++    try:
++        result = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT,
++                                capture_output=True, text=True, check=True)
++        return result.stdout.strip()
++    except (OSError, subprocess.CalledProcessError):
++        return "unknown"
++
++
++def to_binary(labels: pd.Series) -> np.ndarray:
++    text = labels.astype(str).str.strip().str.lower()
++    return (~text.isin(NORMAL_LABELS)).to_numpy().astype(int)
++
++
++def row_keys(frame: pd.DataFrame) -> pd.Series:
++    """One hashable key per row of the 15 features, robust to float formatting."""
++    norm = pd.DataFrame(index=frame.index)
++    for col in FEATURES:
++        column = frame[col]
++        if pd.api.types.is_numeric_dtype(column):
++            norm[col] = column.astype(float).round(9)
++        else:
++            norm[col] = column.astype(str).str.strip()
++    # Python's hash is stable within one run, which is all the comparison needs.
++    return pd.Series([hash(row) for row in norm.itertuples(index=False, name=None)],
++                     index=frame.index)
++
++
++def load_artifact(path: Path) -> dict[str, Any]:
++    artifact = joblib.load(path)
++    if not isinstance(artifact, dict) or "pipeline" not in artifact:
++        raise SystemExit(f"{path} is not an AlgoGuard model artifact (no 'pipeline').")
++    cols = artifact.get("feature_columns") or FEATURES
++    if set(cols) != set(FEATURES):
++        raise SystemExit(f"{path} expects different features: {cols}")
++    return artifact
++
++
++def ratio(numerator: float, denominator: float) -> float:
++    return numerator / denominator if denominator else float("nan")
++
++
++def evaluate(artifact: dict[str, Any], data: pd.DataFrame,
++             y: np.ndarray) -> tuple[dict[str, Any], np.ndarray]:
++    pipeline = artifact["pipeline"]
++    features = data[list(artifact.get("feature_columns") or FEATURES)]
++    start = time.perf_counter()
++    pred = np.asarray(pipeline.predict(features)).astype(int)
++    elapsed = time.perf_counter() - start
++    classes = list(pipeline.classes_)
++    proba = np.asarray(pipeline.predict_proba(features))[:, classes.index(1)]
++    tn, fp, fn, tp = (int(v) for v in confusion_matrix(y, pred, labels=[0, 1]).ravel())
++    precision = ratio(tp, tp + fp)
++    recall = ratio(tp, tp + fn)
++    metrics: dict[str, Any] = {
++        "rows": int(len(y)),
++        "attacks": int(y.sum()),
++        "normal": int(len(y) - y.sum()),
++        "accuracy": float(accuracy_score(y, pred)),
++        "precision": precision,
++        "recall": recall,
++        "f1": ratio(2 * precision * recall, precision + recall),
++        "false_positive_rate": ratio(fp, fp + tn),
++        "specificity": ratio(tn, tn + fp),
++        "roc_auc": float(roc_auc_score(y, proba)) if len(set(y)) == 2 else float("nan"),
++        "tp": tp, "fp": fp, "tn": tn, "fn": fn,
++        "prediction_seconds_total": elapsed,
++        "prediction_ms_per_row": 1000 * elapsed / max(len(y), 1),
++    }
++    return metrics, pred
++
++
++def check_targets(metrics: dict[str, Any]) -> list[dict[str, Any]]:
++    rows = []
++    for name, (op, target) in TARGETS.items():
++        value = metrics[name]
++        met = value >= target if op == ">=" else value <= target
++        rows.append({"metric": name, "target": f"{op} {target:g}", "measured": round(value, 4),
++                     "result": "Met" if met else "Not met"})
++    return rows
++
++
++def per_category(data: pd.DataFrame, pred: np.ndarray) -> list[dict[str, Any]]:
++    cats = data["attack_cat"].astype(str).str.strip()
++    rows = []
++    for cat in sorted(cats.unique()):
++        mask = (cats == cat).to_numpy()
++        normal = cat.lower() == "normal"
++        hits = pred[mask] == (0 if normal else 1)
++        rows.append({
++            "category": cat,
++            "rows": int(mask.sum()),
++            "correct": int(hits.sum()),
++            "measure": "specificity (labelled Normal)" if normal
++            else "recall (flagged as Attack)",
++            "rate": round(float(hits.mean()), 4),
++        })
++    return sorted(rows, key=lambda row: row["rate"])
++
++
++def compare_models(args: argparse.Namespace, artifact: dict[str, Any], metrics: dict[str, Any],
++                   data: pd.DataFrame, y: np.ndarray) -> list[dict[str, Any]]:
++    rows = [{"model": artifact.get("model_name", args.model.name), "file": args.model.name,
++             **{k: round(metrics[k], 4) for k in COMPARE_KEYS}}]
++    main_hash = sha256(args.model)
++    for path in sorted(args.compare_dir.glob("*.joblib")):
++        if path.resolve() == args.model.resolve() or sha256(path) == main_hash:
++            continue  # the same file as the model already evaluated
++        try:
++            other = load_artifact(path)
++        except SystemExit as error:
++            print(f"  skipped {path.name}: {error}")
++            continue
++        if other.get("model_name") and other.get("model_name") == artifact.get("model_name"):
++            continue  # same model type as the one under test (the run's own Stacking copy)
++        other_metrics, _ = evaluate(other, data, y)
++        rows.append({"model": other.get("model_name", path.stem), "file": path.name,
++                     **{k: round(other_metrics[k], 4) for k in COMPARE_KEYS}})
++    return sorted(rows, key=lambda row: row["f1"], reverse=True)
++
++
++def summary_lines(context: dict[str, Any], metrics: dict[str, Any], targets: list[dict[str, Any]],
++                  categories: list[dict[str, Any]] | None,
++                  comparison: list[dict[str, Any]] | None) -> list[str]:
++    lines = [
++        f"# Model evaluation — {context['evaluated_at']}", "",
++        f"- Commit: `{context['git_commit']}` · Python {context['python']} · "
++        f"scikit-learn {context['scikit_learn']}",
++        f"- Model: `{Path(context['model_file']).name}` ({context['model_name']}), "
++        f"trained {context['model_trained_at']}",
++        f"- Model SHA-256: `{context['model_sha256']}`",
++        f"- Data: `{Path(context['data_file']).name}` — {context['rows_loaded']} rows loaded, "
++        f"{context['rows_removed_seen_in_training']} removed as seen in training, "
++        f"**{metrics['rows']} evaluated** ({metrics['attacks']} attack, "
++        f"{metrics['normal']} normal)",
++        "", "## Results against the test plan targets (section 3.3)", "",
++        "| Metric | Target | Measured | Result |", "|---|---|---|---|",
++    ]
++    lines += [f"| {r['metric']} | {r['target']} | {r['measured']} | {r['result']} |"
++              for r in targets]
++    lines += [
++        "", f"Precision {metrics['precision']:.4f} · specificity {metrics['specificity']:.4f} · "
++        f"prediction {metrics['prediction_ms_per_row']:.3f} ms per row", "",
++        "## Confusion matrix", "", "| | Predicted Normal | Predicted Attack |", "|---|---|---|",
++        f"| Actual Normal | {metrics['tn']} | {metrics['fp']} |",
++        f"| Actual Attack | {metrics['fn']} | {metrics['tp']} |",
++    ]
++    if categories is not None:
++        lines += ["", "## By attack category (SYS-03)", "",
++                  "| Category | Rows | Measure | Rate |", "|---|---|---|---|"]
++        lines += [f"| {r['category']} | {r['rows']} | {r['measure']} | {r['rate']} |"
++                  for r in categories]
++    if comparison is not None:
++        lines += ["", "## Model comparison on the same rows (SYS-02)", "",
++                  "| Model | Accuracy | Recall | F1 | FPR | ROC-AUC | ms/row |",
++                  "|---|---|---|---|---|---|---|"]
++        lines += [f"| {r['model']} | {r['accuracy']} | {r['recall']} | {r['f1']} | "
++                  f"{r['false_positive_rate']} | {r['roc_auc']} | {r['prediction_ms_per_row']} |"
++                  for r in comparison]
++    return lines
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__,
++                                     formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("--model", required=True, type=Path,
++                        help="Model artifact (.joblib) to evaluate.")
++    parser.add_argument("--data", type=Path,
++                        default=ROOT / "research/dataset/raw/UNSW_NB15_training-set.csv",
++                        help="Evaluation CSV with the 15 features and a label column.")
++    parser.add_argument("--train-csv", type=Path, nargs="*",
++                        default=sorted((ROOT / "datasets").glob("*.csv")),
++                        help="Training CSVs; their rows are removed from the evaluation data.")
++    parser.add_argument("--label-column", default="label")
++    parser.add_argument("--compare-dir", type=Path,
++                        help="Folder of other artifacts (e.g. saved_models/run_<id>) to score.")
++    parser.add_argument("--out", type=Path)
++    args = parser.parse_args()
++
++    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
++    out = args.out or ROOT / "test-results" / f"evaluation_{stamp}"
++    out.mkdir(parents=True, exist_ok=True)
++
++    print(f"Loading evaluation data: {args.data}")
++    data = pd.read_csv(args.data, encoding="utf-8-sig")
++    missing = [c for c in FEATURES + [args.label_column] if c not in data.columns]
++    if missing:
++        raise SystemExit(f"Evaluation CSV is missing columns: {missing}")
++    data = data.replace([np.inf, -np.inf], np.nan)
++    rows_loaded = len(data)
++
++    # Remove anything the model could have seen during training.
++    train_keys: set[int] = set()
++    for path in args.train_csv:
++        frame = pd.read_csv(path, encoding="utf-8-sig")
++        if all(c in frame.columns for c in FEATURES):
++            train_keys.update(int(k) for k in row_keys(frame))
++            print(f"  training rows from {path.name}: {len(frame)}")
++    seen = row_keys(data).isin(train_keys)
++    data = data[~seen].reset_index(drop=True)
++    print(f"Evaluation rows: {rows_loaded} loaded, {int(seen.sum())} removed as seen in "
++          f"training, {len(data)} kept")
++    if data.empty:
++        raise SystemExit("No unseen rows left to evaluate.")
++
++    y = to_binary(data[args.label_column])
++    artifact = load_artifact(args.model)
++    print(f"Evaluating {args.model.name} ({artifact.get('model_name', 'unknown model')}) ...")
++    metrics, pred = evaluate(artifact, data, y)
++
++    categories = per_category(data, pred) if "attack_cat" in data.columns else None
++    if categories is not None:
++        pd.DataFrame(categories).to_csv(out / "per_category.csv", index=False)
++    comparison = compare_models(args, artifact, metrics, data, y) if args.compare_dir else None
++    if comparison is not None:
++        pd.DataFrame(comparison).to_csv(out / "model_comparison.csv", index=False)
++
++    targets = check_targets(metrics)
++    context = {
++        "evaluated_at": datetime.now().isoformat(timespec="seconds"),
++        "git_commit": git_commit(),
++        "python": platform.python_version(),
++        "scikit_learn": sklearn.__version__,
++        "model_file": str(args.model), "model_sha256": sha256(args.model),
++        "model_name": artifact.get("model_name"), "model_trained_at": artifact.get("trained_at"),
++        "data_file": str(args.data), "data_sha256": sha256(args.data),
++        "training_csvs": [str(p) for p in args.train_csv],
++        "rows_loaded": rows_loaded, "rows_removed_seen_in_training": int(seen.sum()),
++    }
++    report = {"context": context, "metrics": metrics, "targets": targets}
++    (out / "metrics.json").write_text(json.dumps(report, indent=2, default=float))
++    pd.DataFrame([[metrics["tn"], metrics["fp"]], [metrics["fn"], metrics["tp"]]],
++                 index=["actual Normal", "actual Attack"],
++                 columns=["predicted Normal", "predicted Attack"]
++                 ).to_csv(out / "confusion_matrix.csv")
++
++    lines = summary_lines(context, metrics, targets, categories, comparison)
++    (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
++    print("\n" + "\n".join(lines))
++    print(f"\nSaved to {out}")
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/scripts/run_test_suites.py b/scripts/run_test_suites.py
+new file mode 100644
+index 0000000..a6f0825
+--- /dev/null
++++ b/scripts/run_test_suites.py
+@@ -0,0 +1,145 @@
++"""Run every automated AlgoGuard check and save the evidence (cards UNT-01, ENV-02, INT-01, SEC-01).
++
++Runs, in order, and records each tool's full output, exit code and duration:
++  1. Offline Python tests        python -m pytest -q
++  2. Lint                         python -m ruff check .
++  3. Type check                   npm run typecheck   (Pyright)
++  4. Browser polling tests        node --test tests/monitor_poll.test.cjs
++  5. Integration tests (optional) python -m pytest -q -m integration   (needs `supabase start`)
++  6. Dependency scan (optional)   python -m pip_audit -r requirements.txt
++  7. Static security scan (opt.)  python -m bandit on the application code only
++
++Usage (from the repository folder, inside the venv):
++    python scripts/run_test_suites.py                  # 1-4
++    python scripts/run_test_suites.py --integration    # also 5 (local Supabase stack running)
++    python scripts/run_test_suites.py --security       # also 6-7 (pip install pip-audit bandit)
++    python scripts/run_test_suites.py --all
++
++Set RUN_WINDOWS_CAPTURE_TESTS=1 beforehand to include the Npcap capture tests.
++Results go to test-results/suites_<timestamp>/ (summary.md plus one log per step).
++"""
++from __future__ import annotations
++
++import argparse
++import os
++import platform
++import re
++import shutil
++import subprocess
++import sys
++import time
++from datetime import datetime
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++PY = sys.executable
++SECRET = re.compile(
++    r"(sb_secret_[A-Za-z0-9_-]+|service_role[^\s\"']*"
++    r"|eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+|postgres(ql)?://[^\s]+)")
++MISSING_TOOL = re.compile(r"No module named (pytest|ruff|pip_audit|bandit)\b")
++KEY_LINES = {
++    "pytest": r"(\d+ (passed|failed|error)|no tests ran)",
++    "ruff": r"(All checks passed|Found \d+ error)",
++    "pyright": r"\d+ errors?, \d+ warnings?",
++    "node": r"^# (pass|fail) ",
++    "pip-audit": r"(No known vulnerabilities|Found \d+ known vulnerabilit)",
++    "bandit": r"^(Low|Medium|High): \d+",
++}
++
++
++def bandit_targets() -> list[str]:
++    """Application code only: top-level modules, services and scripts (no tests or backups)."""
++    files = sorted(p.name for p in ROOT.glob("*.py"))
++    return files + [d for d in ("services", "scripts") if (ROOT / d).is_dir()]
++
++
++def run(cmd: list[str], timeout: int) -> tuple[int, str, float]:
++    start = time.perf_counter()
++    exe = shutil.which(cmd[0]) or cmd[0]
++    try:
++        proc = subprocess.run([exe, *cmd[1:]], cwd=ROOT, capture_output=True, text=True,
++                              timeout=timeout)
++        code, out = proc.returncode, (proc.stdout or "") + (proc.stderr or "")
++    except FileNotFoundError:
++        code, out = 127, f"Command not found: {cmd[0]}"
++    except subprocess.TimeoutExpired as error:
++        code, out = 124, f"Timed out after {timeout}s\n{error.stdout or ''}{error.stderr or ''}"
++    return code, SECRET.sub("<redacted>", out), time.perf_counter() - start
++
++
++def key_line(name: str, out: str) -> str:
++    """Pull the line(s) that tell the reader the result."""
++    lines = [line.strip() for line in out.strip().splitlines() if line.strip()]
++    for key, pattern in KEY_LINES.items():
++        if key in name:
++            hits = [line for line in lines if re.search(pattern, line)]
++            if hits:
++                limit = 3 if key == "bandit" else 2
++                return " / ".join(hits[-limit:])[:200]
++    return (lines[-1] if lines else "(no output)")[:200]
++
++
++def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str], int]]:
++    steps = [
++        ("pytest-offline", [PY, "-m", "pytest", "-q"], 1800),
++        ("ruff-lint", [PY, "-m", "ruff", "check", "."], 300),
++        ("pyright-typecheck", ["npm", "run", "typecheck"], 600),
++        ("node-monitor-poll", ["node", "--test", "tests/monitor_poll.test.cjs"], 300),
++    ]
++    if args.integration or args.all:
++        steps.append(("pytest-integration", [PY, "-m", "pytest", "-q", "-m", "integration"], 3600))
++    if args.security or args.all:
++        steps.append(("pip-audit", [PY, "-m", "pip_audit", "-r", "requirements.txt"], 900))
++        steps.append(("bandit", [PY, "-m", "bandit", "-r", *bandit_targets()], 900))
++    return steps
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser(description=__doc__,
++                                     formatter_class=argparse.RawDescriptionHelpFormatter)
++    parser.add_argument("--integration", action="store_true")
++    parser.add_argument("--security", action="store_true")
++    parser.add_argument("--all", action="store_true")
++    args = parser.parse_args()
++
++    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
++    out_dir = ROOT / "test-results" / f"suites_{stamp}"
++    out_dir.mkdir(parents=True, exist_ok=True)
++
++    _, commit, _ = run(["git", "rev-parse", "--short", "HEAD"], 30)
++    _, dirty, _ = run(["git", "status", "--porcelain"], 30)
++    suffix = " (with uncommitted changes)" if dirty.strip() else ""
++    report = [
++        f"# Automated test run — {datetime.now().isoformat(timespec='seconds')}", "",
++        f"- Commit: `{commit.strip()}`{suffix}",
++        f"- Machine: {platform.node()} · {platform.platform()} · "
++        f"Python {platform.python_version()}",
++        f"- RUN_WINDOWS_CAPTURE_TESTS={os.environ.get('RUN_WINDOWS_CAPTURE_TESTS', '0')}",
++        "", "| Step | Result | Exit code | Duration | Key line |", "|---|---|---|---|---|",
++    ]
++
++    overall = 0
++    for name, cmd, timeout in build_steps(args):
++        print(f"Running {name} ...", flush=True)
++        code, out, secs = run(cmd, timeout)
++        if code != 0 and MISSING_TOOL.search(out):
++            code = 127
++        (out_dir / f"{name}.log").write_text(f"$ {' '.join(cmd)}\n\n{out}", encoding="utf-8")
++        result = "PASS" if code == 0 else ("NOT RUN" if code == 127 else "FAIL")
++        if result == "FAIL":
++            overall = 1
++        key = key_line(name, out).replace("|", "/")
++        report.append(f"| {name} | {result} | {code} | {secs:.1f} s | {key} |")
++        print(f"  {result} ({secs:.1f}s) {key}", flush=True)
++
++    report += ["", "Full output for each step is in the matching .log file in this folder.",
++               "NOT RUN means the tool is missing on this machine; install it or record the step "
++               "as not executed."]
++    (out_dir / "summary.md").write_text("\n".join(report) + "\n", encoding="utf-8")
++    print("\n" + "\n".join(report))
++    print(f"\nSaved to {out_dir}")
++    return overall
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+-- 
+2.43.0
+
