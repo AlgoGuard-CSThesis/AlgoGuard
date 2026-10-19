@@ -21,10 +21,10 @@
 <section class="panel log-table-panel">
     <div class="table-responsive">
         <table class="table data-table align-middle mb-0">
-            <thead><tr><th>ID</th><th>Timestamp</th><th>Module</th><th>Action</th><th>Status</th><th>Message</th><th>Context</th><th>Admin</th><th>IP</th></tr></thead>
+            <thead><tr><th>ID</th><th>Timestamp (UTC)</th><th>Module</th><th>Action</th><th>Status</th><th>Message</th><th>Context</th><th>Admin</th><th>IP</th></tr></thead>
             <tbody>
                 {% for log in logs["items"] %}
-                <tr><td>#{{ log.log_id }}</td><td class="text-nowrap">{{ log.timestamp }}</td><td>{{ log.module }}</td><td><code>{{ log.action }}</code></td><td><span class="status-badge status-{{ log.status|lower }}">{{ log.status }}</span></td><td class="description-cell">{{ log.message }}</td><td>{% if log.run_id %}<span class="log-run-ref">Run #{{ log.run_id }}</span>{% endif %}{% if log.dataset_filename %}<small>{{ log.dataset_filename }}</small>{% endif %}{% if log.model_name %}<small>{{ log.model_name }}</small>{% endif %}{% if log.prediction_id %}<small>Prediction #{{ log.prediction_id }}</small>{% endif %}</td><td>{{ log.admin_username or 'System' }}</td><td>{{ log.ip_address or 'N/A' }}</td></tr>
+                <tr><td>#{{ log.log_id }}</td><td class="text-nowrap">{{ log.timestamp }}</td><td>{{ log.module }}</td><td><code>{{ log.action }}</code></td><td><span class="status-badge status-{{ log.status|lower }}">{{ log.status }}</span></td><td class="description-cell">{{ log.message if log.message is not none else '' }}</td><td>{% if log.run_id %}<span class="log-run-ref">Run #{{ log.run_id }}</span>{% endif %}{% if log.dataset_filename %}<small>{{ log.dataset_filename }}</small>{% endif %}{% if log.model_name %}<small>{{ log.model_name }}</small>{% endif %}{% if log.prediction_id %}<small>Prediction #{{ log.prediction_id }}</small>{% endif %}</td><td>{{ log.admin_username or 'System' }}</td><td>{{ log.ip_address or 'N/A' }}</td></tr>
                 {% else %}
                 <tr><td colspan="9"><div class="empty-state"><i class="bi bi-search"></i><h2>No matching logs</h2></div></td></tr>
                 {% endfor %}

@@ -26,7 +26,7 @@
 <section class="panel">
     <div class="table-responsive">
         <table class="table data-table align-middle mb-0 alert-table">
-            <thead><tr>{% if config.CLOUD_MODE %}<th><span class="visually-hidden">Select for report</span></th>{% endif %}<th>Alert</th><th>Detected</th><th>Source &rarr; Destination</th><th>Prediction</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Review</th><th>Description</th></tr></thead>
+            <thead><tr>{% if config.CLOUD_MODE %}<th><span class="visually-hidden">Select for report</span></th>{% endif %}<th>Alert</th><th>Detected (UTC)</th><th>Source &rarr; Destination</th><th>Prediction</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Review</th><th>Description</th></tr></thead>
             <tbody>
                 {% for alert in alerts %}
                 {% set reviewed = alert.alert_status in ('Acknowledged', 'Resolved') %}

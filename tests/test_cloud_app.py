@@ -130,6 +130,17 @@ def test_dashboard_warns_when_the_cached_model_is_corrupt(cloud):
         restarted.close()
 
 
+def test_times_are_labelled_utc_and_empty_log_messages_stay_blank(cloud):
+    """USE-01 / DEF-16, DEF-18."""
+    client = signed_in(cloud.app)
+    assert post_json(client, "/predict", MANUAL_FLOW).status_code == 200
+    logs = client.get("/logs").get_data(as_text=True)
+    assert "<th>Timestamp (UTC)</th>" in logs
+    assert 'description-cell">None<' not in logs
+    assert "<th>Detected (UTC)</th>" in client.get("/alerts").get_data(as_text=True)
+    assert "<th>Time (UTC)</th>" in client.get("/monitor").get_data(as_text=True)
+
+
 def test_logout_stops_tokens_and_ends_only_this_installations_session(cloud):
     client = signed_in(cloud.app)
     identity = next(iter(cloud.app.session_interface.sessions.values())).identity

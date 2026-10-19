@@ -8,7 +8,7 @@
 <section class="panel">
     <div class="table-responsive">
         <table class="table data-table align-middle mb-0">
-            <thead><tr><th>Alert</th><th>Detected</th><th>Prediction</th><th>Endpoints</th><th>Model</th><th>Confidence</th><th>Severity</th><th>Status</th></tr></thead>
+            <thead><tr><th>Alert</th><th>Detected (UTC)</th><th>Prediction</th><th>Endpoints</th><th>Model</th><th>Confidence</th><th>Severity</th><th>Status</th></tr></thead>
             <tbody>
                 {% for alert in alerts %}
                 <tr><td><strong>#{{ alert.alert_id }}</strong></td><td>{{ alert.detected_at }}</td><td>#{{ alert.prediction_id }}<small>{{ alert.predicted_label }}</small></td><td>{{ alert.source_ip or '-' }} &rarr; {{ alert.destination_ip or '-' }}</td><td>{{ alert.model_name or 'Legacy model' }}</td><td>{{ '%.2f%%'|format(alert.confidence_score) if alert.confidence_score is not none else 'N/A' }}</td><td><span class="status-badge danger">{{ alert.severity_level }}</span></td><td><span class="status-badge">{{ alert.alert_status }}</span></td></tr>
