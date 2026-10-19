@@ -813,8 +813,8 @@
     {
       "criterion": "3.3 · Open Critical or High severity bugs",
       "target": "0",
-      "measured": "",
-      "result": "Not measured",
+      "measured": "4 High open (DEF-04, DEF-05, DEF-06, DEF-07); 0 Critical (as of 2026-10-19 17:45)",
+      "result": "Not met",
       "source": "Defects sheet"
     },
     {
