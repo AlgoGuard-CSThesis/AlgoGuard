@@ -400,6 +400,11 @@ GitHub Actions (`.github/workflows/ci.yml`) runs the same lint, type, unit, and
 polling checks on Windows for every push to `main` and every pull request. The
 Supabase integration lane stays a local run because it needs Docker.
 
+Before running it, check that every local service is up: `npx supabase start` can
+exit successfully while listing a crashed container under "Stopped services". If
+the Edge Runtime is listed there, run `docker start supabase_edge_runtime_AlgoGuard`;
+otherwise the Edge Function tests fail with HTTP 503 "name resolution failed".
+
 The pinned Pyright checker uses the project's `venv` and checks all application,
 script, and test modules. Its scope is configured in `pyproject.toml`; generated
 reports and backup copies are not included.
