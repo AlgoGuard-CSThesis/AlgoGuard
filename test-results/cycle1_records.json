@@ -357,6 +357,165 @@
       "evidence": "Session check with values masked (git ls-files, git grep)"
     },
     {
+      "time": "2026-10-16 (pilot; time not stated)",
+      "case": "SYS-03.P1",
+      "card": "SYS-03",
+      "build": "pilot 4c9666c / 940e082",
+      "expected": "Each node only sees its own data; no record crosses nodes (SYS-03 card).",
+      "actual": "Pilot record: 'The two node UUIDs differ and each persisted across every restart from 2026-10-08 to 2026-10-16, including the deliberate restart in Test E.' (PC A d535e2fd-8392-4876-a945-c8d9c5184049, PC B 265f767e-f540-4f71-bf36-c7364f99ba59). 'No row was written under the other client's node or owner. Analysts can read only their own node, and the Administrator can read both.'",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §1 (Accounts and nodes) and §7 (accepted on the physical pilot); 2026-10-08 to 2026-10-16; Tests A-D on 4c9666c, 2026-10-15/16 work on 940e082"
+    },
+    {
+      "time": "2026-10-16 (pilot; time not stated)",
+      "case": "SYS-03.P2",
+      "card": "SYS-03",
+      "build": "pilot 940e082",
+      "expected": "TC-06: analyst A requests node B's alerts through the Data API: no rows returned; no private data in errors.",
+      "actual": "Pilot hosted RLS check, read-only, each account under the authenticated role with its own JWT subject, 2026-10-16: 'cel.hendrix (Administrator) - both nodes: 467 on PC A and 1,527 on PC B'; 'celpca (PC A analyst) - PC A only (467); PC B's node row is not visible'; 'bryntpcb (PC B analyst) - PC B only'. UI: the Administrator's Alert History on PC A showed only PC A's alerts (ordinary pages default to the installation's own node; finding 6).",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §3 'Administrator reads across nodes'"
+    },
+    {
+      "time": "2026-10-16 17:40 (pilot)",
+      "case": "SYS-03.P3",
+      "card": "SYS-03",
+      "build": "pilot 9e18f30 (PC B) = 940e082 + test-cycle files",
+      "expected": "TC-07: administrator revokes analyst B; B's prediction and capture refused; Restore re-enables.",
+      "actual": "Pilot Test F, 2026-10-16: 'The Administrator revoked bryntpcb on PC B's node at 09:40:58Z and restored it at 09:45:21Z, then revoked and restored once more at 09:50:38Z and 09:50:42Z. While revoked, PC B was refused, and the cloud accepted no capture and no event from it. The exact wording on PC B was not recorded. After Restore, PC B still refused to monitor until Retry uploads was pressed on its Dashboard.' Five Starts during the block opened empty captures 13-17 (finding 5, Low, routed to 6C.1). 'After Retry uploads, capture 18 ran normally: 332 flows, 234 stored.' Prediction while revoked is not separately recorded.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §3 'Test F' and §5 finding 5"
+    },
+    {
+      "time": "2026-10-16 17:32 (pilot)",
+      "case": "SYS-03.P4",
+      "card": "SYS-03",
+      "build": "pilot 9e18f30 (PC B) = 940e082 + test-cycle files",
+      "expected": "Disconnect and reconnect: pending events kept and synced once (SYS-03 card).",
+      "actual": "Pilot Test E, 2026-10-16, PC B: capture 12 started online at 09:29:04Z, went offline ~2 s later; 'It classified 210 flows offline, all held as pending.' 'Restarting offline refused sign-in, as designed.' bryntpcb signed in at 09:32:39Z; 'All 210 records were acknowledged between 09:32:44.6Z and 09:32:48.7Z, the last 9.5 s after sign-in. The cloud holds 210 events with 210 distinct event UUIDs, 210 traffic rows, 210 predictions and 139 alerts, all under PC B's node and owner. No PC A record changed.'",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §3 'Test E'"
+    },
+    {
+      "time": "2026-10-19 17:41",
+      "case": "TC-06",
+      "card": "SYS-03",
+      "expected": "Live re-run: analyst A requests node B's alerts in the UI and Data API: no rows returned; no private data in errors.",
+      "actual": "Not executed: second PC not available (ENV-01.10). Covered by the pilot (SYS-03.P1, SYS-03.P2) and by the automated two-node lane, which passed at 13:30: tests/integration/test_two_node_acceptance.py::test_two_independent_nodes_download_and_write_concurrently and tests/integration/test_relational_access.py (4 tests) against the local Supabase stack.",
+      "status": "Not executed",
+      "evidence": "test-results/integration_20261019_132933/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-19 17:41",
+      "case": "TC-07",
+      "card": "SYS-03",
+      "expected": "Live re-run: administrator revokes B; B tries prediction and capture: both refused; Restore re-enables.",
+      "actual": "Not executed: second PC not available (ENV-01.10). Covered by the pilot (SYS-03.P3) and by tests/integration/test_relational_access.py::test_protected_tables_views_and_revocation, which passed at 13:30.",
+      "status": "Not executed",
+      "evidence": "test-results/integration_20261019_132933/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-08 to 2026-10-16 (pilot)",
+      "case": "PRF-01.P1",
+      "card": "PRF-01",
+      "build": "pilot 4c9666c / 940e082 / 9e18f30",
+      "expected": "Pilot budget: p95 upload acknowledgement (pending -> synced, online) <= 5 s.",
+      "actual": "PC A: '1.33-2.09 s across 5 runs; manual 1.22 s'. PC B: '2.08-4.46 s across 6 runs; 24.06 s on live capture 6 (2026-10-10)'. Pilot verdict: 'Not met on one run. Met on the other 11, including the 2026-10-16 live retest (3.44 s). Limit L2'.",
+      "status": "Fail",
+      "defect": "DEF-10",
+      "evidence": "docs/migration/05f-pilot.md §4, §5 finding 3, §7 L2"
+    },
+    {
+      "time": "2026-10-08 to 2026-10-16 (pilot)",
+      "case": "PRF-01.P2",
+      "card": "PRF-01",
+      "build": "pilot 4c9666c / 940e082 / 9e18f30",
+      "expected": "Pilot budget: sustained acknowledged events per client >= 20 events/s.",
+      "actual": "PC A: '≈ 1.9/s (capture 5: 300 events in 157 s)'. PC B: 'backlog drain of 210 events in 4.1 s ≈ 51/s'. Pilot verdict: 'Not demonstrated. Sources are paced by design: CSV Fast emits one flow per 0.35 s, ≤ 2.9/s. Each capture stores at most 300 events. Limit L1'.",
+      "status": "Fail",
+      "defect": "DEF-11",
+      "evidence": "docs/migration/05f-pilot.md §4, §5 finding 4, §7 L1"
+    },
+    {
+      "time": "2026-10-16 (pilot)",
+      "case": "PRF-01.P3",
+      "card": "PRF-01",
+      "build": "pilot 9e18f30 (PC B)",
+      "expected": "Pilot budget: average live event-to-verdict lag <= 20 s (measured from a flow's last packet, so it includes the 15 s idle timeout).",
+      "actual": "PC A: 'not recorded'. PC B: '13.1 s' (capture 19, 2026-10-16). Pilot verdict: 'Met on PC B; not recorded on PC A'. This is not the plan 3.4 budget (p95 <= 500 ms excluding timeouts), which TC-11 measures.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §2, §4"
+    },
+    {
+      "time": "2026-10-08 to 2026-10-16 (pilot)",
+      "case": "PRF-01.P4",
+      "card": "PRF-01",
+      "build": "pilot 4c9666c / 940e082",
+      "expected": "Pilot budget: live capture packet drop <= 1%.",
+      "actual": "PC A: '0% (0 of 848; 0 of 2,810)'. PC B: '0% (0 of 119,100; 0 of 740)'. Pilot verdict: 'Met'.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-08 to 2026-10-16 (pilot)",
+      "case": "PRF-01.P5",
+      "card": "PRF-01",
+      "build": "pilot 4c9666c / 9e18f30",
+      "expected": "Pilot budget: AlgoGuard process CPU peak <= 50% of the machine.",
+      "actual": "PC A: '24.5% (2-s samples, Test C)'. PC B: '6.3% (2-s samples, capture 18)'. Pilot verdict: 'Met'. Not the plan 3.4 soak budget (<= 80% over 30 min).",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-08 to 2026-10-16 (pilot)",
+      "case": "PRF-01.P6",
+      "card": "PRF-01",
+      "build": "pilot 4c9666c / 9e18f30",
+      "expected": "Pilot budget: AlgoGuard process RAM (working set) peak <= 1 GB.",
+      "actual": "PC A: '294 MB'. PC B: '108 MB'. Pilot verdict: 'Met'. PC A samples cover 07:58-08:43Z on 2026-10-08 (first 32 min of a 46-min CSV run); PC B's cover 60 s of capture 18.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-08 to 2026-10-16 (pilot)",
+      "case": "PRF-01.P7",
+      "card": "PRF-01",
+      "build": "pilot 4c9666c / 940e082 / 9e18f30",
+      "expected": "Pilot budget: local state-folder growth per PC, whole pilot <= 50 MB.",
+      "actual": "PC A: '0.051 -> 8.846 MiB (8.162 MiB is the model)'. PC B: '9.12 MiB in total'. Pilot verdict: 'Met'.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-16 17:32 (pilot)",
+      "case": "PRF-01.P8",
+      "card": "PRF-01",
+      "build": "pilot 9e18f30 (PC B)",
+      "expected": "Pilot budget: outage recovery - all pending synced <= 2 min after reconnect; 0 lost; 0 duplicates.",
+      "actual": "PC B: '9.5 s after sign-in; 0 lost; 0 duplicates'. Pilot verdict: 'Met. Timed from sign-in, because uploads after a restart wait for an online sign-in by design'.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-16 17:40 (pilot)",
+      "case": "PRF-01.P9",
+      "card": "PRF-01",
+      "build": "pilot 9e18f30 (PC B)",
+      "expected": "Pilot budget: revocation / restore - refused on the next action; works again after restore.",
+      "actual": "PC B: 'refused immediately; works after Retry uploads'. Pilot verdict: 'Met, with the Retry uploads step now in the runbook'.",
+      "status": "Pass",
+      "evidence": "docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-19 17:42",
+      "case": "TC-15",
+      "card": "UAT-01",
+      "expected": "Product Owner, signed in as an analyst, replays algoguard_big.csv, opens an alert, acknowledges and resolves it: alerts raised for attacks; review actions logged; Product Owner accepts.",
+      "actual": "Not executed: awaiting Product Owner. Four scenarios written for her (replay detection, alert review, report from alerts, administrator approves a node member) with Pass/Fail lines and the accept/reject signature.",
+      "status": "Not executed",
+      "evidence": "docs/testing/cycle-1/UAT scenarios.md"
+    },
+    {
       "time": "2026-10-19 13:28",
       "case": "SEC-01.1",
       "card": "SEC-01",
@@ -502,6 +661,40 @@
       "fixed_in": "",
       "retest": "",
       "evidence": "Test Log row TC-08; test-results/int01_20261019_161543/TC-08_dashboard_while_corrupt.png, TC-08_predict_refused.png; cloud_app.py:522-541"
+    },
+    {
+      "id": "DEF-10",
+      "date": "2026-10-19",
+      "case_card": "PRF-01.P1 / PRF-01",
+      "title": "Pilot limit L2: p95 upload acknowledgement 24.06 s on one live capture (budget <= 5 s)",
+      "severity": "Medium",
+      "priority": "Medium",
+      "steps": "From the pilot record (not re-run in cycle 1):\n1. PC B, live capture 6 on 2026-10-10 (Default interface, save attacks, commit 4c9666c).\n2. Measure upload delay as cloud received_at minus client event_time for the stored events.",
+      "expected": "p95 upload acknowledgement <= 5 s (pilot acceptance target, 2026-10-08).",
+      "actual": "'p95 24.06 s, max 36.65 s, with 25 events taking 20-30 s+ around 01:12:25-01:12:44Z.' Not reproduced on 2026-10-16 (capture 19 p95 3.44 s, newer code 940e082); the other 11 runs met the budget. 'Cause not identified.' The pilot recorded it as limit L2 rather than re-targeting it.",
+      "build": "4c9666c (PC B, 2026-10-10)",
+      "environment": "PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo)",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row PRF-01.P1; docs/migration/05f-pilot.md §4, §5 finding 3, §7 L2"
+    },
+    {
+      "id": "DEF-11",
+      "date": "2026-10-19",
+      "case_card": "PRF-01.P2 / PRF-01",
+      "title": "Pilot limit L1: sustained >= 20 acknowledged events/s per client not demonstrated; shipped sources are paced below it",
+      "severity": "Medium",
+      "priority": "Medium",
+      "steps": "From the pilot record (not re-run in cycle 1):\n1. Run a CSV replay at Fast speed and count acknowledged events per second.\n2. Note the replay pace (SPEED_CHOICES: Fast = one flow per 0.35 s) and the 300-event storage cap per capture.",
+      "expected": "Sustained acknowledged events per client >= 20 events/s (pilot budget; also Master Test Plan 3.4).",
+      "actual": "PC A '≈ 1.9/s (capture 5: 300 events in 157 s)'; PC B 'backlog drain of 210 events in 4.1 s ≈ 51/s'. 'Sources are paced by design: CSV Fast emits one flow per 0.35 s, ≤ 2.9/s. Each capture stores at most 300 events.' 'A sustained-load harness is needed.' Recorded by the pilot as limit L1.",
+      "build": "pilot 4c9666c / 9e18f30",
+      "environment": "PC A and PC B, hosted Supabase pilot (Tokyo)",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row PRF-01.P2; docs/migration/05f-pilot.md §4, §5 finding 4, §7 L1"
     },
     {
       "id": "DEF-02",

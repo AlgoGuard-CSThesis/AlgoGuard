@@ -321,3 +321,73 @@ Predict: 'No active deployment - The cached model is corrupt. Remove it and retr
 No e-mail addresses, passwords or tokens are included in this card or its evidence.
 
 ---
+
+## [DEF-10] Pilot limit L2: p95 upload acknowledgement 24.06 s on one live capture (budget <= 5 s)
+
+| Field | Value |
+|---|---|
+| Found by card | PRF-01.P1 / PRF-01 |
+| Card owner | Afel Anthonielle V. Quirao |
+| Date found | 2026-10-19 |
+| Severity | Medium |
+| Priority | Medium |
+| Build | 4c9666c (PC B, 2026-10-10) |
+| Environment | PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo) |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+From the pilot record (not re-run in cycle 1):
+1. PC B, live capture 6 on 2026-10-10 (Default interface, save attacks, commit 4c9666c).
+2. Measure upload delay as cloud received_at minus client event_time for the stored events.
+
+**Expected result**
+
+p95 upload acknowledgement <= 5 s (pilot acceptance target, 2026-10-08).
+
+**Actual result**
+
+'p95 24.06 s, max 36.65 s, with 25 events taking 20-30 s+ around 01:12:25-01:12:44Z.' Not reproduced on 2026-10-16 (capture 19 p95 3.44 s, newer code 940e082); the other 11 runs met the budget. 'Cause not identified.' The pilot recorded it as limit L2 rather than re-targeting it.
+
+**Evidence:** Test Log row PRF-01.P1; docs/migration/05f-pilot.md §4, §5 finding 3, §7 L2
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-11] Pilot limit L1: sustained >= 20 acknowledged events/s per client not demonstrated; shipped sources are paced below it
+
+| Field | Value |
+|---|---|
+| Found by card | PRF-01.P2 / PRF-01 |
+| Card owner | Afel Anthonielle V. Quirao |
+| Date found | 2026-10-19 |
+| Severity | Medium |
+| Priority | Medium |
+| Build | pilot 4c9666c / 9e18f30 |
+| Environment | PC A and PC B, hosted Supabase pilot (Tokyo) |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+From the pilot record (not re-run in cycle 1):
+1. Run a CSV replay at Fast speed and count acknowledged events per second.
+2. Note the replay pace (SPEED_CHOICES: Fast = one flow per 0.35 s) and the 300-event storage cap per capture.
+
+**Expected result**
+
+Sustained acknowledged events per client >= 20 events/s (pilot budget; also Master Test Plan 3.4).
+
+**Actual result**
+
+PC A '≈ 1.9/s (capture 5: 300 events in 157 s)'; PC B 'backlog drain of 210 events in 4.1 s ≈ 51/s'. 'Sources are paced by design: CSV Fast emits one flow per 0.35 s, ≤ 2.9/s. Each capture stores at most 300 events.' 'A sustained-load harness is needed.' Recorded by the pilot as limit L1.
+
+**Evidence:** Test Log row PRF-01.P2; docs/migration/05f-pilot.md §4, §5 finding 4, §7 L1
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---

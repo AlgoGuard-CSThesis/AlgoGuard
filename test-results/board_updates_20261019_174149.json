@@ -1,0 +1,40 @@
+{
+  "applied": "2026-10-19 17:41",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "PRF-01",
+      "action": "edit body",
+      "boxes_ticked": 1,
+      "results_lines": 4
+    },
+    {
+      "card": "SYS-03",
+      "action": "edit body",
+      "boxes_ticked": 4,
+      "results_lines": 5
+    },
+    {
+      "card": "SYS-03",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-10",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M4",
+      "priority": "Medium",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-11",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M4",
+      "priority": "Medium",
+      "status": "To Do",
+      "test_type": "Defect"
+    }
+  ]
+}
