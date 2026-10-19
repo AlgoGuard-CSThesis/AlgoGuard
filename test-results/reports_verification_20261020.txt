@@ -1,0 +1,7 @@
+﻿first/last execution row: 2026-10-19 10:45 / 2026-10-20 05:03
+checked 62 numbers/strings; problems: 0
+
+Could not verify against raw data (quoted or reported only):
+- Stage 5F pilot figures (SYS-03.P*, PRF-01.P*): checked against the text of docs/migration/05f-pilot.md, not against the pilot's raw samples.
+- DEF-15: known only from commit 503cb9b's message and diff; the Lighthouse report it fixes was not received.
+- USE-01 and SYS-02 box 1 on the Testing Kanban: ticked by the card side without results in test-results/.
