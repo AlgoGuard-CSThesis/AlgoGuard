@@ -1,0 +1,116 @@
+{
+  "applied": "2026-10-19 16:45",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "ENV-01",
+      "action": "edit body",
+      "boxes_ticked": 3,
+      "results_lines": 5
+    },
+    {
+      "card": "ENV-02",
+      "action": "edit body",
+      "boxes_ticked": 3,
+      "results_lines": 3
+    },
+    {
+      "card": "SMK-01",
+      "action": "edit body",
+      "boxes_ticked": 5,
+      "results_lines": 4
+    },
+    {
+      "card": "SYS-01",
+      "action": "edit body",
+      "boxes_ticked": 5,
+      "results_lines": 5
+    },
+    {
+      "card": "UNT-01",
+      "action": "edit body",
+      "boxes_ticked": 5,
+      "results_lines": 3
+    },
+    {
+      "card": "SMK-01",
+      "action": "status To Do -> Review"
+    },
+    {
+      "card": "UNT-01",
+      "action": "status To Do -> Review"
+    },
+    {
+      "card": "DEF-01",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M3",
+      "priority": "High",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-02",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M3",
+      "priority": "Medium",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-03",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M3",
+      "priority": "Medium",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-04",
+      "action": "create DEF card",
+      "owner": "Victor Alexander A. Ong",
+      "phase": "M4",
+      "priority": "High",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-05",
+      "action": "create DEF card",
+      "owner": "Victor Alexander A. Ong",
+      "phase": "M4",
+      "priority": "High",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-06",
+      "action": "create DEF card",
+      "owner": "Victor Alexander A. Ong",
+      "phase": "M4",
+      "priority": "High",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-07",
+      "action": "create DEF card",
+      "owner": "Victor Alexander A. Ong",
+      "phase": "M4",
+      "priority": "High",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-08",
+      "action": "create DEF card",
+      "owner": "Victor Alexander A. Ong",
+      "phase": "M4",
+      "priority": "High",
+      "status": "To Do",
+      "test_type": "Defect"
+    }
+  ]
+}

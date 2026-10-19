@@ -1,0 +1,21 @@
+{
+  "applied": "2026-10-19 17:04",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "INT-01",
+      "action": "edit body",
+      "boxes_ticked": 2,
+      "results_lines": 4
+    },
+    {
+      "card": "DEF-09",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M4",
+      "priority": "Low",
+      "status": "To Do",
+      "test_type": "Defect"
+    }
+  ]
+}

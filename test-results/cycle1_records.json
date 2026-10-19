@@ -1,0 +1,719 @@
+{
+  "build": "dafe5e5",
+  "owners": {
+    "DOC-01": "Jan Leigh Augustine A. Munoz",
+    "DOC-02": "Chate Mae N. Caluba",
+    "DOC-03": "Victor Alexander A. Ong",
+    "DOC-04": "John Brian A. Tiopes",
+    "DOC-05": "Brynt M. Timtiman",
+    "DOC-06": "Chate Mae N. Caluba",
+    "LOG-01": "Jan Leigh Augustine A. Munoz",
+    "ENV-01": "Arella Biacea B. Mirasol",
+    "ENV-02": "Afel Anthonielle V. Quirao",
+    "SMK-01": "John Brian A. Tiopes",
+    "UNT-01": "Cel Hendrix N. San Miguel",
+    "INT-01": "Afel Anthonielle V. Quirao",
+    "SYS-01": "Victor Alexander A. Ong",
+    "SYS-02": "John Brian A. Tiopes",
+    "SYS-03": "Cel Hendrix N. San Miguel",
+    "PRF-01": "Afel Anthonielle V. Quirao",
+    "SEC-01": "Arella Biacea B. Mirasol",
+    "USE-01": "Brynt M. Timtiman",
+    "REG-01": "Cel Hendrix N. San Miguel",
+    "UAT-01": "Pauleen Joy O. Gomez"
+  },
+  "test_log": [
+    {
+      "time": "2026-10-19 13:04",
+      "case": "ENV-01.1",
+      "card": "ENV-01",
+      "expected": "Windows 11 test PC as in plan 5.1 (PC A: Intel Core i5-13420H, 16 GB RAM, Intel Wi-Fi 6 AX203).",
+      "actual": "Microsoft Windows 11 Home Single Language, version 26H2, OS build 26300.9711; host SANMIGUEL; Intel Core i5-13420H; 15.7 GB usable RAM; Intel Wi-Fi 6 AX203 (Up). The legacy registry field ProductName still reads 'Windows 10 Home Single Language'; the OS caption reads Windows 11.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/environment.txt"
+    },
+    {
+      "time": "2026-10-19 13:04",
+      "case": "ENV-01.2",
+      "card": "ENV-01",
+      "expected": "venv runs Python 3.14.6 with the library versions in requirements-model.lock (plan 5.1).",
+      "actual": "venv\\Scripts\\python.exe = Python 3.14.6. numpy 2.5.1, scipy 1.18.0, pandas 3.0.3, scikit-learn 1.9.0, joblib 1.5.3, threadpoolctl 3.6.0 installed, each equal to requirements-model.lock.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/environment.txt; test-results/env_20261019/pip-freeze.txt"
+    },
+    {
+      "time": "2026-10-19 10:45",
+      "case": "ENV-01.3",
+      "card": "ENV-01",
+      "expected": "pip install -r requirements-dev.txt succeeds.",
+      "actual": "Exit code 0. Every requirement was already satisfied; nothing changed.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/pip-install-requirements-dev.log"
+    },
+    {
+      "time": "2026-10-19 10:45",
+      "case": "ENV-01.4",
+      "card": "ENV-01",
+      "expected": "pip install pytest-cov pip-audit bandit succeeds.",
+      "actual": "Exit code 0. Installed pytest-cov 7.1.0 and coverage 7.16.2; pip-audit 2.10.1 and bandit 1.9.4 were already installed.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/pip-install-test-tools.log"
+    },
+    {
+      "time": "2026-10-19 13:04",
+      "case": "ENV-01.5",
+      "card": "ENV-01",
+      "expected": "Npcap installed (plan 5.1).",
+      "actual": "Npcap 1.88 installed; npcap service Running (start type System); C:\\Windows\\System32\\Npcap present.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/environment.txt"
+    },
+    {
+      "time": "2026-10-19 13:04",
+      "case": "ENV-01.6",
+      "card": "ENV-01",
+      "expected": "Administrator rights available for live capture (plan 5.1).",
+      "actual": "The Windows account is a member of BUILTIN\\Administrators. The terminal used for the automated runs is not elevated (Medium integrity), so it runs with RUN_WINDOWS_CAPTURE_TESTS unset; live capture needs scripts\\START_APP.cmd started with 'Run as administrator'.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/environment.txt"
+    },
+    {
+      "time": "2026-10-19 10:45",
+      "case": "ENV-01.7",
+      "card": "ENV-01",
+      "expected": "Bundled datasets present and row counts recorded; UNSW_NB15_training-set.csv has 82,332 rows.",
+      "actual": "datasets/algoguard_big.csv 5,000 rows (1,597 Normal / 3,403 Attack); algoguard_bigger.csv 10,000 (3,194 / 6,806); algoguard_biggest.csv 20,000 (6,388 / 13,612); research/dataset/raw/UNSW_NB15_training-set.csv 82,332 rows, 45 columns (37,000 Normal / 45,332 Attack). SHA-256 of each file recorded.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/dataset_counts.json"
+    },
+    {
+      "time": "2026-10-19 10:46",
+      "case": "ENV-01.8",
+      "card": "ENV-01",
+      "expected": "Independent evaluation set built from the UNSW-NB15 training set with every row seen in training removed; row counts recorded (plan 5.1).",
+      "actual": "82,332 rows loaded; 29,089 removed because their 15 features match a row in datasets/*.csv; 53,243 kept (20,674 Attack / 32,569 Normal). Generic attacks fall from 18,871 to 802 rows after removal; 7,387 kept rows repeat the features of another kept row.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261019/independent_set_counts.json (built with scripts/evaluate_model.py row_keys())"
+    },
+    {
+      "time": "2026-10-19 13:00",
+      "case": "ENV-01.9",
+      "card": "ENV-01",
+      "expected": "Official UNSW_NB15_testing-set.csv (175,341 rows) in research/dataset/raw/ for model B (SYS-01).",
+      "actual": "Not executed: the file is not on this PC (checked 10:45 and 13:00). An alternative for the model B comparison is to be decided at Checkpoint 1.",
+      "status": "Not executed",
+      "evidence": "test-results/env_20261019/dataset_counts.json"
+    },
+    {
+      "time": "2026-10-19 13:00",
+      "case": "ENV-01.10",
+      "card": "ENV-01",
+      "expected": "Second PC for the two-PC pilot confirmed, or reported unavailable to the Test Lead (ENV-01 card).",
+      "actual": "PC B is not available on 2026-10-19. Reported in this log and in the Test Status Report (DOC-05). Plan section 8 contingency applies: SYS-03 hardware steps Not executed; the automated two-node integration tests (INT-01) cover isolation.",
+      "status": "Pass",
+      "evidence": "Lead Architect's answer, 2026-10-19 13:00"
+    },
+    {
+      "time": "2026-10-19 15:05",
+      "case": "ENV-01.11",
+      "card": "ENV-01",
+      "expected": "App starts on 127.0.0.1:5000 in cloud mode (ENV-01 card; local mode is checked separately in SEC-01 / TC-10).",
+      "actual": "scripts\\START_APP.cmd started python app.py at 15:02:30 (2 processes: venv launcher + interpreter). GET http://127.0.0.1:5000/login -> HTTP 200 'Login | AlgoGuard', heading 'Cloud Pilot Access', e-mail + password form (cloud sign-in). Model cache C:\\AlgoGuardPilot\\state-PC-A\\models holds only 1-9c9f0fb1...joblib (SHA-256 9c9f0fb18524eeda...).",
+      "status": "Pass",
+      "evidence": "Session check of the /login page and the model cache folder (no credentials read)"
+    },
+    {
+      "time": "2026-10-19 13:00",
+      "case": "ENV-02.1",
+      "card": "ENV-02",
+      "expected": "GitHub Actions CI is green on the build commit (lint, type check, unit tests, browser polling tests) (ENV-02 card).",
+      "actual": "CI workflow (windows-latest) failed on cb3bcdb (run 38886300881, 2026-10-16) and on 940e082 (runs 38870178965 on 2026-10-16 and 38017196080 on 2026-10-10). In both 2026-10-16 runs: Lint success, Type check success, Unit tests failure ('Process completed with exit code 1'), Browser polling tests skipped. All six runs listed for main (back to 4c9666c, 2026-10-05) concluded failure.",
+      "status": "Fail",
+      "defect": "DEF-01",
+      "evidence": "GitHub REST API (unauthenticated) actions/runs and jobs for main; job logs need sign-in (HTTP 403)"
+    },
+    {
+      "time": "2026-10-19 13:50",
+      "case": "ENV-02.1",
+      "card": "ENV-02",
+      "expected": "GitHub Actions CI is green on the build commit (lint, type check, unit tests, browser polling tests) (ENV-02 card).",
+      "actual": "Re-check with the job logs (gh signed in). Both runs (cb3bcdb 38886300881, 940e082 38870178965): setup-python 'python-version: 3.14' installed CPython 3.14.8; Lint 'All checks passed!'; Type check '0 errors, 26 warnings' (all 26 reportMissingModuleSource for maintainer-only packages); Unit tests '5 failed, 476 passed, 21 skipped, 34 deselected, 40 errors'. 44 of the 45 failures/errors are model_runtime.ModelDeliveryError ('Install the locked Python model runtime' x43, 'Retrain this artifact with the locked model runtime' x1): verify_runtime() requires exactly Python 3.14.6 (DEF-01). The 45th is test_cloud_outbox.py::test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot, 'assert spool.drain()' False at line 55 in both runs (DEF-03).",
+      "status": "Fail",
+      "defect": "DEF-01, DEF-03",
+      "evidence": "test-results/env_20261019/ci_run_38886300881_cb3bcdb_failed.log; test-results/env_20261019/ci_run_38870178965_940e082_failed.log (gh run view --log-failed)"
+    },
+    {
+      "time": "2026-10-19 10:51",
+      "case": "TC-16",
+      "card": "ENV-02",
+      "expected": "Line coverage of services/ >= 80% (pytest --cov=services).",
+      "actual": "TOTAL 1,869 statements, 312 missed: 83% line coverage. 537 passed, 67 deselected (integration lane), 18 warnings (all ResourceWarning: unclosed sqlite3 connection, from test_live_monitor and test_model_architecture) in 290.45 s. Below 80% per module: traffic_source_service 69%, deployment_service 77%.",
+      "status": "Pass",
+      "evidence": "test-results/coverage_20261019_104655/pytest-cov.log"
+    },
+    {
+      "time": "2026-10-19 13:03",
+      "case": "ENV-02.2",
+      "card": "ENV-02",
+      "expected": "Local Supabase stack (supabase start) runs for INT-01 (ENV-02 card).",
+      "actual": "At 10:53 the Docker engine was not running (npx supabase status: exit 1, 'failed to inspect container health'). After Docker Desktop started: npx supabase start exit 0 (13:02:37), npx supabase status exit 0; db, auth, rest, storage, realtime, kong, studio, pg_meta, inbucket and analytics up. But supabase start listed the Edge Runtime under 'Stopped services' although supabase/config.toml enables it: its container had exited (255) 11 days earlier and was not restarted. The stack was therefore not complete. (This row was first logged as Pass at 13:03; corrected at 13:31 after INT-01.1 showed the cause.)",
+      "status": "Fail",
+      "defect": "DEF-02",
+      "evidence": "test-results/env_20261019/supabase-status.log; test-results/env_20261019/supabase-start.log; test-results/env_20261019/edge-runtime-restart.log"
+    },
+    {
+      "time": "2026-10-19 13:29",
+      "case": "ENV-02.2",
+      "card": "ENV-02",
+      "expected": "Local Supabase stack (supabase start) runs for INT-01 (ENV-02 card).",
+      "actual": "Re-check after docker start supabase_edge_runtime_AlgoGuard (13:29:25): container Up; serving account_admin and smoke_test on 127.0.0.1:54321/functions/v1. All configured services running.",
+      "status": "Pass",
+      "defect": "DEF-02",
+      "evidence": "test-results/env_20261019/edge-runtime-restart.log"
+    },
+    {
+      "time": "2026-10-19 13:26",
+      "case": "TC-13",
+      "card": "UNT-01",
+      "expected": "All tests pass; 0 lint and type errors (pytest -q; ruff check .; npm run typecheck; node --test tests/monitor_poll.test.cjs).",
+      "actual": "pytest -q: 537 passed, 67 deselected (integration lane) in 130.13 s. ruff: All checks passed. pyright: 0 errors, 0 warnings, 0 informations. node --test monitor_poll: 11 pass, 0 fail. No flaky failures, so no re-run was needed. Run with RUN_WINDOWS_CAPTURE_TESTS=0 (terminal not elevated). The runner's 'uncommitted changes' flag refers only to the untracked docs/testing/ and test-results/ records.",
+      "status": "Pass",
+      "evidence": "test-results/suites_20261019_132412/summary.md and pytest-offline.log, ruff-lint.log, pyright-typecheck.log, node-monitor-poll.log"
+    },
+    {
+      "time": "2026-10-19 15:23",
+      "case": "TC-01",
+      "card": "SMK-01",
+      "expected": "Known Normal row from algoguard_big.csv on Manual Prediction: verdict Normal; event saved.",
+      "actual": "Input: first Normal row of datasets/algoguard_big.csv (CSV line 2). Signed in as the PC A analyst, cloud mode. Result: NORMAL, model confidence 84.11%; Model Stacking Ensemble; Deployment #1; latency 147.987 ms; event b0087c8e-f95c-4ce9-aa80-bfa0422f8f73; page: 'Saved on this computer - pending upload', Prediction 'Assigned after upload', Alert 'Not created'. Outbox (read-only, 15:23): event created 15:22:59, status synced, receipt prediction_id 2913, alert_id null, node d535e2fd (PC A), deployment 1.",
+      "status": "Pass",
+      "evidence": "test-results/smoke_20261019/TC-01_manual_normal.png; local outbox C:\\AlgoGuardPilot\\state-PC-A\\outbox\\outbox.sqlite3 (read-only query)"
+    },
+    {
+      "time": "2026-10-19 15:29",
+      "case": "TC-02",
+      "card": "SMK-01",
+      "expected": "Known Attack row from algoguard_big.csv on Manual Prediction: verdict Attack; alert created with confidence.",
+      "actual": "Input: first Attack row of datasets/algoguard_big.csv (CSV line 3). Result: ATTACK, model confidence 92.95%; Model Stacking Ensemble; Deployment #1; latency 44.745 ms; event 5a86608a-76da-41c6-ba68-4c63e7eccbcb; page: 'Saved on this computer - pending upload', Alert 'Created when the record uploads'. Outbox (read-only, 15:29): event created 15:29:25, status synced, receipt prediction_id 2914, alert_id 2319, node d535e2fd (PC A), deployment 1.",
+      "status": "Pass",
+      "evidence": "test-results/smoke_20261019/TC-02_manual_attack.png; local outbox (read-only query)"
+    },
+    {
+      "time": "2026-10-19 15:35",
+      "case": "SMK-01.3",
+      "card": "SMK-01",
+      "expected": "Short CSV replay produces alerts with no errors (SMK-01 card).",
+      "actual": "Live Monitor, Sample replay algoguard_big.csv (5,000 flows), Fast, Sequential, Save attacks; stopped after 386 of 5,000 flows. Screen: Flows Analyzed 386; Attacks 275 (71.24%); Normal 111; Alerts Queued 275; average latency 130.725 ms; Pinned deployment #1; Label mismatches 15; Queued for upload 275; Synced to cloud 275; Pending upload 0; Not stored 0; Upload status active; no error message. Outbox (read-only, 15:35): session c89500d0 holds 275 events, all synced, all 275 receipts carry an alert_id, 15:31:20-15:34:30, deployment 1, node d535e2fd. Observation for USE-01: the Recent Flows time column shows UTC (07:34:30 for 15:34:30 local) without a label.",
+      "status": "Pass",
+      "evidence": "test-results/smoke_20261019/SMK-01_csv_replay_counters.png and SMK-01_csv_replay_sidepanel.png; local outbox (read-only query)"
+    },
+    {
+      "time": "2026-10-19 15:37",
+      "case": "TC-03",
+      "card": "SYS-01",
+      "expected": "Whole independent set through the saved pipeline: accuracy, F1, attack recall >= 90%; FPR <= 8%; ROC-AUC >= 0.95 (plan 3.3).",
+      "actual": "Model A = deployed Stacking Ensemble (saved_models/run_3/stacking.joblib, SHA-256 9c9f0fb1...847c = deployment #1, trained 2026-10-08 on algoguard_big.csv). Independent set: 82,332 loaded, 29,089 removed as seen, 53,243 evaluated (20,674 attack / 32,569 normal). Accuracy 81.47% (not met), F1 79.49% (not met), recall 92.44% (met), FPR 25.49% (not met), ROC-AUC 0.9371 (not met); precision 69.72%, specificity 74.51%. Confusion: TN 24,268, FP 8,301, FN 1,563, TP 19,111. Harness check: the same model and code on algoguard_big.csv (seen data) give accuracy 96.98%, F1 97.77%, FPR 4.07%, ROC-AUC 0.9963, so the drop is a generalisation gap, not a scoring error.",
+      "status": "Fail",
+      "defect": "DEF-04, DEF-05, DEF-06, DEF-07",
+      "evidence": "test-results/evaluation_20261019_153649/ (summary.md, metrics.json, confusion_matrix.csv, console.log, sanity_seen_rows.log)"
+    },
+    {
+      "time": "2026-10-19 15:37",
+      "case": "SYS-01.2",
+      "card": "SYS-01",
+      "expected": "Stacking compared with each single model on the same rows (F1, ROC-AUC, time per row) (SYS-01 card).",
+      "actual": "Same 53,243 rows. F1 / ROC-AUC / ms per row: Random Forest 0.7957 / 0.9306 / 0.0096; Stacking 0.7949 / 0.9371 / 0.0836; Gradient Boosting 0.7765 / 0.9292 / 0.0037; KNN 0.7629 / 0.8962 / 0.0086; AdaBoost 0.7444 / 0.8907 / 0.0315; Naive Bayes 0.3130 / 0.6108 / 0.0036. Stacking has the best ROC-AUC and ties Random Forest on accuracy (0.8147); Random Forest is marginally higher on F1 and recall. Comparison recorded.",
+      "status": "Pass",
+      "evidence": "test-results/evaluation_20261019_153649/model_comparison.csv"
+    },
+    {
+      "time": "2026-10-19 15:37",
+      "case": "SYS-01.3",
+      "card": "SYS-01",
+      "expected": "Recall per attack category measured; categories below 90% flagged (SYS-01 card).",
+      "actual": "Recall: Analysis 99.76%, Reconnaissance 99.71%, Exploits 98.00%, Backdoor 97.78%, DoS 96.93%, Worms 95.35% (43 rows), Generic 91.27% (802 rows). FLAGGED below 90%: Fuzzers 76.62% (5,064 rows) and Shellcode 89.97% (359 rows). Normal specificity 74.51% (32,569 rows).",
+      "status": "Pass",
+      "evidence": "test-results/evaluation_20261019_153649/per_category.csv"
+    },
+    {
+      "time": "2026-10-19 15:39",
+      "case": "SYS-01.4",
+      "card": "SYS-01",
+      "expected": "Re-run with the same seed gives the same numbers (SYS-01 card).",
+      "actual": "Model A retrained the same way: python train.py datasets/algoguard_big.csv --models-dir saved_models/cycle1_A2 (local run 4, 16.1 s, no --deploy; Stacking test-split F1 95.07%, as recorded for model A). Artifact 8,558,646 bytes, SHA-256 5fc6ee7c... (differs from A only by its stored run metadata). On the independent set: accuracy 0.8147, F1 0.7949, recall 0.9244, FPR 0.2549, ROC-AUC 0.9371, confusion 24,268 / 8,301 / 1,563 / 19,111 - identical to A. Row by row on 53,243 rows: 0 verdicts differ; max attack-probability difference 0.0.",
+      "status": "Pass",
+      "evidence": "test-results/evaluation_20261019_153850/ (summary.md, console.log, train_A2_console.log, A_vs_A2_row_by_row.json)"
+    },
+    {
+      "time": "2026-10-19 15:50",
+      "case": "SYS-01.5",
+      "card": "SYS-01",
+      "expected": "Model B (comparison only) trained from the UNSW-NB15 training file with train.py, no --deploy, training time recorded; usable for an A-vs-B comparison on unseen data (Master Prompt Phase 4).",
+      "actual": "Official testing set unavailable, so B was trained on the training file minus a seeded 30% key-group hold-out (66,393 rows; hold-out 15,939 rows, 0 overlap). python train.py research/dataset/processed/sys01_holdout/model_b_train.csv --models-dir saved_models/cycle1_B: local run 5, 152 s, exit 0. train.py used all 44 non-target columns as features, including attack_cat (encodes the label) and id; Random Forest, AdaBoost, Gradient Boosting, Naive Bayes and Stacking all reported 100.00% accuracy / F1 / ROC-AUC (Naive Bayes scored 48.72% on model A's data). evaluate_model.py refused the artifact ('expects different features'). Not usable; a 15-feature model B was trained instead (SYS-01.6).",
+      "status": "Fail",
+      "defect": "DEF-08",
+      "evidence": "test-results/sys01_holdout/train_B_console.log, eval_B_raw_console.log, holdout_manifest.json; saved_models/cycle1_B/run_5 (git-ignored)"
+    },
+    {
+      "time": "2026-10-19 15:59",
+      "case": "SYS-01.6",
+      "card": "SYS-01",
+      "expected": "Comparison only (not the official result): model A and model B evaluated on the same unseen rows (Master Prompt Phase 4, adapted: hold-out instead of the official testing set).",
+      "actual": "Model B = 15-feature retrain on the same 66,393 rows (local run 6, 809.9 s; test-split Stacking F1 95.42%). Hold-out 15,939 rows (6,174 attack / 9,765 normal), 0 removed as seen by either model. A: accuracy 81.69%, F1 79.56%, recall 92.03%, FPR 24.85%, ROC-AUC 0.9375, 0.144 ms/row. B: accuracy 90.79%, F1 87.36%, recall 82.18%, FPR 3.77%, ROC-AUC 0.9713, 0.236 ms/row. B cuts false positives (2,427 -> 368) but misses more attacks (492 -> 1,100 FN); B recall Fuzzers 49.47%, Shellcode 59.29%. A on the hold-out matches its official 53,243-row result within 0.6 points.",
+      "status": "Pass",
+      "evidence": "test-results/sys01_holdout/ (eval_A_on_holdout/, eval_B_on_holdout/, *_console.log, holdout_manifest.json, model_b_train_15_manifest.json, train_B15_console.log, make_holdout.py, make_b15.py)"
+    },
+    {
+      "time": "2026-10-19 13:27",
+      "case": "INT-01.1",
+      "card": "INT-01",
+      "expected": "Integration lane (pytest -m integration) passes against the local Supabase stack (INT-01 card).",
+      "actual": "5 failed, 60 passed, 2 skipped, 537 deselected in 54.27 s. All 5 failures are Edge Function calls answered HTTP 503 'name resolution failed' (test_enrollment_administration x4, test_local_supabase_stack::test_edge_function_smoke), because the local Edge Runtime container was not running (DEF-02). Test-environment fault; no product code involved.",
+      "status": "Fail",
+      "defect": "DEF-02",
+      "evidence": "test-results/suites_20261019_132412/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-19 13:30",
+      "case": "INT-01.1",
+      "card": "INT-01",
+      "expected": "Integration lane (pytest -m integration) passes against the local Supabase stack (INT-01 card).",
+      "actual": "Re-run after the Edge Runtime restart: 65 passed, 2 skipped, 537 deselected in 43.70 s; exit 0. The 2 skips are the Npcap capture tests (INT-01.2).",
+      "status": "Pass",
+      "defect": "DEF-02",
+      "evidence": "test-results/integration_20261019_132933/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-19 16:16",
+      "case": "INT-01.3",
+      "card": "INT-01",
+      "expected": "Preprocessing to Stacking to alert path verified; Stacking uses all five base models and the Logistic Regression final estimator; model delivery, publication and outbox unit tests pass (INT-01 card).",
+      "actual": "pytest -q tests/test_model_delivery.py tests/test_model_publication.py tests/test_cloud_outbox.py tests/test_model_architecture.py: 42 passed in 39.49 s (includes test_stacking_uses_five_models_and_logistic_regression). Deployed artifact (run_3/stacking.joblib, SHA-256 9c9f0fb1...): pipeline preprocessor -> StackingClassifier with fitted RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, KNeighborsClassifier, GaussianNB; final estimator LogisticRegression; cv 5, predict_proba stacking. End-to-end path to alert shown by TC-02 (alert #2319).",
+      "status": "Pass",
+      "evidence": "test-results/int01_20261019_161543/pytest-int01-units.log, inspect_stacking_modelA.log, inspect_stacking.py"
+    },
+    {
+      "time": "2026-10-19 17:03",
+      "case": "TC-08",
+      "card": "INT-01",
+      "expected": "One byte changed in the cached artifact (local copy, backed up); app restarted: SHA-256 mismatch reported; model not loaded.",
+      "actual": "App stopped 16:58 (outbox 919 synced, 0 pending). Cache backed up to C:\\AlgoGuardPilot\\TC08-backup-models-20261019 (SHA-256 verified equal). Byte at offset 4,279,323 of 1-9c9f0fb1...joblib changed 0x00 -> 0x01 (SHA-256 now c8f1c7fe..., size unchanged). App restarted 17:00:30, PC A analyst signed in. Predict page: 'No active deployment - The cached model is corrupt. Remove it and retry.'; no form, no prediction possible. Live Monitor: the same message, no capture controls. The app neither deleted nor replaced the file. Dashboard still showed the cloud deployment as 'Deployed' with no local warning (DEF-09, Low).",
+      "status": "Pass",
+      "defect": "DEF-09",
+      "evidence": "test-results/int01_20261019_161543/tc08_corruption.json, TC-08_predict_refused.png, TC-08_live_monitor_refused.png, TC-08_dashboard_while_corrupt.png, tc08_flip_byte.py"
+    },
+    {
+      "time": "2026-10-19 17:12",
+      "case": "TC-08",
+      "card": "INT-01",
+      "expected": "After restoring the backup, the app loads the model again (Master Prompt Phase 5.3).",
+      "actual": "App stopped; backup copied back at 17:07; cached file SHA-256 9c9f0fb1...847c again (8,558,646 bytes, only file in the cache). App restarted as administrator, PC A analyst signed in. Predict form shown again; Run Prediction: green verdict at 50.46% confidence, Stacking Ensemble, Deployment #1, latency 2,021.727 ms (first prediction after start), event 3f69afc9..., synced as prediction #3190, no alert. The confidence differs from TC-01 (84.11%): the screenshot shows sinpkt typed as 133.42319, but offline re-scoring of the exact row and of that variant both give Normal 84.11%, so another typed value (not visible, and cleared from the outbox after sync) probably differed. Not counted as a defect; the model loaded and classified.",
+      "status": "Pass",
+      "evidence": "test-results/int01_20261019_161543/TC-08_after_restore_prediction.png, tc08_recheck_row.py, tc08_recheck_row.log"
+    },
+    {
+      "time": "2026-10-19 17:21",
+      "case": "TC-09",
+      "card": "INT-01",
+      "expected": "CSV replay running in cloud mode; disconnect, restart, reconnect, sign in: pending events kept and synced once; no duplicates.",
+      "actual": "Baseline 17:15: outbox 920 synced, 0 pending. Live Monitor replay (algoguard_big, Fast, Sequential, Save every flow) started; Wi-Fi switched off (not Airplane mode). Offline: new flows marked Pending; side panel Queued 142, Synced 39, Pending 103, Not stored 0, Upload status 'retrying (transient)'. Capture stopped and app closed offline; app restarted offline: sign-in refused with 'The cloud is unreachable. Online sign-in is required; a cached model does not permit offline access.' (by design); a page showed 'The cloud is unavailable. Pending records stay on this computer.' Wi-Fi on, signed in: Dashboard 17:21 showed Pending 63 durable, Synced 417, Rejected 0, Not stored 0. Outbox 17:21:28: capture session 4ea6f1f9 holds 202 events (17:17:43-17:19:28), all synced, 0 pending; outbox total 1,122 = 920 + 202. 202 distinct event UUIDs and 202 distinct cloud prediction ids, contiguous #3191-#3392; 145 distinct alert ids. No duplicates, none lost.",
+      "status": "Pass",
+      "evidence": "test-results/int01_20261019_161543/TC-09_*.png (sign-in screenshot e-mail redacted), tc09_outbox_check.json, tc09_outbox_sessions.txt"
+    },
+    {
+      "time": "2026-10-19 13:30",
+      "case": "INT-01.2",
+      "card": "INT-01",
+      "expected": "Npcap capture integration tests (test_cloud_app_stack live capture, test_maintenance_capture) pass with RUN_WINDOWS_CAPTURE_TESTS=1.",
+      "actual": "Not executed: both skipped ('Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.') because the automated runs use a terminal that is not elevated. Can be run from an elevated Command Prompt.",
+      "status": "Not executed",
+      "evidence": "test-results/integration_20261019_132933/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-19 17:24",
+      "case": "SEC-01.2",
+      "card": "SEC-01",
+      "expected": "CSRF: missing or forged tokens refused; sign-in throttle logic (SEC-01 card; Master Prompt: pytest tests/test_api_validation.py tests/test_login_throttle.py).",
+      "actual": "25 passed in 31.52 s: invalid JSON bodies rejected before any action (16 cases), JSON actions require a JSON content type (2), invalid or forged login tokens return a client error (3); throttle: repeated failures pause the account then release it, success clears the counter, one address cannot spray many usernames, old failures are forgotten. Cookie writes without a CSRF token are also covered by tests/test_cloud_app.py::test_cookie_writes_require_csrf_but_bearer_api_calls_do_not, which passed in TC-13.",
+      "status": "Pass",
+      "evidence": "test-results/sec01_20261019_172340/pytest-csrf-throttle.log"
+    },
+    {
+      "time": "2026-10-19 17:31",
+      "case": "SEC-01.3",
+      "card": "SEC-01",
+      "expected": "Bandit run; every Medium/High finding fixed or justified, or a defect raised (SEC-01 card; Master Prompt Phase 6).",
+      "actual": "Bandit (13:28 scan) by severity: High 0, Medium 14, Low 18. All 14 Medium findings read in the source and justified as false positives: 3 x B104 are an outgoing socket bound to an ephemeral port before connect (cloud_connections.py:177, maintenance_connections.py:141) and a host-name list (maintainer_env.py:44) - nothing listens; 11 x B608 build SQL only from fixed table/column lists or '?' placeholders, with every value passed as a parameter (cloud_outbox.py, legacy_backup.py, legacy_import.py, database_service.py). Hardening suggestion (not a defect): call icacls by full path in cloud_outbox.py:55. No defect raised.",
+      "status": "Pass",
+      "evidence": "test-results/sec01_20261019_172340/bandit_review.md; test-results/suites_20261019_132412/bandit.log"
+    },
+    {
+      "time": "2026-10-19 17:33",
+      "case": "SEC-01.4",
+      "card": "SEC-01",
+      "expected": "Secrets: git ls-files lists only the .env .example files; git grep for sb_secret_ / service_role / JWT-like strings finds nothing outside tests/fixtures (Master Prompt Phase 6).",
+      "actual": "Tracked .env files: .env.example and .env.maintainer.example only. git grep (HEAD): 21 hits, 0 JWT-like strings. Outside tests: service_role is the Postgres role name in 14 migration lines, supabase/config.toml:24 (comment) and docs/migration/05b-access.md:606 (prose); scripts/run_test_suites.py:37 is the redaction regex. Tests: test_cloud_schema.py, test_cloud_app.py, test_cloud_repository.py (fixtures). No secret values found; values were not printed.",
+      "status": "Pass",
+      "evidence": "Session check with values masked (git ls-files, git grep)"
+    },
+    {
+      "time": "2026-10-19 13:28",
+      "case": "SEC-01.1",
+      "card": "SEC-01",
+      "expected": "pip-audit finds no known vulnerability in requirements.txt, or each finding is fixed or justified (SEC-01 card).",
+      "actual": "python -m pip_audit -r requirements.txt: 'No known vulnerabilities found'.",
+      "status": "Pass",
+      "evidence": "test-results/suites_20261019_132412/pip-audit.log"
+    }
+  ],
+  "defects": [
+    {
+      "id": "DEF-01",
+      "date": "2026-10-19",
+      "case_card": "ENV-02.1 / ENV-02",
+      "title": "CI installs Python 3.14.8 instead of the locked 3.14.6, so every model-loading unit test stops with ModelDeliveryError and CI is red on main",
+      "severity": "Medium",
+      "priority": "High",
+      "steps": "1. Open GitHub > AlgoGuard-CSThesis/AlgoGuard > Actions > CI.\n2. Open run 38886300881 (cb3bcdb) or 38870178965 (940e082), job 'checks'.\n3. In 'Run actions/setup-python@v5' see 'python-version: 3.14' and 'Successfully set up CPython (3.14.8)'.\n4. In 'Unit tests' see 40 errors and 4 failures with model_runtime.ModelDeliveryError.",
+      "expected": "CI runs on the locked runtime (requirements-model.lock / model_runtime.PYTHON_VERSION = 3.14.6, as the workflow comment itself says) and all steps are green.",
+      "actual": "Unit tests: '5 failed, 476 passed, 21 skipped, 34 deselected, 40 errors'; 44 of the 45 are ModelDeliveryError ('Install the locked Python model runtime.' x43 from model_runtime.py:38; 'Retrain this artifact with the locked model runtime.' x1 from model_runtime.py:74), because .github/workflows/ci.yml asks setup-python for '3.14' and gets 3.14.8. The remaining failure is DEF-03. Browser polling tests are then skipped. All six main runs since 2026-10-05 failed. The app's refusal of an unlocked runtime is by design; the defect is the unpinned CI Python version. Not reproduced on PC A: the working copy passes (537 passed), and so does a clean clone of cb3bcdb with a fresh Python 3.14.6 venv from requirements-dev.txt only (521 passed, 21 skipped, 34 deselected; exit 0; the 21 skips are 16 tests in test_maintainer_env.py and 5 integration modules that need psycopg2 from requirements-maintainer.txt, which CI does not install either), because PC A runs the locked 3.14.6.",
+      "build": "cb3bcdb (CI); 940e082 (CI)",
+      "environment": "GitHub Actions windows-latest; setup-python '3.14' (patch level not pinned; requirements-model.lock records 3.14.6); Node 22",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log rows ENV-02.1 (13:00, 13:50); test-results/env_20261019/ci_run_38886300881_cb3bcdb_failed.log and ci_run_38870178965_940e082_failed.log; Automated Runs rows 'DEF-01 reproduction'; test-results/env_20261019/ci-repro.log, ci-repro-pytest.log, ci-repro-pytest-rs.log; CI runs https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/38886300881 and .../38870178965"
+    },
+    {
+      "id": "DEF-03",
+      "date": "2026-10-19",
+      "case_card": "ENV-02.1 / ENV-02",
+      "title": "test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot fails on the CI runner: 300 queued outbox writes do not finish within drain()'s 5 s limit",
+      "severity": "Low",
+      "priority": "Medium",
+      "steps": "1. Open CI run 38886300881 (cb3bcdb) or 38870178965 (940e082), job 'checks', step 'Unit tests'.\n2. Find tests/test_cloud_outbox.py::test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot.",
+      "expected": "spool.drain() returns True after 300 events are queued (test line 55).",
+      "actual": "'assert spool.drain()' -> False in both runs. Outbox.drain() waits at most 5 s (cloud_outbox.py:554-558) for the writer thread to persist the queue. Passes on PC A in the working copy and in the clean clone. The model runtime is not involved. Most likely the GitHub windows-latest runner writes the 300 SQLite rows more slowly than 5 s; not confirmed. It would keep CI red after DEF-01 is fixed.",
+      "build": "cb3bcdb (CI); 940e082 (CI)",
+      "environment": "GitHub Actions windows-latest; CPython 3.14.8",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row ENV-02.1 (13:50); test-results/env_20261019/ci_run_38886300881_cb3bcdb_failed.log; ci_run_38870178965_940e082_failed.log"
+    },
+    {
+      "id": "DEF-04",
+      "date": "2026-10-19",
+      "case_card": "TC-03 / SYS-01",
+      "title": "Deployed model misses the accuracy target on the independent evaluation set (81.47% vs >= 90%)",
+      "severity": "High",
+      "priority": "High",
+      "steps": "1. On the build commit, with the venv active, run:\n   python scripts/evaluate_model.py --model saved_models/run_3/stacking.joblib --compare-dir saved_models/run_3\n2. The script removes every UNSW_NB15_training-set.csv row whose 15 features appear in datasets/*.csv and scores the rest (53,243 rows).\n3. Read 'accuracy' in summary.md.",
+      "expected": "accuracy >= 90% (Master Test Plan 3.3).",
+      "actual": "accuracy = 81.47% on 53,243 unseen rows (20,674 attack / 32,569 normal). Full result: accuracy 81.47%, F1 79.49%, recall 92.44%, FPR 25.49%, ROC-AUC 0.9371; FP 8,301 of 32,569 normal flows. The same model scores accuracy 96.98% / F1 97.77% / FPR 4.07% on algoguard_big.csv, the data it was trained on: a generalisation gap from training on a 5,000-row sample.",
+      "build": "dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
+    },
+    {
+      "id": "DEF-05",
+      "date": "2026-10-19",
+      "case_card": "TC-03 / SYS-01",
+      "title": "Deployed model misses the F1-score target on the independent evaluation set (79.49% vs >= 90%)",
+      "severity": "High",
+      "priority": "High",
+      "steps": "1. On the build commit, with the venv active, run:\n   python scripts/evaluate_model.py --model saved_models/run_3/stacking.joblib --compare-dir saved_models/run_3\n2. The script removes every UNSW_NB15_training-set.csv row whose 15 features appear in datasets/*.csv and scores the rest (53,243 rows).\n3. Read 'F1-score' in summary.md.",
+      "expected": "F1-score >= 90% (Master Test Plan 3.3).",
+      "actual": "F1-score = 79.49% on 53,243 unseen rows (20,674 attack / 32,569 normal). Full result: accuracy 81.47%, F1 79.49%, recall 92.44%, FPR 25.49%, ROC-AUC 0.9371; FP 8,301 of 32,569 normal flows. The same model scores accuracy 96.98% / F1 97.77% / FPR 4.07% on algoguard_big.csv, the data it was trained on: a generalisation gap from training on a 5,000-row sample.",
+      "build": "dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
+    },
+    {
+      "id": "DEF-06",
+      "date": "2026-10-19",
+      "case_card": "TC-03 / SYS-01",
+      "title": "Deployed model misses the false-positive rate target on the independent evaluation set (25.49% vs <= 8%)",
+      "severity": "High",
+      "priority": "High",
+      "steps": "1. On the build commit, with the venv active, run:\n   python scripts/evaluate_model.py --model saved_models/run_3/stacking.joblib --compare-dir saved_models/run_3\n2. The script removes every UNSW_NB15_training-set.csv row whose 15 features appear in datasets/*.csv and scores the rest (53,243 rows).\n3. Read 'false-positive rate' in summary.md.",
+      "expected": "false-positive rate <= 8% (Master Test Plan 3.3).",
+      "actual": "false-positive rate = 25.49% on 53,243 unseen rows (20,674 attack / 32,569 normal). Full result: accuracy 81.47%, F1 79.49%, recall 92.44%, FPR 25.49%, ROC-AUC 0.9371; FP 8,301 of 32,569 normal flows. The same model scores accuracy 96.98% / F1 97.77% / FPR 4.07% on algoguard_big.csv, the data it was trained on: a generalisation gap from training on a 5,000-row sample.",
+      "build": "dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
+    },
+    {
+      "id": "DEF-07",
+      "date": "2026-10-19",
+      "case_card": "TC-03 / SYS-01",
+      "title": "Deployed model misses the ROC-AUC target on the independent evaluation set (0.9371 vs >= 0.95)",
+      "severity": "High",
+      "priority": "High",
+      "steps": "1. On the build commit, with the venv active, run:\n   python scripts/evaluate_model.py --model saved_models/run_3/stacking.joblib --compare-dir saved_models/run_3\n2. The script removes every UNSW_NB15_training-set.csv row whose 15 features appear in datasets/*.csv and scores the rest (53,243 rows).\n3. Read 'ROC-AUC' in summary.md.",
+      "expected": "ROC-AUC >= 0.95 (Master Test Plan 3.3).",
+      "actual": "ROC-AUC = 0.9371 on 53,243 unseen rows (20,674 attack / 32,569 normal). Full result: accuracy 81.47%, F1 79.49%, recall 92.44%, FPR 25.49%, ROC-AUC 0.9371; FP 8,301 of 32,569 normal flows. The same model scores accuracy 96.98% / F1 97.77% / FPR 4.07% on algoguard_big.csv, the data it was trained on: a generalisation gap from training on a 5,000-row sample.",
+      "build": "dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
+    },
+    {
+      "id": "DEF-08",
+      "date": "2026-10-19",
+      "case_card": "SYS-01.5 / SYS-01",
+      "title": "train.py uses every non-target column as a feature: on the raw UNSW-NB15 file it trains on attack_cat (the label) and id, reports 100%, and local --deploy has no feature-schema check",
+      "severity": "Medium",
+      "priority": "High",
+      "steps": "1. Build a CSV with the UNSW_NB15_training-set.csv columns (e.g. the training file itself, or test-results/sys01_holdout/make_holdout.py's model_b_train.csv).\n2. python train.py <that CSV> --models-dir saved_models/cycle1_B (no --deploy).\n3. Read the comparison table and the artifact's feature_columns.",
+      "expected": "Training uses only the supported 15-feature flow schema (model_runtime FEATURE_SCHEMA_VERSION 'unsw-nb15-fifteen-v1'), or refuses a CSV with other columns; label-derived columns such as attack_cat are never features.",
+      "actual": "preprocessing_service.prepare_dataset() takes every column except the last as a feature: 44 features including attack_cat and id. Random Forest, AdaBoost, Gradient Boosting, Naive Bayes and Stacking report 100.00% accuracy / F1 / ROC-AUC (Naive Bayes is 48.72% on 15 features). Cloud publication and download refuse such a model (model_runtime.verify_artifact_contract, called from publish_model.py and model_delivery.py), but the local deploy path (train.py _deploy_stacking -> deployment_service.deploy_model) does not call it - by code reading; --deploy was not run. Workaround: train only on CSVs with the 15 features + label, as the bundled datasets are.",
+      "build": "dafe5e5 (product code = 940e082)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; local training run 5",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row SYS-01.5; test-results/sys01_holdout/train_B_console.log, eval_B_raw_console.log; services/preprocessing_service.py:158-219; model_runtime.py:69-77; train.py:130-200"
+    },
+    {
+      "id": "DEF-09",
+      "date": "2026-10-19",
+      "case_card": "TC-08 / INT-01",
+      "title": "Dashboard shows the model as 'Deployed' while this installation's cached model is corrupt and refused",
+      "severity": "Low",
+      "priority": "Low",
+      "steps": "1. Stop the app (cloud mode); back up the model cache folder.\n2. Change one byte in the cached .joblib under <state dir>\\models.\n3. Start the app and sign in as an analyst.\n4. Open the Dashboard, then Predict.",
+      "expected": "Every page that reports model status says the model cannot be used on this PC (as Predict does).",
+      "actual": "Predict: 'No active deployment - The cached model is corrupt. Remove it and retry.' Dashboard: green 'Deployed' badge, Stacking Ensemble, deployment #1 and its training metrics, with no warning. cloud_app.py dashboard() renders active_deployment(repo), the cloud record, and does not check the local cache (the model_message path only covers errors from that cloud lookup). No unsafe behaviour: the corrupt model is never used.",
+      "build": "dafe5e5 (product code = 940e082)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode, PC A analyst",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-08; test-results/int01_20261019_161543/TC-08_dashboard_while_corrupt.png, TC-08_predict_refused.png; cloud_app.py:522-541"
+    },
+    {
+      "id": "DEF-02",
+      "date": "2026-10-19",
+      "case_card": "ENV-02.2 / ENV-02",
+      "title": "Local stack: supabase start exits 0 but leaves the crashed Edge Runtime stopped; Edge Function integration tests then fail with HTTP 503",
+      "severity": "Low",
+      "priority": "Medium",
+      "steps": "1. Let the supabase_edge_runtime_AlgoGuard container stop (here it had exited with code 255 eleven days earlier).\n2. Run npx supabase start (CLI 2.117.0); it exits 0 and lists the Edge Runtime under 'Stopped services'.\n3. Run python -m pytest -q -m integration.",
+      "expected": "supabase start brings up every service enabled in supabase/config.toml ([edge_runtime] enabled = true), or fails; the integration lane passes.",
+      "actual": "Exit 0 with the Edge Runtime still stopped; 5 integration tests fail with HTTP 503 'name resolution failed' from /functions/v1/account_admin. Workaround: docker start supabase_edge_runtime_AlgoGuard, then the lane passes (65 passed, 2 skipped). The same stopped Edge Runtime was noted in 05f-pilot.md section 8.2 (2026-09-30). Test-environment issue; the product is not affected.",
+      "build": "dafe5e5 (product code = 940e082)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Docker Desktop 29.8.0; Supabase CLI 2.117.0 local stack",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log rows ENV-02.2 and INT-01.1; test-results/env_20261019/edge-runtime-restart.log; test-results/suites_20261019_132412/pytest-integration.log; test-results/integration_20261019_132933/pytest-integration.log"
+    }
+  ],
+  "automated_runs": [
+    {
+      "time": "2026-10-19 10:51",
+      "step": "TC-16 coverage: python -m pytest --cov=services --cov-report=term -q",
+      "result": "PASS",
+      "key": "537 passed, 67 deselected, 18 warnings in 290.45s; TOTAL 1869 stmts, 312 miss, 83%",
+      "log": "test-results/coverage_20261019_104655/pytest-cov.log"
+    },
+    {
+      "time": "2026-10-19 13:13",
+      "step": "DEF-01 reproduction: clean clone of cb3bcdb, fresh venv (Python 3.14.6, requirements-dev.txt only, no .env, no saved models), python -m pytest -q",
+      "build": "cb3bcdb",
+      "result": "PASS",
+      "key": "521 passed, 21 skipped, 34 deselected in 406.65s (0:06:46); pytest exit 0",
+      "log": "test-results/env_20261019/ci-repro.log; test-results/env_20261019/ci-repro-pytest.log"
+    },
+    {
+      "time": "2026-10-19 13:18",
+      "step": "DEF-01 reproduction re-run with skip reasons: same clean clone, python -m pytest -q -rs",
+      "build": "cb3bcdb",
+      "result": "PASS",
+      "key": "521 passed, 21 skipped, 34 deselected in 157.92s; every skip = psycopg2 missing (requirements-maintainer.txt): 16 in test_maintainer_env.py, 5 integration modules",
+      "log": "test-results/env_20261019/ci-repro-pytest-rs.log"
+    },
+    {
+      "time": "2026-10-19 13:26",
+      "step": "pytest-offline: python -m pytest -q",
+      "result": "PASS",
+      "key": "537 passed, 67 deselected in 130.13s (0:02:10)",
+      "log": "test-results/suites_20261019_132412/pytest-offline.log"
+    },
+    {
+      "time": "2026-10-19 13:26",
+      "step": "ruff-lint: python -m ruff check .",
+      "result": "PASS",
+      "key": "All checks passed!",
+      "log": "test-results/suites_20261019_132412/ruff-lint.log"
+    },
+    {
+      "time": "2026-10-19 13:26",
+      "step": "pyright-typecheck: npm run typecheck",
+      "result": "PASS",
+      "key": "0 errors, 0 warnings, 0 informations",
+      "log": "test-results/suites_20261019_132412/pyright-typecheck.log"
+    },
+    {
+      "time": "2026-10-19 13:26",
+      "step": "node-monitor-poll: node --test tests/monitor_poll.test.cjs",
+      "result": "PASS",
+      "key": "# pass 11 / # fail 0",
+      "log": "test-results/suites_20261019_132412/node-monitor-poll.log"
+    },
+    {
+      "time": "2026-10-19 13:27",
+      "step": "pytest-integration: python -m pytest -q -m integration",
+      "result": "FAIL",
+      "key": "5 failed, 60 passed, 2 skipped, 537 deselected in 54.27s; all 5 = Edge Function HTTP 503 (Edge Runtime container stopped, DEF-02)",
+      "log": "test-results/suites_20261019_132412/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-19 13:28",
+      "step": "pip-audit: python -m pip_audit -r requirements.txt",
+      "result": "PASS",
+      "key": "No known vulnerabilities found",
+      "log": "test-results/suites_20261019_132412/pip-audit.log"
+    },
+    {
+      "time": "2026-10-19 13:28",
+      "step": "bandit: python -m bandit -r <top-level *.py> services scripts",
+      "result": "FAIL",
+      "key": "Exit 1 (issues found). By severity: High 0, Medium 14, Low 18. (The runner's summary line shows the by-confidence counts by mistake: Medium 16 / High 16.)",
+      "log": "test-results/suites_20261019_132412/bandit.log"
+    },
+    {
+      "time": "2026-10-19 13:30",
+      "step": "pytest-integration re-run after docker start supabase_edge_runtime_AlgoGuard: python -m pytest -q -m integration -rfEs",
+      "result": "PASS",
+      "key": "65 passed, 2 skipped, 537 deselected in 43.70s; skips = 2 Npcap capture tests (RUN_WINDOWS_CAPTURE_TESTS not set)",
+      "log": "test-results/integration_20261019_132933/pytest-integration.log"
+    }
+  ],
+  "exit_criteria": [
+    {
+      "criterion": "3.3 · 100% of planned Critical test cases executed",
+      "target": "100%",
+      "measured": "",
+      "result": "Not measured",
+      "source": "Critical = test cases traced to Critical features F2, F7, F8 in the RTM: TC-01, TC-02, TC-03, TC-04, TC-06, TC-08, TC-09"
+    },
+    {
+      "criterion": "3.3 · Overall pass rate across executed test cases",
+      "target": ">= 95%",
+      "measured": "",
+      "result": "Not measured",
+      "source": "Test Log"
+    },
+    {
+      "criterion": "3.3 · Open Critical or High severity bugs",
+      "target": "0",
+      "measured": "",
+      "result": "Not measured",
+      "source": "Defects sheet"
+    },
+    {
+      "criterion": "3.3 · Accuracy on the independent evaluation set",
+      "target": ">= 90%",
+      "measured": "81.47% (53,243 rows; model A, deployment #1)",
+      "result": "Not met",
+      "source": "TC-03 · test-results/evaluation_20261019_153649 · DEF-04"
+    },
+    {
+      "criterion": "3.3 · F1-score on the independent evaluation set",
+      "target": ">= 90%",
+      "measured": "79.49%",
+      "result": "Not met",
+      "source": "TC-03 · test-results/evaluation_20261019_153649 · DEF-05"
+    },
+    {
+      "criterion": "3.3 · Attack recall on the independent evaluation set",
+      "target": ">= 90%",
+      "measured": "92.44%",
+      "result": "Met",
+      "source": "TC-03 · test-results/evaluation_20261019_153649"
+    },
+    {
+      "criterion": "3.3 · False-positive rate on the independent evaluation set",
+      "target": "<= 8%",
+      "measured": "25.49%",
+      "result": "Not met",
+      "source": "TC-03 · test-results/evaluation_20261019_153649 · DEF-06"
+    },
+    {
+      "criterion": "3.3 · ROC-AUC on the independent evaluation set",
+      "target": ">= 0.95",
+      "measured": "0.9371",
+      "result": "Not met",
+      "source": "TC-03 · test-results/evaluation_20261019_153649 · DEF-07"
+    },
+    {
+      "criterion": "3.3 · Every performance budget in 3.4 met or waived in writing by the Product Owner",
+      "target": "All met or waived",
+      "measured": "",
+      "result": "Not measured",
+      "source": "PRF-01 rows below"
+    },
+    {
+      "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
+      "target": "All",
+      "measured": "",
+      "result": "Not measured",
+      "source": "Defects sheet"
+    },
+    {
+      "criterion": "3.3 · Final Test Completion Report generated and accepted (DOC-06)",
+      "target": "Generated and accepted",
+      "measured": "",
+      "result": "Not measured",
+      "source": "DOC-06"
+    },
+    {
+      "criterion": "3.4 · Live event-to-verdict lag, p95 (excluding flow timeouts)",
+      "target": "<= 500 ms",
+      "measured": "",
+      "result": "Not measured",
+      "source": "PRF-01 / TC-11"
+    },
+    {
+      "criterion": "3.4 · Sustained events per second, per client",
+      "target": ">= 20",
+      "measured": "",
+      "result": "Not measured",
+      "source": "PRF-01"
+    },
+    {
+      "criterion": "3.4 · Packet drop fraction during live capture",
+      "target": "<= 1%",
+      "measured": "",
+      "result": "Not measured",
+      "source": "PRF-01"
+    },
+    {
+      "criterion": "3.4 · AlgoGuard process CPU during a 30-minute soak",
+      "target": "<= 80%",
+      "measured": "",
+      "result": "Not measured",
+      "source": "PRF-01 soak"
+    },
+    {
+      "criterion": "3.4 · AlgoGuard process RAM during a 30-minute soak",
+      "target": "<= 1 GiB",
+      "measured": "",
+      "result": "Not measured",
+      "source": "PRF-01 soak"
+    }
+  ]
+}
