@@ -1,0 +1,7 @@
+Loading evaluation data: research\dataset\processed\sys01_holdout\holdout_eval.csv
+  training rows from algoguard_big.csv: 5000
+  training rows from algoguard_bigger.csv: 10000
+  training rows from algoguard_biggest.csv: 20000
+  training rows from model_b_train.csv: 66393
+Evaluation rows: 15939 loaded, 0 removed as seen in training, 15939 kept
+saved_models\cycle1_B\run_5\stacking.joblib expects different features: ['id', 'dur', 'proto', 'service', 'state', 'spkts', 'dpkts', 'sbytes', 'dbytes', 'rate', 'sttl', 'dttl', 'sload', 'dload', 'sloss', 'dloss', 'sinpkt', 'dinpkt', 'sjit', 'djit', 'swin', 'stcpb', 'dtcpb', 'dwin', 'tcprtt', 'synack', 'ackdat', 'smean', 'dmean', 'trans_depth', 'response_body_len', 'ct_srv_src', 'ct_state_ttl', 'ct_dst_ltm', 'ct_src_dport_ltm', 'ct_dst_sport_ltm', 'ct_dst_src_ltm', 'is_ftp_login', 'ct_ftp_cmd', 'ct_flw_http_mthd', 'ct_src_ltm', 'ct_srv_dst', 'is_sm_ips_ports', 'attack_cat']

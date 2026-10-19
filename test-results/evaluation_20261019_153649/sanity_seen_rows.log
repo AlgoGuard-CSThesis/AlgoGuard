@@ -1,0 +1,13 @@
+artifact keys: ['artifact_version', 'categorical_columns', 'feature_columns', 'feature_defaults', 'label_mapping', 'model_id', 'model_name', 'model_type', 'numeric_columns', 'source_run_id', 'target_column', 'trained_at', 'training_runtime', 'workflow_version']
+  trained_at: 2026-10-08 05:38:46
+{
+  "algoguard_big.csv": {
+    "rows": 5000,
+    "accuracy": 0.9698,
+    "precision": 0.9808,
+    "recall": 0.9747,
+    "f1": 0.9777,
+    "false_positive_rate": 0.0407,
+    "roc_auc": 0.9963
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "rows": 53243,
+  "model_a": "saved_models\\run_3\\stacking.joblib",
+  "model_b": "saved_models\\cycle1_A2\\run_4\\stacking.joblib",
+  "verdicts_differing": 0,
+  "attack_probability_max_abs_diff": 0.0,
+  "rows_with_any_probability_difference": 0
+}

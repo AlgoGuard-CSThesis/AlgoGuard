@@ -1,0 +1,33 @@
+{
+  "source": "research\\dataset\\raw\\UNSW_NB15_training-set.csv",
+  "source_sha256": "734fe6642edf758f7c94d7d9149426b49d202fe8e7bf0bef47392489c3c0a559",
+  "seed": 42,
+  "holdout_share_of_unseen_key_groups": 0.3,
+  "source_rows": 82332,
+  "rows_unseen_by_model_a": 53243,
+  "unseen_key_groups": 45856,
+  "holdout_key_groups": 13757,
+  "holdout_rows": 15939,
+  "holdout_attack": 6174,
+  "holdout_normal": 9765,
+  "holdout_attack_cat": {
+    "Normal": 9765,
+    "Exploits": 2800,
+    "Fuzzers": 1520,
+    "DoS": 647,
+    "Reconnaissance": 567,
+    "Generic": 252,
+    "Analysis": 131,
+    "Backdoor": 130,
+    "Shellcode": 113,
+    "Worms": 14
+  },
+  "model_b_train_rows": 66393,
+  "holdout_sha256": "b76c8788eb64b1653a1b32ffff72f989a29b35671f8524939c9666fa3879ce79",
+  "model_b_train_sha256": "634a6ae7a229fd268361f164fd15a3f9ae45b600be02361a446e13a77aee0295",
+  "key_overlap_holdout_vs_b_train": 0,
+  "data_files": [
+    "research\\dataset\\processed\\sys01_holdout\\holdout_eval.csv",
+    "research\\dataset\\processed\\sys01_holdout\\model_b_train.csv"
+  ]
+}

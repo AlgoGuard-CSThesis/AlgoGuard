@@ -1,0 +1,7 @@
+model,file,accuracy,precision,recall,f1,false_positive_rate,roc_auc,prediction_ms_per_row
+Random Forest,random_forest.joblib,0.8147,0.6955,0.9297,0.7957,0.2583,0.9306,0.0082
+Stacking Ensemble,stacking.joblib,0.8147,0.6972,0.9244,0.7949,0.2549,0.9371,0.0797
+Gradient Boosting,gradient_boosting.joblib,0.7815,0.644,0.9777,0.7765,0.343,0.9292,0.0032
+K-Nearest Neighbors,knn.joblib,0.7768,0.6493,0.9246,0.7629,0.317,0.8962,0.0085
+AdaBoost,adaboost.joblib,0.7387,0.6002,0.9797,0.7444,0.4142,0.8907,0.0283
+Naive Bayes,naive_bayes.joblib,0.6837,0.9995,0.1855,0.313,0.0001,0.6108,0.0036

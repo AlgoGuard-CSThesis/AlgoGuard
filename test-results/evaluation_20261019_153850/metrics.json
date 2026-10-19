@@ -1,0 +1,71 @@
+{
+  "context": {
+    "evaluated_at": "2026-10-19T15:39:04",
+    "git_commit": "dafe5e5",
+    "python": "3.14.6",
+    "scikit_learn": "1.9.0",
+    "model_file": "saved_models\\cycle1_A2\\run_4\\stacking.joblib",
+    "model_sha256": "5fc6ee7c98569c1e8489efdc2cecdd94acbe828268e34d83cd813de2daecae2f",
+    "model_name": "Stacking Ensemble",
+    "model_trained_at": "2026-10-19 07:38:14",
+    "data_file": "C:\\Users\\sanmi\\AlgoGuard\\research\\dataset\\raw\\UNSW_NB15_training-set.csv",
+    "data_sha256": "734fe6642edf758f7c94d7d9149426b49d202fe8e7bf0bef47392489c3c0a559",
+    "training_csvs": [
+      "C:\\Users\\sanmi\\AlgoGuard\\datasets\\algoguard_big.csv",
+      "C:\\Users\\sanmi\\AlgoGuard\\datasets\\algoguard_bigger.csv",
+      "C:\\Users\\sanmi\\AlgoGuard\\datasets\\algoguard_biggest.csv"
+    ],
+    "rows_loaded": 82332,
+    "rows_removed_seen_in_training": 29089
+  },
+  "metrics": {
+    "rows": 53243,
+    "attacks": 20674,
+    "normal": 32569,
+    "accuracy": 0.814736209454764,
+    "precision": 0.6971764190865315,
+    "recall": 0.9243977943310439,
+    "f1": 0.7948675290105228,
+    "false_positive_rate": 0.2548742669409561,
+    "specificity": 0.7451257330590438,
+    "roc_auc": 0.9371186835567442,
+    "tp": 19111,
+    "fp": 8301,
+    "tn": 24268,
+    "fn": 1563,
+    "prediction_seconds_total": 4.2434237000015855,
+    "prediction_ms_per_row": 0.07969918486940228
+  },
+  "targets": [
+    {
+      "metric": "accuracy",
+      "target": ">= 0.9",
+      "measured": 0.8147,
+      "result": "Not met"
+    },
+    {
+      "metric": "f1",
+      "target": ">= 0.9",
+      "measured": 0.7949,
+      "result": "Not met"
+    },
+    {
+      "metric": "recall",
+      "target": ">= 0.9",
+      "measured": 0.9244,
+      "result": "Met"
+    },
+    {
+      "metric": "false_positive_rate",
+      "target": "<= 0.08",
+      "measured": 0.2549,
+      "result": "Not met"
+    },
+    {
+      "metric": "roc_auc",
+      "target": ">= 0.95",
+      "measured": 0.9371,
+      "result": "Not met"
+    }
+  ]
+}

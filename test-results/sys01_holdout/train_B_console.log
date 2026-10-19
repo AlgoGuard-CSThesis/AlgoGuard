@@ -1,0 +1,32 @@
+Training run #5 created for model_b_train.csv.
+Validating and preprocessing the dataset ...
+Prepared 66,393 rows and 44 features.
+
+  [1/6] Training Random Forest ...
+  [1/6] Finished Random Forest
+  [2/6] Training Gradient Boosting ...
+  [2/6] Finished Gradient Boosting
+  [3/6] Training AdaBoost ...
+  [3/6] Finished AdaBoost
+  [4/6] Training K-Nearest Neighbors ...
+  [4/6] Finished K-Nearest Neighbors
+  [5/6] Training Naive Bayes ...
+  [5/6] Finished Naive Bayes
+  [6/6] Training Stacking Ensemble ...
+  [6/6] Finished Stacking Ensemble
+
+Model comparison
+------------------------------------------------------------------------------
+#   Model                    Accuracy         F1    ROC-AUC      Score
+------------------------------------------------------------------------------
+1   Random Forest             100.00%    100.00%    100.00%       0.98
+2   AdaBoost                  100.00%    100.00%    100.00%       0.92
+3   Gradient Boosting         100.00%    100.00%    100.00%       0.90
+4   Naive Bayes               100.00%    100.00%    100.00%       0.89
+5   K-Nearest Neighbors        99.70%     99.75%     99.94%       0.03
+-   Stacking Ensemble         100.00%    100.00%    100.00%          -
+------------------------------------------------------------------------------
+Top individual model: Random Forest
+Report: C:\Users\sanmi\AlgoGuard\reports\training_run_5_model_results.csv
+
+Run again with --deploy to promote the Stacking Ensemble.
