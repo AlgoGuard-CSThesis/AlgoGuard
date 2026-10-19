@@ -1,0 +1,56 @@
+﻿AlgoGuard test cycle 1 - environment capture
+Captured: 2026-10-19 13:04:20 (Singapore Standard Time, UTC+08:00 = Asia/Manila)
+Repository HEAD: dafe5e5 (product code = 940e082)
+
+[OS] Caption: Microsoft Windows 11 Home Single Language
+[OS] DisplayVersion 26H2, build 26300.9711, edition CoreSingleLanguage
+[OS] Registry ProductName (legacy field): Windows 10 Home Single Language
+[HW] Host: SANMIGUEL
+[HW] CPU: 13th Gen Intel(R) Core(TM) i5-13420H
+[HW] RAM: 15.7 GB usable
+[HW] Wi-Fi: Intel(R) Wi-Fi 6 AX203 [Up]
+
+[Python] venv: Python 3.14.6
+[Python] packages:
+  numpy 2.5.1
+  scipy 1.18.0
+  pandas 3.0.3
+  scikit-learn 1.9.0
+  joblib 1.5.3
+  threadpoolctl 3.6.0
+  Flask 3.1.3
+  scapy 2.8.0
+  psutil 7.2.2
+  PyJWT 2.15.1
+  pytest 9.1.1
+  ruff 0.16.10
+  pytest-cov 7.1.0
+  coverage 7.16.2
+  pip-audit 2.10.1
+  bandit 1.9.4
+[Python] requirements-model.lock pins:
+  numpy==2.5.1
+  scipy==1.18.0
+  pandas==3.0.3
+  scikit-learn==1.9.0
+  joblib==1.5.3
+  threadpoolctl==3.6.0
+  python-dateutil==2.9.0.post0
+  tzdata==2026.2
+  six==1.17.0
+
+[Npcap] version 1.88; service Running (System); C:\Windows\System32\Npcap present: True
+[Admin] This terminal elevated: False; groups: Mandatory Label\Medium Mandatory Level []; BUILTIN\Administrators [Group used for deny only]
+
+[Tools] node v22.15.0; npm 10.9.2; supabase CLI 2.117.0
+[Tools] docker: Docker version 29.8.0, build 88096ef
+[Tools] gh: gh version 2.100.0 (2026-09-03); signed in: no
+[Browsers] Chrome 155.0.8059.80; Edge 155.0.4283.45
+
+[Clock] w32time service: Running
+  Last Successful Sync Time: 19/10/2026 9:05:40 am
+  Source: time.windows.com,0x9
+[Clock] offset vs time.windows.com:
+  13:04:33, +00.0912750s
+  13:04:35, +00.0913665s
+  13:04:37, +00.0762803s

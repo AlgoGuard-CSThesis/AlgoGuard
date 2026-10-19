@@ -1,0 +1,23 @@
+﻿npx supabase start (2026-10-19 13:02:33 -> 13:02:37, exit 0); secret fields redacted
+{
+    "DB_URL":  "\u003credacted\u003e",
+    "API_URL":  "http://127.0.0.1:54321",
+    "REST_URL":  "http://127.0.0.1:54321/rest/v1",
+    "GRAPHQL_URL":  "http://127.0.0.1:54321/graphql/v1",
+    "MCP_URL":  "http://127.0.0.1:54321/mcp",
+    "STUDIO_URL":  "http://127.0.0.1:54323",
+    "PUBLISHABLE_KEY":  "\u003credacted\u003e",
+    "SECRET_KEY":  "\u003credacted\u003e",
+    "JWT_SECRET":  "\u003credacted\u003e",
+    "ANON_KEY":  "\u003credacted\u003e",
+    "SERVICE_ROLE_KEY":  "\u003credacted\u003e",
+    "MAILPIT_URL":  "http://127.0.0.1:54324",
+    "INBUCKET_URL":  "http://127.0.0.1:54324",
+    "STORAGE_S3_URL":  "\u003credacted\u003e",
+    "S3_PROTOCOL_ACCESS_KEY_ID":  "\u003credacted\u003e",
+    "S3_PROTOCOL_ACCESS_KEY_SECRET":  "\u003credacted\u003e",
+    "S3_PROTOCOL_REGION":  "\u003credacted\u003e",
+    "message":  ""
+}
+Stopped services: [supabase_imgproxy_AlgoGuard supabase_edge_runtime_AlgoGuard supabase_pooler_AlgoGuard]
+npx supabase status exit code: 0 (13:03)

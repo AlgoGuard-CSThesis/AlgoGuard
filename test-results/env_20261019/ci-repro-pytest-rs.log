@@ -1,0 +1,17 @@
+........................................................................ [ 13%]
+........................................................................ [ 26%]
+........................................................................ [ 40%]
+................................ssssssssssssssss........................ [ 53%]
+........................................................................ [ 67%]
+........................................................................ [ 80%]
+........................................................................ [ 93%]
+.................................                                        [100%]
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_auth_configuration.py:28: integration lane needs: python -m pip install -r requirements-maintainer.txt
+SKIPPED [1] tests\integration\test_cloud_schema.py:27: integration lane needs: python -m pip install -r requirements-maintainer.txt
+SKIPPED [1] tests\integration\test_legacy_transfer.py:28: could not import 'psycopg2': No module named 'psycopg2'
+SKIPPED [1] tests\integration\test_local_supabase_stack.py:29: integration lane needs: python -m pip install -r requirements-maintainer.txt
+SKIPPED [1] tests\integration\test_migration_runner.py:18: could not import 'psycopg2': No module named 'psycopg2'
+SKIPPED [15] tests\test_maintainer_env.py:37: could not import 'psycopg2': No module named 'psycopg2'
+SKIPPED [1] tests\test_maintainer_env.py:43: could not import 'psycopg2': No module named 'psycopg2'
+521 passed, 21 skipped, 34 deselected in 157.92s (0:02:37)

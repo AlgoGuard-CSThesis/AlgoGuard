@@ -1,0 +1,49 @@
+{
+  "datasets/algoguard_big.csv": {
+    "present": true,
+    "rows": 5000,
+    "columns": 16,
+    "sha256": "32cfaca1b0099e52c45c91be9360a9c6cc9259cdf01c0ab0c90abcec4ae4f155",
+    "normal": 1597,
+    "attack": 3403
+  },
+  "datasets/algoguard_bigger.csv": {
+    "present": true,
+    "rows": 10000,
+    "columns": 16,
+    "sha256": "0dbd17c22372df061251558e8447ade6865e9fd44380fc7825d203bea66bcf07",
+    "normal": 3194,
+    "attack": 6806
+  },
+  "datasets/algoguard_biggest.csv": {
+    "present": true,
+    "rows": 20000,
+    "columns": 16,
+    "sha256": "4248f04eac6a3697773880aecc471ea44ea028f7a6423e637f1f5ba440d3d9fe",
+    "normal": 6388,
+    "attack": 13612
+  },
+  "research/dataset/raw/UNSW_NB15_training-set.csv": {
+    "present": true,
+    "rows": 82332,
+    "columns": 45,
+    "sha256": "734fe6642edf758f7c94d7d9149426b49d202fe8e7bf0bef47392489c3c0a559",
+    "normal": 37000,
+    "attack": 45332,
+    "attack_cat": {
+      "Normal": 37000,
+      "Generic": 18871,
+      "Exploits": 11132,
+      "Fuzzers": 6062,
+      "DoS": 4089,
+      "Reconnaissance": 3496,
+      "Analysis": 677,
+      "Backdoor": 583,
+      "Shellcode": 378,
+      "Worms": 44
+    }
+  },
+  "research/dataset/raw/UNSW_NB15_testing-set.csv": {
+    "present": false
+  }
+}

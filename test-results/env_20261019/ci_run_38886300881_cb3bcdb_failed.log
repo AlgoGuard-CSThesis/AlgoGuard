@@ -1,0 +1,1884 @@
+checks	UNKNOWN STEP	﻿2026-10-16T10:18:03.8786525Z Current runner version: '2.337.0'
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8815460Z ##[group]Runner Image Provisioner
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8816443Z Hosted Compute Agent
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8817058Z Version: 20261002.596
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8817710Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8818517Z Build Date: 2026-10-02T22:28:27Z
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8819274Z Worker ID: {f880ba32-2b73-4b1e-b65b-4ae526b69f4f}
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8820094Z Region: centralus
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8821166Z Cloud: Azure
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8821733Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8823419Z ##[group]Operating System
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8824160Z Microsoft Windows Server 2025
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8824807Z 10.0.26100
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8825391Z Datacenter
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8825951Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8826551Z ##[group]Runner Image
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8827257Z Image: windows-2025-vs2026
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8827924Z Version: 20261007.264.1
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8829790Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261007.264/images/windows/Windows2025-VS2026-Readme.md
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8831758Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261007.264
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8832914Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8834115Z ##[group]GITHUB_TOKEN Permissions
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8836300Z Contents: read
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8836977Z Metadata: read
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8837635Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8839923Z Secret source: Actions
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8841413Z Cache mode: write
+checks	UNKNOWN STEP	2026-10-16T10:18:03.8842213Z Prepare workflow directory
+checks	UNKNOWN STEP	2026-10-16T10:18:03.9097720Z Prepare all required actions
+checks	UNKNOWN STEP	2026-10-16T10:18:03.9135952Z Getting action download info
+checks	UNKNOWN STEP	2026-10-16T10:18:04.1418694Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+checks	UNKNOWN STEP	2026-10-16T10:18:04.2517163Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+checks	UNKNOWN STEP	2026-10-16T10:18:04.3924866Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+checks	UNKNOWN STEP	2026-10-16T10:18:04.7363700Z Complete job name: checks
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8571593Z ##[group]Run actions/checkout@v4
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8572796Z with:
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8573281Z   repository: AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8578128Z   token: ***
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8578570Z   ssh-strict: true
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8579017Z   ssh-user: git
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8579425Z   persist-credentials: true
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8579949Z   clean: true
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8580363Z   sparse-checkout-cone-mode: true
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8580874Z   fetch-depth: 1
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8581301Z   fetch-tags: false
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8581752Z   show-progress: true
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8582233Z   lfs: false
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8582671Z   submodules: false
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8583208Z   set-safe-directory: true
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8583733Z   allow-unsafe-pr-checkout: false
+checks	UNKNOWN STEP	2026-10-16T10:18:04.8584578Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:04.9878961Z Syncing repository: AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:18:04.9882308Z ##[group]Getting Git version info
+checks	UNKNOWN STEP	2026-10-16T10:18:04.9883025Z Working directory is 'D:\a\AlgoGuard\AlgoGuard'
+checks	UNKNOWN STEP	2026-10-16T10:18:05.0650480Z [command]"C:\Program Files\Git\bin\git.exe" version
+checks	UNKNOWN STEP	2026-10-16T10:18:05.4960875Z git version 2.56.0.windows.2
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5005562Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5024526Z Temporarily overriding HOME='D:\a\_temp\43a74b8a-daa7-4467-9051-86592982fd54' before making global git config changes
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5025994Z Adding repository directory to the temporary git global config as a safe directory
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5034621Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\AlgoGuard\AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5655149Z Deleting the contents of 'D:\a\AlgoGuard\AlgoGuard'
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5661671Z ##[group]Initializing the repository
+checks	UNKNOWN STEP	2026-10-16T10:18:05.5670006Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\AlgoGuard\AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:18:05.6432579Z Initialized empty Git repository in D:/a/AlgoGuard/AlgoGuard/.git/
+checks	UNKNOWN STEP	2026-10-16T10:18:05.6484210Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:18:05.6823183Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:05.6824405Z ##[group]Disabling automatic garbage collection
+checks	UNKNOWN STEP	2026-10-16T10:18:05.6832657Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+checks	UNKNOWN STEP	2026-10-16T10:18:05.7142569Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:05.7144408Z ##[group]Setting up auth
+checks	UNKNOWN STEP	2026-10-16T10:18:05.7155248Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+checks	UNKNOWN STEP	2026-10-16T10:18:05.7532115Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+checks	UNKNOWN STEP	2026-10-16T10:18:07.1376775Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+checks	UNKNOWN STEP	2026-10-16T10:18:07.1692669Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+checks	UNKNOWN STEP	2026-10-16T10:18:07.6875808Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+checks	UNKNOWN STEP	2026-10-16T10:18:07.7217847Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+checks	UNKNOWN STEP	2026-10-16T10:18:08.2393963Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+checks	UNKNOWN STEP	2026-10-16T10:18:08.2697711Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:08.2698474Z ##[group]Fetching the repository
+checks	UNKNOWN STEP	2026-10-16T10:18:08.2711504Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +cb3bcdb6dc6c24427764df0ffaa28a005267ffc5:refs/remotes/origin/main
+checks	UNKNOWN STEP	2026-10-16T10:18:09.5820682Z From https://github.com/AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:18:09.5821367Z  * [new ref]         cb3bcdb6dc6c24427764df0ffaa28a005267ffc5 -> origin/main
+checks	UNKNOWN STEP	2026-10-16T10:18:09.5860076Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:09.5860592Z ##[group]Determining the checkout info
+checks	UNKNOWN STEP	2026-10-16T10:18:09.5862358Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:09.5871453Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+checks	UNKNOWN STEP	2026-10-16T10:18:09.6207973Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+checks	UNKNOWN STEP	2026-10-16T10:18:09.6519315Z ##[group]Checking out the ref
+checks	UNKNOWN STEP	2026-10-16T10:18:09.6529557Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+checks	UNKNOWN STEP	2026-10-16T10:18:09.8131931Z Switched to a new branch 'main'
+checks	UNKNOWN STEP	2026-10-16T10:18:09.8139265Z branch 'main' set up to track 'origin/main'.
+checks	UNKNOWN STEP	2026-10-16T10:18:09.8190727Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:09.8520459Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+checks	UNKNOWN STEP	2026-10-16T10:18:09.8792794Z cb3bcdb6dc6c24427764df0ffaa28a005267ffc5
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9219753Z ##[group]Run actions/setup-python@v5
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9220281Z with:
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9220620Z   python-version: 3.14
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9220889Z   check-latest: false
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9222832Z   token: ***
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9223087Z   update-environment: true
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9223339Z   allow-prereleases: false
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9223633Z   freethreaded: false
+checks	UNKNOWN STEP	2026-10-16T10:18:09.9223932Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:10.0597052Z ##[group]Installed versions
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1262484Z (node:4088) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1263191Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1264592Z Successfully set up CPython (3.14.8)
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1265137Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1543598Z ##[group]Run actions/setup-node@v4
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1544092Z with:
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1544337Z   node-version: 22
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1544585Z   cache: npm
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1544826Z   always-auth: false
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1545060Z   check-latest: false
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1546993Z   token: ***
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1547213Z env:
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1547568Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1548046Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.8\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1548443Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1548810Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1549193Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:10.1549494Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:10.3055765Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:10.3062572Z (node:8228) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	UNKNOWN STEP	2026-10-16T10:18:10.3063360Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	UNKNOWN STEP	2026-10-16T10:18:10.3065012Z ##[group]Environment details
+checks	UNKNOWN STEP	2026-10-16T10:18:15.1404477Z node: v22.23.3
+checks	UNKNOWN STEP	2026-10-16T10:18:15.1404811Z npm: 10.9.9
+checks	UNKNOWN STEP	2026-10-16T10:18:15.1405061Z yarn: 1.22.22
+checks	UNKNOWN STEP	2026-10-16T10:18:15.1406167Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:15.1991259Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.3\x64\npm.cmd config get cache"
+checks	UNKNOWN STEP	2026-10-16T10:18:15.6708431Z C:\npm\cache
+checks	UNKNOWN STEP	2026-10-16T10:18:15.9740665Z npm cache is not found
+checks	UNKNOWN STEP	2026-10-16T10:18:16.1807698Z ##[group]Run python -m venv venv
+checks	UNKNOWN STEP	2026-10-16T10:18:16.1808741Z ^[[36;1mpython -m venv venv^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:18:16.1809107Z ^[[36;1m.\venv\Scripts\python.exe -m pip install --upgrade pip^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:18:16.1809621Z ^[[36;1m.\venv\Scripts\python.exe -m pip install -r requirements-dev.txt^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2517330Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2517776Z env:
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2518108Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2518619Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.8\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2519046Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2519546Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2519927Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:16.2520362Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:18:22.9255389Z Requirement already satisfied: pip in .\venv\Lib\site-packages (26.2.1)
+checks	UNKNOWN STEP	2026-10-16T10:18:24.3753295Z Collecting numpy==2.5.1 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 3))
+checks	UNKNOWN STEP	2026-10-16T10:18:24.4426923Z   Downloading numpy-2.5.1-cp314-cp314-win_amd64.whl.metadata (6.6 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:24.6250754Z Collecting scipy==1.18.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 4))
+checks	UNKNOWN STEP	2026-10-16T10:18:24.6672484Z   Downloading scipy-1.18.0-cp314-cp314-win_amd64.whl.metadata (61 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:24.8518129Z Collecting pandas==3.0.3 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 5))
+checks	UNKNOWN STEP	2026-10-16T10:18:24.8647095Z   Downloading pandas-3.0.3-cp314-cp314-win_amd64.whl.metadata (19 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:24.9800587Z Collecting scikit-learn==1.9.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 6))
+checks	UNKNOWN STEP	2026-10-16T10:18:24.9942660Z   Downloading scikit_learn-1.9.0-cp314-cp314-win_amd64.whl.metadata (11 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.0632178Z Collecting joblib==1.5.3 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 7))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.0798310Z   Downloading joblib-1.5.3-py3-none-any.whl.metadata (5.5 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.1385930Z Collecting threadpoolctl==3.6.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 8))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.1542548Z   Downloading threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.2462758Z Collecting python-dateutil==2.9.0.post0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 9))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.2585313Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.3244192Z Collecting tzdata==2026.2 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 10))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.3371335Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.4054107Z Collecting six==1.17.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 11))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.4177633Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.4800912Z Collecting Flask>=3.0.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.4923224Z   Downloading flask-3.1.3-py3-none-any.whl.metadata (3.2 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.6119706Z Collecting psutil>=5.9.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 7))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.6283102Z   Downloading psutil-7.2.2-cp37-abi3-win_amd64.whl.metadata (22 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.6895673Z Collecting scapy>=2.5.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 8))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.7057532Z   Downloading scapy-2.8.0-py3-none-any.whl.metadata (5.8 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.7625262Z Collecting python-dotenv (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 9))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.7748823Z   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:25.9448072Z Collecting PyJWT>=2.8.0 (from PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-16T10:18:25.9573020Z   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.0201876Z Collecting pytest>=8.0.0 (from -r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.0409483Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.3218099Z Collecting ruff>=0.5.0 (from -r requirements-dev.txt (line 3))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.3343812Z   Downloading ruff-0.17.1-py3-none-win_amd64.whl.metadata (21 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.4086190Z Collecting narwhals>=2.0.1 (from scikit-learn==1.9.0->-r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 6))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.4245020Z   Downloading narwhals-2.27.1-py3-none-any.whl.metadata (15 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.4861262Z Collecting blinker>=1.9.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.4984895Z   Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.5579636Z Collecting click>=8.1.3 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.5704632Z   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.6297925Z Collecting itsdangerous>=2.2.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.6441801Z   Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.7019482Z Collecting jinja2>=3.1.2 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.7143713Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.8034893Z Collecting markupsafe>=2.1.1 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.8196213Z   Downloading markupsafe-3.0.4-cp314-cp314-win_amd64.whl.metadata (2.8 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.8843777Z Collecting werkzeug>=3.1.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.8968373Z   Downloading werkzeug-3.1.9-py3-none-any.whl.metadata (4.1 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:26.9664921Z Collecting colorama>=0.4 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:26.9798745Z   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.0377628Z Collecting iniconfig>=1.0.1 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.0498466Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.1058431Z Collecting packaging>=22 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.1180485Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.1692643Z Collecting pluggy<2,>=1.5 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.1814699Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.4531772Z Collecting pygments>=2.7.2 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.4688893Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.6681229Z Collecting cryptography>=3.4.0 (from PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.6808037Z   Downloading cryptography-50.0.2-cp311-abi3-win_amd64.whl.metadata (4.4 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.8250460Z Collecting cffi>=2.0.0 (from cryptography>=3.4.0->PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.8378891Z   Downloading cffi-2.1.1-cp314-cp314-win_amd64.whl.metadata (2.6 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.8978974Z Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-16T10:18:27.9107988Z   Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:27.9500738Z Downloading numpy-2.5.1-cp314-cp314-win_amd64.whl (12.6 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:28.5487134Z    ---------------------------------------- 12.6/12.6 MB 21.6 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:28.5629829Z Downloading scipy-1.18.0-cp314-cp314-win_amd64.whl (37.3 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.3664362Z    ---------------------------------------- 37.3/37.3 MB 46.2 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:29.3808555Z Downloading pandas-3.0.3-cp314-cp314-win_amd64.whl (9.9 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.5636147Z    ---------------------------------------- 9.9/9.9 MB 53.5 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:29.5774288Z Downloading scikit_learn-1.9.0-cp314-cp314-win_amd64.whl (8.3 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.7175013Z    ---------------------------------------- 8.3/8.3 MB 58.8 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:29.7298547Z Downloading joblib-1.5.3-py3-none-any.whl (309 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.7663690Z Downloading threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.8112314Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.8432083Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.8830993Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.9137504Z Downloading flask-3.1.3-py3-none-any.whl (103 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.9466842Z Downloading psutil-7.2.2-cp37-abi3-win_amd64.whl (137 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:29.9817203Z Downloading scapy-2.8.0-py3-none-any.whl (2.8 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:30.0441840Z    ---------------------------------------- 2.8/2.8 MB 42.1 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:30.0563963Z Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:30.0861293Z Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:30.9262853Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:30.9828244Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.0266736Z Downloading ruff-0.17.1-py3-none-win_amd64.whl (10.1 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.2258719Z    ---------------------------------------- 10.1/10.1 MB 50.2 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:31.2376818Z Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.2652995Z Downloading click-8.5.0-py3-none-any.whl (125 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.3014289Z Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.3314368Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.3632187Z Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.3907557Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.4254271Z Downloading markupsafe-3.0.4-cp314-cp314-win_amd64.whl (14 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.7081208Z Downloading narwhals-2.27.1-py3-none-any.whl (483 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.7496443Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.7774900Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.8372742Z    ---------------------------------------- 1.3/1.3 MB 17.3 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:31.8491286Z Downloading cryptography-50.0.2-cp311-abi3-win_amd64.whl (3.8 MB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.9269755Z    ---------------------------------------- 3.8/3.8 MB 47.7 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-16T10:18:31.9386244Z Downloading cffi-2.1.1-cp314-cp314-win_amd64.whl (187 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:31.9731762Z Downloading werkzeug-3.1.9-py3-none-any.whl (228 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:32.0067523Z Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+checks	UNKNOWN STEP	2026-10-16T10:18:32.3249505Z Installing collected packages: tzdata, threadpoolctl, six, scapy, ruff, python-dotenv, PyJWT, pygments, pycparser, psutil, pluggy, packaging, numpy, narwhals, markupsafe, joblib, itsdangerous, iniconfig, colorama, click, blinker, werkzeug, scipy, python-dateutil, pytest, jinja2, cffi, scikit-learn, pandas, Flask, cryptography
+checks	UNKNOWN STEP	2026-10-16T10:18:50.7835656Z 
+checks	UNKNOWN STEP	2026-10-16T10:18:50.7861126Z Successfully installed Flask-3.1.3 PyJWT-2.15.1 blinker-1.9.0 cffi-2.1.1 click-8.5.0 colorama-0.4.6 cryptography-50.0.2 iniconfig-2.3.1 itsdangerous-2.2.0 jinja2-3.1.6 joblib-1.5.3 markupsafe-3.0.4 narwhals-2.27.1 numpy-2.5.1 packaging-26.3 pandas-3.0.3 pluggy-1.7.0 psutil-7.2.2 pycparser-3.11 pygments-2.21.0 pytest-9.1.1 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 ruff-0.17.1 scapy-2.8.0 scikit-learn-1.9.0 scipy-1.18.0 six-1.17.0 threadpoolctl-3.6.0 tzdata-2026.2 werkzeug-3.1.9
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0648263Z ##[group]Run npm ci
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0648608Z ^[[36;1mnpm ci^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0745971Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0746302Z env:
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0746595Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0747017Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.8\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0747388Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0747752Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0748091Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:18:51.0748393Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1247921Z 
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1248770Z added 20 packages, and audited 21 packages in 11s
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1249206Z 
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1249402Z 5 packages are looking for funding
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1250493Z   run `npm fund` for details
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1258321Z 
+checks	UNKNOWN STEP	2026-10-16T10:19:02.1258694Z found 0 vulnerabilities
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9468486Z ##[group]Run .\venv\Scripts\python.exe -m ruff check .
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9468975Z ^[[36;1m.\venv\Scripts\python.exe -m ruff check .^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9525935Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9526296Z env:
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9526561Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9526939Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.8\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9527339Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9527705Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9528052Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:03.9528338Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:19:04.2559007Z All checks passed!
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3582813Z ##[group]Run npm run typecheck
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3583238Z ^[[36;1mnpm run typecheck^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3640206Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3640762Z env:
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3641049Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3641412Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.8\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3641808Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3642402Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3642755Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:04.3643108Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:19:05.1755729Z 
+checks	UNKNOWN STEP	2026-10-16T10:19:05.1756606Z > typecheck
+checks	UNKNOWN STEP	2026-10-16T10:19:05.1757106Z > pyright
+checks	UNKNOWN STEP	2026-10-16T10:19:05.1757307Z 
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9351197Z d:\a\AlgoGuard\AlgoGuard\bootstrap_admin.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9355175Z   d:\a\AlgoGuard\AlgoGuard\bootstrap_admin.py:134:12 - warning: Import "requests" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9356227Z d:\a\AlgoGuard\AlgoGuard\check_db_connection.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9356968Z   d:\a\AlgoGuard\AlgoGuard\check_db_connection.py:26:16 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9357881Z d:\a\AlgoGuard\AlgoGuard\cloud_migrate.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9358574Z   d:\a\AlgoGuard\AlgoGuard\cloud_migrate.py:278:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9360913Z d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9361644Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:53:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9362397Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:53:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9363278Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:238:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9364130Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:238:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9364908Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:239:10 - warning: Import "psycopg2.extras" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9365397Z d:\a\AlgoGuard\AlgoGuard\legacy_import.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9366438Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:45:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9367584Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:45:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9368688Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:95:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9369607Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:95:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9370610Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:96:10 - warning: Import "psycopg2.extras" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9371336Z d:\a\AlgoGuard\AlgoGuard\maintainer_env.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9372072Z   d:\a\AlgoGuard\AlgoGuard\maintainer_env.py:97:14 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9373030Z   d:\a\AlgoGuard\AlgoGuard\maintainer_env.py:98:14 - warning: Import "psycopg2.extensions" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9373886Z d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9377919Z   d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py:188:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9379671Z   d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py:189:10 - warning: Import "psycopg2.extensions" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9380361Z d:\a\AlgoGuard\AlgoGuard\measure_latency.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9381054Z   d:\a\AlgoGuard\AlgoGuard\measure_latency.py:29:16 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9381743Z d:\a\AlgoGuard\AlgoGuard\publish_model.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9382377Z   d:\a\AlgoGuard\AlgoGuard\publish_model.py:145:12 - warning: Import "requests" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9383066Z d:\a\AlgoGuard\AlgoGuard\tests\integration\cloud_fixtures.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9383845Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\cloud_fixtures.py:11:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9384564Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_cloud_app_stack.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9385319Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_cloud_app_stack.py:34:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9386111Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9387471Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:35:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9388594Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:35:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9397175Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:257:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9399605Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:257:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9401019Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_model_publication.py
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9402033Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_model_publication.py:76:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-16T10:19:14.9402833Z 0 errors, 26 warnings, 0 informations
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0811870Z ##[group]Run .\venv\Scripts\python.exe -m pytest -q
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0812551Z ^[[36;1m.\venv\Scripts\python.exe -m pytest -q^[[0m
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0870960Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0871296Z env:
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0871611Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0871998Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.8\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0872378Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0872759Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0873269Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.8\x64
+checks	UNKNOWN STEP	2026-10-16T10:19:15.0873588Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-16T10:19:32.2358295Z .............EEE...........................................EEEEEEEFEEEEE [ 13%]
+checks	UNKNOWN STEP	2026-10-16T10:19:50.1440377Z EEEEEEFFEEEEE..................................................F........ [ 26%]
+checks	UNKNOWN STEP	2026-10-16T10:20:01.1601906Z ........................................................................ [ 40%]
+checks	UNKNOWN STEP	2026-10-16T10:20:22.2366996Z ................................ssssssssssssssss.....................EEE [ 53%]
+checks	UNKNOWN STEP	2026-10-16T10:20:22.8016119Z EEEEEEEEEEE..........F.................................................. [ 67%]
+checks	UNKNOWN STEP	2026-10-16T10:20:22.8761058Z ........................................................................ [ 80%]
+checks	UNKNOWN STEP	2026-10-16T10:20:27.6959363Z ........................................................................ [ 93%]
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3405276Z .................................                                        [100%]
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3406652Z =================================== ERRORS ====================================
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3407402Z _ ERROR at setup of test_cloud_alert_severity_and_review_go_through_row_level_security _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3407819Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3408415Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_cloud_alert_severity_and_0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3410637Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3411574Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3411759Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3411912Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3412499Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3413096Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3413541Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3414019Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3414579Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3414878Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3415053Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3415686Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3416219Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3416817Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3417306Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3418362Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3418841Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3419364Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3419740Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3419922Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3420374Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3420987Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3421687Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3422045Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3425313Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3426084Z _ ERROR at setup of test_cloud_alert_review_refuses_hidden_alerts_and_unknown_states _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3426436Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3426838Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_cloud_alert_review_refuse0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3427969Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3428804Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3428972Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3429067Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3429384Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3429827Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3430127Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3430468Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3430877Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3431089Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3431180Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3431585Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3431945Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3432316Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3432676Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3433720Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3434122Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3434451Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3435109Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3435275Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3435607Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3436043Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3436640Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3436900Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3437080Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3437514Z _ ERROR at setup of test_cloud_destructive_admin_actions_ask_for_confirmation _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3437798Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3438213Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_cloud_destructive_admin_a0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3439336Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3440126Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3440319Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3440417Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3440742Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3441153Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3441443Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3441788Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3442156Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3442352Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3442474Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3442812Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3443221Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3443599Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3443962Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3444330Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3445117Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3445986Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3446304Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3446403Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3446742Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3447237Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3447741Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3448024Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3448188Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3448651Z _ ERROR at setup of test_login_uses_cloud_identity_and_cookie_holds_only_an_opaque_id _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3448951Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3449359Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_login_uses_cloud_identity0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3450485Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3451224Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3451365Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3451465Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3451838Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3452182Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3452537Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3452860Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3453426Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3453651Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3453792Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3454117Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3454533Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3454973Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3455373Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3455745Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3456084Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3456470Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3456707Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3456808Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3457120Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3457626Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3458117Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3458385Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3458577Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3458988Z __ ERROR at setup of test_rejected_and_offline_logins_never_create_a_session __
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3459247Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3459659Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_rejected_and_offline_logi0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3460793Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3461516Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3461704Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3461824Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3462139Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3462554Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3462846Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3463152Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3463557Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3463767Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3463990Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3464412Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3465157Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3465577Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3465954Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3466358Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3466726Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3467082Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3467274Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3467395Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3467721Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3468201Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3468789Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3469049Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3469225Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3469616Z __ ERROR at setup of test_deactivated_and_historical_profiles_cannot_sign_in __
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3469920Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3470297Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_deactivated_and_historica0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3471467Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3472395Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3472550Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3472645Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3472945Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3473436Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3473751Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3474118Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3474492Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3474755Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3474845Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3475264Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3475620Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3475981Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3476366Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3476698Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3477094Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3477415Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3477594Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3477755Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3478091Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3478507Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3479079Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3479332Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3479499Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3479954Z _ ERROR at setup of test_restart_requires_online_login_even_with_a_cached_model _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3480228Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3480600Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_restart_requires_online_l0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3481726Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3482459Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3482676Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3482834Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3483201Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3483606Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3483922Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3484284Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3484665Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3484869Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3485321Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3485716Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3486129Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3486482Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3486861Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3487233Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3487559Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3487908Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3488157Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3488301Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3488603Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3489090Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3489589Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3489879Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3490150Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3490629Z _ ERROR at setup of test_logout_stops_tokens_and_ends_only_this_installations_session _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3490932Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3491299Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_logout_stops_tokens_and_e0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3492486Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3493251Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3493365Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3493508Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3493823Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3494181Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3494513Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3494882Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3495293Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3495559Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3495667Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3496049Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3496468Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3496904Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3497299Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3497646Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3497967Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3498329Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3498516Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3498700Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3498988Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3499430Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3499996Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3500296Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3500498Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3500933Z _ ERROR at setup of test_cookie_writes_require_csrf_but_bearer_api_calls_do_not _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3501810Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3502293Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_cookie_writes_require_csr0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3503453Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3504272Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3504409Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3504602Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3504960Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3505820Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3506195Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3506514Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3506924Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3507625Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3507734Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3507995Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3508405Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3508806Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3509169Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3509688Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3509996Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3510452Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3510701Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3510802Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3511187Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3511694Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3512186Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3512449Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3512577Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3512959Z ___ ERROR at setup of test_concurrent_bearer_requests_never_swap_identities ___
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3513216Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3513576Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_concurrent_bearer_request0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3514702Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3515464Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3515665Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3515781Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3516149Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3516510Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3516793Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3517082Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3517417Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3517627Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3517761Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3518043Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3518415Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3518761Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3519109Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3519555Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3519855Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3520199Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3520447Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3520728Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3521101Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3521535Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3521987Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3522283Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3522442Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3524180Z _ ERROR at setup of test_every_page_reads_through_the_cloud_and_never_opens_sqlite _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3524509Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3525000Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_every_page_reads_through_0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3526075Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3526778Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3526988Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3527097Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3527499Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3527897Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3528260Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3528565Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3528928Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3529125Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3529376Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3529737Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3530084Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3530400Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3530781Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3531163Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3531464Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3531790Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3532020Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3532103Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3532431Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3532909Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3533531Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3533799Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3533995Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3534383Z _ ERROR at setup of test_network_failure_pages_are_controlled_without_recursive_logging _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3534680Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3535021Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_network_failure_pages_are0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3536062Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3536742Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3536894Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3536980Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3537328Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3537732Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3538065Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3538399Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3538777Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3538997Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3539083Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3539462Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3539940Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3540304Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3540628Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3540924Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3541270Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3541600Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3541761Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3541905Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3542200Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3542579Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3543412Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3543659Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3543819Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3544275Z _ ERROR at setup of test_manual_prediction_reports_queued_state_until_acknowledged _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3544542Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3544884Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_manual_prediction_reports0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3545908Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3546591Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3546826Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3546908Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3547207Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3547583Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3547835Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3548149Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3548486Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3548669Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3548778Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3549114Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3549426Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3549761Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3550179Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3550526Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3550870Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3551190Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3551379Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3551503Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3551820Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3552217Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3552745Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3552984Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3553135Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3553573Z _ ERROR at setup of test_csv_capture_pins_deployment_and_uploads_through_the_outbox _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3553843Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3554217Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_csv_capture_pins_deployme0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3555265Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3555955Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3556093Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3556183Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3556580Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3556952Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3557280Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3557575Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3557912Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3558119Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3558231Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3558554Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3558928Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3559284Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3559624Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3559973Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3560306Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3560637Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3560816Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3560942Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3561206Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3561619Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3562090Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3562352Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3562523Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3562895Z ______ ERROR at setup of test_session_cap_reserves_slots_before_enqueue _______
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3563515Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3563893Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_session_cap_reserves_slot0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3564957Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3565611Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3565731Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3565869Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3566167Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3566491Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3566910Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3567244Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3567634Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3567850Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3567948Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3568306Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3568742Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3569096Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3569483Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3569829Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3570203Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3570614Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3570791Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3570906Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3571202Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3571601Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3572064Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3572347Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3572500Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3572852Z ____ ERROR at setup of test_stop_is_bounded_even_when_local_storage_stalls ____
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3573123Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3574049Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_stop_is_bounded_even_when0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3575061Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3575798Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3575909Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3576037Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3576314Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3576672Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3577017Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3577336Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3577681Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3577877Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3577955Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3578288Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3578605Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3579078Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3579410Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3579719Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3580018Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3580307Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3580499Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3580639Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3581633Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3582018Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3582500Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3582777Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3582931Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3583685Z _ ERROR at setup of test_network_loss_keeps_capturing_and_reconnect_uploads_without_duplicates _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3583994Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3584375Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_network_loss_keeps_captur0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3585337Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3586094Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3586205Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3586365Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3586668Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3587003Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3587274Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3587655Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3587997Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3588142Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3588293Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3588593Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3588934Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3589304Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3589648Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3589980Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3590253Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3590543Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3590803Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3590930Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3591253Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3591776Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3592248Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3592523Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3592680Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3593094Z _ ERROR at setup of test_lost_acknowledgement_is_reconciled_by_server_deduplication _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3593330Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3593710Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_lost_acknowledgement_is_r0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3594722Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3595454Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3595562Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3595683Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3595988Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3596331Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3596608Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3596936Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3597304Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3597476Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3597605Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3597911Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3598342Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3598717Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3599033Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3599368Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3599647Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3599976Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3600185Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3600310Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3600586Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3601026Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3601482Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3601751Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3601885Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3602345Z _____ ERROR at setup of test_one_invalid_event_does_not_reject_its_batch ______
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3602562Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3602935Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_one_invalid_event_does_no0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3604243Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3604937Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3605077Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3605234Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3605527Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3605878Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3606157Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3606443Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3606829Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3606991Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3607124Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3607420Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3607770Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3608152Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3608633Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3608964Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3609236Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3609594Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3609811Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3609900Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3610236Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3610635Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3611106Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3611397Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3611515Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3611925Z _ ERROR at setup of test_expiry_without_refresh_stops_capture_and_requires_login _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3612156Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3612559Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_expiry_without_refresh_st0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3613538Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3614195Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3614355Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3614501Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3614777Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3615218Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3615484Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3615762Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3616154Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3616383Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3616535Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3616862Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3617189Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3617513Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3617879Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3618213Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3618524Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3618816Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3619021Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3619123Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3619438Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3619850Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3620347Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3620659Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3620784Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3621205Z ___ ERROR at setup of test_concurrent_refresh_spends_the_refresh_token_once ___
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3621417Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3621797Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_concurrent_refresh_spends0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3622768Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3623447Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3623601Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3623709Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3624352Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3624726Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3624984Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3625417Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3625798Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3626016Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3626160Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3626465Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3626777Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3627105Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3627456Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3627792Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3628069Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3628387Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3628647Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3628735Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3629045Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3629458Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3629938Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3630191Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3630319Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3630742Z _ ERROR at setup of test_revoked_membership_stops_capture_and_keeps_records_exportable _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3631025Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3631383Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_revoked_membership_stops_0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3632454Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3633197Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3633332Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3633477Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3633807Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3634131Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3634420Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3634714Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3635056Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3635265Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3635426Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3635736Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3636111Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3636439Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3636802Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3637167Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3637432Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3637750Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3637959Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3638050Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3638323Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3638768Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3639215Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3639542Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3639707Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3640108Z _ ERROR at setup of test_logout_stops_the_capture_and_account_switch_keeps_owner_records _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3640383Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3640787Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_logout_stops_the_capture_0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3641903Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3642608Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3642777Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3642858Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3643189Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3643588Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3643865Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3644472Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3644856Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3645064Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3645209Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3645640Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3645976Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3646286Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3646620Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3646979Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3647260Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3647556Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3647790Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3647866Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3648186Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3648806Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3649279Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3649517Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3649676Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3650041Z _ ERROR at setup of test_alert_selection_creates_one_report_with_its_evidence _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3650328Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3650704Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_alert_selection_creates_o0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3651743Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3652437Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3652579Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3652663Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3652987Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3653335Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3653603Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3653954Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3654288Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3654481Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3654605Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3654916Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3655243Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3655616Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3655935Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3656270Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3656560Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3656888Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3657095Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3657197Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3657482Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3657911Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3658481Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3658728Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3658886Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3659278Z _ ERROR at setup of test_log_filters_and_audit_entries_are_scoped_and_idempotent _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3659542Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3659887Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_log_filters_and_audit_ent0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3660907Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3661587Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3661730Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3661813Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3662113Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3662543Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3662807Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3663122Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3663463Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3663649Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3663762Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3664473Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3664887Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3665276Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3665705Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3666027Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3666341Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3666630Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3666819Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3666948Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3667234Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3667629Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3668124Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3668358Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3668510Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3668910Z _ ERROR at setup of test_administrator_account_management_uses_the_checked_function _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3669177Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3669518Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_administrator_account_man0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3670543Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3671213Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3671339Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3671431Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3671736Z     def cloud(tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3672101Z         from tests.cloud_support import make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3672383Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3672667Z >       environment = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3672999Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3673204Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3673298Z tests\conftest.py:227: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3673626Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3673968Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3674297Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3674661Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3675088Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3675389Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3675757Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3675937Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3676061Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3676357Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3676778Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3677311Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3677574Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3677820Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3678237Z __ ERROR at setup of test_verified_cache_reuses_bytes_but_rechecks_manifest ___
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3678472Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3678824Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_verified_cache_reuses_byt0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3680002Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x00000292602EBA10>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3680336Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3680474Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3680882Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3681234Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3681604Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3681960Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3682157Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3682454Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3682895Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3683203Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3683537Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3683841Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3684090Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3684389Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3684660Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3684967Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3685268Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3685553Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3685829Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3686081Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3686350Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3686608Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3686923Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3687200Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3687522Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3687843Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3688079Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3688203Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3688369Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3688690Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3689054Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3689339Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3689636Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3689843Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3689985Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3690274Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3690669Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3691150Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3691428Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3691572Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3691992Z _ ERROR at setup of test_failed_download_never_promotes_or_deserializes[partial] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3692215Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3692600Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_failed_download_never_pro0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3693249Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801C360>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3693532Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3693662Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3693901Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3694226Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3694578Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3694874Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3695100Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3695387Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3695707Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3695993Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3696303Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3696597Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3696849Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3697162Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3697470Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3697784Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3698079Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3698344Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3698668Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3698926Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3699159Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3699432Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3699697Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3700145Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3700474Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3700776Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3701029Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3701162Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3701278Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3701644Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3701982Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3702254Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3702557Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3702766Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3702862Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3703200Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3703600Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3704057Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3704345Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3704790Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3705248Z _ ERROR at setup of test_failed_download_never_promotes_or_deserializes[corrupt] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3705616Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3706023Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_failed_download_never_pro1')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3706605Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801E820>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3706856Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3706946Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3707222Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3707532Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3707899Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3708230Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3708441Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3708733Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3709088Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3709427Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3709749Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3710017Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3710260Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3711574Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3711945Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3712298Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3712581Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3712858Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3713138Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3713445Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3713687Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3713927Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3714237Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3714551Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3714955Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3715258Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3715489Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3715669Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3715782Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3716104Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3716481Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3716779Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3717064Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3717285Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3717373Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3717651Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3718092Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3718635Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3718869Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3719072Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3719488Z _ ERROR at setup of test_failed_download_never_promotes_or_deserializes[oversized] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3719791Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3720158Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_failed_download_never_pro2')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3720766Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801D5C0>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3720996Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3721122Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3721367Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3721676Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3722068Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3722400Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3722612Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3722907Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3723247Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3723553Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3723937Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3724220Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3724437Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3725147Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3725468Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3725825Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3726108Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3726360Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3726697Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3726956Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3727247Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3727498Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3727764Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3728061Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3728427Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3728735Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3729010Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3729159Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3729458Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3729828Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3730176Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3730457Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3730789Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3730962Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3731077Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3731378Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3731774Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3732299Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3732533Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3732718Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3733136Z _ ERROR at setup of test_failed_download_never_promotes_or_deserializes[expired] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3733449Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3733789Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_failed_download_never_pro3')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3734360Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801E7B0>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3734620Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3734772Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3735019Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3735352Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3735729Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3736144Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3736397Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3736685Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3737043Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3737354Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3737696Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3738024Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3738244Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3738508Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3738827Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3739115Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3739434Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3739705Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3739969Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3740242Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3740497Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3740760Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3741060Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3741349Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3741713Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3742061Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3742306Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3742442Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3742623Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3742933Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3743299Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3743577Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3743880Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3744097Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3744242Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3744536Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3745265Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3745789Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3746069Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3746252Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3746685Z _ ERROR at setup of test_incompatible_manifest_refused_before_download[python_version-0.0.0] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3747103Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3747493Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_incompatible_manifest_ref0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3748184Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801D940>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3748442Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3748528Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3748858Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3749190Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3749558Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3749901Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3750107Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3750479Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3750768Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3751044Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3751383Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3751658Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3751950Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3752230Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3752534Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3752850Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3753151Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3753413Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3753719Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3753963Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3754380Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3754631Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3754898Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3755208Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3755548Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3755875Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3756115Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3756235Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3756369Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3756771Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3757098Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3757416Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3757745Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3757953Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3758054Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3758410Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3758808Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3759353Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3759619Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3759753Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3760432Z _ ERROR at setup of test_incompatible_manifest_refused_before_download[dependency_lock-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3760957Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3761335Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_incompatible_manifest_ref1')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3761898Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801E510>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3762224Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3762309Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3762559Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3917882Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3918761Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3919100Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3919298Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3919580Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3919890Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3920743Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3921064Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3921321Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3921505Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3921773Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3922047Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3922665Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3922972Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3923233Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3923525Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3923775Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3924013Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3924276Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3924540Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3924805Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3925176Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3925526Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3925765Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3925891Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3926036Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3926404Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3926802Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3927078Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3927417Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3927957Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3928057Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3928357Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3928833Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3929472Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3929786Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3929948Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3930429Z _ ERROR at setup of test_incompatible_manifest_refused_before_download[dependency_versions-{}] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3930797Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3931212Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_incompatible_manifest_ref2')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3931829Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801C210>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3932069Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3932147Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3932356Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3932629Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3933006Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3933296Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3933453Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3933702Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3933984Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3934258Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3934566Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3934854Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3935041Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3935297Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3935584Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3935887Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3936183Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3936454Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3936742Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3936990Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3937225Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3937466Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3937744Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3938048Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3938728Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3939074Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3939305Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3939418Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3939558Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3939902Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3940249Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3940525Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3940840Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3941093Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3941174Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3941461Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3941901Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3942476Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3943262Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3943413Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3943932Z _ ERROR at setup of test_incompatible_manifest_refused_before_download[workflow_version-old] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3944299Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3944811Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_incompatible_manifest_ref3')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3945602Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801ECF0>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3945901Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3945997Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3946482Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3946768Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3947144Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3947435Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3947595Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3947839Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3948128Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3948404Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3948728Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3948996Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3949165Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3949380Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3949570Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3949796Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3949999Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3950178Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3950371Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3950538Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3950711Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3950887Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3951064Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3951253Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3951494Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3951769Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3951947Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3952045Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3952145Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3952393Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3952658Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3952847Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3953053Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3953200Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3953259Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3953453Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3953761Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3954292Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3954518Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3954622Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3954993Z _ ERROR at setup of test_incompatible_manifest_refused_before_download[feature_schema_version-wrong] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3955246Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3955566Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_incompatible_manifest_ref4')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3956070Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801C7C0>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3956273Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3956340Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3956515Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3956735Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3957003Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3957236Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3957361Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3957542Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3957813Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3958017Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3958252Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3958453Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3958593Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3958774Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3958970Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3959183Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3959472Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3959652Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3959850Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3960029Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3960198Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3960363Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3960550Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3960738Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3960970Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3961187Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3961342Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3961419Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3961501Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3961747Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3962002Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3962195Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3962401Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3962551Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3962609Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3962811Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3963721Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3964102Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3964319Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3964411Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3964759Z _ ERROR at setup of test_incompatible_manifest_refused_before_download[object_path-../../escape] _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3965003Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3965334Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_incompatible_manifest_ref5')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3965829Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002926801DC50>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3966034Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3966094Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3966263Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3966469Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3966735Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3966979Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3967231Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3967416Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3967621Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3967809Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3968045Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3968248Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3968368Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3968542Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3968720Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3968923Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3969110Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3969272Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3969458Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3969636Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3969792Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3969950Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3970121Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3970303Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3970521Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3970728Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3970887Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3970969Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3971058Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3971303Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3971646Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3971839Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972041Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972200Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972260Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972381Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972570Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972759Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972765Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3972873Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973051Z _ ERROR at setup of test_cached_corruption_and_failed_update_keep_pinned_model _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973056Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973363Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_cached_corruption_and_fai0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973541Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029263D069E0>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973547Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973601Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973678Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973769Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973907Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3973953Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974016Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974115Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974187Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974276Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974376Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974420Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974486Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974560Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974645Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974751Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974806Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974894Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3974968Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975030Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975166Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975246Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975316Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975389Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975500Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975566Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975616Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975622Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975709Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975829Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975940Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3975989Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976117Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976122Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976179Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976279Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976446Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976629Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976635Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976723Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976885Z _________ ERROR at setup of test_signed_url_cannot_change_destination _________
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3976891Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977203Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_signed_url_cannot_change_0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977439Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029263D07CB0>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977453Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977506Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977595Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977685Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977830Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977883Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3977936Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978042Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978128Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978214Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978324Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978374Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978439Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978522Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978604Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978697Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978756Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978836Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978909Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3978969Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979024Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979103Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979186Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979263Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979385Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979463Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979510Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979516Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979608Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979740Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979849Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3979917Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980038Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980052Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980112Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980292Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980459Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980650Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980656Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980746Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980903Z ______ ERROR at setup of test_runtime_mismatch_prevents_deserialization _______
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3980916Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981217Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_runtime_mismatch_prevents0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981403Z monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x0000029263AB9A20>
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981409Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981478Z     @pytest.fixture
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981568Z     def delivery(tmp_path, monkeypatch):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981680Z         from services import deployment_service
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981833Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981889Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3981955Z         artifact = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3982044Z             "workflow_version": "stacking-five-v3",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3982130Z             "test": "verified bytes",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3982222Z             "training_runtime": training_runtime(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3982320Z             "feature_columns": list(FLOW_FEATURE_COLUMNS),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3982395Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3982474Z         buffer = io.BytesIO()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3983964Z         joblib.dump(artifact, buffer)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984061Z         content = buffer.getvalue()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984177Z         digest = hashlib.sha256(content).hexdigest()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984238Z         manifest = {
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984324Z >           **compatibility_metadata(),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984388Z               ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984449Z             "manifest_id": 1,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984512Z             "model_id": 2,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984579Z             "deployment_id": 3,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984657Z             "object_sha256": digest,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984734Z             "object_bytes": len(content),
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984842Z             "object_path": f"releases/{uuid4()}/{digest}.joblib",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984922Z             "status": "active",
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984975Z         }
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3984980Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985059Z tests\test_model_delivery.py:36: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985192Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985304Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985355Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985476Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985481Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985541Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985642Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3985823Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986032Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986038Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986134Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986269Z ================================== FAILURES ===================================
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986430Z _____________ test_enrollment_on_login_and_administrator_approval _____________
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986437Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3986740Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_enrollment_on_login_and_a0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3987426Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3987494Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3987500Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3987689Z     def test_enrollment_on_login_and_administrator_approval(tmp_path, stacking_artifact_bytes,
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3987811Z                                                             fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3987980Z >       env = make_cloud(tmp_path, stacking_artifact_bytes, approve=False)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988079Z               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988087Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988176Z tests\test_cloud_app.py:157: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988301Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988399Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988518Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988607Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988709Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988778Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988904Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988909Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3988969Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3989076Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3989244Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3989424Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3989758Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3989859Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3990039Z ____ test_restart_with_pending_events_replays_only_under_the_original_user ____
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3990045Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3990358Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_restart_with_pending_even0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3990964Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991034Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991039Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991193Z     def test_restart_with_pending_events_replays_only_under_the_original_user(
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991332Z             tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991466Z >       env = make_cloud(tmp_path, stacking_artifact_bytes)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991552Z               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991558Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991636Z tests\test_cloud_app.py:386: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991763Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991856Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3991971Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992061Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992173Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992246Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992373Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992378Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992435Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992553Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992735Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992919Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3992924Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3993023Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3993253Z ______ test_full_local_storage_stops_saving_but_classification_continues ______
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3993260Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3993875Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_full_local_storage_stops_0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3994492Z stacking_artifact_bytes = b'\x80\x05\x95]\x06\x00\x00\x00\x00\x00\x00}\x94(\x8c\x10artifact_version\x94K\x02\x8c\x10training_runtime\x94}\x94(\x...(\x8c\x010\x94\x8c\x06Normal\x94\x8c\x011\x94\x8c\x06Attack\x94uu\x8c\ntrained_at\x94\x8c\x132026-10-16 10:19:28\x94u.'
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3994559Z fast_replay = None
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3994569Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3994710Z     def test_full_local_storage_stops_saving_but_classification_continues(
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3994826Z             tmp_path, stacking_artifact_bytes, fast_replay):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3994980Z >       env = make_cloud(tmp_path, stacking_artifact_bytes, start=False)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995082Z               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995104Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995174Z tests\test_cloud_app.py:419: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995303Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995390Z tests\cloud_support.py:42: in make_cloud
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995505Z     fake.publish_model(artifact, compatibility_metadata())
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995592Z                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995690Z model_runtime.py:51: in compatibility_metadata
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3995759Z     verify_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996236Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996243Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996297Z     def verify_runtime():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996420Z         if platform.python_version() != PYTHON_VERSION:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996597Z >           raise ModelDeliveryError("Install the locked Python model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996787Z E           model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996793Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3996888Z model_runtime.py:38: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997054Z ______ test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot _______
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997060Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997368Z tmp_path = WindowsPath('C:/Users/runneradmin/AppData/Local/Temp/pytest-of-runneradmin/pytest-0/test_cap_reserves_before_enque0')
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997385Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997546Z     def test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot(tmp_path):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997615Z         owner = context()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997700Z         spool = Outbox(tmp_path / "outbox")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997856Z         rows = [event() for _ in range(300)]
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997927Z         try:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3997997Z             for row in rows:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3998219Z                 assert spool.submit(owner, "capture", row)["persistence"] == "in_memory"
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3998381Z             assert spool.submit(owner, "capture", rows[0])["persistence"] == "in_memory"
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3998482Z             assert spool.reservations["capture"] == 300
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3998884Z             assert spool.submit(owner, "capture", event())["persistence"] == "dropped"
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3998989Z             spool.start()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999090Z >           assert spool.drain()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999170Z E           assert False
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999263Z E            +  where False = drain()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999438Z E            +    where drain = <cloud_outbox.Outbox object at 0x0000029263CE7250>.drain
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999444Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999556Z tests\test_cloud_outbox.py:55: AssertionError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999725Z ______ test_artifact_requires_producer_versions_and_exact_feature_schema ______
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999730Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.3999959Z     def test_artifact_requires_producer_versions_and_exact_feature_schema():
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000100Z         artifact: dict = {"feature_columns": list(FLOW_FEATURE_COLUMNS)}
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000238Z         with pytest.raises(ModelDeliveryError, match="runtime"):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000317Z             verify_artifact_contract(artifact)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000423Z         artifact["training_runtime"] = training_runtime()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000515Z >       verify_artifact_contract(artifact)
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000521Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000609Z tests\test_model_publication.py:42: 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000738Z _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4000744Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001258Z artifact = {'feature_columns': ['dur', 'proto', 'service', 'state', 'spkts', 'dpkts', ...], 'training_runtime': {'python': '3.14.8', 'dependencies': {'numpy': '2.5.1', 'scipy': '1.18.0', 'pandas': '3.0.3', 'scikit-learn': '1.9.0', ...}}}
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001263Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001347Z     def verify_artifact_contract(artifact):
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001485Z         from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001540Z     
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001693Z         expected = {"python": PYTHON_VERSION, "dependencies": locked_dependencies()}
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4001799Z         if artifact.get("training_runtime") != expected:
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4002021Z >           raise ModelDeliveryError("Retrain this artifact with the locked model runtime.")
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4002242Z E           model_runtime.ModelDeliveryError: Retrain this artifact with the locked model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4002524Z 
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4002640Z model_runtime.py:74: ModelDeliveryError
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4002783Z =========================== short test summary info ===========================
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4003240Z FAILED tests/test_cloud_app.py::test_enrollment_on_login_and_administrator_approval - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4003684Z FAILED tests/test_cloud_app.py::test_restart_with_pending_events_replays_only_under_the_original_user - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4004106Z FAILED tests/test_cloud_app.py::test_full_local_storage_stops_saving_but_classification_continues - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4004366Z FAILED tests/test_cloud_outbox.py::test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot - assert False
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4004440Z  +  where False = drain()
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4004584Z  +    where drain = <cloud_outbox.Outbox object at 0x0000029263CE7250>.drain
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4005054Z FAILED tests/test_model_publication.py::test_artifact_requires_producer_versions_and_exact_feature_schema - model_runtime.ModelDeliveryError: Retrain this artifact with the locked model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4005485Z ERROR tests/test_alert_review.py::test_cloud_alert_severity_and_review_go_through_row_level_security - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4005903Z ERROR tests/test_alert_review.py::test_cloud_alert_review_refuses_hidden_alerts_and_unknown_states - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4006320Z ERROR tests/test_alert_review.py::test_cloud_destructive_admin_actions_ask_for_confirmation - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4006731Z ERROR tests/test_cloud_app.py::test_login_uses_cloud_identity_and_cookie_holds_only_an_opaque_id - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4007147Z ERROR tests/test_cloud_app.py::test_rejected_and_offline_logins_never_create_a_session - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4007615Z ERROR tests/test_cloud_app.py::test_deactivated_and_historical_profiles_cannot_sign_in - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4008009Z ERROR tests/test_cloud_app.py::test_restart_requires_online_login_even_with_a_cached_model - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4008475Z ERROR tests/test_cloud_app.py::test_logout_stops_tokens_and_ends_only_this_installations_session - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4008874Z ERROR tests/test_cloud_app.py::test_cookie_writes_require_csrf_but_bearer_api_calls_do_not - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4009300Z ERROR tests/test_cloud_app.py::test_concurrent_bearer_requests_never_swap_identities - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4009719Z ERROR tests/test_cloud_app.py::test_every_page_reads_through_the_cloud_and_never_opens_sqlite - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4010140Z ERROR tests/test_cloud_app.py::test_network_failure_pages_are_controlled_without_recursive_logging - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4010548Z ERROR tests/test_cloud_app.py::test_manual_prediction_reports_queued_state_until_acknowledged - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4010956Z ERROR tests/test_cloud_app.py::test_csv_capture_pins_deployment_and_uploads_through_the_outbox - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4011612Z ERROR tests/test_cloud_app.py::test_session_cap_reserves_slots_before_enqueue - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4011993Z ERROR tests/test_cloud_app.py::test_stop_is_bounded_even_when_local_storage_stalls - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4012436Z ERROR tests/test_cloud_app.py::test_network_loss_keeps_capturing_and_reconnect_uploads_without_duplicates - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4012860Z ERROR tests/test_cloud_app.py::test_lost_acknowledgement_is_reconciled_by_server_deduplication - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4013237Z ERROR tests/test_cloud_app.py::test_one_invalid_event_does_not_reject_its_batch - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4013641Z ERROR tests/test_cloud_app.py::test_expiry_without_refresh_stops_capture_and_requires_login - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4014035Z ERROR tests/test_cloud_app.py::test_concurrent_refresh_spends_the_refresh_token_once - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4014492Z ERROR tests/test_cloud_app.py::test_revoked_membership_stops_capture_and_keeps_records_exportable - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4014911Z ERROR tests/test_cloud_app.py::test_logout_stops_the_capture_and_account_switch_keeps_owner_records - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4015308Z ERROR tests/test_cloud_app.py::test_alert_selection_creates_one_report_with_its_evidence - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4015717Z ERROR tests/test_cloud_app.py::test_log_filters_and_audit_entries_are_scoped_and_idempotent - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4016207Z ERROR tests/test_cloud_app.py::test_administrator_account_management_uses_the_checked_function - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4016605Z ERROR tests/test_model_delivery.py::test_verified_cache_reuses_bytes_but_rechecks_manifest - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4017091Z ERROR tests/test_model_delivery.py::test_failed_download_never_promotes_or_deserializes[partial] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4017522Z ERROR tests/test_model_delivery.py::test_failed_download_never_promotes_or_deserializes[corrupt] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4017944Z ERROR tests/test_model_delivery.py::test_failed_download_never_promotes_or_deserializes[oversized] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4018366Z ERROR tests/test_model_delivery.py::test_failed_download_never_promotes_or_deserializes[expired] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4019121Z ERROR tests/test_model_delivery.py::test_incompatible_manifest_refused_before_download[python_version-0.0.0] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4019796Z ERROR tests/test_model_delivery.py::test_incompatible_manifest_refused_before_download[dependency_lock-ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4020250Z ERROR tests/test_model_delivery.py::test_incompatible_manifest_refused_before_download[dependency_versions-{}] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4020790Z ERROR tests/test_model_delivery.py::test_incompatible_manifest_refused_before_download[workflow_version-old] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4021268Z ERROR tests/test_model_delivery.py::test_incompatible_manifest_refused_before_download[feature_schema_version-wrong] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4021720Z ERROR tests/test_model_delivery.py::test_incompatible_manifest_refused_before_download[object_path-../../escape] - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4022138Z ERROR tests/test_model_delivery.py::test_cached_corruption_and_failed_update_keep_pinned_model - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4022520Z ERROR tests/test_model_delivery.py::test_signed_url_cannot_change_destination - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4022916Z ERROR tests/test_model_delivery.py::test_runtime_mismatch_prevents_deserialization - model_runtime.ModelDeliveryError: Install the locked Python model runtime.
+checks	UNKNOWN STEP	2026-10-16T10:20:37.4023094Z 5 failed, 476 passed, 21 skipped, 34 deselected, 40 errors in 80.72s (0:01:20)
+checks	UNKNOWN STEP	2026-10-16T10:20:38.0174962Z ##[error]Process completed with exit code 1.
+checks	UNKNOWN STEP	2026-10-16T10:20:38.0386196Z Post job cleanup.
+checks	UNKNOWN STEP	2026-10-16T10:20:38.1953339Z [command]"C:\Program Files\Git\bin\git.exe" version
+checks	UNKNOWN STEP	2026-10-16T10:20:38.2244415Z git version 2.56.0.windows.2
+checks	UNKNOWN STEP	2026-10-16T10:20:38.2300916Z Temporarily overriding HOME='D:\a\_temp\c9397672-b6db-439d-8f63-ec81f406bd09' before making global git config changes
+checks	UNKNOWN STEP	2026-10-16T10:20:38.2301525Z Adding repository directory to the temporary git global config as a safe directory
+checks	UNKNOWN STEP	2026-10-16T10:20:38.2309942Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\AlgoGuard\AlgoGuard
+checks	UNKNOWN STEP	2026-10-16T10:20:38.2625286Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+checks	UNKNOWN STEP	2026-10-16T10:20:38.2935477Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+checks	UNKNOWN STEP	2026-10-16T10:20:38.7588046Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+checks	UNKNOWN STEP	2026-10-16T10:20:38.7865449Z http.https://github.com/.extraheader
+checks	UNKNOWN STEP	2026-10-16T10:20:38.7906185Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+checks	UNKNOWN STEP	2026-10-16T10:20:38.8232025Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+checks	UNKNOWN STEP	2026-10-16T10:20:39.3596096Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+checks	UNKNOWN STEP	2026-10-16T10:20:39.3905640Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+checks	UNKNOWN STEP	2026-10-16T10:20:39.8809672Z Cleaning up orphan processes
+checks	UNKNOWN STEP	2026-10-16T10:20:39.8838299Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

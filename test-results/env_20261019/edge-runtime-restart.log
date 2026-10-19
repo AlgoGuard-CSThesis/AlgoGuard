@@ -1,0 +1,15 @@
+﻿Local Supabase Edge Runtime - evidence for ENV-02.2 / INT-01.1 / DEF-02
+Captured by the test agent from session console output; current status re-read at 2026-10-19 13:31:13
+
+2026-10-19 13:02:37  npx supabase start -> exit 0, output included:
+  Stopped services: [supabase_imgproxy_AlgoGuard supabase_edge_runtime_AlgoGuard supabase_pooler_AlgoGuard]
+2026-10-19 13:28     supabase/config.toml: [edge_runtime] enabled = true
+2026-10-19 13:28     docker ps -a --filter name=edge_runtime:
+  supabase_edge_runtime_AlgoGuard | Exited (255) 11 days ago
+2026-10-19 13:29:25  docker start supabase_edge_runtime_AlgoGuard -> started
+  docker logs (tail): Serving functions on http://127.0.0.1:54321/functions/v1/<function-name>
+   - http://127.0.0.1:54321/functions/v1/account_admin
+   - http://127.0.0.1:54321/functions/v1/smoke_test
+  Using supabase-edge-runtime-1.74.3 (compatible with Deno v2.1.4)
+
+Current status: supabase_edge_runtime_AlgoGuard | Up About a minute

@@ -1,0 +1,173 @@
+﻿{
+    "captured":  "2026-10-19 14:02",
+    "board":  "AlgoGuard Testing Kanban",
+    "url":  "https://github.com/users/bry22191919-hash/projects/4",
+    "status_options":  [
+                           "To Do",
+                           "Review",
+                           "Done"
+                       ],
+    "note":  "Read-only snapshot via gh project item-list. Every card description and Done-when list equals 0 - AlgoGuard Testing Kanban card sheet.docx; no checklist items ticked.",
+    "cards":  [
+                  {
+                      "title":  "[DOC-01] Write the Test Policy and Test Strategy",
+                      "status":  "Review",
+                      "owner":  "Jan Leigh Augustine A. Munoz",
+                      "priority":  "High",
+                      "phase":  "M1",
+                      "test_type":  "Planning"
+                  },
+                  {
+                      "title":  "[DOC-02] Write the Master Test Plan",
+                      "status":  "Review",
+                      "owner":  "Chate Mae N. Caluba",
+                      "priority":  "Critical",
+                      "phase":  "M1",
+                      "test_type":  "Planning"
+                  },
+                  {
+                      "title":  "[DOC-03] Write the Test Design and Test Case Specifications (RTM)",
+                      "status":  "Review",
+                      "owner":  "Victor Alexander A. Ong",
+                      "priority":  "High",
+                      "phase":  "M2",
+                      "test_type":  "Planning"
+                  },
+                  {
+                      "title":  "[DOC-04] Write the Test Procedure Specification",
+                      "status":  "Review",
+                      "owner":  "John Brian A. Tiopes",
+                      "priority":  "Medium",
+                      "phase":  "M2",
+                      "test_type":  "Planning"
+                  },
+                  {
+                      "title":  "[DOC-05] Send the Test Status Reports",
+                      "status":  "To Do",
+                      "owner":  "Brynt M. Timtiman",
+                      "priority":  "Medium",
+                      "phase":  "Ongoing",
+                      "test_type":  "Reporting"
+                  },
+                  {
+                      "title":  "[DOC-06] Write the Test Completion Report",
+                      "status":  "To Do",
+                      "owner":  "Chate Mae N. Caluba",
+                      "priority":  "Critical",
+                      "phase":  "M7",
+                      "test_type":  "Reporting"
+                  },
+                  {
+                      "title":  "[ENV-01] Prepare the test environment and test data",
+                      "status":  "To Do",
+                      "owner":  "Arella Biacea B. Mirasol",
+                      "priority":  "Critical",
+                      "phase":  "M3",
+                      "test_type":  "Environment"
+                  },
+                  {
+                      "title":  "[ENV-02] Confirm CI and add coverage",
+                      "status":  "To Do",
+                      "owner":  "Afel Anthonielle V. Quirao",
+                      "priority":  "High",
+                      "phase":  "M3",
+                      "test_type":  "Environment"
+                  },
+                  {
+                      "title":  "[INT-01] Integration: pipeline, sync and model delivery",
+                      "status":  "To Do",
+                      "owner":  "Afel Anthonielle V. Quirao",
+                      "priority":  "High",
+                      "phase":  "M4",
+                      "test_type":  "Integration"
+                  },
+                  {
+                      "title":  "[LOG-01] Keep the Test Log and Defect Reports",
+                      "status":  "To Do",
+                      "owner":  "Jan Leigh Augustine A. Munoz",
+                      "priority":  "High",
+                      "phase":  "Ongoing",
+                      "test_type":  "Reporting"
+                  },
+                  {
+                      "title":  "[PRF-01] Performance and load",
+                      "status":  "To Do",
+                      "owner":  "Afel Anthonielle V. Quirao",
+                      "priority":  "Medium",
+                      "phase":  "M4",
+                      "test_type":  "Performance"
+                  },
+                  {
+                      "title":  "[REG-01] Regression and fix verification",
+                      "status":  "To Do",
+                      "owner":  "Cel Hendrix N. San Miguel",
+                      "priority":  "High",
+                      "phase":  "M5",
+                      "test_type":  "Regression"
+                  },
+                  {
+                      "title":  "[SEC-01] Security",
+                      "status":  "To Do",
+                      "owner":  "Arella Biacea B. Mirasol",
+                      "priority":  "High",
+                      "phase":  "M4",
+                      "test_type":  "Security"
+                  },
+                  {
+                      "title":  "[SMK-01] Smoke gate",
+                      "status":  "To Do",
+                      "owner":  "John Brian A. Tiopes",
+                      "priority":  "Critical",
+                      "phase":  "M3",
+                      "test_type":  "Smoke"
+                  },
+                  {
+                      "title":  "[SYS-01] Detection quality on unseen data",
+                      "status":  "To Do",
+                      "owner":  "Victor Alexander A. Ong",
+                      "priority":  "Critical",
+                      "phase":  "M4",
+                      "test_type":  "System"
+                  },
+                  {
+                      "title":  "[SYS-02] Traffic sources and bad input",
+                      "status":  "To Do",
+                      "owner":  "John Brian A. Tiopes",
+                      "priority":  "High",
+                      "phase":  "M4",
+                      "test_type":  "System"
+                  },
+                  {
+                      "title":  "[SYS-03] Node isolation and access control",
+                      "status":  "To Do",
+                      "owner":  "Cel Hendrix N. San Miguel",
+                      "priority":  "Critical",
+                      "phase":  "M4",
+                      "test_type":  "System"
+                  },
+                  {
+                      "title":  "[UAT-01] User acceptance testing and sign-off",
+                      "status":  "To Do",
+                      "owner":  "Pauleen Joy O. Gomez",
+                      "priority":  "Critical",
+                      "phase":  "M6",
+                      "test_type":  "UAT"
+                  },
+                  {
+                      "title":  "[UNT-01] Unit tests, lint and type check",
+                      "status":  "To Do",
+                      "owner":  "Cel Hendrix N. San Miguel",
+                      "priority":  "High",
+                      "phase":  "M3",
+                      "test_type":  "Unit"
+                  },
+                  {
+                      "title":  "[USE-01] Usability and accessibility",
+                      "status":  "To Do",
+                      "owner":  "Brynt M. Timtiman",
+                      "priority":  "Medium",
+                      "phase":  "M4",
+                      "test_type":  "Usability"
+                  }
+              ]
+}

@@ -1,0 +1,35 @@
+{
+  "source": "research/dataset/raw/UNSW_NB15_training-set.csv",
+  "rows_loaded": 82332,
+  "rows_removed_seen_in_training": 29089,
+  "rows_kept": 53243,
+  "kept_attack": 20674,
+  "kept_normal": 32569,
+  "kept_attack_cat": {
+    "Normal": 32569,
+    "Exploits": 9328,
+    "Fuzzers": 5064,
+    "DoS": 2214,
+    "Reconnaissance": 2043,
+    "Generic": 802,
+    "Analysis": 416,
+    "Backdoor": 405,
+    "Shellcode": 359,
+    "Worms": 43
+  },
+  "training_csvs": {
+    "algoguard_big.csv": {
+      "rows": 5000,
+      "rows_matching_eval_source": 25145
+    },
+    "algoguard_bigger.csv": {
+      "rows": 10000,
+      "rows_matching_eval_source": 28067
+    },
+    "algoguard_biggest.csv": {
+      "rows": 20000,
+      "rows_matching_eval_source": 29089
+    }
+  },
+  "duplicate_feature_rows_within_kept": 7387
+}
