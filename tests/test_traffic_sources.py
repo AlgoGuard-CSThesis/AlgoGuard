@@ -4,6 +4,7 @@ import sqlite3
 import threading
 import time
 from functools import partial
+from pathlib import Path
 from unittest.mock import Mock
 
 import pandas as pd
@@ -133,6 +134,20 @@ def test_pcap_source_rejects_captures_without_ip_flows(tmp_path):
     source = PcapReplaySource(str(empty))
     with pytest.raises(TrafficSourceError, match="no classifiable IP flows"):
         source.prepare()
+
+
+@pytest.mark.parametrize("order", ["sequential", "random"])
+def test_pcap_source_rejects_a_truncated_capture(tmp_path, order):
+    """SYS-02 / DEF-14: a capture cut off mid-packet is refused, not replayed partially."""
+    full = Path(write_sample_pcap(tmp_path / "full.pcap", sessions=3))
+    cut = tmp_path / "cut.pcap"
+    cut.write_bytes(full.read_bytes()[:-5])
+
+    with pytest.raises(TrafficSourceError, match="incomplete"):
+        PcapReplaySource(str(cut), order=order).prepare()
+    complete = PcapReplaySource(str(full), order=order)
+    complete.prepare()  # the complete file still replays
+    complete.close()
 
 
 def test_pcap_source_honors_cancellation_before_preparation(tmp_path):

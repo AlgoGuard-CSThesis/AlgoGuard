@@ -21,6 +21,7 @@ reports whether live mode can run and why not when it cannot.
 import os
 import queue
 import random
+import struct
 import threading
 import time
 
@@ -35,6 +36,35 @@ from services.preprocessing_service import encode_binary_target
 
 class TrafficSourceError(RuntimeError):
     """Raised when a traffic source cannot be prepared or read."""
+
+
+# Classic pcap magic numbers (microsecond and nanosecond, both byte orders) -> struct endianness.
+_PCAP_MAGIC = {b"\xd4\xc3\xb2\xa1": "<", b"\xa1\xb2\xc3\xd4": ">",
+               b"\x4d\x3c\xb2\xa1": "<", b"\xa1\xb2\x3c\x4d": ">"}
+
+
+def _pcap_is_truncated(path):
+    """True when a classic pcap file ends part-way through a packet record.
+
+    Scapy reads a cut-off final packet with only a log warning, so a truncated capture would
+    otherwise replay partially without the user knowing. pcapng files are not checked here.
+    """
+    try:
+        size = os.path.getsize(path)
+        with open(path, "rb") as handle:
+            endian = _PCAP_MAGIC.get(handle.read(4))
+            if endian is None or size < 24:
+                return False
+            position = 24  # global header
+            while position < size:
+                handle.seek(position)
+                header = handle.read(16)
+                if len(header) < 16:
+                    return True
+                position += 16 + struct.unpack(endian + "IIII", header)[2]
+            return position > size
+    except OSError:
+        return False
 
 
 class TrafficSourceCancelled(TrafficSourceError):
@@ -207,6 +237,12 @@ class PcapReplaySource(TrafficSource):
                 "Reading packet captures requires the scapy package "
                 "(python -m pip install -r requirements.txt)."
             ) from error
+
+        if _pcap_is_truncated(self._path):
+            raise TrafficSourceError(
+                "The packet capture is incomplete: its last packet is cut off. "
+                "Use a complete capture file."
+            )
 
         if self._order == "random":
             self._prepare_buffered(PcapReader)
