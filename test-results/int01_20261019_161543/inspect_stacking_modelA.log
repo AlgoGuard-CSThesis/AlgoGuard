@@ -1,0 +1,11 @@
+file: stacking.joblib sha256: 9c9f0fb18524eeda
+pipeline steps: ['preprocessor', 'classifier']
+final step is StackingClassifier: True
+base estimators (name -> fitted type):
+  random_forest -> RandomForestClassifier
+  gradient_boosting -> GradientBoostingClassifier
+  adaboost -> AdaBoostClassifier
+  knn -> KNeighborsClassifier
+  naive_bayes -> GaussianNB
+final estimator: LogisticRegression
+cv: 5 | stack_method: ['predict_proba', 'predict_proba', 'predict_proba', 'predict_proba', 'predict_proba']

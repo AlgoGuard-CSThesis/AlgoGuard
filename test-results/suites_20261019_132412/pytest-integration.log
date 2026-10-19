@@ -1,0 +1,161 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m pytest -q -m integration
+
+........................s...................FFFF.......Fs..........      [100%]
+================================== FAILURES ===================================
+____________ test_reassignment_rejection_and_account_deactivation _____________
+
+cloud = {'users': [{'id': '935e97c6-e24e-42cb-99ca-f8672c145c36', 'token': '<redacted-jwt> cloud.<locals>.rpc at 0x000001F97ADFF690>, 'admin': <function cloud.<locals>.admin at 0x000001F97ADFFD70>, ...}
+
+    def test_reassignment_rejection_and_account_deactivation(cloud):
+        admin, _, analyst = cloud["users"]
+        old, new = str(uuid.uuid4()), str(uuid.uuid4())
+        for node in (old, new):
+            assert (
+                cloud["rpc"](
+                    "request_enrollment",
+                    {"p_node_id": node, "p_display_name": cloud["prefix"]},
+                    analyst,
+                ).status_code
+                == 200
+            )
+>       assert (
+            cloud["admin"](
+                {
+                    "action": "membership",
+                    "node_id": old,
+                    "profile_id": analyst["profile"],
+                    "status": "approved",
+                    "is_default": True,
+                }
+            ).status_code
+            == 200
+        )
+E       AssertionError: assert 503 == 200
+E        +  where 503 = <Response [503]>.status_code
+E        +    where <Response [503]> = <function cloud.<locals>.admin at 0x000001F97ADFFD70>({'action': 'membership', 'node_id': '2a2a08eb-38a6-4a2b-b62a-330391b22379', 'profile_id': 431, 'status': 'approved', ...})
+
+tests\integration\test_enrollment_administration.py:20: AssertionError
+______________ test_enrollment_repeats_and_membership_lifecycle _______________
+
+cloud = {'users': [{'id': '935e97c6-e24e-42cb-99ca-f8672c145c36', 'token': '<redacted-jwt> cloud.<locals>.rpc at 0x000001F97ADFF690>, 'admin': <function cloud.<locals>.admin at 0x000001F97ADFFD70>, ...}
+
+    def test_enrollment_repeats_and_membership_lifecycle(cloud):
+        admin, analyst, _ = cloud["users"]
+        nodes = [str(uuid.uuid4()), str(uuid.uuid4())]
+        for node in nodes:
+            body = {"p_node_id": node, "p_display_name": cloud["prefix"]}
+            first = cloud["rpc"]("request_enrollment", body, analyst)
+            assert first.status_code == 200, first.json()
+            assert first.json()["status"] == "pending"
+            assert cloud["rpc"]("request_enrollment", body, analyst).json() == first.json()
+            assert cloud["sql"]("select count(*) from public.node where node_id=%s", (node,))[0][0] == 1
+            approved = cloud["admin"](
+                {
+                    "action": "membership",
+                    "node_id": node,
+                    "profile_id": analyst["profile"],
+                    "status": "approved",
+                    "is_default": True,
+                }
+            )
+>           assert approved.status_code == 200
+E           assert 503 == 200
+E            +  where 503 = <Response [503]>.status_code
+
+tests\integration\test_enrollment_administration.py:103: AssertionError
+____________ test_edge_refuses_anonymous_analyst_and_demoted_admin ____________
+
+cloud = {'users': [{'id': '935e97c6-e24e-42cb-99ca-f8672c145c36', 'token': '<redacted-jwt> cloud.<locals>.rpc at 0x000001F97ADFF690>, 'admin': <function cloud.<locals>.admin at 0x000001F97ADFFD70>, ...}
+
+    def test_edge_refuses_anonymous_analyst_and_demoted_admin(cloud):
+        admin, analyst, _ = cloud["users"]
+        path = "/functions/v1/account_admin"
+>       assert cloud["request"]("POST", path, json={}).status_code == 401
+E       AssertionError: assert 503 == 401
+E        +  where 503 = <Response [503]>.status_code
+E        +    where <Response [503]> = <function cloud.<locals>.request at 0x000001F97ADFF8A0>('POST', '/functions/v1/account_admin', json={})
+
+tests\integration\test_enrollment_administration.py:133: AssertionError
+____________ test_create_retry_conflict_and_partial_auth_recovery _____________
+
+cloud = {'users': [{'id': '935e97c6-e24e-42cb-99ca-f8672c145c36', 'token': '<redacted-jwt> cloud.<locals>.rpc at 0x000001F97ADFF690>, 'admin': <function cloud.<locals>.admin at 0x000001F97ADFFD70>, ...}
+local_stack = {'api_url': 'http://127.0.0.1:54321', 'rest_url': 'http://127.0.0.1:54321/rest/v1', 'functions_url': 'http://127.0.0.1:54321/functions/v1', 'db_url': '<redacted> ...}
+local_http = <stack_support.LocalStackHttp object at 0x000001F97496F230>
+
+    def test_create_retry_conflict_and_partial_auth_recovery(cloud, local_stack, local_http):
+        admin = cloud["users"][0]
+        for partial in (False, True):
+            request_id = str(uuid.uuid4())
+            username = cloud["prefix"] + ("_partial" if partial else "_created")
+            body = {
+                "action": "create_account",
+                "email": username + "@algoguard.invalid",
+                "username": username,
+                "role": "analyst",
+            }
+            password = "Integration!" + uuid.uuid4().hex
+            if partial:
+                reserved = local_http.post(
+                    local_stack["rest_url"] + "/rpc/administration_command",
+                    headers=cloud["maintenance"],
+                    json={"p_actor": admin["id"], "p_request_id": request_id, "p_body": body},
+                )
+                assert reserved.status_code == 200
+                created = local_http.post(
+                    local_stack["api_url"] + "/auth/v1/admin/users",
+                    headers=cloud["maintenance"],
+                    json={
+                        "email": body["email"],
+                        "password": password,
+                        "email_confirm": True,
+                        "app_metadata": {"algoguard_request_id": request_id},
+                    },
+                )
+                assert created.status_code in (200, 201)
+            result = cloud["admin"]({**body, "password": password}, request_id=request_id)
+>           assert result.status_code == 200, (partial, result.json())
+E           AssertionError: (False, {'message': 'name resolution failed'})
+E           assert 503 == 200
+E            +  where 503 = <Response [503]>.status_code
+
+tests\integration\test_enrollment_administration.py:184: AssertionError
+__________________________ test_edge_function_smoke ___________________________
+
+local_stack = {'api_url': 'http://127.0.0.1:54321', 'rest_url': 'http://127.0.0.1:54321/rest/v1', 'functions_url': 'http://127.0.0.1:54321/functions/v1', 'db_url': '<redacted> ...}
+local_http = <stack_support.LocalStackHttp object at 0x000001F97496F230>
+
+    def test_edge_function_smoke(local_stack, local_http):
+        """Invoke the disposable smoke_test Edge Function
+        (supabase/functions/smoke_test) and confirm it responds. Requires
+        `supabase start` to have picked up the function from the repo's
+        supabase/functions directory."""
+        resp = local_http.post(
+            f"{local_stack['functions_url']}/smoke_test",
+            headers={
+                "apikey": local_stack["publishable_key"],
+                "Authorization": f"Bearer {local_stack['publishable_key']}",
+            },
+            timeout=10,
+        )
+>       require_status(resp, (200,), "Edge Function invocation")
+
+tests\integration\test_local_supabase_stack.py:239: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [503]>, allowed = (200,)
+operation = 'Edge Function invocation'
+
+    def require_status(response, allowed, operation):
+        """Report status codes without echoing response bodies containing tokens."""
+        if response.status_code not in allowed:
+>           raise AssertionError(f"{operation} failed with HTTP {response.status_code}.")
+E           AssertionError: Edge Function invocation failed with HTTP 503.
+
+tests\stack_support.py:158: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/integration/test_enrollment_administration.py::test_reassignment_rejection_and_account_deactivation
+FAILED tests/integration/test_enrollment_administration.py::test_enrollment_repeats_and_membership_lifecycle
+FAILED tests/integration/test_enrollment_administration.py::test_edge_refuses_anonymous_analyst_and_demoted_admin
+FAILED tests/integration/test_enrollment_administration.py::test_create_retry_conflict_and_partial_auth_recovery
+FAILED tests/integration/test_local_supabase_stack.py::test_edge_function_smoke
+5 failed, 60 passed, 2 skipped, 537 deselected in 54.27s

@@ -1,0 +1,17 @@
+﻿{
+  "session": "4ea6f1f9-30a2-4a46-b8c9-07a2e52cf9f0",
+  "events": 202,
+  "distinct_event_uuids": 202,
+  "statuses": {
+    "synced": 202
+  },
+  "receipts": 202,
+  "prediction_ids": 202,
+  "distinct_prediction_ids": 202,
+  "prediction_id_range": [
+    3191,
+    3392
+  ],
+  "alert_ids": 145,
+  "distinct_alert_ids": 145
+}
