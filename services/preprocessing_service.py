@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
+from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+
 NORMAL_LABELS = {"0", "0.0", "normal", "benign", "legitimate", "clean"}
 
 
@@ -103,6 +105,12 @@ def _read_and_validate_csv(file_path):
     usable_features = dataframe.iloc[:, :-1].dropna(axis=1, how="all")
     if usable_features.shape[1] == 0:
         raise ValueError("The dataset does not contain usable feature columns.")
+    flow_features = [c for c in usable_features.columns if c in FLOW_FEATURE_COLUMNS]
+    if len(flow_features) == len(FLOW_FEATURE_COLUMNS):
+        # A file with the full flow schema (e.g. the raw UNSW-NB15 export) trains on exactly the
+        # 15 features live traffic can provide. Extra columns such as id or attack_cat would leak
+        # the label and give a model that cannot be published or used on captured flows.
+        usable_features = usable_features[flow_features]
 
     dataframe = pd.concat([usable_features, dataframe[[target_column]]], axis=1)
     return dataframe
