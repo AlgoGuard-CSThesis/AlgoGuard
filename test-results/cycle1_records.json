@@ -507,6 +507,149 @@
       "evidence": "docs/migration/05f-pilot.md §4"
     },
     {
+      "time": "2026-10-20 04:51",
+      "case": "ENV-01.11",
+      "card": "ENV-01",
+      "expected": "App starts in local (SQLite) mode (ENV-01 card).",
+      "actual": "ALGOGUARD_DB_MODE=sqlite and ALGOGUARD_PORT=5001 set for that process only (.env untouched); python app.py served http://127.0.0.1:5001; /login -> HTTP 200 'Login | AlgoGuard', heading 'Local Console Access' with a username field. Port 5001 was used so the cloud-mode app on 5000 kept running.",
+      "status": "Pass",
+      "evidence": "Session check of the local /login page"
+    },
+    {
+      "time": "2026-10-20 04:51",
+      "case": "TC-10",
+      "card": "SEC-01",
+      "expected": "Local mode, account exists: five wrong passwords for one account -> further attempts paused.",
+      "actual": "Against the local-mode app on port 5001, account 'admin' (the only local account), six sign-ins with made-up wrong passwords sent by script: attempts 1-5 HTTP 200 'Invalid username or password.'; attempt 6 HTTP 429 'Too many failed sign-in attempts. Try again in 15 minutes.' Local system_log: five login_failed (log 115-119) and login_throttled 'Sign-in for admin blocked for 15 minutes after repeated failures.' (log 120), 20:51:21-20:51:23 UTC. The app does not check the password while locked (app.py:398-406), so a correct password would get the same reply; that was not demonstrated because no real password was used. The local app was stopped afterwards, which clears the in-memory lockout. Deviation: the existing admin account was used instead of a throwaway account created on the Admins page.",
+      "status": "Pass",
+      "evidence": "test-results/sec01_20261019_172340/tc10_lockout.py, tc10_lockout_result.log, tc10_local_db_events.txt"
+    },
+    {
+      "time": "2026-10-20 04:52",
+      "case": "SEC-01.5",
+      "card": "SEC-01",
+      "expected": "Analyst role cannot reach administrator pages: signed in as an analyst, /admins and /nodes refused (SEC-01 card; Master Prompt Phase 6).",
+      "actual": "Local mode (port 5001): throwaway Analyst 'cycle1_roles_test' created in the local SQLite database with a random password held only in memory; signed in -> Dashboard. GET /admins -> HTTP 302 to / with 'Only Administrator accounts can manage admin users.'; GET /nodes -> 404 (Nodes exists only in cloud mode). (/dashboard -> 404 is a wrong path in the check script; the Dashboard is /.) Cloud mode with a real analyst was not checked by hand; it is covered by tests/test_cloud_app.py::test_administrator_account_management_uses_the_checked_function (a demoted administrator gets 302 from /admins and loses the Accounts link) and the integration tests test_a_token_claiming_administrator_is_not_an_administrator and test_a_profile_cannot_grant_itself_a_role, which passed on 2026-10-19. The local account cycle1_roles_test remains (the app has no delete function).",
+      "status": "Pass",
+      "evidence": "test-results/sec01_20261019_172340/roles_check.py, roles_check_result.json"
+    },
+    {
+      "time": "2026-10-20 04:54",
+      "case": "TC-05",
+      "card": "SYS-02",
+      "expected": "POST /predict (and Manual Prediction) with a missing field, text in a numeric field, an out-of-range number: rejected with a plain message; nothing stored.",
+      "actual": "Server side, through services.simulation_service.predict_with_artifact (used by app.py /simulation and /predict and cloud_app.py:416) with model A, starting from the TC-01 row (control: Normal 84.11%): missing dur -> ACCEPTED, filled with the training default, Normal 56.67%; empty dur -> ACCEPTED, 56.67%; spkts 'abc' -> REJECTED 'spkts must contain a finite numerical value.'; sbytes '1e308' -> REJECTED but with 'Prediction failed: Input X contains infinity or a value too large for dtype('float32').'; sbytes '-5' -> ACCEPTED, Normal 86.65%. Accepted input is classified and queued for upload (cloud_app.py:415-418); the cloud form also fills absent fields with defaults (cloud_app.py:608-611). In the browser, the form's required and number-type boxes block a missing value and 'abc', but there are no min/max limits, so '1e308' and '-5' reach the server. The browser part was not run by hand.",
+      "status": "Fail",
+      "defect": "DEF-12, DEF-13",
+      "evidence": "test-results/sys02_files/tc05_server_validation.py, tc05_server_validation_result.json; templates/simulation.html"
+    },
+    {
+      "time": "2026-10-20 04:55",
+      "case": "TC-04",
+      "card": "SYS-02",
+      "expected": "Synthetic PCAP, persistence All: all flows classified and saved.",
+      "actual": "Service level, this cycle: captures/cycle1-tc04-sample.pcap (write_sample_pcap, 10 sessions) through PcapReplaySource and predict_with_artifact with model A: 82 packets -> 11 flows, all classified (10 Attack, 1 Normal; end reasons fin, flush) - the same 11 flows the pilot recorded. Saving was not exercised here. Pilot Test B (2026-10-08, 4c9666c) replayed the same PCAP through the Live Monitor on both PCs: '11 | 11 | 11 -> 0 | 0 of 82 packets' stored -> synced.",
+      "status": "Pass",
+      "evidence": "test-results/sys02_files/sys02_pcap_service_check.py, sys02_pcap_service_check_result.json, sys02_files_manifest.json; docs/migration/05f-pilot.md §3 Test B"
+    },
+    {
+      "time": "2026-10-20 04:55",
+      "case": "SYS-02.1",
+      "card": "SYS-02",
+      "expected": "Bad files (empty, text, truncated PCAP) rejected without a crash (SYS-02 card).",
+      "actual": "Service level (PcapReplaySource): cycle1-bad-empty.pcap refused 'Unable to read the packet capture: No data could be read!'; cycle1-bad-text.pcap refused 'Unable to read the packet capture: Not a supported capture file'; cycle1-bad-truncated.pcap NOT refused - 49 packets read, 7 flows classified, only a console warning 'Pcap: packet has been truncated'. No crash in any case. The Live Monitor messages for these files were not observed by hand.",
+      "status": "Fail",
+      "defect": "DEF-14",
+      "evidence": "test-results/sys02_files/sys02_pcap_service_check_result.json"
+    },
+    {
+      "time": "2026-10-20 04:56",
+      "case": "SYS-02.2",
+      "card": "SYS-02",
+      "expected": "Live Npcap capture classifies flows and saves results; AlgoGuard's own cloud traffic is excluded (SYS-02 card).",
+      "actual": "Not executed this cycle on PC A: live capture needs the app run as administrator and a person at the Live Monitor, and no results were received by close. Pilot evidence: PC A capture 10 (2026-10-15, Administrator) 27 flows, 18 stored, '0 of 848 packets' dropped, '329 own cloud packets excluded'; check_capture_exclusion.py on 2026-10-16 'passed: true' on both PCs ('owned flows classified 0; unrelated flows classified 10').",
+      "status": "Not executed",
+      "evidence": "docs/migration/05f-pilot.md §3 Test D"
+    },
+    {
+      "time": "2026-10-20 04:56",
+      "case": "SYS-02.3",
+      "card": "SYS-02",
+      "expected": "300-event persistence cap shown in the UI (SYS-02 card).",
+      "actual": "Not executed this cycle: no replay this cycle reached 300 stored events (SMK-01 stored 275, TC-09 202) and no capped replay was run by close. Automated: tests/test_live_monitor.py asserts persisted <= MAX_PERSISTED_PER_SESSION (passed in TC-13). Pilot: captures 4 and 5 stored '300 (cap)' of 5,000 flows each, and an unplanned replay 'classified 571 flows and stored exactly 300'.",
+      "status": "Not executed",
+      "evidence": "docs/migration/05f-pilot.md §3 (Test C, incidental cap evidence)"
+    },
+    {
+      "time": "2026-10-20 04:56",
+      "case": "PRF-01.1",
+      "card": "PRF-01",
+      "expected": "Sustained events per second, per client >= 20 (plan 3.4).",
+      "actual": "Measured from this cycle's Fast CSV replays on PC A: TC-09 (Save every flow) 202 events queued 17:17:43-17:19:28 = 105 s -> 1.92 events/s; SMK-01 386 flows analysed in about 190 s (stored events 15:31:20-15:34:30) -> about 2.0 flows/s. The CSV source is paced at one flow per 0.35 s (<= 2.86/s), so 20/s cannot be reached with the shipped sources - same cause as pilot limit L1.",
+      "status": "Fail",
+      "defect": "DEF-11",
+      "evidence": "test-results/int01_20261019_161543/tc09_outbox_sessions.txt; Test Log SMK-01.3; services/live_monitor_service.py SPEED_CHOICES"
+    },
+    {
+      "time": "2026-10-20 04:56",
+      "case": "TC-11",
+      "card": "PRF-01",
+      "expected": "Live capture of ordinary browsing: event-to-verdict lag p95 <= 500 ms (excluding flow timeouts).",
+      "actual": "Not executed: needs a live capture from an elevated app with someone browsing, and no results were received by close. Measurement note: the app stores no flow end time or per-flow lag (local SQLite stamps flows at classification; the outbox clears payloads after upload), so the lag can only be collected from the live /monitor/status feed (detection_lag_ms, end_reason); test-results/prf01/tc11_collect_lag.js was prepared for that. Pilot reference (different budget): average live lag 13.1 s on PC B including the 15 s idle timeout.",
+      "status": "Not executed",
+      "evidence": "test-results/prf01/tc11_collect_lag.js"
+    },
+    {
+      "time": "2026-10-20 04:56",
+      "case": "PRF-01.2",
+      "card": "PRF-01",
+      "expected": "Packet drop during live capture <= 1%; 30-minute soak: CPU <= 80%, RAM <= 1 GiB, no steady growth (plan 3.4).",
+      "actual": "Not executed this cycle: both need a live capture / 30-minute replay started from the browser, and no results were received by close (test-results/prf01/soak_sampler.py was prepared and trial-run: idle app 0.7-1.1% CPU, ~259 MB). Pilot reference (different budgets): packet drop 0% on both PCs; CPU peak 24.5% / 6.3%; RAM peak 294 / 108 MB.",
+      "status": "Not executed",
+      "evidence": "test-results/prf01/soak_sampler.py; docs/migration/05f-pilot.md §4"
+    },
+    {
+      "time": "2026-10-20 04:56",
+      "case": "TC-12",
+      "card": "USE-01",
+      "expected": "Every page at 390 px (and 1366 px): no page-level horizontal scroll; accessibility scan on Login, Live Monitor and Manual Prediction.",
+      "actual": "Not executed in this log: no results (screenshots, widths, Lighthouse scores) were received by the log keeper. The Testing Kanban shows USE-01 moved to Done with all four boxes ticked by the card's side on 2026-10-19/20; the log and the board disagree until those results are added. Observation from other cases: alert, log and feed times are shown in UTC without saying so, while 'Deployed at' says UTC.",
+      "status": "Not executed",
+      "evidence": "Testing Kanban USE-01 card (no attached results)"
+    },
+    {
+      "time": "2026-10-20 05:01",
+      "case": "REG-01.1",
+      "card": "REG-01",
+      "build": "503cb9b",
+      "expected": "Full automated suite re-run on the release-candidate commit; no new failures (REG-01 card; TC-14 second half).",
+      "actual": "Release candidate 503cb9b = product code 940e082 + the accessibility fix for DEF-15 (templates/monitor.html, static/css/style.css), committed 2026-10-19 19:48 from the USE-01 owner's account and pulled to PC A. run_test_suites.py --all: pytest 537 passed / 67 deselected; ruff all checks passed; pyright 0 errors; node 11 pass; integration 65 passed, 2 skipped (Npcap capture tests, terminal not elevated); pip-audit no known vulnerabilities; Bandit High 0 / Medium 14 / Low 18 - the same findings reviewed in SEC-01.3. No new failures.",
+      "status": "Pass",
+      "defect": "DEF-15",
+      "evidence": "test-results/suites_20261020_045724/summary.md and step logs"
+    },
+    {
+      "time": "2026-10-20 05:03",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "503cb9b",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit, then the full automated suite: case passes; no new failures.",
+      "actual": "Only DEF-15 was fixed during the cycle (503cb9b). The fix is present on the release candidate (the Live Monitor feed container now has tabindex=\"0\", role=\"region\", aria-label=\"Live monitor feed\" and a :focus-visible outline) and the full suite passed on it (REG-01.1). The failing case itself - the Lighthouse accessibility audit of the signed-in Live Monitor page - was not re-run: it needs a signed-in browser and no Lighthouse report was received. DEF-15 stays 'Fixed, re-test pending'. No other defect was fixed in cycle 1.",
+      "status": "Not executed",
+      "defect": "DEF-15",
+      "evidence": "git show 503cb9b; test-results/suites_20261020_045724/"
+    },
+    {
+      "time": "2026-10-20 05:03",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "503cb9b",
+      "expected": "SMK-01 re-run on the final build (REG-01 card).",
+      "actual": "Not executed: needs a person at the app (sign-in, Manual Prediction, CSV replay) and was not done by close. The change since SMK-01 touches only the Live Monitor feed's markup and CSS; prediction and storage code are unchanged and the full suite passed on 503cb9b.",
+      "status": "Not executed",
+      "evidence": "git diff 940e082 503cb9b"
+    },
+    {
       "time": "2026-10-19 17:42",
       "case": "TC-15",
       "card": "UAT-01",
@@ -697,6 +840,74 @@
       "evidence": "Test Log row PRF-01.P2; docs/migration/05f-pilot.md §4, §5 finding 4, §7 L1"
     },
     {
+      "id": "DEF-12",
+      "date": "2026-10-20",
+      "case_card": "TC-05 / SYS-02",
+      "title": "Manual Prediction and /predict accept missing, empty and negative numeric input: missing values are filled with training defaults and the record is saved",
+      "severity": "Medium",
+      "priority": "High",
+      "steps": "1. Signed in, POST /predict (JSON) with the TC-01 Normal row but without 'dur', or with 'dur': ''.\n2. Repeat with 'sbytes': '-5'.\n(Equivalent: call services.simulation_service.predict_with_artifact with model A, test-results/sys02_files/tc05_server_validation.py.)",
+      "expected": "Missing or empty fields and negative byte or packet counts are rejected with a plain message; nothing is classified or stored (TC-05).",
+      "actual": "Missing dur -> accepted, filled from the artifact's feature_defaults (simulation_service.py:94), Normal 56.67%; empty dur -> accepted (NaN imputed), 56.67%; sbytes -5 -> accepted, Normal 86.65%. Accepted input is queued for upload (cloud_app.py:415-418). The cloud Manual Prediction form also fills absent fields with defaults before validating (cloud_app.py:608-611). The browser form blocks empty fields (required) but has no min/max, so negatives pass.",
+      "build": "dafe5e5 (product code = 940e082)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A (deployment #1)",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json"
+    },
+    {
+      "id": "DEF-13",
+      "date": "2026-10-20",
+      "case_card": "TC-05 / SYS-02",
+      "title": "An out-of-range number (1e308) is refused with a technical scikit-learn message, not plain language",
+      "severity": "Low",
+      "priority": "Low",
+      "steps": "POST /predict or Manual Prediction with the TC-01 row and sbytes = 1e308.",
+      "expected": "A plain message such as 'sbytes is out of range'.",
+      "actual": "'Prediction failed: Input X contains infinity or a value too large for dtype('float32').' The value passes the finite-number check (simulation_service.py:99-108) and fails inside the model.",
+      "build": "dafe5e5 (product code = 940e082)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json"
+    },
+    {
+      "id": "DEF-14",
+      "date": "2026-10-20",
+      "case_card": "SYS-02.1 / SYS-02",
+      "title": "A truncated PCAP is replayed partially without telling the user it is cut short",
+      "severity": "Low",
+      "priority": "Medium",
+      "steps": "1. Use captures/cycle1-bad-truncated.pcap (first 60% of the TC-04 sample).\n2. Replay it (Live Monitor > Recorded packets, or PcapReplaySource directly).",
+      "expected": "The file is rejected, or the user is told the capture is truncated (SYS-02 card: bad files rejected without a crash).",
+      "actual": "Not refused: 49 packets read, 7 flows classified; the only sign is a scapy console warning 'Pcap: packet has been truncated'. No crash. Empty and text files are refused correctly.",
+      "build": "dafe5e5 (product code = 940e082)",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row SYS-02.1; test-results/sys02_files/sys02_pcap_service_check_result.json"
+    },
+    {
+      "id": "DEF-15",
+      "date": "2026-10-19",
+      "case_card": "TC-12 / USE-01",
+      "title": "Live Monitor's scrolling flow feed cannot be reached by keyboard (Lighthouse: scrollable content not keyboard-accessible)",
+      "severity": "Medium",
+      "priority": "Medium",
+      "steps": "1. Sign in and open Live Monitor.\n2. Run Chrome Lighthouse > Accessibility, or press Tab through the page.",
+      "expected": "Every scrollable region can be focused and scrolled with the keyboard.",
+      "actual": "Reported through the fix commit 503cb9b ('fix the Ensure elements that have scrollable content are accessible by keyboard in Safari', 2026-10-19 19:48, from the USE-01 owner's account): the .monitor-feed-scroll container had no tabindex, role or label. The Lighthouse report itself was not received by the log keeper.",
+      "build": "940e082 (found); fixed in 503cb9b",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Chrome Lighthouse",
+      "status": "Fixed - re-test pending",
+      "fixed_in": "503cb9b",
+      "retest": "2026-10-20 REG-01: fix present on 503cb9b (tabindex=\"0\", role=\"region\", aria-label, :focus-visible outline); full suite passed; Lighthouse re-run not executed.",
+      "evidence": "git show 503cb9b; Test Log rows REG-01.1, TC-14"
+    },
+    {
       "id": "DEF-02",
       "date": "2026-10-19",
       "case_card": "ENV-02.2 / ENV-02",
@@ -788,6 +999,62 @@
       "log": "test-results/suites_20261019_132412/bandit.log"
     },
     {
+      "time": "2026-10-20 04:59",
+      "step": "REG-01 pytest-offline: python -m pytest -q",
+      "build": "503cb9b",
+      "result": "PASS",
+      "key": "537 passed, 67 deselected in 139.19s (0:02:19)",
+      "log": "test-results/suites_20261020_045724/pytest-offline.log"
+    },
+    {
+      "time": "2026-10-20 04:59",
+      "step": "REG-01 ruff-lint: python -m ruff check .",
+      "build": "503cb9b",
+      "result": "PASS",
+      "key": "All checks passed!",
+      "log": "test-results/suites_20261020_045724/ruff-lint.log"
+    },
+    {
+      "time": "2026-10-20 05:00",
+      "step": "REG-01 pyright-typecheck: npm run typecheck",
+      "build": "503cb9b",
+      "result": "PASS",
+      "key": "0 errors, 0 warnings, 0 informations",
+      "log": "test-results/suites_20261020_045724/pyright-typecheck.log"
+    },
+    {
+      "time": "2026-10-20 05:00",
+      "step": "REG-01 node-monitor-poll: node --test tests/monitor_poll.test.cjs",
+      "build": "503cb9b",
+      "result": "PASS",
+      "key": "# pass 11 / # fail 0",
+      "log": "test-results/suites_20261020_045724/node-monitor-poll.log"
+    },
+    {
+      "time": "2026-10-20 05:00",
+      "step": "REG-01 pytest-integration: python -m pytest -q -m integration",
+      "build": "503cb9b",
+      "result": "PASS",
+      "key": "65 passed, 2 skipped, 537 deselected in 49.47s",
+      "log": "test-results/suites_20261020_045724/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-20 05:01",
+      "step": "REG-01 pip-audit: python -m pip_audit -r requirements.txt",
+      "build": "503cb9b",
+      "result": "PASS",
+      "key": "No known vulnerabilities found",
+      "log": "test-results/suites_20261020_045724/pip-audit.log"
+    },
+    {
+      "time": "2026-10-20 05:01",
+      "step": "REG-01 bandit",
+      "build": "503cb9b",
+      "result": "FAIL",
+      "key": "Exit 1 (issues found). By severity: High 0, Medium 14, Low 18 - unchanged, all Medium justified in SEC-01.3. (Runner summary shows the by-confidence counts.)",
+      "log": "test-results/suites_20261020_045724/bandit.log"
+    },
+    {
       "time": "2026-10-19 13:30",
       "step": "pytest-integration re-run after docker start supabase_edge_runtime_AlgoGuard: python -m pytest -q -m integration -rfEs",
       "result": "PASS",
@@ -799,21 +1066,21 @@
     {
       "criterion": "3.3 · 100% of planned Critical test cases executed",
       "target": "100%",
-      "measured": "",
-      "result": "Not measured",
-      "source": "Critical = test cases traced to Critical features F2, F7, F8 in the RTM: TC-01, TC-02, TC-03, TC-04, TC-06, TC-08, TC-09"
+      "measured": "6 of 7 (86%): TC-01, TC-02, TC-03, TC-04, TC-08, TC-09 executed; TC-06 not executed (second PC unavailable - pilot evidence and the automated two-node test only). Counted by card priority instead (Critical cards SMK-01, SYS-01, SYS-03, UAT-01: TC-01, TC-02, TC-03, TC-06, TC-07, TC-15): 3 of 6.",
+      "result": "Not met",
+      "source": "Critical = test cases traced to Critical features F2, F7, F8 in the RTM: TC-01, TC-02, TC-03, TC-04, TC-06, TC-08, TC-09; Test Log"
     },
     {
       "criterion": "3.3 · Overall pass rate across executed test cases",
       "target": ">= 95%",
-      "measured": "",
-      "result": "Not measured",
+      "measured": "80% of executed test cases (8 of 10: TC-01, TC-02, TC-04, TC-08, TC-09, TC-10, TC-13, TC-16 passed; TC-03 and TC-05 failed; TC-06, TC-07, TC-11, TC-12, TC-14, TC-15 not executed). 80.4% of executed Test Log rows (45 Pass of 56).",
+      "result": "Not met",
       "source": "Test Log"
     },
     {
       "criterion": "3.3 · Open Critical or High severity bugs",
       "target": "0",
-      "measured": "4 High open (DEF-04, DEF-05, DEF-06, DEF-07); 0 Critical (as of 2026-10-19 17:45)",
+      "measured": "4 High open (DEF-04, DEF-05, DEF-06, DEF-07); 0 Critical",
       "result": "Not met",
       "source": "Defects sheet"
     },
@@ -855,58 +1122,58 @@
     {
       "criterion": "3.3 · Every performance budget in 3.4 met or waived in writing by the Product Owner",
       "target": "All met or waived",
-      "measured": "",
-      "result": "Not measured",
-      "source": "PRF-01 rows below"
+      "measured": "Events per second not met (about 1.9/s, DEF-11); lag, packet drop and soak not measured this cycle; no written waiver",
+      "result": "Not met",
+      "source": "3.4 rows below"
     },
     {
       "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
       "target": "All",
-      "measured": "",
-      "result": "Not measured",
-      "source": "Defects sheet"
+      "measured": "11 Low/Medium defects open (DEF-01, 02, 03, 08, 09, 10, 11, 12, 13, 14, 15). A workaround is written only in DEF-02 (docker start the Edge Runtime) and DEF-08 (train on 15-feature CSVs); suggested workarounds are in the Completion Report; no Product Owner sign-off yet",
+      "result": "Not met",
+      "source": "Defects sheet; docs/testing/cycle-1/defects.md"
     },
     {
       "criterion": "3.3 · Final Test Completion Report generated and accepted (DOC-06)",
       "target": "Generated and accepted",
-      "measured": "",
-      "result": "Not measured",
-      "source": "DOC-06"
+      "measured": "Generated 2026-10-20 (v1.0); not yet accepted - approval signatures blank",
+      "result": "Not met",
+      "source": "docs/testing/cycle-1/3 - AlgoGuard Test Completion Report v1.0.docx"
     },
     {
       "criterion": "3.4 · Live event-to-verdict lag, p95 (excluding flow timeouts)",
       "target": "<= 500 ms",
-      "measured": "",
+      "measured": "Not measured: TC-11 not executed. The app stores no flow end time or per-flow lag. (Pilot, different budget: average 13.1 s on PC B including the 15 s idle timeout.)",
       "result": "Not measured",
-      "source": "PRF-01 / TC-11"
+      "source": "PRF-01 / TC-11; PRF-01.P3"
     },
     {
       "criterion": "3.4 · Sustained events per second, per client",
       "target": ">= 20",
-      "measured": "",
-      "result": "Not measured",
-      "source": "PRF-01"
+      "measured": "1.92 events/s (TC-09 replay, 202 events in 105 s); about 2.0 flows/s (SMK-01 replay); paced source, max 2.86/s",
+      "result": "Not met",
+      "source": "PRF-01.1 · DEF-11"
     },
     {
       "criterion": "3.4 · Packet drop fraction during live capture",
       "target": "<= 1%",
-      "measured": "",
+      "measured": "Not measured this cycle (pilot: 0% - 0 of 848, 0 of 2,810, 0 of 119,100, 0 of 740 packets)",
       "result": "Not measured",
-      "source": "PRF-01"
+      "source": "PRF-01.2; PRF-01.P4"
     },
     {
       "criterion": "3.4 · AlgoGuard process CPU during a 30-minute soak",
       "target": "<= 80%",
-      "measured": "",
+      "measured": "Not measured this cycle (pilot, different budget: peak 24.5% PC A, 6.3% PC B)",
       "result": "Not measured",
-      "source": "PRF-01 soak"
+      "source": "PRF-01.2; PRF-01.P5"
     },
     {
       "criterion": "3.4 · AlgoGuard process RAM during a 30-minute soak",
       "target": "<= 1 GiB",
-      "measured": "",
+      "measured": "Not measured this cycle (pilot: peak 294 MB PC A, 108 MB PC B)",
       "result": "Not measured",
-      "source": "PRF-01 soak"
+      "source": "PRF-01.2; PRF-01.P6"
     }
   ]
 }

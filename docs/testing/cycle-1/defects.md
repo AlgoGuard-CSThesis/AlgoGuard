@@ -391,3 +391,139 @@ PC A '≈ 1.9/s (capture 5: 300 events in 157 s)'; PC B 'backlog drain of 210 ev
 No e-mail addresses, passwords or tokens are included in this card or its evidence.
 
 ---
+
+## [DEF-12] Manual Prediction and /predict accept missing, empty and negative numeric input: missing values are filled with training defaults and the record is saved
+
+| Field | Value |
+|---|---|
+| Found by card | TC-05 / SYS-02 |
+| Card owner | John Brian A. Tiopes |
+| Date found | 2026-10-20 |
+| Severity | Medium |
+| Priority | High |
+| Build | dafe5e5 (product code = 940e082) |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A (deployment #1) |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+1. Signed in, POST /predict (JSON) with the TC-01 Normal row but without 'dur', or with 'dur': ''.
+2. Repeat with 'sbytes': '-5'.
+(Equivalent: call services.simulation_service.predict_with_artifact with model A, test-results/sys02_files/tc05_server_validation.py.)
+
+**Expected result**
+
+Missing or empty fields and negative byte or packet counts are rejected with a plain message; nothing is classified or stored (TC-05).
+
+**Actual result**
+
+Missing dur -> accepted, filled from the artifact's feature_defaults (simulation_service.py:94), Normal 56.67%; empty dur -> accepted (NaN imputed), 56.67%; sbytes -5 -> accepted, Normal 86.65%. Accepted input is queued for upload (cloud_app.py:415-418). The cloud Manual Prediction form also fills absent fields with defaults before validating (cloud_app.py:608-611). The browser form blocks empty fields (required) but has no min/max, so negatives pass.
+
+**Evidence:** Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-13] An out-of-range number (1e308) is refused with a technical scikit-learn message, not plain language
+
+| Field | Value |
+|---|---|
+| Found by card | TC-05 / SYS-02 |
+| Card owner | John Brian A. Tiopes |
+| Date found | 2026-10-20 |
+| Severity | Low |
+| Priority | Low |
+| Build | dafe5e5 (product code = 940e082) |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+POST /predict or Manual Prediction with the TC-01 row and sbytes = 1e308.
+
+**Expected result**
+
+A plain message such as 'sbytes is out of range'.
+
+**Actual result**
+
+'Prediction failed: Input X contains infinity or a value too large for dtype('float32').' The value passes the finite-number check (simulation_service.py:99-108) and fails inside the model.
+
+**Evidence:** Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-14] A truncated PCAP is replayed partially without telling the user it is cut short
+
+| Field | Value |
+|---|---|
+| Found by card | SYS-02.1 / SYS-02 |
+| Card owner | John Brian A. Tiopes |
+| Date found | 2026-10-20 |
+| Severity | Low |
+| Priority | Medium |
+| Build | dafe5e5 (product code = 940e082) |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+1. Use captures/cycle1-bad-truncated.pcap (first 60% of the TC-04 sample).
+2. Replay it (Live Monitor > Recorded packets, or PcapReplaySource directly).
+
+**Expected result**
+
+The file is rejected, or the user is told the capture is truncated (SYS-02 card: bad files rejected without a crash).
+
+**Actual result**
+
+Not refused: 49 packets read, 7 flows classified; the only sign is a scapy console warning 'Pcap: packet has been truncated'. No crash. Empty and text files are refused correctly.
+
+**Evidence:** Test Log row SYS-02.1; test-results/sys02_files/sys02_pcap_service_check_result.json
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-15] Live Monitor's scrolling flow feed cannot be reached by keyboard (Lighthouse: scrollable content not keyboard-accessible)
+
+| Field | Value |
+|---|---|
+| Found by card | TC-12 / USE-01 |
+| Card owner | Brynt M. Timtiman |
+| Date found | 2026-10-19 |
+| Severity | Medium |
+| Priority | Medium |
+| Build | 940e082 (found); fixed in 503cb9b |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Chrome Lighthouse |
+| Status | Fixed - re-test pending |
+| Fixed in commit | 503cb9b |
+| Re-test result | 2026-10-20 REG-01: fix present on 503cb9b (tabindex="0", role="region", aria-label, :focus-visible outline); full suite passed; Lighthouse re-run not executed. |
+
+**Steps to reproduce**
+
+1. Sign in and open Live Monitor.
+2. Run Chrome Lighthouse > Accessibility, or press Tab through the page.
+
+**Expected result**
+
+Every scrollable region can be focused and scrolled with the keyboard.
+
+**Actual result**
+
+Reported through the fix commit 503cb9b ('fix the Ensure elements that have scrollable content are accessible by keyboard in Safari', 2026-10-19 19:48, from the USE-01 owner's account): the .monitor-feed-scroll container had no tabindex, role or label. The Lighthouse report itself was not received by the log keeper.
+
+**Evidence:** git show 503cb9b; Test Log rows REG-01.1, TC-14
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---

@@ -1,0 +1,356 @@
+{
+  "captured": "2026-10-20 05:16",
+  "board": "https://github.com/users/bry22191919-hash/projects/4",
+  "cards": [
+    {
+      "title": "[DEF-01] CI installs Python 3.14.8 instead of the locked 3.14.6, so every model-loading unit test stops with ModelDeliveryError and CI is red on main",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "High",
+      "phase": "M3",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-02] Local stack: supabase start exits 0 but leaves the crashed Edge Runtime stopped; Edge Function integration tests then fail with HTTP 503",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "Medium",
+      "phase": "M3",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-03] test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot fails on the CI runner: 300 queued outbox writes do not finish within drain()'s 5 s limit",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "Medium",
+      "phase": "M3",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-04] Deployed model misses the accuracy target on the independent evaluation set (81.47% vs >= 90%)",
+      "status": "To Do",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-05] Deployed model misses the F1-score target on the independent evaluation set (79.49% vs >= 90%)",
+      "status": "To Do",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-06] Deployed model misses the false-positive rate target on the independent evaluation set (25.49% vs <= 8%)",
+      "status": "To Do",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-07] Deployed model misses the ROC-AUC target on the independent evaluation set (0.9371 vs >= 0.95)",
+      "status": "To Do",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-08] train.py uses every non-target column as a feature: on the raw UNSW-NB15 file it trains on attack_cat (the label) and id, reports 100%, and local --deploy has no feature-schema check",
+      "status": "To Do",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-09] Dashboard shows the model as 'Deployed' while this installation's cached model is corrupt and refused",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "Low",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-10] Pilot limit L2: p95 upload acknowledgement 24.06 s on one live capture (budget <= 5 s)",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "Medium",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-11] Pilot limit L1: sustained >= 20 acknowledged events/s per client not demonstrated; shipped sources are paced below it",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "Medium",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-12] Manual Prediction and /predict accept missing, empty and negative numeric input: missing values are filled with training defaults and the record is saved",
+      "status": "To Do",
+      "owner": "John Brian A. Tiopes",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-13] An out-of-range number (1e308) is refused with a technical scikit-learn message, not plain language",
+      "status": "To Do",
+      "owner": "John Brian A. Tiopes",
+      "priority": "Low",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-14] A truncated PCAP is replayed partially without telling the user it is cut short",
+      "status": "To Do",
+      "owner": "John Brian A. Tiopes",
+      "priority": "Medium",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DEF-15] Live Monitor's scrolling flow feed cannot be reached by keyboard (Lighthouse: scrollable content not keyboard-accessible)",
+      "status": "Review",
+      "owner": "Brynt M. Timtiman",
+      "priority": "Medium",
+      "phase": "M4",
+      "test_type": "Defect",
+      "boxes_ticked": 0,
+      "boxes_total": 0
+    },
+    {
+      "title": "[DOC-01] Write the Test Policy and Test Strategy",
+      "status": "Review",
+      "owner": "Jan Leigh Augustine A. Munoz",
+      "priority": "High",
+      "phase": "M1",
+      "test_type": "Planning",
+      "boxes_ticked": 0,
+      "boxes_total": 4
+    },
+    {
+      "title": "[DOC-02] Write the Master Test Plan",
+      "status": "Review",
+      "owner": "Chate Mae N. Caluba",
+      "priority": "Critical",
+      "phase": "M1",
+      "test_type": "Planning",
+      "boxes_ticked": 0,
+      "boxes_total": 5
+    },
+    {
+      "title": "[DOC-03] Write the Test Design and Test Case Specifications (RTM)",
+      "status": "Review",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "High",
+      "phase": "M2",
+      "test_type": "Planning",
+      "boxes_ticked": 0,
+      "boxes_total": 4
+    },
+    {
+      "title": "[DOC-04] Write the Test Procedure Specification",
+      "status": "Review",
+      "owner": "John Brian A. Tiopes",
+      "priority": "Medium",
+      "phase": "M2",
+      "test_type": "Planning",
+      "boxes_ticked": 0,
+      "boxes_total": 4
+    },
+    {
+      "title": "[DOC-05] Send the Test Status Reports",
+      "status": "To Do",
+      "owner": "Brynt M. Timtiman",
+      "priority": "Medium",
+      "phase": "Ongoing",
+      "test_type": "Reporting",
+      "boxes_ticked": 3,
+      "boxes_total": 4
+    },
+    {
+      "title": "[DOC-06] Write the Test Completion Report",
+      "status": "To Do",
+      "owner": "Chate Mae N. Caluba",
+      "priority": "Critical",
+      "phase": "M7",
+      "test_type": "Reporting",
+      "boxes_ticked": 4,
+      "boxes_total": 5
+    },
+    {
+      "title": "[ENV-01] Prepare the test environment and test data",
+      "status": "Done",
+      "owner": "Arella Biacea B. Mirasol",
+      "priority": "Critical",
+      "phase": "M3",
+      "test_type": "Environment",
+      "boxes_ticked": 4,
+      "boxes_total": 4
+    },
+    {
+      "title": "[ENV-02] Confirm CI and add coverage",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "High",
+      "phase": "M3",
+      "test_type": "Environment",
+      "boxes_ticked": 3,
+      "boxes_total": 4
+    },
+    {
+      "title": "[INT-01] Integration: pipeline, sync and model delivery",
+      "status": "Done",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Integration",
+      "boxes_ticked": 4,
+      "boxes_total": 4
+    },
+    {
+      "title": "[LOG-01] Keep the Test Log and Defect Reports",
+      "status": "To Do",
+      "owner": "Jan Leigh Augustine A. Munoz",
+      "priority": "High",
+      "phase": "Ongoing",
+      "test_type": "Reporting",
+      "boxes_ticked": 3,
+      "boxes_total": 4
+    },
+    {
+      "title": "[PRF-01] Performance and load",
+      "status": "To Do",
+      "owner": "Afel Anthonielle V. Quirao",
+      "priority": "Medium",
+      "phase": "M4",
+      "test_type": "Performance",
+      "boxes_ticked": 2,
+      "boxes_total": 5
+    },
+    {
+      "title": "[REG-01] Regression and fix verification",
+      "status": "To Do",
+      "owner": "Cel Hendrix N. San Miguel",
+      "priority": "High",
+      "phase": "M5",
+      "test_type": "Regression",
+      "boxes_ticked": 2,
+      "boxes_total": 4
+    },
+    {
+      "title": "[SEC-01] Security",
+      "status": "To Do",
+      "owner": "Arella Biacea B. Mirasol",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "Security",
+      "boxes_ticked": 5,
+      "boxes_total": 6
+    },
+    {
+      "title": "[SMK-01] Smoke gate",
+      "status": "Done",
+      "owner": "John Brian A. Tiopes",
+      "priority": "Critical",
+      "phase": "M3",
+      "test_type": "Smoke",
+      "boxes_ticked": 5,
+      "boxes_total": 5
+    },
+    {
+      "title": "[SYS-01] Detection quality on unseen data",
+      "status": "Done",
+      "owner": "Victor Alexander A. Ong",
+      "priority": "Critical",
+      "phase": "M4",
+      "test_type": "System",
+      "boxes_ticked": 5,
+      "boxes_total": 5
+    },
+    {
+      "title": "[SYS-02] Traffic sources and bad input",
+      "status": "In Progress",
+      "owner": "John Brian A. Tiopes",
+      "priority": "High",
+      "phase": "M4",
+      "test_type": "System",
+      "boxes_ticked": 1,
+      "boxes_total": 5
+    },
+    {
+      "title": "[SYS-03] Node isolation and access control",
+      "status": "Done",
+      "owner": "Cel Hendrix N. San Miguel",
+      "priority": "Critical",
+      "phase": "M4",
+      "test_type": "System",
+      "boxes_ticked": 4,
+      "boxes_total": 4
+    },
+    {
+      "title": "[UAT-01] User acceptance testing and sign-off",
+      "status": "To Do",
+      "owner": "Pauleen Joy O. Gomez",
+      "priority": "Critical",
+      "phase": "M6",
+      "test_type": "UAT",
+      "boxes_ticked": 1,
+      "boxes_total": 4
+    },
+    {
+      "title": "[UNT-01] Unit tests, lint and type check",
+      "status": "Done",
+      "owner": "Cel Hendrix N. San Miguel",
+      "priority": "High",
+      "phase": "M3",
+      "test_type": "Unit",
+      "boxes_ticked": 5,
+      "boxes_total": 5
+    },
+    {
+      "title": "[USE-01] Usability and accessibility",
+      "status": "Done",
+      "owner": "Brynt M. Timtiman",
+      "priority": "Medium",
+      "phase": "M4",
+      "test_type": "Usability",
+      "boxes_ticked": 4,
+      "boxes_total": 4
+    }
+  ]
+}
