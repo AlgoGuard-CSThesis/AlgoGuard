@@ -329,6 +329,45 @@ def test_nonfinite_prediction_input_is_rejected_without_storing(
     assert db.get_detection_stats()["total_flows"] == before
 
 
+@pytest.mark.parametrize("field", ["dur", "rate", "sbytes", "dbytes"])
+def test_negative_flow_values_are_rejected_without_storing(
+    authenticated_client, trained_bundle, field
+):
+    deploy_stacking(trained_bundle)
+    before = db.get_detection_stats()["total_flows"]
+
+    response = authenticated_client.post("/predict", json={field: -5})
+
+    assert response.status_code == 400
+    assert response.get_json()["message"] == f"{field} cannot be negative."
+    assert db.get_detection_stats()["total_flows"] == before
+
+
+def test_values_beyond_the_model_range_are_rejected_in_plain_language(
+    authenticated_client, trained_bundle
+):
+    deploy_stacking(trained_bundle)
+    before = db.get_detection_stats()["total_flows"]
+
+    response = authenticated_client.post("/predict", json={"sbytes": 1e308})
+
+    assert response.status_code == 400
+    message = response.get_json()["message"]
+    assert message == "sbytes is too large to classify; enter a smaller value."
+    assert "dtype" not in message
+    assert db.get_detection_stats()["total_flows"] == before
+
+
+def test_manual_prediction_form_does_not_offer_negative_values(
+    authenticated_client, trained_bundle
+):
+    deploy_stacking(trained_bundle)
+    html = authenticated_client.get("/simulation").get_data(as_text=True)
+    assert 'name="sbytes"' in html
+    # The fixture's numeric flow features: dur, rate, sbytes, dbytes.
+    assert html.count('min="0"') == 4
+
+
 @pytest.mark.parametrize("field", ["sbytes", "dbytes"])
 def test_large_finite_prediction_values_preserve_the_flow_without_integer_overflow(
     authenticated_client, trained_bundle, field

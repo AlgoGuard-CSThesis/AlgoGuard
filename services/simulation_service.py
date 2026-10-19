@@ -31,6 +31,14 @@ FEATURE_GUIDE = {
 }
 
 
+# Every numeric flow feature is a duration, count, size, rate, TTL or gap, so none can be negative.
+NON_NEGATIVE_FEATURES = frozenset(
+    name for name in FEATURE_GUIDE if name not in {"proto", "service", "state"}
+)
+# The fitted pipeline works in float32; anything larger cannot be classified.
+MAX_MODEL_VALUE = float(np.finfo(np.float32).max)
+
+
 def _display_default(value, is_numeric):
     """Render a stored feature default without float noise (0.0045000000000000005)."""
     if value is None:
@@ -70,6 +78,7 @@ def schema_for_artifact(artifact, deployment):
             "label": label,
             "hint": hint,
             "type": "number" if column in numeric_columns else "text",
+            "min": 0 if column in numeric_columns and column in NON_NEGATIVE_FEATURES else None,
             "default": _display_default(defaults.get(column), column in numeric_columns),
         })
     return {
@@ -105,6 +114,12 @@ def _build_input_frame(payload, artifact):
                 if not np.isfinite(row[column]):
                     raise SimulationServiceError(
                         f"{column} must contain a finite numerical value."
+                    )
+                if column in NON_NEGATIVE_FEATURES and row[column] < 0:
+                    raise SimulationServiceError(f"{column} cannot be negative.")
+                if abs(row[column]) > MAX_MODEL_VALUE:
+                    raise SimulationServiceError(
+                        f"{column} is too large to classify; enter a smaller value."
                     )
         else:
             row[column] = None if value in (None, "") else str(value)

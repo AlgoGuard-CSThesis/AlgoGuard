@@ -49,6 +49,7 @@
                     name="{{ field.name }}"
                     type="{{ field.type }}"
                     {% if field.type == 'number' %}step="any"{% endif %}
+                    {% if field.min is not none %}min="{{ field.min }}"{% endif %}
                     value="{{ form_data.get(field.name, field.default) }}"
                     {% if field.hint %}aria-describedby="field_{{ loop.index }}_hint"{% endif %}
                     required
