@@ -534,6 +534,10 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                 services.models.resolve(g.repo)
             except ModelDeliveryError as error:
                 model_message = str(error)
+            except RepositoryError as error:
+                if error.category == "authentication":
+                    raise
+                model_message = "The active model could not be checked. Reconnect and retry."
         return render_template(
             "dashboard.html",
             active_deployment=deployment,

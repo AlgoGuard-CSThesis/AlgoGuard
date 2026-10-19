@@ -16,6 +16,7 @@ import pytest
 
 import cloud_outbox
 from cloud_app import build_services, create_cloud_app
+from cloud_repository import RepositoryError
 from services import database_service
 from tests.cloud_support import (
     ADMIN,
@@ -128,6 +129,21 @@ def test_dashboard_warns_when_the_cached_model_is_corrupt(cloud):
         assert 'status-pill active">Deployed' not in page
     finally:
         restarted.close()
+
+
+def test_dashboard_stays_up_when_the_model_check_cannot_reach_the_cloud(cloud, monkeypatch):
+    client = signed_in(cloud.app)
+    assert client.get("/simulation").status_code == 200
+
+    def unreachable(_repository):
+        raise RepositoryError("transient")
+
+    monkeypatch.setattr(cloud.services.models, "resolve", unreachable)
+    response = client.get("/")
+    page = response.get_data(as_text=True)
+    assert response.status_code == 200
+    assert "The active model could not be checked. Reconnect and retry." in page
+    assert 'status-pill active">Deployed' not in page
 
 
 def test_times_are_labelled_utc_and_empty_log_messages_stay_blank(cloud):
