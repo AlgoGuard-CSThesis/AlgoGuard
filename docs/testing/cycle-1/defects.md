@@ -263,8 +263,8 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; local training run 5 |
 | Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Fixed in commit | 2f4e087 (training columns only) |
+| Re-test result | 2026-10-20 07:13 TC-14 Pass for the reported case: the raw UNSW-NB15 training file now gives exactly the 15 flow features (no id, no attack_cat). Still open: local train.py --deploy has no feature-schema check (local mode allows other schemas by design; needs a decision). |
 
 **Steps to reproduce**
 
@@ -297,9 +297,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Low |
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode, PC A analyst |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Status | Closed |
+| Fixed in commit | eecaac7, 0480899 |
+| Re-test result | 2026-10-20 07:01 TC-14 Pass: with a corrupted cached copy the Dashboard shows 'Unavailable here' and the reason; after restoring the backup it shows 'Deployed' again. |
 
 **Steps to reproduce**
 
@@ -404,8 +404,8 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A (deployment #1) |
 | Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Fixed in commit | edf6193 (negative values only) |
+| Re-test result | 2026-10-20 07:02 TC-05 re-run: negative values refused at the browser, the form and /predict, nothing stored - Pass for that part. Still open: missing or empty numeric fields are filled with training defaults and stored at the server (deliberate, tested design; needs a decision by the Lead Architect and Product Owner). |
 
 **Steps to reproduce**
 
@@ -438,9 +438,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Low |
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Status | Closed |
+| Fixed in commit | edf6193 |
+| Re-test result | 2026-10-20 07:02 TC-05 re-run Pass: 1e308 -> 'sbytes is too large to classify; enter a smaller value.' at the form and /predict; nothing stored. |
 
 **Steps to reproduce**
 
@@ -471,9 +471,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Status | Closed |
+| Fixed in commit | 547044f |
+| Re-test result | 2026-10-20 07:02 SYS-02.1 re-run Pass: 'The packet capture is incomplete: its last packet is cut off. Use a complete capture file.', 0 flows; TC-04 sample still 11 of 11 flows. |
 
 **Steps to reproduce**
 
@@ -505,9 +505,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 940e082 (found); fixed in 503cb9b |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Chrome Lighthouse |
-| Status | Fixed - re-test pending |
+| Status | Closed |
 | Fixed in commit | 503cb9b |
-| Re-test result | 2026-10-20 REG-01: fix present on 503cb9b (tabindex="0", role="region", aria-label, :focus-visible outline); full suite passed; Lighthouse re-run not executed. |
+| Re-test result | 2026-10-20 06:24 TC-14 Pass: feed reached with Tab, PageDown scrolls it, focus outline visible; Lighthouse 12.6 Accessibility 100 on Live Monitor; full suite passed on 503cb9b. |
 
 **Steps to reproduce**
 
@@ -523,6 +523,108 @@ Every scrollable region can be focused and scrolled with the keyboard.
 Reported through the fix commit 503cb9b ('fix the Ensure elements that have scrollable content are accessible by keyboard in Safari', 2026-10-19 19:48, from the USE-01 owner's account): the .monitor-feed-scroll container had no tabindex, role or label. The Lighthouse report itself was not received by the log keeper.
 
 **Evidence:** git show 503cb9b; Test Log rows REG-01.1, TC-14
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-16] Feed, alert and log times are shown in UTC without saying so
+
+| Field | Value |
+|---|---|
+| Found by card | USE-01.3 / USE-01 |
+| Card owner | Brynt M. Timtiman |
+| Date found | 2026-10-20 |
+| Severity | Low |
+| Priority | Medium |
+| Build | 503cb9b |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+1. On PC A (UTC+8), run a replay at a known local time.
+2. Read the Recent Flows TIME column, the Dashboard alerts and System Logs.
+
+**Expected result**
+
+Times in local time, or clearly labelled UTC as 'Deployed at' and Reports ('Generated (UTC)') already are.
+
+**Actual result**
+
+Recent Flows shows 22:15:45 for a flow at 06:15:45 local; System Logs' newest line reads 2026-10-19 22:15:46 for 2026-10-20 06:15:46 local - even the date looks a day behind. Seen in SMK-01, TC-09 and USE-01.
+
+**Evidence:** Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png, 390_monitor.png
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-17] Live event-to-verdict lag p95 is 895.6 ms for flows ended by FIN/RST (budget <= 500 ms)
+
+| Field | Value |
+|---|---|
+| Found by card | TC-11 / PRF-01 |
+| Card owner | Afel Anthonielle V. Quirao |
+| Date found | 2026-10-20 |
+| Severity | Medium |
+| Priority | Medium |
+| Build | 503cb9b |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, administrator |
+| Status | Open |
+| Fixed in commit | â€” |
+| Re-test result | â€” |
+
+**Steps to reproduce**
+
+1. Start the app as administrator; Live Monitor > Live interface capture, Save attacks.
+2. Browse normally for 90 s.
+3. Read detection_lag_ms and end_reason per flow from /monitor/status; take flows with end_reason fin or rst.
+
+**Expected result**
+
+p95 <= 500 ms (Master Test Plan 3.4).
+
+**Actual result**
+
+n=32 FIN/RST flows: p50 388.9 ms, p95 895.6 ms. Model latency alone p50 163.9 ms, p95 377.2 ms, so roughly half the delay is queueing and handling around the model. Measured with a traffic generator and Chrome running on PC A; the app also stores no per-flow lag, so this can only be measured live.
+
+**Evidence:** Test Log row TC-11; test-results/ui_20261020/tc11_live.json
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-18] System Logs show the word 'None' as the message of every flow_accepted entry
+
+| Field | Value |
+|---|---|
+| Found by card | USE-01.3 / USE-01 |
+| Card owner | Brynt M. Timtiman |
+| Date found | 2026-10-20 |
+| Severity | Low |
+| Priority | Low |
+| Build | 503cb9b |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode |
+| Status | Closed |
+| Fixed in commit | 1ffa1b9 |
+| Re-test result | 2026-10-20 07:02 USE-01.3 re-run: 0 of 21 flow_accepted rows show 'None' - Pass. |
+
+**Steps to reproduce**
+
+Run any replay in cloud mode, then open Logs.
+
+**Expected result**
+
+An empty message cell or a readable message.
+
+**Actual result**
+
+Each 'detection / flow_accepted / success' row has the message 'None' (a Python null rendered as text).
+
+**Evidence:** Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png
 
 No e-mail addresses, passwords or tokens are included in this card or its evidence.
 

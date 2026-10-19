@@ -650,11 +650,283 @@
       "evidence": "git diff 940e082 503cb9b"
     },
     {
+      "time": "2026-10-20 06:06",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "503cb9b",
+      "expected": "SMK-01 re-run on the final build (REG-01 card).",
+      "actual": "App restarted as administrator on 503cb9b; PC A analyst signed in once in a test Chrome window driven by script (Playwright over CDP). TC-01 Normal row -> NORMAL 84.11%, deployment #1, synced as prediction #4160, no alert. TC-02 Attack row -> ATTACK 92.95%, synced as prediction #4161 with alert #3369. Short replay (algoguard_big, Fast, Save attacks, 120 s): 172 flows, 126 Attack / 46 Normal, 126 alerts, 126 queued, 126 synced, 0 pending, 0 not stored, no error. Two earlier attempts at 05:53-05:54 failed on a screenshot step after submitting; their 3 manual predictions were synced and are extra records, not results.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/smk_rerun.json, smk_*.png, outbox_sessions_0600.txt"
+    },
+    {
+      "time": "2026-10-20 06:08",
+      "case": "TC-05",
+      "card": "SYS-02",
+      "build": "503cb9b",
+      "expected": "Malformed input on Manual Prediction: missing field, text in a numeric field, an out-of-range number, a negative byte count - rejected with a plain message; nothing stored.",
+      "actual": "Real form, starting from the TC-01 row: (a) dur emptied -> browser blocks the submit, 'Please fill out this field.'; (b) typing 'abc' into spkts leaves it empty -> 'Please fill out this field.'; (c) sbytes 1e308 -> 'Prediction failed: Input X contains infinity or a value too large for dtype('float32').' (DEF-13); (d) sbytes -5 -> ACCEPTED, NORMAL 86.65%, event cb1438e0, stored and synced as prediction #4288 (DEF-12). (a) and (b) are stopped only by the browser; the server accepts them (TC-05 at 04:54).",
+      "status": "Fail",
+      "defect": "DEF-12, DEF-13",
+      "evidence": "test-results/ui_20261020/sys02_ui.json, tc05_*.png"
+    },
+    {
+      "time": "2026-10-20 06:08",
+      "case": "TC-04",
+      "card": "SYS-02",
+      "build": "503cb9b",
+      "expected": "Synthetic PCAP, persistence All: all flows classified and saved.",
+      "actual": "Live Monitor, Recorded packets (PCAP), cycle1-tc04-sample.pcap, Fast, Save every flow: 11 of 11 flows, 10 Attack / 1 Normal, 10 alerts, 11 queued, 11 synced, 0 pending, 0 not stored; 'The traffic source finished streaming.'",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/sys02_ui.json, pcap_cycle1-tc04-sample.png"
+    },
+    {
+      "time": "2026-10-20 06:08",
+      "case": "SYS-02.1",
+      "card": "SYS-02",
+      "build": "503cb9b",
+      "expected": "Bad files (empty, text, truncated PCAP) rejected without a crash (SYS-02 card).",
+      "actual": "Live Monitor: cycle1-bad-empty.pcap -> 'Unable to read the packet capture: No data could be read!'; cycle1-bad-text.pcap -> 'Unable to read the packet capture: Not a supported capture file'; cycle1-bad-truncated.pcap -> 7 of 7 flows streamed and saved, 'The traffic source finished streaming.', no warning (DEF-14). No crash; the page kept working.",
+      "status": "Fail",
+      "defect": "DEF-14",
+      "evidence": "test-results/ui_20261020/sys02_ui.json, pcap_*.png"
+    },
+    {
+      "time": "2026-10-20 06:15",
+      "case": "SYS-02.3",
+      "card": "SYS-02",
+      "build": "503cb9b",
+      "expected": "300-event persistence cap shown in the UI (SYS-02 card).",
+      "actual": "Sample replay algoguard_big, Fast, Save every flow: side panel 'Queued for upload 300 (capped)', 'Not stored 312', classification continued to 612 flows (438 Attack); 211 alerts; Synced 300, Pending 0. Outbox: session 749511b1 holds exactly 300 events, all synced, 211 with alerts. The cap is shown in the Queued-for-upload field; no separate message.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/sys02_ui.json, cap_300.png, outbox_sessions_0600.txt"
+    },
+    {
+      "time": "2026-10-20 06:19",
+      "case": "TC-12",
+      "card": "USE-01",
+      "build": "503cb9b",
+      "expected": "Every page at 390 px (and 1366 px): no page-level horizontal scroll.",
+      "actual": "Dashboard, Live Monitor, Manual Prediction, Alerts, System Logs, Reports, Nodes, Accounts/Admins and Login at 1366x768 and 390x844 (fresh tab, signed-in session): document scrollWidth never above the window width (375-390 of 390; 1351-1366 of 1366), no element outside a scroll container past the right edge; screenshots show stacked layouts with no overlap. Accounts/Admins redirects the analyst to the Dashboard.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/use01/use01_ui.json and 18 screenshots"
+    },
+    {
+      "time": "2026-10-20 06:19",
+      "case": "USE-01.1",
+      "card": "USE-01",
+      "build": "503cb9b",
+      "expected": "Keyboard navigation and form labels checked on Login, Live Monitor and Manual Prediction (USE-01 card).",
+      "actual": "Tab walk: Login 3 of 3 interactive elements reached, Live Monitor 17 of 17, Manual Prediction 25 of 25 distinct (26 counting a second 'Live Monitor' link); no visible field without a label (label element, aria-label or aria-labelledby).",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/use01/use01_ui.json"
+    },
+    {
+      "time": "2026-10-20 06:23",
+      "case": "USE-01.2",
+      "card": "USE-01",
+      "build": "503cb9b",
+      "expected": "Automated accessibility scan run; serious issues logged as DEF cards (USE-01 card).",
+      "actual": "Lighthouse 12.6.0, desktop, Accessibility only: Login 100 (signed-out Chrome), Live Monitor 100 and Manual Prediction 100 (signed-in session, storage reset disabled); 0 failed audits on each.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/lighthouse/ (reports and lighthouse_summary.json)"
+    },
+    {
+      "time": "2026-10-20 06:24",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "503cb9b",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-15 re-test on 503cb9b: the Live Monitor feed has tabindex=0, role=region, aria-label 'Live monitor feed'; reached with Tab (17th stop); PageDown scrolled it from 0 to 420 px of 2,084 px content; visible focus outline (solid 1.6px). Lighthouse 12.6 has no scrollable-region audit, so the behaviour was tested directly. Full suite passed on 503cb9b (REG-01.1). DEF-15 closed.",
+      "status": "Pass",
+      "defect": "DEF-15",
+      "evidence": "test-results/ui_20261020/def15_check.json, def15_feed_focused.png"
+    },
+    {
+      "time": "2026-10-20 06:26",
+      "case": "SYS-02.2",
+      "card": "SYS-02",
+      "build": "503cb9b",
+      "expected": "Live Npcap capture classifies flows and saves results; AlgoGuard's own cloud traffic is excluded (SYS-02 card).",
+      "actual": "Live interface capture, default interface, Save attacks, 06:24:38-06:26:08 (90 s) while about 100 public web pages were fetched: 8,721 packets, 0 dropped, 1,025 own cloud packets excluded; 139 flows classified (93 Attack / 46 Normal; ended by FIN 14, RST 18, idle timeout 107); 93 saved, 93 synced, 0 pending. Observation: 67% of ordinary browsing flagged Attack - same pattern as pilot finding 12 and consistent with DEF-06.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/tc11_live.json, live_capture.png"
+    },
+    {
+      "time": "2026-10-20 06:26",
+      "case": "TC-11",
+      "card": "PRF-01",
+      "build": "503cb9b",
+      "expected": "Live capture of ordinary browsing: event-to-verdict lag p95 <= 500 ms (excluding flow timeouts).",
+      "actual": "Same 90 s capture. Lag per flow read from the page's /monitor/status feed (detection_lag_ms = verdict time minus the flow's last packet). Flows ended by TCP FIN/RST (no timeout wait), n=32: p50 388.9 ms, p95 895.6 ms - budget missed. All 139 flows: p50 15,765 ms, p95 16,311 ms (includes the 15 s idle timeout); idle-timeout flows minus 15 s: p50 916.5 ms, p95 1,362.4 ms. Model latency: p50 163.9 ms, p95 377.2 ms. A traffic generator and Chrome were running on PC A.",
+      "status": "Fail",
+      "defect": "DEF-17",
+      "evidence": "test-results/ui_20261020/tc11_live.json"
+    },
+    {
+      "time": "2026-10-20 06:26",
+      "case": "PRF-01.3",
+      "card": "PRF-01",
+      "build": "503cb9b",
+      "expected": "Packet drop fraction during live capture <= 1% (plan 3.4).",
+      "actual": "0 of 8,721 packets dropped (0%) in the 90 s live capture.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/tc11_live.json (session_capture_counters)"
+    },
+    {
+      "time": "2026-10-20 06:57",
+      "case": "PRF-01.4",
+      "card": "PRF-01",
+      "build": "503cb9b",
+      "expected": "30-minute soak: AlgoGuard process CPU <= 80% and RAM <= 1 GiB, no steady growth (plan 3.4; PRF-01 card).",
+      "actual": "Live Monitor, Sample replay algoguard_biggest.csv, Fast, Sequential, Save attacks, 06:27:23-06:57:25 (1,800 s), started and stopped by script in the signed-in test Chrome. Sampler every 30 s on the app (PID 37452 + its 3.5 MB launcher, found by command line), 60 samples 06:28:02-06:57:33. CPU (share of the whole machine): max 8.03%, mean 7.54%. RAM: max 352.2 MB (first 4 minutes), dropped to 298.6 MB at 06:32, climbed to 327.8 MB by 06:55 (about 1.1 MB/min), flat from 06:52 (+1 MB), 322.0 MB at the end; whole-run trend -0.1 MB/min. Threads 35-37. No error message; 300 stored (cap), 300 synced, 0 pending. Observation: 30 minutes cannot rule out a slow leak after the 06:32-06:52 climb; a longer soak is suggested for cycle 2. Short test runs in other processes ran on PC A during the soak.",
+      "status": "Pass",
+      "evidence": "test-results/soak_20261020_062732.csv; test-results/ui_20261020/soak_ui.json, soak_sampler_console.log, soak_end.png"
+    },
+    {
+      "time": "2026-10-20 06:57",
+      "case": "PRF-01.5",
+      "card": "PRF-01",
+      "build": "503cb9b",
+      "expected": "Sustained events per second, per client >= 20 (plan 3.4).",
+      "actual": "Same 30-minute Fast replay: 2,972 flows classified in 1,800 s = 1.65 flows/s (five-minute readings 498, 1,025, 1,548, 2,043, 2,477, 2,972); 300 events stored (the per-session cap), all synced. The sample source is paced at one flow per 0.35 s (<= 2.86/s), so 20/s cannot be reached with it.",
+      "status": "Fail",
+      "defect": "DEF-11",
+      "evidence": "test-results/ui_20261020/soak_ui.json, soak_end.png"
+    },
+    {
+      "time": "2026-10-20 07:03",
+      "case": "REG-01.1",
+      "card": "REG-01",
+      "build": "0480899",
+      "expected": "Full automated suite re-run on the fix build; no new failures (REG-01 card; TC-14 second half).",
+      "actual": "Fix build 0480899 = 503cb9b + eight fix commits for DEF-01, 02, 03, 08, 09, 12, 13, 14, 16 and 18 (eecaac7..0480899). run_test_suites.py --all 06:58-07:03: pytest 550 passed / 67 deselected (13 more than on 503cb9b, the new tests for the fixes); pyright 0 errors; node 11 pass; integration 65 passed, 2 skipped (Npcap capture tests, terminal not elevated); pip-audit no known vulnerabilities; Bandit High 0 / Medium 14 / Low 18 (same as SEC-01.3). Ruff found 3 over-long lines, all in an uncommitted evidence script (test-results/ui_20261020/lighthouse/summarise_lighthouse.py), none in product code; after re-wrapping it (its output is unchanged) ruff check . passed. No new failures in product code.",
+      "status": "Pass",
+      "evidence": "test-results/suites_20261020_065849/summary.md and step logs"
+    },
+    {
+      "time": "2026-10-20 07:02",
+      "case": "TC-05",
+      "card": "SYS-02",
+      "build": "0480899",
+      "expected": "Malformed input on Manual Prediction: missing field, text in a numeric field, an out-of-range number, a negative byte count - rejected with a plain message; nothing stored.",
+      "actual": "Re-run of (c) and (d) on the fix build, signed-in test Chrome, starting from the TC-01 row: (c) sbytes 1e308 -> 'sbytes is too large to classify; enter a smaller value.'; (d) sbytes -5 -> browser: 'Value must be greater than or equal to 0.'; the same form with the browser check off -> 'sbytes cannot be negative.'; /predict with sbytes -5, dur -1 and sbytes 1e308 -> HTTP 400 with the same plain messages. Flows Analyzed 2,277 before and after: nothing stored. (a) and (b) not re-run (browser-blocked at 06:08; unchanged). Still failing: a missing or empty numeric field sent to the server is filled with the training default and stored - unchanged design, asserted by test_missing_numeric_prediction_is_imputed_and_saved_as_null, which passed on this build (REG-01.1).",
+      "status": "Fail",
+      "defect": "DEF-12",
+      "evidence": "test-results/ui_20261020/reg01/reg01_ui.json (tc05), tc05_*.png"
+    },
+    {
+      "time": "2026-10-20 07:02",
+      "case": "SYS-02.1",
+      "card": "SYS-02",
+      "build": "0480899",
+      "expected": "Bad files (empty, text, truncated PCAP) rejected without a crash (SYS-02 card).",
+      "actual": "Live Monitor, Recorded packets, Save every flow: cycle1-bad-truncated.pcap -> 'The packet capture is incomplete: its last packet is cut off. Use a complete capture file.', 0 flows, nothing stored, page kept working. Empty and text files not re-run (refused without a crash at 06:08).",
+      "status": "Pass",
+      "defect": "DEF-14",
+      "evidence": "test-results/ui_20261020/reg01/reg01_ui.json (pcap), pcap_cycle1-bad-truncated.png"
+    },
+    {
+      "time": "2026-10-20 07:02",
+      "case": "TC-04",
+      "card": "SYS-02",
+      "build": "0480899",
+      "expected": "Synthetic PCAP, persistence All: all flows classified and saved.",
+      "actual": "Regression re-run after the PCAP change: cycle1-tc04-sample.pcap, Fast, Save every flow: 11 of 11 flows, 10 Attack / 1 Normal, 10 alerts, 11 queued, 11 synced, 0 pending, 0 not stored; 'The traffic source finished streaming.'",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/reg01/reg01_ui.json (pcap), pcap_cycle1-tc04-sample.png"
+    },
+    {
+      "time": "2026-10-20 07:02",
+      "case": "USE-01.3",
+      "card": "USE-01",
+      "build": "0480899",
+      "expected": "Error messages and status text are plain language (USE-01 card).",
+      "actual": "Fix build: Logs header 'Timestamp (UTC)', Alerts 'Detected (UTC)', Live Monitor 'Time (UTC)', Dashboard alert and log lines end in 'UTC' (7); 0 of 21 flow_accepted rows show 'None' (DEF-18 fixed); the 1e308 message is plain (TC-05 at 07:02). Still unlabelled UTC times: Dashboard 'Last at 2026-10-19 22:31:50' under Flows Analyzed, Nodes 'Requested'/'Decided', Accounts 'Created' and local-mode 'Deployed at' (DEF-16 not fully fixed; follow-up fix 128855e).",
+      "status": "Fail",
+      "defect": "DEF-16",
+      "evidence": "test-results/ui_20261020/reg01/reg01_ui.json (labels), def09_dashboard_corrupt.png"
+    },
+    {
+      "time": "2026-10-20 07:03",
+      "case": "SEC-01.4",
+      "card": "SEC-01",
+      "build": "0480899",
+      "expected": "No secrets in pages or API responses (SEC-01 card).",
+      "actual": "Signed-in analyst session, same-session requests to /, /monitor, /monitor/status, /simulation, /alerts, /logs, /reports, /nodes, /admins (redirects an analyst to the Dashboard) and /outbox/export: all HTTP 200, 0 matches for JWTs, Supabase keys, 'service_role', Bearer tokens, password/secret/key/token values, SUPABASE_/ALGOGUARD_ setting names and e-mail addresses (counts only were saved). No report existed to open, so report detail pages were not scanned. Repository and logs were checked in SEC-01 on 2026-10-19. Note: a UTC label edit to the Nodes page template was briefly on disk in the repository folder around 07:02-07:03 and then undone, so the Nodes header text may have come from it (label text only; no effect on this scan).",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/reg01/reg01_ui.json (secrets)"
+    },
+    {
+      "time": "2026-10-20 07:05",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "0480899",
+      "expected": "SMK-01 re-run on the fix build (REG-01 card).",
+      "actual": "TC-01 Normal row -> NORMAL 84.11%, deployment #1, synced as prediction #5011, no alert. TC-02 Attack row -> ATTACK 92.95%, synced as prediction #5012 with alert #4126. Replay algoguard_big, Fast, Save attacks, 07:03:24-07:05:24: 167 flows, 121 Attack / 46 Normal, 121 alerts, 121 queued, 121 synced, 0 pending, 0 not stored, no error. Outbox: all 2,099 events synced.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/reg01/reg01_ui.json (smoke), smk_*.png"
+    },
+    {
+      "time": "2026-10-20 07:05",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "0480899",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-13 (edf6193): 1e308 now refused in plain language at the form and /predict - closed. DEF-12 (edf6193): negative values now refused at the browser, the form and /predict, nothing stored; missing or empty numeric fields are still filled with training defaults and stored at the server (deliberate design, not changed) - TC-05 still fails on that part; DEF-12 stays open for a decision. DEF-14 (547044f): truncated capture refused, TC-04 sample unaffected - closed. DEF-18 (1ffa1b9): no 'None' messages - closed. DEF-16 (1ffa1b9): partly fixed; remaining labels in 128855e, re-tested on the final build.",
+      "status": "Fail",
+      "defect": "DEF-12, DEF-13, DEF-14, DEF-16, DEF-18",
+      "evidence": "Test Log rows TC-05, SYS-02.1, TC-04, USE-01.3 at 07:02; test-results/ui_20261020/reg01/"
+    },
+    {
+      "time": "2026-10-20 07:13",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "128855e",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-08 (2f4e087): the raw research/dataset/raw/UNSW_NB15_training-set.csv (45 columns incl. id and attack_cat) given to the training preparation on the final build -> 15 training columns, exactly the live flow features; id and attack_cat not used. Training itself was not re-run (no new model or run written). Not changed: local train.py --deploy still has no feature-schema check (local mode allows other schemas by design), so DEF-08 stays open for that part.",
+      "status": "Pass",
+      "defect": "DEF-08",
+      "evidence": "test-results/ui_20261020/reg01/def08_schema_check.txt; tests/test_training_schema.py"
+    },
+    {
+      "time": "2026-10-20 07:09",
+      "case": "REG-01.1",
+      "card": "REG-01",
+      "build": "128855e",
+      "expected": "Full automated suite re-run on the final build; no new failures (REG-01 card).",
+      "actual": "Final build 128855e (0480899 + the remaining UTC labels for DEF-16): pytest 551 passed / 67 deselected; ruff all checks passed; pyright 0 errors; node 11 pass. Integration lane: see INT-01.2.",
+      "status": "Pass",
+      "evidence": "test-results/suites_final_128855e/*.log"
+    },
+    {
+      "time": "2026-10-20 07:01",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "0480899",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-09 (fixed in eecaac7 and 0480899) re-tested with the TC-08 procedure on a backed-up cache: cache file 1-9c9f0fb185... (8,558,646 bytes) copied to C:\\AlgoGuardPilot\\REG01-backup-models-20261020 (SHA-256 checked), one byte changed at offset 4,279,323; app restarted on 0480899 and the PC A analyst signed in. Dashboard: model label 'Unavailable here' and 'Not usable on this computer: The cached model is corrupt. Remove it and retry.'; Manual Prediction: 'No active deployment - The cached model is corrupt. Remove it and retry.' Cache restored from the backup at 07:01:18 (SHA-256 matches again), no restart needed: Dashboard 'Deployed', Manual Prediction form back with 15 fields. DEF-09 closed.",
+      "status": "Pass",
+      "defect": "DEF-09",
+      "evidence": "test-results/ui_20261020/reg01/def09_check.json, def09_dashboard_corrupt.png, def09_dashboard_restored.png"
+    },
+    {
+      "time": "2026-10-20 06:27",
+      "case": "USE-01.3",
+      "card": "USE-01",
+      "build": "503cb9b",
+      "expected": "Error messages and status text are plain language (USE-01 card).",
+      "actual": "Mostly plain (e.g. 'Unable to read the packet capture: Not a supported capture file', 'Please fill out this field.'). Not plain: the 1e308 message 'Input X contains infinity or a value too large for dtype('float32')' (DEF-13); System Logs show the word 'None' as the message of every flow_accepted entry (DEF-18); feed, alert and log times are UTC without a label - the newest log line reads 2026-10-19 22:15:46 for 2026-10-20 06:15:46 local (DEF-16).",
+      "status": "Fail",
+      "defect": "DEF-13, DEF-16, DEF-18",
+      "evidence": "test-results/ui_20261020/use01/1366_logs.png, use01/390_monitor.png, tc05_c_1e308.png"
+    },
+    {
       "time": "2026-10-19 17:42",
       "case": "TC-15",
       "card": "UAT-01",
       "expected": "Product Owner, signed in as an analyst, replays algoguard_big.csv, opens an alert, acknowledges and resolves it: alerts raised for attacks; review actions logged; Product Owner accepts.",
-      "actual": "Not executed: awaiting Product Owner. Four scenarios written for her (replay detection, alert review, report from alerts, administrator approves a node member) with Pass/Fail lines and the accept/reject signature.",
+      "actual": "Not executed: awaiting Product Owner. Four scenarios written for her (replay detection, alert review, report from alerts, administrator approves a node member) with Pass/Fail lines and the accept/reject signature. On 2026-10-20 the Lead Architect relayed that she gave permission to accept the build; no executed scenarios or signed decision were received.",
       "status": "Not executed",
       "evidence": "docs/testing/cycle-1/UAT scenarios.md"
     },
@@ -784,8 +1056,8 @@
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; local training run 5",
       "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "fixed_in": "2f4e087 (training columns only)",
+      "retest": "2026-10-20 07:13 TC-14 Pass for the reported case: the raw UNSW-NB15 training file now gives exactly the 15 flow features (no id, no attack_cat). Still open: local train.py --deploy has no feature-schema check (local mode allows other schemas by design; needs a decision).",
       "evidence": "Test Log row SYS-01.5; test-results/sys01_holdout/train_B_console.log, eval_B_raw_console.log; services/preprocessing_service.py:158-219; model_runtime.py:69-77; train.py:130-200"
     },
     {
@@ -800,9 +1072,9 @@
       "actual": "Predict: 'No active deployment - The cached model is corrupt. Remove it and retry.' Dashboard: green 'Deployed' badge, Stacking Ensemble, deployment #1 and its training metrics, with no warning. cloud_app.py dashboard() renders active_deployment(repo), the cloud record, and does not check the local cache (the model_message path only covers errors from that cloud lookup). No unsafe behaviour: the corrupt model is never used.",
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode, PC A analyst",
-      "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "status": "Closed",
+      "fixed_in": "eecaac7, 0480899",
+      "retest": "2026-10-20 07:01 TC-14 Pass: with a corrupted cached copy the Dashboard shows 'Unavailable here' and the reason; after restoring the backup it shows 'Deployed' again.",
       "evidence": "Test Log row TC-08; test-results/int01_20261019_161543/TC-08_dashboard_while_corrupt.png, TC-08_predict_refused.png; cloud_app.py:522-541"
     },
     {
@@ -852,8 +1124,8 @@
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A (deployment #1)",
       "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "fixed_in": "edf6193 (negative values only)",
+      "retest": "2026-10-20 07:02 TC-05 re-run: negative values refused at the browser, the form and /predict, nothing stored - Pass for that part. Still open: missing or empty numeric fields are filled with training defaults and stored at the server (deliberate, tested design; needs a decision by the Lead Architect and Product Owner).",
       "evidence": "Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json"
     },
     {
@@ -868,9 +1140,9 @@
       "actual": "'Prediction failed: Input X contains infinity or a value too large for dtype('float32').' The value passes the finite-number check (simulation_service.py:99-108) and fails inside the model.",
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A",
-      "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "status": "Closed",
+      "fixed_in": "edf6193",
+      "retest": "2026-10-20 07:02 TC-05 re-run Pass: 1e308 -> 'sbytes is too large to classify; enter a smaller value.' at the form and /predict; nothing stored.",
       "evidence": "Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json"
     },
     {
@@ -885,9 +1157,9 @@
       "actual": "Not refused: 49 packets read, 7 flows classified; the only sign is a scapy console warning 'Pcap: packet has been truncated'. No crash. Empty and text files are refused correctly.",
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv",
-      "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "status": "Closed",
+      "fixed_in": "547044f",
+      "retest": "2026-10-20 07:02 SYS-02.1 re-run Pass: 'The packet capture is incomplete: its last packet is cut off. Use a complete capture file.', 0 flows; TC-04 sample still 11 of 11 flows.",
       "evidence": "Test Log row SYS-02.1; test-results/sys02_files/sys02_pcap_service_check_result.json"
     },
     {
@@ -902,10 +1174,61 @@
       "actual": "Reported through the fix commit 503cb9b ('fix the Ensure elements that have scrollable content are accessible by keyboard in Safari', 2026-10-19 19:48, from the USE-01 owner's account): the .monitor-feed-scroll container had no tabindex, role or label. The Lighthouse report itself was not received by the log keeper.",
       "build": "940e082 (found); fixed in 503cb9b",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Chrome Lighthouse",
-      "status": "Fixed - re-test pending",
+      "status": "Closed",
       "fixed_in": "503cb9b",
-      "retest": "2026-10-20 REG-01: fix present on 503cb9b (tabindex=\"0\", role=\"region\", aria-label, :focus-visible outline); full suite passed; Lighthouse re-run not executed.",
+      "retest": "2026-10-20 06:24 TC-14 Pass: feed reached with Tab, PageDown scrolls it, focus outline visible; Lighthouse 12.6 Accessibility 100 on Live Monitor; full suite passed on 503cb9b.",
       "evidence": "git show 503cb9b; Test Log rows REG-01.1, TC-14"
+    },
+    {
+      "id": "DEF-16",
+      "date": "2026-10-20",
+      "case_card": "USE-01.3 / USE-01",
+      "title": "Feed, alert and log times are shown in UTC without saying so",
+      "severity": "Low",
+      "priority": "Medium",
+      "steps": "1. On PC A (UTC+8), run a replay at a known local time.\n2. Read the Recent Flows TIME column, the Dashboard alerts and System Logs.",
+      "expected": "Times in local time, or clearly labelled UTC as 'Deployed at' and Reports ('Generated (UTC)') already are.",
+      "actual": "Recent Flows shows 22:15:45 for a flow at 06:15:45 local; System Logs' newest line reads 2026-10-19 22:15:46 for 2026-10-20 06:15:46 local - even the date looks a day behind. Seen in SMK-01, TC-09 and USE-01.",
+      "build": "503cb9b",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png, 390_monitor.png"
+    },
+    {
+      "id": "DEF-17",
+      "date": "2026-10-20",
+      "case_card": "TC-11 / PRF-01",
+      "title": "Live event-to-verdict lag p95 is 895.6 ms for flows ended by FIN/RST (budget <= 500 ms)",
+      "severity": "Medium",
+      "priority": "Medium",
+      "steps": "1. Start the app as administrator; Live Monitor > Live interface capture, Save attacks.\n2. Browse normally for 90 s.\n3. Read detection_lag_ms and end_reason per flow from /monitor/status; take flows with end_reason fin or rst.",
+      "expected": "p95 <= 500 ms (Master Test Plan 3.4).",
+      "actual": "n=32 FIN/RST flows: p50 388.9 ms, p95 895.6 ms. Model latency alone p50 163.9 ms, p95 377.2 ms, so roughly half the delay is queueing and handling around the model. Measured with a traffic generator and Chrome running on PC A; the app also stores no per-flow lag, so this can only be measured live.",
+      "build": "503cb9b",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, administrator",
+      "status": "Open",
+      "fixed_in": "",
+      "retest": "",
+      "evidence": "Test Log row TC-11; test-results/ui_20261020/tc11_live.json"
+    },
+    {
+      "id": "DEF-18",
+      "date": "2026-10-20",
+      "case_card": "USE-01.3 / USE-01",
+      "title": "System Logs show the word 'None' as the message of every flow_accepted entry",
+      "severity": "Low",
+      "priority": "Low",
+      "steps": "Run any replay in cloud mode, then open Logs.",
+      "expected": "An empty message cell or a readable message.",
+      "actual": "Each 'detection / flow_accepted / success' row has the message 'None' (a Python null rendered as text).",
+      "build": "503cb9b",
+      "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode",
+      "status": "Closed",
+      "fixed_in": "1ffa1b9",
+      "retest": "2026-10-20 07:02 USE-01.3 re-run: 0 of 21 flow_accepted rows show 'None' - Pass.",
+      "evidence": "Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png"
     },
     {
       "id": "DEF-02",
@@ -1073,7 +1396,7 @@
     {
       "criterion": "3.3 · Overall pass rate across executed test cases",
       "target": ">= 95%",
-      "measured": "80% of executed test cases (8 of 10: TC-01, TC-02, TC-04, TC-08, TC-09, TC-10, TC-13, TC-16 passed; TC-03 and TC-05 failed; TC-06, TC-07, TC-11, TC-12, TC-14, TC-15 not executed). 80.4% of executed Test Log rows (45 Pass of 56).",
+      "measured": "69% of executed test cases (9 of 13: TC-01, TC-02, TC-04, TC-08, TC-09, TC-10, TC-12, TC-13, TC-16 passed; TC-03, TC-05, TC-11 and TC-14 failed - TC-14 because the DEF-12 re-test still fails; TC-06, TC-07, TC-15 not executed). 76.8% of executed Test Log rows (63 Pass of 82).",
       "result": "Not met",
       "source": "Test Log"
     },
@@ -1122,14 +1445,14 @@
     {
       "criterion": "3.3 · Every performance budget in 3.4 met or waived in writing by the Product Owner",
       "target": "All met or waived",
-      "measured": "Events per second not met (about 1.9/s, DEF-11); lag, packet drop and soak not measured this cycle; no written waiver",
+      "measured": "Lag p95 not met (895.6 ms, DEF-17) and events per second not met (1.65-1.92/s, DEF-11); packet drop, soak CPU and soak RAM met; no written waiver",
       "result": "Not met",
       "source": "3.4 rows below"
     },
     {
       "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
       "target": "All",
-      "measured": "11 Low/Medium defects open (DEF-01, 02, 03, 08, 09, 10, 11, 12, 13, 14, 15). A workaround is written only in DEF-02 (docker start the Edge Runtime) and DEF-08 (train on 15-feature CSVs); suggested workarounds are in the Completion Report; no Product Owner sign-off yet",
+      "measured": "9 Low/Medium defects open (DEF-01, 02, 03, 08, 10, 11, 12, 16, 17); DEF-09, 13, 14, 15 and 18 fixed and closed in REG-01. Fix commits for DEF-01/03 (CI) and the rest of DEF-16 wait for their re-test. Workarounds written in DEF-02 (README) and DEF-08 (train on 15-feature CSVs); no Product Owner sign-off yet",
       "result": "Not met",
       "source": "Defects sheet; docs/testing/cycle-1/defects.md"
     },
@@ -1143,37 +1466,37 @@
     {
       "criterion": "3.4 · Live event-to-verdict lag, p95 (excluding flow timeouts)",
       "target": "<= 500 ms",
-      "measured": "Not measured: TC-11 not executed. The app stores no flow end time or per-flow lag. (Pilot, different budget: average 13.1 s on PC B including the 15 s idle timeout.)",
-      "result": "Not measured",
-      "source": "PRF-01 / TC-11; PRF-01.P3"
+      "measured": "895.6 ms p95 (p50 388.9 ms) over 32 flows ended by FIN/RST in a 90 s live capture of ordinary browsing on PC A",
+      "result": "Not met",
+      "source": "TC-11 · test-results/ui_20261020/tc11_live.json · DEF-17"
     },
     {
       "criterion": "3.4 · Sustained events per second, per client",
       "target": ">= 20",
-      "measured": "1.92 events/s (TC-09 replay, 202 events in 105 s); about 2.0 flows/s (SMK-01 replay); paced source, max 2.86/s",
+      "measured": "1.65 flows/s over the 30-minute Fast replay; 1.92 events/s (TC-09 replay, 202 events in 105 s); paced source, max 2.86/s",
       "result": "Not met",
-      "source": "PRF-01.1 · DEF-11"
+      "source": "PRF-01.5, PRF-01.1 · DEF-11"
     },
     {
       "criterion": "3.4 · Packet drop fraction during live capture",
       "target": "<= 1%",
-      "measured": "Not measured this cycle (pilot: 0% - 0 of 848, 0 of 2,810, 0 of 119,100, 0 of 740 packets)",
-      "result": "Not measured",
-      "source": "PRF-01.2; PRF-01.P4"
+      "measured": "0% (0 of 8,721 packets in the 90 s live capture)",
+      "result": "Met",
+      "source": "PRF-01.3 · test-results/ui_20261020/tc11_live.json"
     },
     {
       "criterion": "3.4 · AlgoGuard process CPU during a 30-minute soak",
       "target": "<= 80%",
-      "measured": "Not measured this cycle (pilot, different budget: peak 24.5% PC A, 6.3% PC B)",
-      "result": "Not measured",
-      "source": "PRF-01.2; PRF-01.P5"
+      "measured": "Max 8.03%, mean 7.54% of the machine (60 samples, 06:28-06:57)",
+      "result": "Met",
+      "source": "PRF-01.4 · test-results/soak_20261020_062732.csv"
     },
     {
       "criterion": "3.4 · AlgoGuard process RAM during a 30-minute soak",
       "target": "<= 1 GiB",
-      "measured": "Not measured this cycle (pilot: peak 294 MB PC A, 108 MB PC B)",
-      "result": "Not measured",
-      "source": "PRF-01.2; PRF-01.P6"
+      "measured": "Max 352.2 MB; 322.0 MB at the end; whole-run trend -0.1 MB/min (a climb of about 29 MB from 06:32 to 06:52 then flat - a longer soak is suggested)",
+      "result": "Met",
+      "source": "PRF-01.4 · test-results/soak_20261020_062732.csv"
     }
   ]
 }
