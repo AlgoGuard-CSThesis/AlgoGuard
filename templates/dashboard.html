@@ -31,7 +31,7 @@
         <div class="metric-card">
             <span class="metric-label">Flows Analyzed</span>
             <strong>{{ '{:,}'.format(stats.total_flows) }}</strong>
-            <small>{% if stats.last_prediction_at %}Last at {{ stats.last_prediction_at }}{% else %}No traffic classified yet{% endif %}</small>
+            <small>{% if stats.last_prediction_at %}Last at {{ stats.last_prediction_at }} UTC{% else %}No traffic classified yet{% endif %}</small>
         </div>
         <div class="metric-card warning">
             <span class="metric-label">Attacks Detected</span>
@@ -117,7 +117,7 @@
             {% endif %}
             <dl class="detail-list">
                 <div><dt>Trained on</dt><dd>{{ active_deployment.filename or 'N/A' }}</dd></div>
-                <div><dt>Deployed at</dt><dd>{{ active_deployment.deployed_at or 'N/A' }}</dd></div>
+                <div><dt>Deployed at</dt><dd>{% if active_deployment.deployed_at %}{{ active_deployment.deployed_at }}{% if 'UTC' not in active_deployment.deployed_at|string %} UTC{% endif %}{% else %}N/A{% endif %}</dd></div>
                 <div><dt>Accuracy</dt><dd>{{ percent(active_deployment.accuracy) }}</dd></div>
                 <div><dt>Precision</dt><dd>{{ percent(active_deployment.precision_score) }}</dd></div>
                 <div><dt>Recall</dt><dd>{{ percent(active_deployment.recall) }}</dd></div>

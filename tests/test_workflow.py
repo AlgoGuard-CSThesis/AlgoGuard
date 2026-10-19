@@ -1,4 +1,5 @@
 import json
+import re
 import sqlite3
 
 import joblib
@@ -366,6 +367,15 @@ def test_manual_prediction_form_does_not_offer_negative_values(
     assert 'name="sbytes"' in html
     # The fixture's numeric flow features: dur, rate, sbytes, dbytes.
     assert html.count('min="0"') == 4
+
+
+def test_local_dashboard_and_accounts_label_times_as_utc(authenticated_client, trained_bundle):
+    """USE-01 / DEF-16: stored times are UTC in local mode too."""
+    deploy_stacking(trained_bundle)
+    dashboard = authenticated_client.get("/").get_data(as_text=True)
+    assert re.search(r"Deployed at</dt><dd>[0-9: -]+ UTC</dd>", dashboard)
+    accounts = authenticated_client.get("/admins").get_data(as_text=True)
+    assert "<th>Created (UTC)</th>" in accounts
 
 
 @pytest.mark.parametrize("field", ["sbytes", "dbytes"])

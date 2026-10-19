@@ -155,6 +155,15 @@ def test_times_are_labelled_utc_and_empty_log_messages_stay_blank(cloud):
     assert 'description-cell">None<' not in logs
     assert "<th>Detected (UTC)</th>" in client.get("/alerts").get_data(as_text=True)
     assert "<th>Time (UTC)</th>" in client.get("/monitor").get_data(as_text=True)
+    assert "<th>Decided (UTC)</th>" in client.get("/nodes").get_data(as_text=True)
+
+    def dashboard():
+        page = client.get("/").get_data(as_text=True)
+        return page if "Last at" in page else None
+
+    page = wait_for(dashboard)
+    assert re.search(r"Last at [0-9: -]+ UTC<", page)
+    assert "UTC UTC" not in page
 
 
 def test_logout_stops_tokens_and_ends_only_this_installations_session(cloud):
@@ -222,6 +231,7 @@ def test_enrollment_on_login_and_administrator_approval(tmp_path, stacking_artif
         admin = signed_in(env.app, ADMIN)
         queue = admin.get("/nodes").get_data(as_text=True)
         assert "Pending Requests" in queue and "analyst" in queue
+        assert "<th>Requested (UTC)</th>" in queue
         match = re.search(r'name="request_id" value="([^"]+)"', queue)
         assert match is not None
         request_id = match.group(1)
