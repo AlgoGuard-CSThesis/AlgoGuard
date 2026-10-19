@@ -24,8 +24,9 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          # Must match the runtime recorded in requirements-model.lock.
-          python-version: "3.14"
+          # Must match the runtime recorded in requirements-model.lock (model_runtime.PYTHON_VERSION):
+          # the app refuses to load models on any other patch release.
+          python-version: "3.14.6"
 
       - uses: actions/setup-node@v4
         with:

@@ -13,6 +13,15 @@ def event():
     return {"event_uuid": str(uuid4()), "deployment_id": 1, "value": "payload"}
 
 
+def drained(spool, within=60):
+    """Outbox.drain() waits at most 5 s; slower disks (CI runners) need several rounds."""
+    deadline = time.monotonic() + within
+    while not spool.drain():
+        if time.monotonic() > deadline:
+            return False
+    return True
+
+
 def test_durable_restart_original_owner_and_acknowledgement(tmp_path):
     owner = context()
     row = event()
@@ -52,7 +61,7 @@ def test_cap_reserves_before_enqueue_and_retry_does_not_consume_slot(tmp_path):
         assert spool.reservations["capture"] == 300
         assert spool.submit(owner, "capture", event())["persistence"] == "dropped"
         spool.start()
-        assert spool.drain()
+        assert drained(spool)
         assert len(spool.pending(owner)) == 50
         assert spool.counts(owner)["pending"] == 300
     finally:
