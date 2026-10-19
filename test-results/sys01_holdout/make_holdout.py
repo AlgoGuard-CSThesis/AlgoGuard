@@ -9,8 +9,9 @@
 4. A and B are then evaluated on H with evaluate_model.py, removing rows seen by either model;
    the expected "removed as seen in training" count is 0, which proves H is unseen by both.
 
-Data files (git-ignored): research/dataset/processed/sys01_holdout/holdout_eval.csv, model_b_train.csv
-Evidence (committed):     test-results/sys01_holdout/holdout_manifest.json (seed, counts, SHA-256)
+Data files (git-ignored), in research/dataset/processed/sys01_holdout/:
+    holdout_eval.csv, model_b_train.csv
+Evidence (committed): test-results/sys01_holdout/holdout_manifest.json (seed, counts, SHA-256)
 """
 import hashlib
 import json
@@ -87,7 +88,8 @@ manifest = {
     "model_b_train_rows": len(model_b_train),
     "holdout_sha256": sha(OUT / "holdout_eval.csv"),
     "model_b_train_sha256": sha(OUT / "model_b_train.csv"),
-    "key_overlap_holdout_vs_b_train": int(row_keys(holdout).isin(set(int(k) for k in row_keys(model_b_train))).sum()),
+    "key_overlap_holdout_vs_b_train": int(
+        row_keys(holdout).isin({int(k) for k in row_keys(model_b_train)}).sum()),
 }
 manifest["data_files"] = [str((OUT / n).relative_to(ROOT)) for n in ("holdout_eval.csv",
                                                                      "model_b_train.csv")]

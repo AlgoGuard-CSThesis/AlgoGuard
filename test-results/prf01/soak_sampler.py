@@ -82,7 +82,8 @@ def main():
     if rows:
         cpus, rams = [r[2] for r in rows], [r[3] for r in rows]
         half = max(len(rams) // 2, 1)
-        print(f"\nSamples {len(rows)} | CPU max {max(cpus):.2f}% mean {statistics.mean(cpus):.2f}% | "
+        print(f"\nSamples {len(rows)} | CPU max {max(cpus):.2f}% "
+              f"mean {statistics.mean(cpus):.2f}% | "
               f"RAM max {max(rams):.1f} MB, first {rams[0]:.1f}, last {rams[-1]:.1f}, "
               f"mean 1st half {statistics.mean(rams[:half]):.1f} vs 2nd half "
               f"{statistics.mean(rams[half:]) if rams[half:] else rams[-1]:.1f} MB")
