@@ -107,6 +107,29 @@ def test_restart_requires_online_login_even_with_a_cached_model(cloud):
         restarted.close()
 
 
+def test_dashboard_warns_when_the_cached_model_is_corrupt(cloud):
+    """TC-08 / DEF-09: a corrupt local copy must not be shown as 'Deployed'."""
+    client = signed_in(cloud.app)
+    assert client.get("/simulation").status_code == 200  # downloads and caches the model
+    assert 'status-pill active">Deployed' in client.get("/").get_data(as_text=True)
+    cached = next((cloud.cfg.state_dir / "models").glob("*.joblib"))
+    data = bytearray(cached.read_bytes())
+    data[len(data) // 2] ^= 0x01
+    cached.write_bytes(bytes(data))
+    cloud.services.close()
+    restarted = build_services(cloud.cfg)
+    app = create_cloud_app(cloud.cfg, services=restarted, start_workers=False)
+    try:
+        browser = app.test_client()
+        login(browser, *ANALYST[:2])
+        page = browser.get("/").get_data(as_text=True)
+        assert "Unavailable here" in page
+        assert "The cached model is corrupt" in page
+        assert 'status-pill active">Deployed' not in page
+    finally:
+        restarted.close()
+
+
 def test_logout_stops_tokens_and_ends_only_this_installations_session(cloud):
     client = signed_in(cloud.app)
     identity = next(iter(cloud.app.session_interface.sessions.values())).identity

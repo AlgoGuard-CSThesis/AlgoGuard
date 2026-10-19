@@ -95,7 +95,9 @@
                     <p class="eyebrow">Detection Engine</p>
                     <h2>Deployed Model</h2>
                 </div>
-                {% if active_deployment %}
+                {% if active_deployment and model_message %}
+                    <span class="status-pill warning-pill">Unavailable here</span>
+                {% elif active_deployment %}
                     <span class="status-pill active">Deployed</span>
                 {% else %}
                     <span class="status-pill">Not Deployed</span>
@@ -110,6 +112,9 @@
                     <small>{{ active_deployment.model_type or 'Stacking' }}{% if active_deployment.run_id %} &middot; source run #{{ active_deployment.run_id }}{% endif %}{% if active_deployment.deployment_id and config.CLOUD_MODE %} &middot; deployment #{{ active_deployment.deployment_id }}{% endif %}</small>
                 </div>
             </div>
+            {% if model_message %}
+            <p class="monitor-hint" role="alert"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Not usable on this computer: {{ model_message }}</p>
+            {% endif %}
             <dl class="detail-list">
                 <div><dt>Trained on</dt><dd>{{ active_deployment.filename or 'N/A' }}</dd></div>
                 <div><dt>Deployed at</dt><dd>{{ active_deployment.deployed_at or 'N/A' }}</dd></div>

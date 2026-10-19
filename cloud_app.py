@@ -527,6 +527,13 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             model_message = (str(deployment) if isinstance(deployment, ModelDeliveryError)
                              else "The active model could not be checked. Reconnect and retry.")
             deployment = None
+        if deployment is not None:
+            # The cloud record names the active model; check this installation can use it (the
+            # verified cache Predict and Live Monitor load), so a corrupt copy is not "Deployed".
+            try:
+                services.models.resolve(g.repo)
+            except ModelDeliveryError as error:
+                model_message = str(error)
         return render_template(
             "dashboard.html",
             active_deployment=deployment,
