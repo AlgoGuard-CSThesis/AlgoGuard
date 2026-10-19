@@ -1,0 +1,35 @@
+{
+  "login": {
+    "url": "http://127.0.0.1:5000/login",
+    "fetched": "2026-10-19T22:21:57.402Z",
+    "lighthouse": "12.6.0",
+    "accessibility_score": 100,
+    "failed_audits": [],
+    "scrollable_region_focusable": {
+      "score": null,
+      "mode": null
+    }
+  },
+  "monitor": {
+    "url": "http://127.0.0.1:5000/monitor",
+    "fetched": "2026-10-19T22:22:09.553Z",
+    "lighthouse": "12.6.0",
+    "accessibility_score": 100,
+    "failed_audits": [],
+    "scrollable_region_focusable": {
+      "score": null,
+      "mode": null
+    }
+  },
+  "simulation": {
+    "url": "http://127.0.0.1:5000/simulation",
+    "fetched": "2026-10-19T22:23:04.357Z",
+    "lighthouse": "12.6.0",
+    "accessibility_score": 100,
+    "failed_audits": [],
+    "scrollable_region_focusable": {
+      "score": null,
+      "mode": null
+    }
+  }
+}

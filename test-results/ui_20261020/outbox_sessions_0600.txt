@@ -1,0 +1,6 @@
+﻿session manual: 3 events {'synced': 3}, alerts in receipts 1, 2026-10-20 06:04:34 -> 2026-10-20 06:08:02, deployments [1], nodes ['d535e2fd']
+session 005853dd-cc3d-4ce8-84ac-d395abce5dac: 126 events {'synced': 126}, alerts in receipts 126, 2026-10-20 06:04:42 -> 2026-10-20 06:06:40, deployments [1], nodes ['d535e2fd']
+session 46b2a86f-f1e8-40b3-89ed-ec0026ee4ee1: 11 events {'synced': 11}, alerts in receipts 10, 2026-10-20 06:08:08 -> 2026-10-20 06:08:14, deployments [1], nodes ['d535e2fd']
+session ae2aca1e-892e-4336-ba4e-a24ab3334ece: 7 events {'synced': 7}, alerts in receipts 6, 2026-10-20 06:08:31 -> 2026-10-20 06:08:35, deployments [1], nodes ['d535e2fd']
+session 749511b1-5312-4e6d-a699-46bc052ba008: 300 events {'synced': 300}, alerts in receipts 211, 2026-10-20 06:08:42 -> 2026-10-20 06:12:08, deployments [1], nodes ['d535e2fd']
+lifecycle since:

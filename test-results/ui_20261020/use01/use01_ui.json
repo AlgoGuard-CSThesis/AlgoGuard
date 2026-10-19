@@ -1,0 +1,187 @@
+{
+  "time": "2026-10-20 06:20:21",
+  "widths": {
+    "1366 Dashboard": {
+      "innerWidth": 1366,
+      "scrollWidth": 1351,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/",
+      "screenshot": "1366_dashboard.png"
+    },
+    "1366 Live Monitor": {
+      "innerWidth": 1366,
+      "scrollWidth": 1351,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/monitor",
+      "screenshot": "1366_monitor.png"
+    },
+    "1366 Manual Prediction": {
+      "innerWidth": 1366,
+      "scrollWidth": 1351,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/simulation",
+      "screenshot": "1366_simulation.png"
+    },
+    "1366 Alerts": {
+      "innerWidth": 1366,
+      "scrollWidth": 1351,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/alerts",
+      "screenshot": "1366_alerts.png"
+    },
+    "1366 System Logs": {
+      "innerWidth": 1366,
+      "scrollWidth": 1351,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/logs",
+      "screenshot": "1366_logs.png"
+    },
+    "1366 Reports": {
+      "innerWidth": 1366,
+      "scrollWidth": 1366,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/reports",
+      "screenshot": "1366_reports.png"
+    },
+    "1366 Nodes": {
+      "innerWidth": 1366,
+      "scrollWidth": 1366,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/nodes",
+      "screenshot": "1366_nodes.png"
+    },
+    "1366 Accounts/Admins": {
+      "innerWidth": 1366,
+      "scrollWidth": 1351,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/",
+      "screenshot": "1366_admins.png"
+    },
+    "390 Dashboard": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/",
+      "screenshot": "390_dashboard.png"
+    },
+    "390 Live Monitor": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/monitor",
+      "screenshot": "390_monitor.png"
+    },
+    "390 Manual Prediction": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/simulation",
+      "screenshot": "390_simulation.png"
+    },
+    "390 Alerts": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/alerts",
+      "screenshot": "390_alerts.png"
+    },
+    "390 System Logs": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/logs",
+      "screenshot": "390_logs.png"
+    },
+    "390 Reports": {
+      "innerWidth": 390,
+      "scrollWidth": 390,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/reports",
+      "screenshot": "390_reports.png"
+    },
+    "390 Nodes": {
+      "innerWidth": 390,
+      "scrollWidth": 390,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/nodes",
+      "screenshot": "390_nodes.png"
+    },
+    "390 Accounts/Admins": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "final_url": "/",
+      "screenshot": "390_admins.png"
+    },
+    "1366 Login": {
+      "innerWidth": 1366,
+      "scrollWidth": 1366,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "screenshot": "1366_login.png"
+    },
+    "390 Login": {
+      "innerWidth": 390,
+      "scrollWidth": 375,
+      "pageScrollsSideways": false,
+      "overflowingOutsideScrollers": [],
+      "screenshot": "390_login.png"
+    }
+  },
+  "keyboard": {
+    "Live Monitor": {
+      "interactive_elements": 17,
+      "distinct_elements": 17,
+      "reached_by_tab": 17,
+      "duplicate_descriptors": [],
+      "not_reached": [],
+      "unlabeled_fields": [],
+      "focus_style_last_element": {
+        "outline": "solid 1.6px",
+        "boxShadow": "none"
+      }
+    },
+    "Manual Prediction": {
+      "interactive_elements": 26,
+      "distinct_elements": 25,
+      "reached_by_tab": 25,
+      "duplicate_descriptors": [
+        "a \"Live Monitor\""
+      ],
+      "not_reached": [],
+      "unlabeled_fields": [],
+      "focus_style_last_element": {
+        "outline": "none 0px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+      }
+    },
+    "Login": {
+      "interactive_elements": 3,
+      "distinct_elements": 3,
+      "reached_by_tab": 3,
+      "duplicate_descriptors": [],
+      "not_reached": [],
+      "unlabeled_fields": [],
+      "focus_style_last_element": {
+        "outline": "none 0px",
+        "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px"
+      }
+    }
+  }
+}

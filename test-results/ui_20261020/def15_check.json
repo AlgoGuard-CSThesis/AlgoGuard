@@ -1,0 +1,16 @@
+{
+  "time": "2026-10-20 06:24:03",
+  "attributes": {
+    "tabindex": "0",
+    "role": "region",
+    "aria-label": "Live monitor feed"
+  },
+  "reached_with_tab_after_presses": 17,
+  "geometry_before": {
+    "scrollHeight": 2084,
+    "clientHeight": 480,
+    "top": 0
+  },
+  "scrollTop_after_PageDown": 420,
+  "focus_outline": "solid 1.6px"
+}

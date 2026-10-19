@@ -1,0 +1,1177 @@
+{
+  "started": "2026-10-20 06:24:38",
+  "stopped": "2026-10-20 06:26:08",
+  "seconds": 90,
+  "screen": {
+    "statFlows": "139",
+    "statProgress": "Waiting to start",
+    "statAttacks": "93",
+    "statRatio": "66.91% of the stream",
+    "statNormals": "46",
+    "statAlerts": "93",
+    "statLatency": "Average latency 202.422 ms",
+    "statDeployment": "#1 (pinned for this capture)",
+    "statMismatches": "0",
+    "statPersisted": "93",
+    "statSynced": "93",
+    "statPending": "0",
+    "statDropped": "0",
+    "statUpload": "active",
+    "statLag": "12325.7 ms avg",
+    "statCapture": "8,722 (1,025 own traffic)",
+    "message": ""
+  },
+  "session_capture_counters": {
+    "active_flows": 36,
+    "dropped": 0,
+    "excluded": 1025,
+    "excluded_cloud": 1025,
+    "flows": 139,
+    "packets": 8721
+  },
+  "flows_in_feed": 139,
+  "end_reasons": {
+    "rst": 18,
+    "idle_timeout": 107,
+    "fin": 14
+  },
+  "verdicts": {
+    "Attack": 93,
+    "Normal": 46
+  },
+  "lag_all_ms": {
+    "n": 139,
+    "p50": 15765.4,
+    "p95": 16310.8
+  },
+  "lag_teardown_ms (excludes flow timeouts)": {
+    "n": 32,
+    "p50": 388.9,
+    "p95": 895.6
+  },
+  "lag_idle_minus_15s_ms (approximate)": {
+    "n": 107,
+    "p50": 916.5,
+    "p95": 1362.4
+  },
+  "model_latency_ms": {
+    "n": 139,
+    "p50": 163.9,
+    "p95": 377.2,
+    "mean": 202.4
+  },
+  "flows": [
+    {
+      "seq": 1,
+      "time": "2026-10-19 22:24:42",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 410.1,
+      "latency_ms": 406.884
+    },
+    {
+      "seq": 2,
+      "time": "2026-10-19 22:24:43",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 92.8,
+      "latency_ms": 90.324
+    },
+    {
+      "seq": 3,
+      "time": "2026-10-19 22:24:43",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 211.2,
+      "latency_ms": 117.017
+    },
+    {
+      "seq": 4,
+      "time": "2026-10-19 22:24:46",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 278.7,
+      "latency_ms": 274.685
+    },
+    {
+      "seq": 5,
+      "time": "2026-10-19 22:24:48",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 150.5,
+      "latency_ms": 146.277
+    },
+    {
+      "seq": 6,
+      "time": "2026-10-19 22:24:48",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 388.9,
+      "latency_ms": 235.827
+    },
+    {
+      "seq": 7,
+      "time": "2026-10-19 22:24:50",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 152.3,
+      "latency_ms": 106.648
+    },
+    {
+      "seq": 8,
+      "time": "2026-10-19 22:24:50",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 383.1,
+      "latency_ms": 228.116
+    },
+    {
+      "seq": 9,
+      "time": "2026-10-19 22:24:52",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 314,
+      "latency_ms": 301.398
+    },
+    {
+      "seq": 10,
+      "time": "2026-10-19 22:24:52",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 549,
+      "latency_ms": 231.747
+    },
+    {
+      "seq": 11,
+      "time": "2026-10-19 22:24:55",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15618.4,
+      "latency_ms": 218.844
+    },
+    {
+      "seq": 12,
+      "time": "2026-10-19 22:24:56",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16003.5,
+      "latency_ms": 147.002
+    },
+    {
+      "seq": 13,
+      "time": "2026-10-19 22:24:56",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16093.5,
+      "latency_ms": 123.385
+    },
+    {
+      "seq": 14,
+      "time": "2026-10-19 22:24:57",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16186.6,
+      "latency_ms": 531.742
+    },
+    {
+      "seq": 15,
+      "time": "2026-10-19 22:24:57",
+      "verdict": "Normal",
+      "end_reason": "fin",
+      "detection_lag_ms": 448,
+      "latency_ms": 122.495
+    },
+    {
+      "seq": 16,
+      "time": "2026-10-19 22:24:57",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16197.1,
+      "latency_ms": 168.977
+    },
+    {
+      "seq": 17,
+      "time": "2026-10-19 22:24:57",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15440.2,
+      "latency_ms": 107.725
+    },
+    {
+      "seq": 18,
+      "time": "2026-10-19 22:24:57",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15597.4,
+      "latency_ms": 153.994
+    },
+    {
+      "seq": 19,
+      "time": "2026-10-19 22:24:58",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15432,
+      "latency_ms": 219.01
+    },
+    {
+      "seq": 20,
+      "time": "2026-10-19 22:25:00",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15488.4,
+      "latency_ms": 201.197
+    },
+    {
+      "seq": 21,
+      "time": "2026-10-19 22:25:01",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 264.3,
+      "latency_ms": 259
+    },
+    {
+      "seq": 22,
+      "time": "2026-10-19 22:25:01",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16111.8,
+      "latency_ms": 164.452
+    },
+    {
+      "seq": 23,
+      "time": "2026-10-19 22:25:02",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 543.9,
+      "latency_ms": 152.542
+    },
+    {
+      "seq": 24,
+      "time": "2026-10-19 22:25:02",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15977.2,
+      "latency_ms": 115.187
+    },
+    {
+      "seq": 25,
+      "time": "2026-10-19 22:25:02",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15934.8,
+      "latency_ms": 114.211
+    },
+    {
+      "seq": 26,
+      "time": "2026-10-19 22:25:03",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16167.9,
+      "latency_ms": 286.258
+    },
+    {
+      "seq": 27,
+      "time": "2026-10-19 22:25:04",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15878.6,
+      "latency_ms": 357.025
+    },
+    {
+      "seq": 28,
+      "time": "2026-10-19 22:25:05",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15745.4,
+      "latency_ms": 103.517
+    },
+    {
+      "seq": 29,
+      "time": "2026-10-19 22:25:05",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15865.7,
+      "latency_ms": 227.834
+    },
+    {
+      "seq": 30,
+      "time": "2026-10-19 22:25:08",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16206.5,
+      "latency_ms": 347.147
+    },
+    {
+      "seq": 31,
+      "time": "2026-10-19 22:25:09",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15901.6,
+      "latency_ms": 250.066
+    },
+    {
+      "seq": 32,
+      "time": "2026-10-19 22:25:09",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16047.2,
+      "latency_ms": 209.112
+    },
+    {
+      "seq": 33,
+      "time": "2026-10-19 22:25:10",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15866.1,
+      "latency_ms": 584.684
+    },
+    {
+      "seq": 34,
+      "time": "2026-10-19 22:25:10",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16004.2,
+      "latency_ms": 120.108
+    },
+    {
+      "seq": 35,
+      "time": "2026-10-19 22:25:10",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16201.9,
+      "latency_ms": 117.172
+    },
+    {
+      "seq": 36,
+      "time": "2026-10-19 22:25:11",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15455.4,
+      "latency_ms": 123.754
+    },
+    {
+      "seq": 37,
+      "time": "2026-10-19 22:25:11",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15297.3,
+      "latency_ms": 121.068
+    },
+    {
+      "seq": 38,
+      "time": "2026-10-19 22:25:12",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16352,
+      "latency_ms": 112.993
+    },
+    {
+      "seq": 39,
+      "time": "2026-10-19 22:25:12",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16135.5,
+      "latency_ms": 250.522
+    },
+    {
+      "seq": 40,
+      "time": "2026-10-19 22:25:12",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16014.5,
+      "latency_ms": 192.296
+    },
+    {
+      "seq": 41,
+      "time": "2026-10-19 22:25:13",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15577.1,
+      "latency_ms": 377.217
+    },
+    {
+      "seq": 42,
+      "time": "2026-10-19 22:25:13",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16293.4,
+      "latency_ms": 108.017
+    },
+    {
+      "seq": 43,
+      "time": "2026-10-19 22:25:13",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16288.3,
+      "latency_ms": 78.316
+    },
+    {
+      "seq": 44,
+      "time": "2026-10-19 22:25:13",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15320.7,
+      "latency_ms": 163.931
+    },
+    {
+      "seq": 45,
+      "time": "2026-10-19 22:25:14",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16066.6,
+      "latency_ms": 118.217
+    },
+    {
+      "seq": 46,
+      "time": "2026-10-19 22:25:14",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16136.2,
+      "latency_ms": 108.8
+    },
+    {
+      "seq": 47,
+      "time": "2026-10-19 22:25:14",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16072.5,
+      "latency_ms": 232.522
+    },
+    {
+      "seq": 48,
+      "time": "2026-10-19 22:25:15",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15560.5,
+      "latency_ms": 280.829
+    },
+    {
+      "seq": 49,
+      "time": "2026-10-19 22:25:16",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15865.7,
+      "latency_ms": 345.836
+    },
+    {
+      "seq": 50,
+      "time": "2026-10-19 22:25:16",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15851.2,
+      "latency_ms": 272.171
+    },
+    {
+      "seq": 51,
+      "time": "2026-10-19 22:25:17",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15727.3,
+      "latency_ms": 216.062
+    },
+    {
+      "seq": 52,
+      "time": "2026-10-19 22:25:17",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16011.3,
+      "latency_ms": 249.851
+    },
+    {
+      "seq": 53,
+      "time": "2026-10-19 22:25:18",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16147,
+      "latency_ms": 135.534
+    },
+    {
+      "seq": 54,
+      "time": "2026-10-19 22:25:18",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16220.1,
+      "latency_ms": 111.043
+    },
+    {
+      "seq": 55,
+      "time": "2026-10-19 22:25:18",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 188.1,
+      "latency_ms": 112.229
+    },
+    {
+      "seq": 56,
+      "time": "2026-10-19 22:25:18",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 436.7,
+      "latency_ms": 245.74
+    },
+    {
+      "seq": 57,
+      "time": "2026-10-19 22:25:18",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 538.7,
+      "latency_ms": 110.979
+    },
+    {
+      "seq": 58,
+      "time": "2026-10-19 22:25:20",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15631.2,
+      "latency_ms": 252.404
+    },
+    {
+      "seq": 59,
+      "time": "2026-10-19 22:25:20",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16381.4,
+      "latency_ms": 118.869
+    },
+    {
+      "seq": 60,
+      "time": "2026-10-19 22:25:20",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15611.6,
+      "latency_ms": 129.738
+    },
+    {
+      "seq": 61,
+      "time": "2026-10-19 22:25:20",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15136.5,
+      "latency_ms": 123.186
+    },
+    {
+      "seq": 62,
+      "time": "2026-10-19 22:25:22",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15557,
+      "latency_ms": 506.005
+    },
+    {
+      "seq": 63,
+      "time": "2026-10-19 22:25:23",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15415.1,
+      "latency_ms": 236.172
+    },
+    {
+      "seq": 64,
+      "time": "2026-10-19 22:25:23",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15614.4,
+      "latency_ms": 274.398
+    },
+    {
+      "seq": 65,
+      "time": "2026-10-19 22:25:25",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16086,
+      "latency_ms": 219.114
+    },
+    {
+      "seq": 66,
+      "time": "2026-10-19 22:25:26",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15808.7,
+      "latency_ms": 345.439
+    },
+    {
+      "seq": 67,
+      "time": "2026-10-19 22:25:28",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15818.3,
+      "latency_ms": 138.251
+    },
+    {
+      "seq": 68,
+      "time": "2026-10-19 22:25:28",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16114.1,
+      "latency_ms": 297.78
+    },
+    {
+      "seq": 69,
+      "time": "2026-10-19 22:25:28",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15709.8,
+      "latency_ms": 173.625
+    },
+    {
+      "seq": 70,
+      "time": "2026-10-19 22:25:29",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15176.1,
+      "latency_ms": 133.022
+    },
+    {
+      "seq": 71,
+      "time": "2026-10-19 22:25:30",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16310.8,
+      "latency_ms": 118.928
+    },
+    {
+      "seq": 72,
+      "time": "2026-10-19 22:25:30",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16107.1,
+      "latency_ms": 111.462
+    },
+    {
+      "seq": 73,
+      "time": "2026-10-19 22:25:33",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15970.1,
+      "latency_ms": 315.585
+    },
+    {
+      "seq": 74,
+      "time": "2026-10-19 22:25:33",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15632.5,
+      "latency_ms": 123.721
+    },
+    {
+      "seq": 75,
+      "time": "2026-10-19 22:25:34",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15994.9,
+      "latency_ms": 114.178
+    },
+    {
+      "seq": 76,
+      "time": "2026-10-19 22:25:34",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15847.6,
+      "latency_ms": 100.594
+    },
+    {
+      "seq": 77,
+      "time": "2026-10-19 22:25:35",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15643.5,
+      "latency_ms": 312.663
+    },
+    {
+      "seq": 78,
+      "time": "2026-10-19 22:25:36",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15244,
+      "latency_ms": 127.025
+    },
+    {
+      "seq": 79,
+      "time": "2026-10-19 22:25:36",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15882.4,
+      "latency_ms": 145.195
+    },
+    {
+      "seq": 80,
+      "time": "2026-10-19 22:25:36",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16012.1,
+      "latency_ms": 112.464
+    },
+    {
+      "seq": 81,
+      "time": "2026-10-19 22:25:37",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16211.4,
+      "latency_ms": 420.306
+    },
+    {
+      "seq": 82,
+      "time": "2026-10-19 22:25:38",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 114.2,
+      "latency_ms": 109.952
+    },
+    {
+      "seq": 83,
+      "time": "2026-10-19 22:25:38",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 372.1,
+      "latency_ms": 305.341
+    },
+    {
+      "seq": 84,
+      "time": "2026-10-19 22:25:39",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16270,
+      "latency_ms": 158.676
+    },
+    {
+      "seq": 85,
+      "time": "2026-10-19 22:25:40",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15373.1,
+      "latency_ms": 133.366
+    },
+    {
+      "seq": 86,
+      "time": "2026-10-19 22:25:41",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16212,
+      "latency_ms": 302.781
+    },
+    {
+      "seq": 87,
+      "time": "2026-10-19 22:25:41",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15697.3,
+      "latency_ms": 109.947
+    },
+    {
+      "seq": 88,
+      "time": "2026-10-19 22:25:42",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15797.1,
+      "latency_ms": 118.829
+    },
+    {
+      "seq": 89,
+      "time": "2026-10-19 22:25:42",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15476.2,
+      "latency_ms": 131.077
+    },
+    {
+      "seq": 90,
+      "time": "2026-10-19 22:25:43",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15967.9,
+      "latency_ms": 396.365
+    },
+    {
+      "seq": 91,
+      "time": "2026-10-19 22:25:44",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15619.5,
+      "latency_ms": 104.093
+    },
+    {
+      "seq": 92,
+      "time": "2026-10-19 22:25:45",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15601.7,
+      "latency_ms": 257.416
+    },
+    {
+      "seq": 93,
+      "time": "2026-10-19 22:25:46",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15961.9,
+      "latency_ms": 199.998
+    },
+    {
+      "seq": 94,
+      "time": "2026-10-19 22:25:47",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15991.1,
+      "latency_ms": 126.343
+    },
+    {
+      "seq": 95,
+      "time": "2026-10-19 22:25:48",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 313.4,
+      "latency_ms": 231.796
+    },
+    {
+      "seq": 96,
+      "time": "2026-10-19 22:25:48",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15983.8,
+      "latency_ms": 105.025
+    },
+    {
+      "seq": 97,
+      "time": "2026-10-19 22:25:48",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15551.4,
+      "latency_ms": 109.933
+    },
+    {
+      "seq": 98,
+      "time": "2026-10-19 22:25:49",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15793.2,
+      "latency_ms": 240.065
+    },
+    {
+      "seq": 99,
+      "time": "2026-10-19 22:25:49",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16052.4,
+      "latency_ms": 279.296
+    },
+    {
+      "seq": 100,
+      "time": "2026-10-19 22:25:49",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15814,
+      "latency_ms": 117.031
+    },
+    {
+      "seq": 101,
+      "time": "2026-10-19 22:25:51",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15517.3,
+      "latency_ms": 503.321
+    },
+    {
+      "seq": 102,
+      "time": "2026-10-19 22:25:51",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 124.7,
+      "latency_ms": 117.65
+    },
+    {
+      "seq": 103,
+      "time": "2026-10-19 22:25:51",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 225.8,
+      "latency_ms": 127.327
+    },
+    {
+      "seq": 104,
+      "time": "2026-10-19 22:25:52",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 536.2,
+      "latency_ms": 308.169
+    },
+    {
+      "seq": 105,
+      "time": "2026-10-19 22:25:52",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16546.6,
+      "latency_ms": 107.179
+    },
+    {
+      "seq": 106,
+      "time": "2026-10-19 22:25:52",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15765.4,
+      "latency_ms": 148.889
+    },
+    {
+      "seq": 107,
+      "time": "2026-10-19 22:25:53",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15901.1,
+      "latency_ms": 117.166
+    },
+    {
+      "seq": 108,
+      "time": "2026-10-19 22:25:53",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15569.3,
+      "latency_ms": 112.93
+    },
+    {
+      "seq": 109,
+      "time": "2026-10-19 22:25:55",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16162.8,
+      "latency_ms": 175.345
+    },
+    {
+      "seq": 110,
+      "time": "2026-10-19 22:25:56",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15594.8,
+      "latency_ms": 132.466
+    },
+    {
+      "seq": 111,
+      "time": "2026-10-19 22:25:57",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15957.9,
+      "latency_ms": 303.922
+    },
+    {
+      "seq": 112,
+      "time": "2026-10-19 22:25:57",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15916.5,
+      "latency_ms": 316.072
+    },
+    {
+      "seq": 113,
+      "time": "2026-10-19 22:25:58",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16218.9,
+      "latency_ms": 313.811
+    },
+    {
+      "seq": 114,
+      "time": "2026-10-19 22:25:58",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16374.7,
+      "latency_ms": 273.62
+    },
+    {
+      "seq": 115,
+      "time": "2026-10-19 22:25:58",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15498,
+      "latency_ms": 170.918
+    },
+    {
+      "seq": 116,
+      "time": "2026-10-19 22:25:59",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 317,
+      "latency_ms": 216.245
+    },
+    {
+      "seq": 117,
+      "time": "2026-10-19 22:25:59",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 400.2,
+      "latency_ms": 121.059
+    },
+    {
+      "seq": 118,
+      "time": "2026-10-19 22:25:59",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16385.9,
+      "latency_ms": 111.743
+    },
+    {
+      "seq": 119,
+      "time": "2026-10-19 22:25:59",
+      "verdict": "Attack",
+      "end_reason": "fin",
+      "detection_lag_ms": 573.5,
+      "latency_ms": 101.229
+    },
+    {
+      "seq": 120,
+      "time": "2026-10-19 22:25:59",
+      "verdict": "Normal",
+      "end_reason": "rst",
+      "detection_lag_ms": 895.6,
+      "latency_ms": 362.458
+    },
+    {
+      "seq": 121,
+      "time": "2026-10-19 22:26:00",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15836,
+      "latency_ms": 319.78
+    },
+    {
+      "seq": 122,
+      "time": "2026-10-19 22:26:00",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15688.7,
+      "latency_ms": 109.792
+    },
+    {
+      "seq": 123,
+      "time": "2026-10-19 22:26:02",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15267.1,
+      "latency_ms": 155.374
+    },
+    {
+      "seq": 124,
+      "time": "2026-10-19 22:26:03",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16151.1,
+      "latency_ms": 128.175
+    },
+    {
+      "seq": 125,
+      "time": "2026-10-19 22:26:03",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16266.8,
+      "latency_ms": 252.061
+    },
+    {
+      "seq": 126,
+      "time": "2026-10-19 22:26:04",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15326.4,
+      "latency_ms": 131.454
+    },
+    {
+      "seq": 127,
+      "time": "2026-10-19 22:26:04",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16213.2,
+      "latency_ms": 244.303
+    },
+    {
+      "seq": 128,
+      "time": "2026-10-19 22:26:04",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16241,
+      "latency_ms": 307.441
+    },
+    {
+      "seq": 129,
+      "time": "2026-10-19 22:26:05",
+      "verdict": "Normal",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16362.4,
+      "latency_ms": 256.428
+    },
+    {
+      "seq": 130,
+      "time": "2026-10-19 22:26:05",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16250.9,
+      "latency_ms": 298.556
+    },
+    {
+      "seq": 131,
+      "time": "2026-10-19 22:26:05",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16185.3,
+      "latency_ms": 135.561
+    },
+    {
+      "seq": 132,
+      "time": "2026-10-19 22:26:06",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 15263.9,
+      "latency_ms": 244.107
+    },
+    {
+      "seq": 133,
+      "time": "2026-10-19 22:26:07",
+      "verdict": "Attack",
+      "end_reason": "rst",
+      "detection_lag_ms": 156.4,
+      "latency_ms": 149.574
+    },
+    {
+      "seq": 134,
+      "time": "2026-10-19 22:26:07",
+      "verdict": "Attack",
+      "end_reason": "idle_timeout",
+      "detection_lag_ms": 16370.4,
+      "latency_ms": 267.369
+    },
+    {
+      "seq": 135,
+      "time": "2026-10-19 22:26:07",
+      "verdict": "Attack",
+      "end_reason": "rst",
+      "detection_lag_ms": 602.2,
+      "latency_ms": 159.273
+    },
+    {
+      "seq": 136,
+      "time": "2026-10-19 22:26:07",
+      "verdict": "Attack",
+      "end_reason": "rst",
+      "detection_lag_ms": 731.1,
+      "latency_ms": 126.72
+    },
+    {
+      "seq": 137,
+      "time": "2026-10-19 22:26:08",
+      "verdict": "Attack",
+      "end_reason": "rst",
+      "detection_lag_ms": 840.5,
+      "latency_ms": 107.181
+    },
+    {
+      "seq": 138,
+      "time": "2026-10-19 22:26:08",
+      "verdict": "Attack",
+      "end_reason": "rst",
+      "detection_lag_ms": 1095.7,
+      "latency_ms": 252.872
+    },
+    {
+      "seq": 139,
+      "time": "2026-10-19 22:26:08",
+      "verdict": "Attack",
+      "end_reason": "rst",
+      "detection_lag_ms": 1349.5,
+      "latency_ms": 252.173
+    }
+  ]
+}

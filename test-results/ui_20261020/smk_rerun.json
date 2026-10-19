@@ -1,0 +1,58 @@
+{
+  "tc01": {
+    "time": "2026-10-20 06:04:35",
+    "screenshot": "smk_tc01_normal.png",
+    "verdict": "NORMAL",
+    "confidence": "84.11%",
+    "details": {
+      "Model": "Stacking Ensemble",
+      "Deployment": "#1",
+      "Latency": "96.01 ms",
+      "Event": "db52fe38-1205-47a4-ae51-7cdfe34c39d4",
+      "Saved": "Saved on this computer - pending upload",
+      "Prediction": "Assigned after upload",
+      "Alert": "Not created"
+    },
+    "messages": []
+  },
+  "tc02": {
+    "time": "2026-10-20 06:04:38",
+    "screenshot": "smk_tc02_attack.png",
+    "verdict": "ATTACK",
+    "confidence": "92.95%",
+    "details": {
+      "Model": "Stacking Ensemble",
+      "Deployment": "#1",
+      "Latency": "136.747 ms",
+      "Event": "a2617e4c-aec5-43d2-afca-a540956d6002",
+      "Saved": "Saved on this computer - pending upload",
+      "Prediction": "Assigned after upload",
+      "Alert": "Created when the record uploads"
+    },
+    "messages": []
+  },
+  "replay": {
+    "started": "2026-10-20 06:04:40",
+    "stopped": "2026-10-20 06:06:40",
+    "read_at": "2026-10-20 06:06:45",
+    "stats": {
+      "statFlows": "172",
+      "statProgress": "172 of 5,000 flows",
+      "statAttacks": "126",
+      "statRatio": "73.26% of the stream",
+      "statNormals": "46",
+      "statAlerts": "126",
+      "statLatency": "Average latency 303.342 ms",
+      "statDeployment": "#1 (pinned for this capture)",
+      "statMismatches": "6",
+      "statPersisted": "126",
+      "statSynced": "126",
+      "statPending": "0",
+      "statDropped": "0",
+      "statUpload": "active",
+      "statLag": "N/A",
+      "statCapture": "0",
+      "message": ""
+    }
+  }
+}
