@@ -355,6 +355,14 @@ python train.py datasets\algoguard_big.csv --deploy
 python train.py my_traffic.csv --deploy --admin your_admin
 ```
 
+The last column is the label; the other columns are the features, except that `id`
+and `attack_cat` are always dropped (a row number and the attack name, which would
+leak the label). A file that has all 15 flow features, such as the raw UNSW-NB15
+export, trains on exactly those 15. When a file's features are not the 15 flow
+features, `train.py` says so before training and again before `--deploy`: such a
+model still works for Manual Prediction and CSV replay with the same columns, but
+Live Monitor packet capture and cloud publishing refuse it.
+
 Without `--deploy`, the run trains and ranks all six candidates, writes `reports/training_run_<id>_model_results.csv`, and prints the comparison table without touching the active model. With `--deploy`, the Stacking Ensemble is promoted only if it passes the quality gate; the five individual models are comparison results and can never be deployed. Each deployment saves the Stacking pipeline and its metadata to a separate `saved_models/deployed_model.<unique-id>.joblib` file, then switches the active file reference in one SQLite transaction. Previous files are retained for requests already in progress and deployment history. Existing installations that reference `deployed_model.joblib` continue to work. `ALGOGUARD_DEPLOYED_MODEL_PATH` sets the folder and base filename for new deployment files.
 
 The default minimums are Accuracy 70%, F1-score 70%, and ROC-AUC 70%. They can be configured before startup with `ALGOGUARD_MIN_STACKING_ACCURACY`, `ALGOGUARD_MIN_STACKING_F1`, and `ALGOGUARD_MIN_STACKING_ROC_AUC`. Values are percentages from 0 to 100.

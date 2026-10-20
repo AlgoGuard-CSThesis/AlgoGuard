@@ -13,6 +13,13 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
 
 NORMAL_LABELS = {"0", "0.0", "normal", "benign", "legitimate", "clean"}
+# Row identifiers and label-derived columns are never features: attack_cat names the attack, so
+# a model trained on it scores 100% and learns nothing about traffic (DEF-08).
+NON_FEATURE_COLUMNS = {"id", "attack_cat"}
+
+
+def _column_key(name):
+    return str(name).lstrip("﻿").strip().lower()
 
 
 @dataclass
@@ -103,6 +110,9 @@ def _read_and_validate_csv(file_path):
         raise ValueError("The final target column must have a name.")
 
     usable_features = dataframe.iloc[:, :-1].dropna(axis=1, how="all")
+    usable_features = usable_features[
+        [c for c in usable_features.columns if _column_key(c) not in NON_FEATURE_COLUMNS]
+    ]
     if usable_features.shape[1] == 0:
         raise ValueError("The dataset does not contain usable feature columns.")
     flow_features = [c for c in usable_features.columns if c in FLOW_FEATURE_COLUMNS]

@@ -63,3 +63,19 @@ def test_save_report_writes_the_run_csv(tmp_path):
     assert report_name == "training_run_7_model_results.csv"
     assert written.exists()
     assert "Random Forest" in written.read_text()
+
+
+def test_live_schema_note_is_silent_for_the_15_flow_features():
+    from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+
+    assert train.live_schema_note(list(reversed(FLOW_FEATURE_COLUMNS))) is None
+
+
+def test_live_schema_note_names_missing_and_extra_columns():
+    """DEF-08: say up front that Live Monitor and publishing will refuse such a model."""
+    note = train.live_schema_note(["dur", "proto", "custom_score"])
+
+    assert note is not None
+    assert "missing service, state" in note
+    assert "extra custom_score" in note
+    assert "Live Monitor packet capture and cloud publishing will refuse it" in note

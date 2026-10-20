@@ -32,9 +32,29 @@ from services.deployment_service import (
     deploy_model,
     stacking_deployment_eligibility,
 )
+from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
 from services.model_registry import STACKING_MODEL_NAME
 from services.preprocessing_service import prepare_dataset
 from services.training_service import train_and_compare_models
+
+
+def live_schema_note(feature_columns):
+    """Explain when a model cannot run on captured traffic (DEF-08), or return None.
+
+    Local mode may train on other column sets for Manual Prediction and CSV replay; Live
+    Monitor packet capture and cloud publishing accept only the 15 flow features.
+    """
+    missing = [column for column in FLOW_FEATURE_COLUMNS if column not in feature_columns]
+    extra = [column for column in feature_columns if column not in FLOW_FEATURE_COLUMNS]
+    if not missing and not extra:
+        return None
+    parts = ([f"missing {', '.join(missing)}"] if missing else []) + (
+        [f"extra {', '.join(extra)}"] if extra else [])
+    return (
+        f"these features are not the 15 live flow features ({'; '.join(parts)}). The model "
+        "works for Manual Prediction and CSV replay with the same columns, but Live Monitor "
+        "packet capture and cloud publishing will refuse it."
+    )
 
 
 def save_report(run_id, model_results, report_folder=None):
@@ -292,6 +312,9 @@ def main(argv=None):
     print(
         f"Prepared {prepared.summary['rows']:,} rows and {prepared.summary['features']} features.\n"
     )
+    schema_note = live_schema_note(prepared.feature_columns)
+    if schema_note:
+        print(f"Note: {schema_note}\n", file=sys.stderr)
 
     try:
         results = train_and_compare_models(
@@ -324,6 +347,8 @@ def main(argv=None):
         print("No candidate completed every required metric.")
     print(f"Report: {get_config().report_folder / report_name}")
 
+    if args.deploy and schema_note:
+        print(f"\nDeploying anyway for local use. {schema_note}", file=sys.stderr)
     if args.deploy and not _deploy_stacking(run_id, admin_id):
         return 1
     if not args.deploy:

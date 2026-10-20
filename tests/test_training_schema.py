@@ -41,3 +41,17 @@ def test_bundled_dataset_keeps_its_own_column_order(tmp_path):
     prepared = prepare_dataset(path)
 
     assert prepared.feature_columns == [c for c in frame.columns if c != "label"]
+
+
+def test_id_and_attack_cat_are_never_features_even_without_the_full_flow_schema(tmp_path):
+    """DEF-08: label-derived and row-id columns are dropped from any training file."""
+    frame = sample_rows()[["dur", "proto", "sbytes", "dbytes", "label"]]
+    frame.insert(0, "id", range(1, len(frame) + 1))
+    attack_cat = ["Normal" if value == "Normal" else "Exploits" for value in frame["label"]]
+    frame.insert(4, "attack_cat", attack_cat)
+    path = tmp_path / "partial_with_label_columns.csv"
+    frame.to_csv(path, index=False, encoding="utf-8-sig")  # byte-order mark, like the raw file
+
+    prepared = prepare_dataset(path)
+
+    assert prepared.feature_columns == ["dur", "proto", "sbytes", "dbytes"]
