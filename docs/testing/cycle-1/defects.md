@@ -262,9 +262,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; local training run 5 |
-| Status | Open |
-| Fixed in commit | 2f4e087 (training columns only) |
-| Re-test result | 2026-10-20 07:13 TC-14 Pass for the reported case: the raw UNSW-NB15 training file now gives exactly the 15 flow features (no id, no attack_cat). Still open: local train.py --deploy has no feature-schema check (local mode allows other schemas by design; needs a decision). |
+| Status | Closed |
+| Fixed in commit | 2f4e087, 213d0be |
+| Re-test result | 2026-10-20 07:13 TC-14 Pass: the raw UNSW-NB15 training file gives exactly the 15 flow features. 10:17 TC-14 Pass on 213d0be: id and attack_cat are dropped from any training file, and train.py warns before training and before --deploy when a model cannot run on captured traffic (Lead Architect decision: warn, not refuse). |
 
 **Steps to reproduce**
 
@@ -403,9 +403,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A (deployment #1) |
-| Status | Open |
-| Fixed in commit | edf6193 (negative values only) |
-| Re-test result | 2026-10-20 07:02 TC-05 re-run: negative values refused at the browser, the form and /predict, nothing stored - Pass for that part. Still open: missing or empty numeric fields are filled with training defaults and stored at the server (deliberate, tested design; needs a decision by the Lead Architect and Product Owner). |
+| Status | Closed |
+| Fixed in commit | edf6193, 063f42f |
+| Re-test result | 2026-10-20 07:02: negative values refused, nothing stored. 10:20 TC-05 Pass on 213d0be (Lead Architect decision: refuse missing fields): omitted, null and empty fields refused at the form and /predict with 'Enter a value for every field; missing: dur.', nothing stored. |
 
 **Steps to reproduce**
 
@@ -539,9 +539,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 503cb9b |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode |
-| Status | Open |
+| Status | Closed |
 | Fixed in commit | 1ffa1b9, 128855e |
-| Re-test result | 2026-10-20 07:02 USE-01.3 on 0480899: feed, alert, log and report times now say UTC, but Dashboard 'Last at', Nodes, Accounts and local 'Deployed at' did not - fixed in 128855e, whose automated tests passed (07:09). UI re-test on 128855e not executed (app not restarted); stays open until then. |
+| Re-test result | 2026-10-20 07:02 on 0480899: partly fixed (Dashboard 'Last at', Nodes, Accounts and local 'Deployed at' still unlabelled; fixed in 128855e). 10:20 USE-01.3 Pass on the final build 213d0be: every shown time says UTC. |
 
 **Steps to reproduce**
 

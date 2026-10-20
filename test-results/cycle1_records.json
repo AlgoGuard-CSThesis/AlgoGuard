@@ -901,6 +901,26 @@
       "evidence": "test-results/env_20261020/ci_run_39341292642_ccbadd8_success.log; https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/39341292642"
     },
     {
+      "time": "2026-10-20 10:02",
+      "case": "ENV-02.1",
+      "card": "ENV-02",
+      "build": "33ca81d",
+      "expected": "GitHub Actions CI is green on the build commit (lint, type check, unit tests, browser polling tests) (ENV-02 card).",
+      "actual": "Run 39356261813 on 33ca81d (final product code 128855e plus test records and reports), 09:57-10:02: 'Successfully set up CPython (3.14.6)'; Lint 'All checks passed!'; Type check '0 errors, 26 warnings'; Unit tests '535 passed, 21 skipped, 34 deselected'; Browser polling tests 11 pass / 0 fail; conclusion success.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261020/ci_run_39356261813_33ca81d_success.log; https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/39356261813"
+    },
+    {
+      "time": "2026-10-20 10:23",
+      "case": "ENV-02.1",
+      "card": "ENV-02",
+      "build": "213d0be",
+      "expected": "GitHub Actions CI is green on the build commit (lint, type check, unit tests, browser polling tests) (ENV-02 card).",
+      "actual": "Run 39358135540 on the final build 213d0be, finished 10:22:59: 'Successfully set up CPython (3.14.6)'; Lint 'All checks passed!'; Type check '0 errors, 26 warnings'; Unit tests '550 passed, 21 skipped, 34 deselected'; Browser polling tests 11 pass / 0 fail; conclusion success.",
+      "status": "Pass",
+      "evidence": "test-results/env_20261020/ci_run_39358135540_213d0be_success.log; https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/39358135540"
+    },
+    {
       "time": "2026-10-20 07:29",
       "case": "TC-14",
       "card": "REG-01",
@@ -931,6 +951,70 @@
       "actual": "Second smoke run, again on the 0480899 process (the app was not restarted on the final build 128855e, whose only product change is UTC label text in four templates). TC-01 -> NORMAL 84.11%, no alert; TC-02 -> ATTACK 92.95%, alert on upload; replay algoguard_big, Fast, Save attacks, 09:44:54-09:46:58: 191 flows, 138 Attack / 53 Normal, 138 alerts, 138 queued, 138 synced, 0 pending, 0 not stored, no error.",
       "status": "Pass",
       "evidence": "test-results/ui_20261020/final/final_ui.json (smoke), smk_replay.png (the TC-01/TC-02 screenshots were not captured)"
+    },
+    {
+      "time": "2026-10-20 10:20",
+      "case": "USE-01.3",
+      "card": "USE-01",
+      "build": "213d0be",
+      "expected": "Error messages and status text are plain language; every shown time says it is UTC (USE-01 card; DEF-16 re-test on the final build).",
+      "actual": "App restarted at 10:19:41 on the final build 213d0be, analyst signed in. Dashboard 'Last at 2026-10-20 01:46:58 UTC' and 'Deployed at 2026-10-08 06:10:49 UTC' (no doubled 'UTC'), alert and log lines end in UTC (7); headers: Logs 'Timestamp (UTC)', Alerts 'Detected (UTC)', Live Monitor 'Time (UTC)', Reports 'Generated (UTC)', Nodes 'Decided (UTC)'; 0 'None' log messages.",
+      "status": "Pass",
+      "defect": "DEF-16",
+      "evidence": "test-results/ui_20261020/final2/final2_ui.json (labels), dashboard_utc.png, nodes_utc.png"
+    },
+    {
+      "time": "2026-10-20 10:20",
+      "case": "TC-05",
+      "card": "SYS-02",
+      "build": "213d0be",
+      "expected": "Malformed input on Manual Prediction: missing field, text in a numeric field, an out-of-range number, a negative byte count - rejected with a plain message; nothing stored.",
+      "actual": "Final build: (a) dur emptied in the form with the browser check off -> 'Enter a value for every field; missing: dur.'; /predict with dur omitted, null or empty -> HTTP 400 with the same message. Flows Analyzed 2,551 before and after: nothing stored. (b) 'abc' is blocked by the browser number field (06:08) and refused by the server ('must contain a finite numerical value', unit tests); (c) 1e308 and (d) negative values refused in plain language (07:02, unchanged code). All four inputs are now refused and nothing is stored.",
+      "status": "Pass",
+      "defect": "DEF-12",
+      "evidence": "test-results/ui_20261020/final2/final2_ui.json (def12), def12_form_empty_dur.png"
+    },
+    {
+      "time": "2026-10-20 10:23",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "213d0be",
+      "expected": "SMK-01 re-run on the final build (REG-01 card).",
+      "actual": "Final build 213d0be: TC-01 Normal row -> NORMAL 84.11%, deployment #1, synced as prediction #5274, no alert. TC-02 Attack row -> ATTACK 92.95%, synced as prediction #5275 with alert #4387. Replay algoguard_big, Fast, Save attacks, 10:21:22-10:23:22: 169 flows, 123 Attack / 46 Normal, 123 alerts, 123 queued, 123 synced, 0 pending, 0 not stored, no error. Outbox: all 2,364 events synced.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/final2/final2_ui.json (smoke), smk_*.png"
+    },
+    {
+      "time": "2026-10-20 10:23",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "213d0be",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-12 (edf6193, 063f42f): TC-05 passes on the final build - omitted, null and empty fields refused at the form and /predict, nothing stored - closed. DEF-16 (1ffa1b9, 128855e): every shown time says UTC on the final build (USE-01.3 at 10:20) - closed. Every fixed DEF card is now re-tested and closed; open: the cycle 2 items DEF-04..07, 10, 11, 17.",
+      "status": "Pass",
+      "defect": "DEF-12, DEF-16",
+      "evidence": "Test Log rows TC-05, USE-01.3 and REG-01.2 at 10:20-10:23; test-results/ui_20261020/final2/"
+    },
+    {
+      "time": "2026-10-20 10:17",
+      "case": "REG-01.1",
+      "card": "REG-01",
+      "build": "213d0be",
+      "expected": "Full automated suite re-run on the final build; no new failures (REG-01 card).",
+      "actual": "Final build 213d0be = 128855e + the DEF-12 fix (063f42f) and the DEF-08 fix (213d0be): pytest 566 passed / 67 deselected; ruff all checks passed; pyright 0 errors; node 11 pass; integration 65 passed, 2 skipped (Npcap capture tests, terminal not elevated). No new failures.",
+      "status": "Pass",
+      "evidence": "test-results/suites_20261020_101708/*.log"
+    },
+    {
+      "time": "2026-10-20 10:17",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "213d0be",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-08 (2f4e087, 213d0be): the raw UNSW file trains on exactly the 15 flow features (07:13 check); any training file now loses id and attack_cat, also without the full flow schema and with a byte-order mark (test_id_and_attack_cat_are_never_features_even_without_the_full_flow_schema); train.py names missing and extra columns and says Live Monitor and publishing will refuse such a model (test_live_schema_note_*). Live Monitor already refuses incompatible models before capture. All passed in REG-01.1 at 10:17 - closed.",
+      "status": "Pass",
+      "defect": "DEF-08",
+      "evidence": "test-results/suites_20261020_101708/pytest-offline.log; tests/test_training_schema.py; tests/test_cli_training.py"
     },
     {
       "time": "2026-10-20 07:09",
@@ -1098,9 +1182,9 @@
       "actual": "preprocessing_service.prepare_dataset() takes every column except the last as a feature: 44 features including attack_cat and id. Random Forest, AdaBoost, Gradient Boosting, Naive Bayes and Stacking report 100.00% accuracy / F1 / ROC-AUC (Naive Bayes is 48.72% on 15 features). Cloud publication and download refuse such a model (model_runtime.verify_artifact_contract, called from publish_model.py and model_delivery.py), but the local deploy path (train.py _deploy_stacking -> deployment_service.deploy_model) does not call it - by code reading; --deploy was not run. Workaround: train only on CSVs with the 15 features + label, as the bundled datasets are.",
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; local training run 5",
-      "status": "Open",
-      "fixed_in": "2f4e087 (training columns only)",
-      "retest": "2026-10-20 07:13 TC-14 Pass for the reported case: the raw UNSW-NB15 training file now gives exactly the 15 flow features (no id, no attack_cat). Still open: local train.py --deploy has no feature-schema check (local mode allows other schemas by design; needs a decision).",
+      "status": "Closed",
+      "fixed_in": "2f4e087, 213d0be",
+      "retest": "2026-10-20 07:13 TC-14 Pass: the raw UNSW-NB15 training file gives exactly the 15 flow features. 10:17 TC-14 Pass on 213d0be: id and attack_cat are dropped from any training file, and train.py warns before training and before --deploy when a model cannot run on captured traffic (Lead Architect decision: warn, not refuse).",
       "evidence": "Test Log row SYS-01.5; test-results/sys01_holdout/train_B_console.log, eval_B_raw_console.log; services/preprocessing_service.py:158-219; model_runtime.py:69-77; train.py:130-200"
     },
     {
@@ -1166,9 +1250,9 @@
       "actual": "Missing dur -> accepted, filled from the artifact's feature_defaults (simulation_service.py:94), Normal 56.67%; empty dur -> accepted (NaN imputed), 56.67%; sbytes -5 -> accepted, Normal 86.65%. Accepted input is queued for upload (cloud_app.py:415-418). The cloud Manual Prediction form also fills absent fields with defaults before validating (cloud_app.py:608-611). The browser form blocks empty fields (required) but has no min/max, so negatives pass.",
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; model A (deployment #1)",
-      "status": "Open",
-      "fixed_in": "edf6193 (negative values only)",
-      "retest": "2026-10-20 07:02 TC-05 re-run: negative values refused at the browser, the form and /predict, nothing stored - Pass for that part. Still open: missing or empty numeric fields are filled with training defaults and stored at the server (deliberate, tested design; needs a decision by the Lead Architect and Product Owner).",
+      "status": "Closed",
+      "fixed_in": "edf6193, 063f42f",
+      "retest": "2026-10-20 07:02: negative values refused, nothing stored. 10:20 TC-05 Pass on 213d0be (Lead Architect decision: refuse missing fields): omitted, null and empty fields refused at the form and /predict with 'Enter a value for every field; missing: dur.', nothing stored.",
       "evidence": "Test Log row TC-05; test-results/sys02_files/tc05_server_validation_result.json"
     },
     {
@@ -1234,9 +1318,9 @@
       "actual": "Recent Flows shows 22:15:45 for a flow at 06:15:45 local; System Logs' newest line reads 2026-10-19 22:15:46 for 2026-10-20 06:15:46 local - even the date looks a day behind. Seen in SMK-01, TC-09 and USE-01.",
       "build": "503cb9b",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode",
-      "status": "Open",
+      "status": "Closed",
       "fixed_in": "1ffa1b9, 128855e",
-      "retest": "2026-10-20 07:02 USE-01.3 on 0480899: feed, alert, log and report times now say UTC, but Dashboard 'Last at', Nodes, Accounts and local 'Deployed at' did not - fixed in 128855e, whose automated tests passed (07:09). UI re-test on 128855e not executed (app not restarted); stays open until then.",
+      "retest": "2026-10-20 07:02 on 0480899: partly fixed (Dashboard 'Last at', Nodes, Accounts and local 'Deployed at' still unlabelled; fixed in 128855e). 10:20 USE-01.3 Pass on the final build 213d0be: every shown time says UTC.",
       "evidence": "Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png, 390_monitor.png"
     },
     {
@@ -1439,7 +1523,7 @@
     {
       "criterion": "3.3 · Overall pass rate across executed test cases",
       "target": ">= 95%",
-      "measured": "69% of executed test cases (9 of 13: TC-01, TC-02, TC-04, TC-08, TC-09, TC-10, TC-12, TC-13, TC-16 passed; TC-03, TC-05, TC-11 and TC-14 failed - TC-14 because the DEF-12 re-test still fails; TC-06, TC-07, TC-15 not executed). 76.7% of executed Test Log rows (66 Pass of 86).",
+      "measured": "84.6% of executed test cases (11 of 13: TC-01, TC-02, TC-04, TC-05, TC-08, TC-09, TC-10, TC-12, TC-13, TC-14, TC-16 passed on their latest run; TC-03 and TC-11 failed; TC-06, TC-07, TC-15 not executed). 78.7% of executed Test Log rows (74 Pass of 94, earlier failed runs included).",
       "result": "Not met",
       "source": "Test Log"
     },
@@ -1495,7 +1579,7 @@
     {
       "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
       "target": "All",
-      "measured": "6 Low/Medium defects open (DEF-08, 10, 11, 12, 16, 17); DEF-01, 02, 03, 09, 13, 14, 15 and 18 fixed and closed in REG-01. DEF-08 and DEF-12 are fixed in part and wait for a decision; DEF-16 waits for its UI re-test on 128855e. Workaround written in DEF-08 (train on 15-feature CSVs); no Product Owner sign-off yet",
+      "measured": "3 Medium defects open (DEF-10, 11, 17 - throughput and lag limits, for cycle 2), without written workarounds; 11 Low/Medium defects (DEF-01, 02, 03, 08, 09, 12, 13, 14, 15, 16, 18) fixed, re-tested and closed. No Product Owner sign-off yet",
       "result": "Not met",
       "source": "Defects sheet; docs/testing/cycle-1/defects.md"
     },
