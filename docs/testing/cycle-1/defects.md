@@ -13,9 +13,9 @@ One section per DEF card. Paste the title into the card title and everything und
 | Priority | High |
 | Build | cb3bcdb (CI); 940e082 (CI) |
 | Environment | GitHub Actions windows-latest; setup-python '3.14' (patch level not pinned; requirements-model.lock records 3.14.6); Node 22 |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Status | Closed |
+| Fixed in commit | f143b21 |
+| Re-test result | 2026-10-20 07:29 ENV-02.1 Pass: CI run 39341292642 sets up CPython 3.14.6; unit tests 535 passed, 21 skipped; all four checks green. |
 
 **Steps to reproduce**
 
@@ -49,9 +49,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | dafe5e5 (product code = 940e082) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Docker Desktop 29.8.0; Supabase CLI 2.117.0 local stack |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Status | Closed |
+| Fixed in commit | 8b5133c (README workaround) |
+| Re-test result | 2026-10-20 07:03 integration lane 65 passed, 2 skipped with all services up. The Supabase CLI still exits 0 with a stopped container (outside AlgoGuard); the README step is the documented workaround. |
 
 **Steps to reproduce**
 
@@ -84,9 +84,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | cb3bcdb (CI); 940e082 (CI) |
 | Environment | GitHub Actions windows-latest; CPython 3.14.8 |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Status | Closed |
+| Fixed in commit | f143b21 |
+| Re-test result | 2026-10-20 07:29 ENV-02.1 Pass: the outbox cap test passes on the CI runner (run 39341292642). |
 
 **Steps to reproduce**
 
@@ -540,8 +540,8 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Build | 503cb9b |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode |
 | Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | â€” |
+| Fixed in commit | 1ffa1b9, 128855e |
+| Re-test result | 2026-10-20 07:02 USE-01.3 on 0480899: feed, alert, log and report times now say UTC, but Dashboard 'Last at', Nodes, Accounts and local 'Deployed at' did not - fixed in 128855e, whose automated tests passed (07:09). UI re-test on 128855e not executed (app not restarted); stays open until then. |
 
 **Steps to reproduce**
 

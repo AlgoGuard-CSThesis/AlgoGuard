@@ -890,6 +890,49 @@
       "evidence": "test-results/ui_20261020/reg01/def08_schema_check.txt; tests/test_training_schema.py"
     },
     {
+      "time": "2026-10-20 07:29",
+      "case": "ENV-02.1",
+      "card": "ENV-02",
+      "build": "ccbadd8",
+      "expected": "GitHub Actions CI is green on the build commit (lint, type check, unit tests, browser polling tests) (ENV-02 card).",
+      "actual": "Run 39341292642 on ccbadd8 (product code 128855e plus test records), 07:23-07:29: setup-python 'python-version: 3.14.6' -> 'Successfully set up CPython (3.14.6)'; Lint 'All checks passed!'; Type check '0 errors, 26 warnings'; Unit tests '535 passed, 21 skipped, 34 deselected'; Browser polling tests 11 pass / 0 fail; conclusion success - the first green run on main since 2026-10-05.",
+      "status": "Pass",
+      "defect": "DEF-01, DEF-03",
+      "evidence": "test-results/env_20261020/ci_run_39341292642_ccbadd8_success.log; https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/39341292642"
+    },
+    {
+      "time": "2026-10-20 07:29",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "ccbadd8",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-01 and DEF-03 (f143b21): CI run 39341292642 installs the locked Python 3.14.6, and the model-loading tests and the outbox cap test pass on the runner; all four CI checks green (ENV-02.1 at 07:29) - both closed. DEF-02 (8b5133c): the README now tells testers to check 'Stopped services' after supabase start and restart the Edge Runtime; the integration lane passed with all services up (REG-01.1 at 07:03). The Supabase CLI behaviour itself is outside AlgoGuard - closed with the workaround documented.",
+      "status": "Pass",
+      "defect": "DEF-01, DEF-02, DEF-03",
+      "evidence": "test-results/env_20261020/ci_run_39341292642_ccbadd8_success.log; README.md"
+    },
+    {
+      "time": "2026-10-20 09:44",
+      "case": "USE-01.3",
+      "card": "USE-01",
+      "build": "0480899",
+      "expected": "Every shown time labelled UTC after the follow-up fix 128855e (DEF-16 re-test on the final build).",
+      "actual": "Planned on 128855e, but the app on port 5000 was still the process started at 07:00:28 on 0480899 (not restarted after main moved to 128855e), so the 128855e labels were not exercised. Seen on 0480899: Logs, Alerts, Live Monitor and Reports headers say UTC; 0 'None' messages; Dashboard 'Deployed at 2026-10-08 06:10:49 UTC'; still unlabelled: 'Last at 2026-10-19 23:05:24' and the Nodes 'Decided' header - as expected for 0480899. The 128855e labels are covered only by the automated tests that passed on 128855e (REG-01.1 at 07:09).",
+      "status": "Fail",
+      "defect": "DEF-16",
+      "evidence": "test-results/ui_20261020/final/final_ui.json (labels; screenshots not captured - the browser window could not be drawn)"
+    },
+    {
+      "time": "2026-10-20 09:47",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "0480899",
+      "expected": "SMK-01 re-run on the final build (REG-01 card).",
+      "actual": "Second smoke run, again on the 0480899 process (the app was not restarted on the final build 128855e, whose only product change is UTC label text in four templates). TC-01 -> NORMAL 84.11%, no alert; TC-02 -> ATTACK 92.95%, alert on upload; replay algoguard_big, Fast, Save attacks, 09:44:54-09:46:58: 191 flows, 138 Attack / 53 Normal, 138 alerts, 138 queued, 138 synced, 0 pending, 0 not stored, no error.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/final/final_ui.json (smoke), smk_replay.png (the TC-01/TC-02 screenshots were not captured)"
+    },
+    {
       "time": "2026-10-20 07:09",
       "case": "REG-01.1",
       "card": "REG-01",
@@ -953,9 +996,9 @@
       "actual": "Unit tests: '5 failed, 476 passed, 21 skipped, 34 deselected, 40 errors'; 44 of the 45 are ModelDeliveryError ('Install the locked Python model runtime.' x43 from model_runtime.py:38; 'Retrain this artifact with the locked model runtime.' x1 from model_runtime.py:74), because .github/workflows/ci.yml asks setup-python for '3.14' and gets 3.14.8. The remaining failure is DEF-03. Browser polling tests are then skipped. All six main runs since 2026-10-05 failed. The app's refusal of an unlocked runtime is by design; the defect is the unpinned CI Python version. Not reproduced on PC A: the working copy passes (537 passed), and so does a clean clone of cb3bcdb with a fresh Python 3.14.6 venv from requirements-dev.txt only (521 passed, 21 skipped, 34 deselected; exit 0; the 21 skips are 16 tests in test_maintainer_env.py and 5 integration modules that need psycopg2 from requirements-maintainer.txt, which CI does not install either), because PC A runs the locked 3.14.6.",
       "build": "cb3bcdb (CI); 940e082 (CI)",
       "environment": "GitHub Actions windows-latest; setup-python '3.14' (patch level not pinned; requirements-model.lock records 3.14.6); Node 22",
-      "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "status": "Closed",
+      "fixed_in": "f143b21",
+      "retest": "2026-10-20 07:29 ENV-02.1 Pass: CI run 39341292642 sets up CPython 3.14.6; unit tests 535 passed, 21 skipped; all four checks green.",
       "evidence": "Test Log rows ENV-02.1 (13:00, 13:50); test-results/env_20261019/ci_run_38886300881_cb3bcdb_failed.log and ci_run_38870178965_940e082_failed.log; Automated Runs rows 'DEF-01 reproduction'; test-results/env_20261019/ci-repro.log, ci-repro-pytest.log, ci-repro-pytest-rs.log; CI runs https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/38886300881 and .../38870178965"
     },
     {
@@ -970,9 +1013,9 @@
       "actual": "'assert spool.drain()' -> False in both runs. Outbox.drain() waits at most 5 s (cloud_outbox.py:554-558) for the writer thread to persist the queue. Passes on PC A in the working copy and in the clean clone. The model runtime is not involved. Most likely the GitHub windows-latest runner writes the 300 SQLite rows more slowly than 5 s; not confirmed. It would keep CI red after DEF-01 is fixed.",
       "build": "cb3bcdb (CI); 940e082 (CI)",
       "environment": "GitHub Actions windows-latest; CPython 3.14.8",
-      "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "status": "Closed",
+      "fixed_in": "f143b21",
+      "retest": "2026-10-20 07:29 ENV-02.1 Pass: the outbox cap test passes on the CI runner (run 39341292642).",
       "evidence": "Test Log row ENV-02.1 (13:50); test-results/env_20261019/ci_run_38886300881_cb3bcdb_failed.log; ci_run_38870178965_940e082_failed.log"
     },
     {
@@ -1192,8 +1235,8 @@
       "build": "503cb9b",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; cloud mode",
       "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "fixed_in": "1ffa1b9, 128855e",
+      "retest": "2026-10-20 07:02 USE-01.3 on 0480899: feed, alert, log and report times now say UTC, but Dashboard 'Last at', Nodes, Accounts and local 'Deployed at' did not - fixed in 128855e, whose automated tests passed (07:09). UI re-test on 128855e not executed (app not restarted); stays open until then.",
       "evidence": "Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png, 390_monitor.png"
     },
     {
@@ -1242,9 +1285,9 @@
       "actual": "Exit 0 with the Edge Runtime still stopped; 5 integration tests fail with HTTP 503 'name resolution failed' from /functions/v1/account_admin. Workaround: docker start supabase_edge_runtime_AlgoGuard, then the lane passes (65 passed, 2 skipped). The same stopped Edge Runtime was noted in 05f-pilot.md section 8.2 (2026-09-30). Test-environment issue; the product is not affected.",
       "build": "dafe5e5 (product code = 940e082)",
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Docker Desktop 29.8.0; Supabase CLI 2.117.0 local stack",
-      "status": "Open",
-      "fixed_in": "",
-      "retest": "",
+      "status": "Closed",
+      "fixed_in": "8b5133c (README workaround)",
+      "retest": "2026-10-20 07:03 integration lane 65 passed, 2 skipped with all services up. The Supabase CLI still exits 0 with a stopped container (outside AlgoGuard); the README step is the documented workaround.",
       "evidence": "Test Log rows ENV-02.2 and INT-01.1; test-results/env_20261019/edge-runtime-restart.log; test-results/suites_20261019_132412/pytest-integration.log; test-results/integration_20261019_132933/pytest-integration.log"
     }
   ],
@@ -1396,7 +1439,7 @@
     {
       "criterion": "3.3 · Overall pass rate across executed test cases",
       "target": ">= 95%",
-      "measured": "69% of executed test cases (9 of 13: TC-01, TC-02, TC-04, TC-08, TC-09, TC-10, TC-12, TC-13, TC-16 passed; TC-03, TC-05, TC-11 and TC-14 failed - TC-14 because the DEF-12 re-test still fails; TC-06, TC-07, TC-15 not executed). 76.8% of executed Test Log rows (63 Pass of 82).",
+      "measured": "69% of executed test cases (9 of 13: TC-01, TC-02, TC-04, TC-08, TC-09, TC-10, TC-12, TC-13, TC-16 passed; TC-03, TC-05, TC-11 and TC-14 failed - TC-14 because the DEF-12 re-test still fails; TC-06, TC-07, TC-15 not executed). 76.7% of executed Test Log rows (66 Pass of 86).",
       "result": "Not met",
       "source": "Test Log"
     },
@@ -1452,7 +1495,7 @@
     {
       "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
       "target": "All",
-      "measured": "9 Low/Medium defects open (DEF-01, 02, 03, 08, 10, 11, 12, 16, 17); DEF-09, 13, 14, 15 and 18 fixed and closed in REG-01. Fix commits for DEF-01/03 (CI) and the rest of DEF-16 wait for their re-test. Workarounds written in DEF-02 (README) and DEF-08 (train on 15-feature CSVs); no Product Owner sign-off yet",
+      "measured": "6 Low/Medium defects open (DEF-08, 10, 11, 12, 16, 17); DEF-01, 02, 03, 09, 13, 14, 15 and 18 fixed and closed in REG-01. DEF-08 and DEF-12 are fixed in part and wait for a decision; DEF-16 waits for its UI re-test on 128855e. Workaround written in DEF-08 (train on 15-feature CSVs); no Product Owner sign-off yet",
       "result": "Not met",
       "source": "Defects sheet; docs/testing/cycle-1/defects.md"
     },
