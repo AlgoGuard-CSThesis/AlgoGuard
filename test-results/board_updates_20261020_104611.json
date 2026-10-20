@@ -1,0 +1,16 @@
+{
+  "applied": "2026-10-20 10:46",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "UAT-01",
+      "action": "edit body",
+      "boxes_ticked": 1,
+      "results_lines": 4
+    },
+    {
+      "card": "UAT-01",
+      "action": "status In Progress -> Review"
+    }
+  ]
+}

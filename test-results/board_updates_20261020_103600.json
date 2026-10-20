@@ -1,0 +1,38 @@
+{
+  "applied": "2026-10-20 10:35",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "DOC-01",
+      "action": "edit body",
+      "boxes_ticked": 3,
+      "results_lines": 4
+    },
+    {
+      "card": "DOC-02",
+      "action": "edit body",
+      "boxes_ticked": 4,
+      "results_lines": 5
+    },
+    {
+      "card": "DOC-03",
+      "action": "edit body",
+      "boxes_ticked": 4,
+      "results_lines": 4
+    },
+    {
+      "card": "DOC-04",
+      "action": "edit body",
+      "boxes_ticked": 4,
+      "results_lines": 5
+    },
+    {
+      "card": "DOC-03",
+      "action": "status Review -> Done"
+    },
+    {
+      "card": "DOC-04",
+      "action": "status Review -> Done"
+    }
+  ]
+}
