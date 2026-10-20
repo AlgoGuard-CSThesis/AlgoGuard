@@ -1,0 +1,75 @@
+{
+  "started": "2026-10-20 09:43:40",
+  "labels": {
+    "time": "2026-10-20 09:44:24",
+    "dashboard_last_at": "2026-10-19 23:05:24",
+    "dashboard_deployed_at": "2026-10-08 06:10:49 UTC",
+    "dashboard_double_utc": 0,
+    "dashboard_alert_and_log_utc_suffixes": 7,
+    "logs_header_utc": true,
+    "logs_message_cells_none": 0,
+    "alerts_header_utc": true,
+    "monitor_header_utc": true,
+    "reports_header_utc": true,
+    "nodes_decided_header_utc": false
+  },
+  "smoke": {
+    "tc01": {
+      "time": "2026-10-20 09:44:39",
+      "screenshot": "not captured",
+      "verdict": "NORMAL",
+      "confidence": "84.11%",
+      "details": {
+        "Model": "Stacking Ensemble",
+        "Deployment": "#1",
+        "Latency": "534.307 ms",
+        "Event": "9da518bb-9a88-43fb-92dd-c559295b1d91",
+        "Saved": "Saved on this computer - pending upload",
+        "Prediction": "Assigned after upload",
+        "Alert": "Not created"
+      },
+      "messages": []
+    },
+    "tc02": {
+      "time": "2026-10-20 09:44:53",
+      "screenshot": "not captured",
+      "verdict": "ATTACK",
+      "confidence": "92.95%",
+      "details": {
+        "Model": "Stacking Ensemble",
+        "Deployment": "#1",
+        "Latency": "168.781 ms",
+        "Event": "5583d3bf-478a-4de0-b26d-1a9b99426883",
+        "Saved": "Saved on this computer - pending upload",
+        "Prediction": "Assigned after upload",
+        "Alert": "Created when the record uploads"
+      },
+      "messages": []
+    },
+    "replay": {
+      "started": "2026-10-20 09:44:54",
+      "stopped": "2026-10-20 09:46:58",
+      "read_at": "2026-10-20 09:47:06",
+      "stats": {
+        "statFlows": "191",
+        "statProgress": "191 of 5,000 flows",
+        "statAttacks": "138",
+        "statRatio": "72.25% of the stream",
+        "statNormals": "53",
+        "statAlerts": "138",
+        "statLatency": "Average latency 243.427 ms",
+        "statDeployment": "#1 (pinned for this capture)",
+        "statMismatches": "6",
+        "statPersisted": "138",
+        "statSynced": "138",
+        "statPending": "0",
+        "statDropped": "0",
+        "statUpload": "active",
+        "statLag": "N/A",
+        "statCapture": "0",
+        "message": ""
+      }
+    }
+  },
+  "finished": "2026-10-20 09:47:06"
+}

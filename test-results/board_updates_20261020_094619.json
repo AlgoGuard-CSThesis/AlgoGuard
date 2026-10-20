@@ -1,0 +1,217 @@
+{
+  "applied": "2026-10-20 09:44",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "DOC-05",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 2
+    },
+    {
+      "card": "DOC-06",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 3
+    },
+    {
+      "card": "ENV-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "ENV-02",
+      "action": "edit body",
+      "boxes_ticked": 1,
+      "results_lines": 4
+    },
+    {
+      "card": "INT-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "LOG-01",
+      "action": "edit body",
+      "boxes_ticked": 1,
+      "results_lines": 3
+    },
+    {
+      "card": "PRF-01",
+      "action": "edit body",
+      "boxes_ticked": 3,
+      "results_lines": 8
+    },
+    {
+      "card": "REG-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "SEC-01",
+      "action": "edit body",
+      "boxes_ticked": 1,
+      "results_lines": 8
+    },
+    {
+      "card": "SMK-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 4
+    },
+    {
+      "card": "SYS-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "SYS-02",
+      "action": "edit body",
+      "boxes_ticked": 2,
+      "results_lines": 6
+    },
+    {
+      "card": "SYS-03",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "UAT-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 2
+    },
+    {
+      "card": "UNT-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 3
+    },
+    {
+      "card": "USE-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "DEF-15",
+      "action": "status Review -> Done"
+    },
+    {
+      "card": "ENV-02",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "PRF-01",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "SEC-01",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "LOG-01",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-01",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-02",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-03",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-09",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-13",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-14",
+      "action": "status To Do -> Done"
+    },
+    {
+      "card": "DEF-08",
+      "action": "status To Do -> Review"
+    },
+    {
+      "card": "DEF-12",
+      "action": "status To Do -> Review"
+    },
+    {
+      "card": "DEF-01",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-02",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-03",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-08",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-09",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-12",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-13",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-14",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-15",
+      "action": "edit DEF body from defects.md"
+    },
+    {
+      "card": "DEF-16",
+      "action": "create DEF card",
+      "owner": "Brynt M. Timtiman",
+      "phase": "M4",
+      "priority": "Medium",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-17",
+      "action": "create DEF card",
+      "owner": "Afel Anthonielle V. Quirao",
+      "phase": "M4",
+      "priority": "Medium",
+      "status": "To Do",
+      "test_type": "Defect"
+    },
+    {
+      "card": "DEF-18",
+      "action": "create DEF card",
+      "owner": "Brynt M. Timtiman",
+      "phase": "M4",
+      "priority": "Low",
+      "status": "Done",
+      "test_type": "Defect"
+    }
+  ]
+}

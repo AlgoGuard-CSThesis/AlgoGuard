@@ -1,0 +1,608 @@
+﻿checks	UNKNOWN STEP	﻿2026-10-19T23:23:49.7044976Z Current runner version: '2.337.0'
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7073548Z ##[group]Runner Image Provisioner
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7074337Z Hosted Compute Agent
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7074912Z Version: 20261002.596
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7075595Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7076294Z Build Date: 2026-10-02T22:28:27Z
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7076946Z Worker ID: {811a3df2-18d9-40d3-a659-1d80913f835d}
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7077650Z Region: eastus
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7078168Z Cloud: Azure
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7078661Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7079975Z ##[group]Operating System
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7080581Z Microsoft Windows Server 2025
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7081216Z 10.0.26100
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7081692Z Datacenter
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7082362Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7082917Z ##[group]Runner Image
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7083451Z Image: windows-2025-vs2026
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7084566Z Version: 20261007.264.1
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7086355Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261007.264/images/windows/Windows2025-VS2026-Readme.md
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7088064Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261007.264
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7089077Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7090183Z ##[group]GITHUB_TOKEN Permissions
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7092074Z Contents: read
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7092760Z Metadata: read
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7093281Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7095458Z Secret source: Actions
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7096368Z Cache mode: write
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7097038Z Prepare workflow directory
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7467557Z Prepare all required actions
+checks	UNKNOWN STEP	2026-10-19T23:23:49.7516048Z Getting action download info
+checks	UNKNOWN STEP	2026-10-19T23:23:49.9286021Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+checks	UNKNOWN STEP	2026-10-19T23:23:50.0715772Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+checks	UNKNOWN STEP	2026-10-19T23:23:50.2297031Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+checks	UNKNOWN STEP	2026-10-19T23:23:50.5240968Z Complete job name: checks
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7014678Z ##[group]Run actions/checkout@v4
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7015776Z with:
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7016231Z   repository: AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7020463Z   token: ***
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7020877Z   ssh-strict: true
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7021283Z   ssh-user: git
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7021690Z   persist-credentials: true
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7022150Z   clean: true
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7022557Z   sparse-checkout-cone-mode: true
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7023270Z   fetch-depth: 1
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7023667Z   fetch-tags: false
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7024073Z   show-progress: true
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7024486Z   lfs: false
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7024859Z   submodules: false
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7025281Z   set-safe-directory: true
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7025754Z   allow-unsafe-pr-checkout: false
+checks	UNKNOWN STEP	2026-10-19T23:23:50.7026658Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:50.8515929Z Syncing repository: AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:23:50.8518056Z ##[group]Getting Git version info
+checks	UNKNOWN STEP	2026-10-19T23:23:50.8518686Z Working directory is 'D:\a\AlgoGuard\AlgoGuard'
+checks	UNKNOWN STEP	2026-10-19T23:23:50.9470052Z [command]"C:\Program Files\Git\bin\git.exe" version
+checks	UNKNOWN STEP	2026-10-19T23:23:51.3210882Z git version 2.56.0.windows.2
+checks	UNKNOWN STEP	2026-10-19T23:23:51.3261131Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:51.3280722Z Temporarily overriding HOME='D:\a\_temp\c0d52d07-86dd-48d2-a0fa-d0783d537b4a' before making global git config changes
+checks	UNKNOWN STEP	2026-10-19T23:23:51.3282561Z Adding repository directory to the temporary git global config as a safe directory
+checks	UNKNOWN STEP	2026-10-19T23:23:51.3291241Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\AlgoGuard\AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:23:51.4042272Z Deleting the contents of 'D:\a\AlgoGuard\AlgoGuard'
+checks	UNKNOWN STEP	2026-10-19T23:23:51.4048769Z ##[group]Initializing the repository
+checks	UNKNOWN STEP	2026-10-19T23:23:51.4057276Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\AlgoGuard\AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:23:51.5060043Z Initialized empty Git repository in D:/a/AlgoGuard/AlgoGuard/.git/
+checks	UNKNOWN STEP	2026-10-19T23:23:51.5118857Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:23:51.5836363Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:51.5837951Z ##[group]Disabling automatic garbage collection
+checks	UNKNOWN STEP	2026-10-19T23:23:51.5845153Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+checks	UNKNOWN STEP	2026-10-19T23:23:51.6238875Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:51.6240427Z ##[group]Setting up auth
+checks	UNKNOWN STEP	2026-10-19T23:23:51.6251262Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+checks	UNKNOWN STEP	2026-10-19T23:23:51.6764855Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+checks	UNKNOWN STEP	2026-10-19T23:23:53.1653282Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+checks	UNKNOWN STEP	2026-10-19T23:23:53.2056381Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+checks	UNKNOWN STEP	2026-10-19T23:23:53.7686304Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+checks	UNKNOWN STEP	2026-10-19T23:23:53.8088966Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+checks	UNKNOWN STEP	2026-10-19T23:23:54.3343969Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+checks	UNKNOWN STEP	2026-10-19T23:23:54.3739880Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:54.3740790Z ##[group]Fetching the repository
+checks	UNKNOWN STEP	2026-10-19T23:23:54.3762805Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +ccbadd8f9edf754e0cb5773ad6cb1902f71b245d:refs/remotes/origin/main
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0075119Z From https://github.com/AlgoGuard-CSThesis/AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0076177Z  * [new ref]         ccbadd8f9edf754e0cb5773ad6cb1902f71b245d -> origin/main
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0120882Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0121343Z ##[group]Determining the checkout info
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0124614Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0139569Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+checks	UNKNOWN STEP	2026-10-19T23:23:56.0689943Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+checks	UNKNOWN STEP	2026-10-19T23:23:56.1086896Z ##[group]Checking out the ref
+checks	UNKNOWN STEP	2026-10-19T23:23:56.1097230Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+checks	UNKNOWN STEP	2026-10-19T23:23:56.4512806Z Switched to a new branch 'main'
+checks	UNKNOWN STEP	2026-10-19T23:23:56.4579686Z branch 'main' set up to track 'origin/main'.
+checks	UNKNOWN STEP	2026-10-19T23:23:56.4675367Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:56.5235407Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+checks	UNKNOWN STEP	2026-10-19T23:23:56.5587094Z ccbadd8f9edf754e0cb5773ad6cb1902f71b245d
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6126578Z ##[group]Run actions/setup-python@v5
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6126941Z with:
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6127145Z   python-version: 3.14.6
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6127389Z   check-latest: false
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6129750Z   token: ***
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6129955Z   update-environment: true
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6130193Z   allow-prereleases: false
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6130398Z   freethreaded: false
+checks	UNKNOWN STEP	2026-10-19T23:23:56.6130585Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:23:56.7737166Z ##[group]Installed versions
+checks	UNKNOWN STEP	2026-10-19T23:23:56.7752140Z Version 3.14.6 was not found in the local cache
+checks	UNKNOWN STEP	2026-10-19T23:23:56.7938108Z (node:3288) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	UNKNOWN STEP	2026-10-19T23:23:56.7939908Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	UNKNOWN STEP	2026-10-19T23:23:57.3409581Z Version 3.14.6 is available for downloading
+checks	UNKNOWN STEP	2026-10-19T23:23:57.3446143Z Download from "https://github.com/actions/python-versions/releases/download/3.14.6-27283001424/python-3.14.6-win32-x64.zip"
+checks	UNKNOWN STEP	2026-10-19T23:23:57.6779222Z Extract downloaded archive
+checks	UNKNOWN STEP	2026-10-19T23:23:57.7929487Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\python-3.14.6-win32-x64.zip', 'D:\a\_temp\9eb54d5c-9391-4f51-85cb-dc2aa912ddfc', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\python-3.14.6-win32-x64.zip' -DestinationPath 'D:\a\_temp\9eb54d5c-9391-4f51-85cb-dc2aa912ddfc' -Force } else { throw $_ } } ;"
+checks	UNKNOWN STEP	2026-10-19T23:23:58.2694894Z Execute installation script
+checks	UNKNOWN STEP	2026-10-19T23:24:01.0991783Z Check if Python hostedtoolcache folder exist...
+checks	UNKNOWN STEP	2026-10-19T23:24:01.0993862Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:01.1147349Z Check if current Python version is installed...
+checks	UNKNOWN STEP	2026-10-19T23:24:01.1148819Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:01.1326053Z Python3.14 (x64) was found in C:\hostedtoolcache\windows\Python...
+checks	UNKNOWN STEP	2026-10-19T23:24:01.1326579Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:01.1709236Z Deleting C:\hostedtoolcache\windows\Python\3.14.8\x64...
+checks	UNKNOWN STEP	2026-10-19T23:24:01.1711582Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:05.7965286Z VERBOSE: Performing the operation "Remove File" on target "C:\hostedtoolcache\windows\Python\3.14.8\x64.complete".
+checks	UNKNOWN STEP	2026-10-19T23:24:05.7966067Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:05.7975621Z Remove registry entries for Python 3.14(x64)...
+checks	UNKNOWN STEP	2026-10-19T23:24:05.7976398Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2749810Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2750832Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\069CC06E16B39BF44B3AD
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2751747Z 977888BD1C9".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2751927Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2777726Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2778862Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\228F7064AA17E324E8D58
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2780153Z A15B58FFFE0".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2780349Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2808993Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2810425Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\6DB1C82DCBD24074C9A01
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2811377Z A77834B467C".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2811570Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2831696Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2832806Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\787B403CDDC6D5D4288A4
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2833938Z A74E5834FA6".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2834361Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2861185Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2862364Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\7CA09A653AF9AD3459A04
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2863302Z 20466BD752E".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2863484Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2883732Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2884631Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\B912F893D67A17C418E82
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2885369Z C324DD240CD".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2885527Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2903113Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2904261Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\CFEF102E1AC2CF84E96DB
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2905551Z 628CB4E1596".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2905746Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2926863Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2928191Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\FF615CA1CD56FA04B9E6B
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2928843Z E0BCCEBF8B1".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.2929016Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.3058975Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.3060231Z HKEY_CLASSES_ROOT\Installer\Products\069CC06E16B39BF44B3AD977888BD1C9".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.3061041Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.3701631Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.3703007Z HKEY_CLASSES_ROOT\Installer\Products\228F7064AA17E324E8D58A15B58FFFE0".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.3703444Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4102033Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4102898Z HKEY_CLASSES_ROOT\Installer\Products\6DB1C82DCBD24074C9A01A77834B467C".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4103736Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4165543Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4167093Z HKEY_CLASSES_ROOT\Installer\Products\787B403CDDC6D5D4288A4A74E5834FA6".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4168414Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4208603Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4209632Z HKEY_CLASSES_ROOT\Installer\Products\7CA09A653AF9AD3459A0420466BD752E".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4210169Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4502469Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4503775Z HKEY_CLASSES_ROOT\Installer\Products\B912F893D67A17C418E82C324DD240CD".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4504251Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4607680Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4608167Z HKEY_CLASSES_ROOT\Installer\Products\CFEF102E1AC2CF84E96DB628CB4E1596".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4609170Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4889220Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4890170Z HKEY_CLASSES_ROOT\Installer\Products\FF615CA1CD56FA04B9E6BE0BCCEBF8B1".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4890689Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4971470Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4972767Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Miniconda3 py314_26.7.1-1 (Python 3.14.7 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4973309Z 64-bit)".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.4973417Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5088228Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5089439Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{1AC516FF-65DC-40AF-9B6E-EBB0CCBE8F1B}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5090408Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5146335Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5147002Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{398F219B-A76D-4C71-818E-C223D42D04DC}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5147649Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5192858Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5195389Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{4607F822-71AA-423E-8E5D-A8515BF8FF0E}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5196301Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5245536Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5247476Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{56A90AC7-9FA3-43DA-950A-244066DB57E2}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5248195Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5447433Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5448068Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{C304B787-6CDD-4D5D-82A8-A4475E38F46A}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5449135Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5487991Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5489450Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{D28C1BD6-2DBC-4704-9C0A-A17738B464C7}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5491137Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5524738Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5525511Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{E201FEFC-2CA1-48FC-9ED6-6B82BCE45169}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5526175Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5546376Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5547511Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{E60CC960-3B61-4FB9-B4A3-9D7788B81D9C}".
+checks	UNKNOWN STEP	2026-10-19T23:24:06.5548217Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.6366685Z Create Python 3.14.6 folder in C:\hostedtoolcache\windows\Python
+checks	UNKNOWN STEP	2026-10-19T23:24:06.6367534Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.6408840Z Copy Python binaries to C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:06.6410662Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:06.6539908Z Install Python 3.14.6 in C:\hostedtoolcache\windows\Python...
+checks	UNKNOWN STEP	2026-10-19T23:24:06.6540945Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:39.5954469Z Create python3 symlink
+checks	UNKNOWN STEP	2026-10-19T23:24:39.5954879Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6331212Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6332332Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6337335Z Directory: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6337768Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6338201Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6350342Z Mode                 LastWriteTime         Length Name
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6355170Z ----                 -------------         ------ ----
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6367282Z -a---l        10/19/2026  11:24 PM              0 python3.exe
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6375903Z Install and upgrade Pip
+checks	UNKNOWN STEP	2026-10-19T23:24:39.6377307Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:40.8266209Z Collecting pip
+checks	UNKNOWN STEP	2026-10-19T23:24:40.9226430Z Downloading pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:24:40.9698344Z Downloading pip-26.2.1-py3-none-any.whl (1.8 MB)
+checks	UNKNOWN STEP	2026-10-19T23:24:41.1119170Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:41.1120634Z ---------------------------------------- 1.8/1.8 MB 20.0 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:24:41.1122614Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:41.1469972Z Installing collected packages: pip
+checks	UNKNOWN STEP	2026-10-19T23:24:41.1472269Z Attempting uninstall: pip
+checks	UNKNOWN STEP	2026-10-19T23:24:41.1503220Z Found existing installation: pip 26.1.2
+checks	UNKNOWN STEP	2026-10-19T23:24:41.2317655Z Uninstalling pip-26.1.2:
+checks	UNKNOWN STEP	2026-10-19T23:24:41.2535301Z Successfully uninstalled pip-26.1.2
+checks	UNKNOWN STEP	2026-10-19T23:24:45.5582133Z Successfully installed pip-26.2.1
+checks	UNKNOWN STEP	2026-10-19T23:24:45.6241099Z Create complete file
+checks	UNKNOWN STEP	2026-10-19T23:24:45.6242058Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:45.6256228Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:45.6256683Z 
+checks	UNKNOWN STEP	2026-10-19T23:24:45.6720402Z Successfully set up CPython (3.14.6)
+checks	UNKNOWN STEP	2026-10-19T23:24:45.6721565Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7060045Z ##[group]Run actions/setup-node@v4
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7060373Z with:
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7060557Z   node-version: 22
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7060743Z   cache: npm
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7060922Z   always-auth: false
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7061118Z   check-latest: false
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7063479Z   token: ***
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7063651Z env:
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7063903Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7064386Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7064828Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7065218Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7065594Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:45.7065905Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:24:45.8926476Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:45.8933847Z (node:6776) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	UNKNOWN STEP	2026-10-19T23:24:45.8935134Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	UNKNOWN STEP	2026-10-19T23:24:45.8938227Z ##[group]Environment details
+checks	UNKNOWN STEP	2026-10-19T23:24:51.0085794Z node: v22.23.3
+checks	UNKNOWN STEP	2026-10-19T23:24:51.0086148Z npm: 10.9.9
+checks	UNKNOWN STEP	2026-10-19T23:24:51.0086416Z yarn: 1.22.22
+checks	UNKNOWN STEP	2026-10-19T23:24:51.0086910Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:24:51.0993264Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.3\x64\npm.cmd config get cache"
+checks	UNKNOWN STEP	2026-10-19T23:24:51.6515280Z C:\npm\cache
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9209805Z npm cache is not found
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9520761Z ##[group]Run python -m venv venv
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9521139Z ^[[36;1mpython -m venv venv^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9521487Z ^[[36;1m.\venv\Scripts\python.exe -m pip install --upgrade pip^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9521939Z ^[[36;1m.\venv\Scripts\python.exe -m pip install -r requirements-dev.txt^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9662998Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9663446Z env:
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9663733Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9664235Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9664724Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9665190Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9665640Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:24:51.9665989Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:24:57.0894935Z Requirement already satisfied: pip in .\venv\Lib\site-packages (26.1.2)
+checks	UNKNOWN STEP	2026-10-19T23:24:57.2465105Z Collecting pip
+checks	UNKNOWN STEP	2026-10-19T23:24:57.2488481Z   Using cached pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:24:57.2553825Z Using cached pip-26.2.1-py3-none-any.whl (1.8 MB)
+checks	UNKNOWN STEP	2026-10-19T23:24:57.2948906Z Installing collected packages: pip
+checks	UNKNOWN STEP	2026-10-19T23:24:57.2949940Z   Attempting uninstall: pip
+checks	UNKNOWN STEP	2026-10-19T23:24:57.2982179Z     Found existing installation: pip 26.1.2
+checks	UNKNOWN STEP	2026-10-19T23:24:57.3675814Z     Uninstalling pip-26.1.2:
+checks	UNKNOWN STEP	2026-10-19T23:24:57.3877079Z       Successfully uninstalled pip-26.1.2
+checks	UNKNOWN STEP	2026-10-19T23:24:58.7971030Z Successfully installed pip-26.2.1
+checks	UNKNOWN STEP	2026-10-19T23:25:00.2530153Z Collecting numpy==2.5.1 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 3))
+checks	UNKNOWN STEP	2026-10-19T23:25:00.3322755Z   Downloading numpy-2.5.1-cp314-cp314-win_amd64.whl.metadata (6.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:00.5230581Z Collecting scipy==1.18.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 4))
+checks	UNKNOWN STEP	2026-10-19T23:25:00.5461217Z   Downloading scipy-1.18.0-cp314-cp314-win_amd64.whl.metadata (61 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:00.7490457Z Collecting pandas==3.0.3 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 5))
+checks	UNKNOWN STEP	2026-10-19T23:25:00.7729989Z   Downloading pandas-3.0.3-cp314-cp314-win_amd64.whl.metadata (19 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:00.9203653Z Collecting scikit-learn==1.9.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 6))
+checks	UNKNOWN STEP	2026-10-19T23:25:00.9442600Z   Downloading scikit_learn-1.9.0-cp314-cp314-win_amd64.whl.metadata (11 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.0183443Z Collecting joblib==1.5.3 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 7))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.0394681Z   Downloading joblib-1.5.3-py3-none-any.whl.metadata (5.5 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.1080251Z Collecting threadpoolctl==3.6.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 8))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.1291932Z   Downloading threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.1946431Z Collecting python-dateutil==2.9.0.post0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 9))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.2161343Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.2853594Z Collecting tzdata==2026.2 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 10))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.3067832Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.3925894Z Collecting six==1.17.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 11))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.4143162Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.4926177Z Collecting Flask>=3.0.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.5569579Z   Downloading flask-3.1.3-py3-none-any.whl.metadata (3.2 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.7374826Z Collecting psutil>=5.9.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 7))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.7600241Z   Downloading psutil-7.2.2-cp37-abi3-win_amd64.whl.metadata (22 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.8309397Z Collecting scapy>=2.5.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 8))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.8537351Z   Downloading scapy-2.8.0-py3-none-any.whl.metadata (5.8 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:01.9262132Z Collecting python-dotenv (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 9))
+checks	UNKNOWN STEP	2026-10-19T23:25:01.9479076Z   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.0210566Z Collecting PyJWT>=2.8.0 (from PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.0433639Z   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.1246860Z Collecting pytest>=8.0.0 (from -r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.1457994Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.5671846Z Collecting ruff>=0.5.0 (from -r requirements-dev.txt (line 3))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.5894692Z   Downloading ruff-0.17.1-py3-none-win_amd64.whl.metadata (21 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.6879962Z Collecting narwhals>=2.0.1 (from scikit-learn==1.9.0->-r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 6))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.7103282Z   Downloading narwhals-2.27.1-py3-none-any.whl.metadata (15 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.7951825Z Collecting blinker>=1.9.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.8163477Z   Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.8789330Z Collecting click>=8.1.3 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.9001023Z   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:02.9626681Z Collecting itsdangerous>=2.2.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:02.9858871Z   Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.0536933Z Collecting jinja2>=3.1.2 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.0752131Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.1932637Z Collecting markupsafe>=2.1.1 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.2150878Z   Downloading markupsafe-3.0.4-cp314-cp314-win_amd64.whl.metadata (2.8 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.2884243Z Collecting werkzeug>=3.1.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.3096005Z   Downloading werkzeug-3.1.9-py3-none-any.whl.metadata (4.1 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.3749855Z Collecting colorama>=0.4 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.3966708Z   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.4616242Z Collecting iniconfig>=1.0.1 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.4827372Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.5479670Z Collecting packaging>=22 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.5700591Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.6333823Z Collecting pluggy<2,>=1.5 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.6548688Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:03.7254987Z Collecting pygments>=2.7.2 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	UNKNOWN STEP	2026-10-19T23:25:03.7473216Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:04.0293483Z Collecting cryptography>=3.4.0 (from PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-19T23:25:04.0523601Z   Downloading cryptography-50.0.2-cp311-abi3-win_amd64.whl.metadata (4.4 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:04.2895495Z Collecting cffi>=2.0.0 (from cryptography>=3.4.0->PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-19T23:25:04.3111388Z   Downloading cffi-2.1.1-cp314-cp314-win_amd64.whl.metadata (2.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:04.3740014Z Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	UNKNOWN STEP	2026-10-19T23:25:04.3952216Z   Downloading pycparser-3.11-py3-none-any.whl.metadata (8.2 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:04.4423832Z Downloading numpy-2.5.1-cp314-cp314-win_amd64.whl (12.6 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:04.6635161Z    ---------------------------------------- 12.6/12.6 MB 67.8 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:04.6859843Z Downloading scipy-1.18.0-cp314-cp314-win_amd64.whl (37.3 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:05.2985590Z    ---------------------------------------- 37.3/37.3 MB 60.8 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:05.3226969Z Downloading pandas-3.0.3-cp314-cp314-win_amd64.whl (9.9 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:05.4438763Z    ---------------------------------------- 9.9/9.9 MB 81.6 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:05.4664042Z Downloading scikit_learn-1.9.0-cp314-cp314-win_amd64.whl (8.3 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:05.9922069Z    ---------------------------------------- 8.3/8.3 MB 15.4 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:06.0139511Z Downloading joblib-1.5.3-py3-none-any.whl (309 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.0583640Z Downloading threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.0984180Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.1415204Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.1861816Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.2360109Z Downloading flask-3.1.3-py3-none-any.whl (103 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.2738829Z Downloading psutil-7.2.2-cp37-abi3-win_amd64.whl (137 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.3142019Z Downloading scapy-2.8.0-py3-none-any.whl (2.8 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.3617497Z    ---------------------------------------- 2.8/2.8 MB 57.6 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:06.3833771Z Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.4231687Z Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.4711841Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.5206234Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.5589196Z Downloading ruff-0.17.1-py3-none-win_amd64.whl (10.1 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.6555457Z    ---------------------------------------- 10.1/10.1 MB 106.2 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:06.6766964Z Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.7161586Z Downloading click-8.5.0-py3-none-any.whl (125 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.7586853Z Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.7986864Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:06.9482425Z Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.0110369Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.0503985Z Downloading markupsafe-3.0.4-cp314-cp314-win_amd64.whl (14 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.0923318Z Downloading narwhals-2.27.1-py3-none-any.whl (483 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.1371353Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.1777639Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.2109485Z    ---------------------------------------- 1.3/1.3 MB 32.6 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:07.2332356Z Downloading cryptography-50.0.2-cp311-abi3-win_amd64.whl (3.8 MB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.2804134Z    ---------------------------------------- 3.8/3.8 MB 83.1 MB/s  0:00:00
+checks	UNKNOWN STEP	2026-10-19T23:25:07.3021006Z Downloading cffi-2.1.1-cp314-cp314-win_amd64.whl (187 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.3451838Z Downloading werkzeug-3.1.9-py3-none-any.whl (228 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.3855791Z Downloading pycparser-3.11-py3-none-any.whl (51 kB)
+checks	UNKNOWN STEP	2026-10-19T23:25:07.7646119Z Installing collected packages: tzdata, threadpoolctl, six, scapy, ruff, python-dotenv, PyJWT, pygments, pycparser, psutil, pluggy, packaging, numpy, narwhals, markupsafe, joblib, itsdangerous, iniconfig, colorama, click, blinker, werkzeug, scipy, python-dateutil, pytest, jinja2, cffi, scikit-learn, pandas, Flask, cryptography
+checks	UNKNOWN STEP	2026-10-19T23:25:31.6411528Z 
+checks	UNKNOWN STEP	2026-10-19T23:25:31.6446570Z Successfully installed Flask-3.1.3 PyJWT-2.15.1 blinker-1.9.0 cffi-2.1.1 click-8.5.0 colorama-0.4.6 cryptography-50.0.2 iniconfig-2.3.1 itsdangerous-2.2.0 jinja2-3.1.6 joblib-1.5.3 markupsafe-3.0.4 narwhals-2.27.1 numpy-2.5.1 packaging-26.3 pandas-3.0.3 pluggy-1.7.0 psutil-7.2.2 pycparser-3.11 pygments-2.21.0 pytest-9.1.1 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 ruff-0.17.1 scapy-2.8.0 scikit-learn-1.9.0 scipy-1.18.0 six-1.17.0 threadpoolctl-3.6.0 tzdata-2026.2 werkzeug-3.1.9
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9640912Z ##[group]Run npm ci
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9641231Z ^[[36;1mnpm ci^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9714791Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9715134Z env:
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9715399Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9715849Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9716308Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9716722Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9717141Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:31.9717477Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3187638Z 
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3188270Z added 20 packages, and audited 21 packages in 14s
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3188833Z 
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3189389Z 5 packages are looking for funding
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3189907Z   run `npm fund` for details
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3200922Z 
+checks	UNKNOWN STEP	2026-10-19T23:25:46.3201167Z found 0 vulnerabilities
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8006375Z ##[group]Run .\venv\Scripts\python.exe -m ruff check .
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8006833Z ^[[36;1m.\venv\Scripts\python.exe -m ruff check .^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8079723Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8080070Z env:
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8080344Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8080797Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8081247Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8081642Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8082124Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:47.8082634Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:25:48.2276842Z All checks passed!
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3564695Z ##[group]Run npm run typecheck
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3565033Z ^[[36;1mnpm run typecheck^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3653451Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3653798Z env:
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3654069Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3654528Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3654990Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3655373Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3655778Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:25:48.3656087Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:25:49.1124413Z 
+checks	UNKNOWN STEP	2026-10-19T23:25:49.1124752Z > typecheck
+checks	UNKNOWN STEP	2026-10-19T23:25:49.1125006Z > pyright
+checks	UNKNOWN STEP	2026-10-19T23:25:49.1125140Z 
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4335100Z d:\a\AlgoGuard\AlgoGuard\bootstrap_admin.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4343521Z   d:\a\AlgoGuard\AlgoGuard\bootstrap_admin.py:134:12 - warning: Import "requests" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4346866Z d:\a\AlgoGuard\AlgoGuard\check_db_connection.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4348761Z   d:\a\AlgoGuard\AlgoGuard\check_db_connection.py:26:16 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4350272Z d:\a\AlgoGuard\AlgoGuard\cloud_migrate.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4351670Z   d:\a\AlgoGuard\AlgoGuard\cloud_migrate.py:278:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4353851Z d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4355325Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:53:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4357455Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:53:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4359514Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:238:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4362103Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:238:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4364290Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:239:10 - warning: Import "psycopg2.extras" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4365690Z d:\a\AlgoGuard\AlgoGuard\legacy_import.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4366991Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:45:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4368620Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:45:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4370327Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:95:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4371941Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:95:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4374090Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:96:10 - warning: Import "psycopg2.extras" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4375295Z d:\a\AlgoGuard\AlgoGuard\maintainer_env.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4376454Z   d:\a\AlgoGuard\AlgoGuard\maintainer_env.py:97:14 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4378282Z   d:\a\AlgoGuard\AlgoGuard\maintainer_env.py:98:14 - warning: Import "psycopg2.extensions" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4379553Z d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4383179Z   d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py:188:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4385297Z   d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py:189:10 - warning: Import "psycopg2.extensions" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4386631Z d:\a\AlgoGuard\AlgoGuard\measure_latency.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4387820Z   d:\a\AlgoGuard\AlgoGuard\measure_latency.py:29:16 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4388968Z d:\a\AlgoGuard\AlgoGuard\publish_model.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4390113Z   d:\a\AlgoGuard\AlgoGuard\publish_model.py:145:12 - warning: Import "requests" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4391371Z d:\a\AlgoGuard\AlgoGuard\tests\integration\cloud_fixtures.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4392791Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\cloud_fixtures.py:11:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4394536Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_cloud_app_stack.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4396193Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_cloud_app_stack.py:34:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4397651Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4399140Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:35:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4401229Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:35:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4403323Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:257:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4405420Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:257:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4406944Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_model_publication.py
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4408448Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_model_publication.py:76:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	UNKNOWN STEP	2026-10-19T23:26:02.4409745Z 0 errors, 26 warnings, 0 informations
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5768197Z ##[group]Run .\venv\Scripts\python.exe -m pytest -q
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5768831Z ^[[36;1m.\venv\Scripts\python.exe -m pytest -q^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5874126Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5874642Z env:
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5875033Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5875745Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5876464Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5877116Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5877753Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:26:02.5878481Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:26:54.4964477Z ........................................................................ [ 13%]
+checks	UNKNOWN STEP	2026-10-19T23:28:00.8195558Z ........................................................................ [ 26%]
+checks	UNKNOWN STEP	2026-10-19T23:28:10.4649459Z ........................................................................ [ 39%]
+checks	UNKNOWN STEP	2026-10-19T23:28:37.7196655Z ...................................ssssssssssssssss..................... [ 52%]
+checks	UNKNOWN STEP	2026-10-19T23:28:39.4476282Z ........................................................................ [ 65%]
+checks	UNKNOWN STEP	2026-10-19T23:28:39.5403002Z ........................................................................ [ 78%]
+checks	UNKNOWN STEP	2026-10-19T23:28:43.1864472Z ........................................................................ [ 91%]
+checks	UNKNOWN STEP	2026-10-19T23:28:59.8321151Z ...............................................                          [100%]
+checks	UNKNOWN STEP	2026-10-19T23:28:59.8321783Z 535 passed, 21 skipped, 34 deselected in 175.72s (0:02:55)
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5407304Z ##[group]Run node --test tests/monitor_poll.test.cjs
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5407763Z ^[[36;1mnode --test tests/monitor_poll.test.cjs^[[0m
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5482134Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5482503Z env:
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5483000Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5483457Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5483896Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5484289Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5484697Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	UNKNOWN STEP	2026-10-19T23:29:00.5485235Z ##[endgroup]
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9207200Z TAP version 13
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9892759Z # Subtest: a session restart clears old rows and resumes from the new event cursor
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9901219Z ok 1 - a session restart clears old rows and resumes from the new event cursor
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9901947Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9902268Z   duration_ms: 5.2247
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9902624Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9902992Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9905108Z # Subtest: a new session with no events resets the cursor immediately
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9908242Z ok 2 - a new session with no events resets the cursor immediately
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9909645Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9909955Z   duration_ms: 1.0857
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9910292Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9910579Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9916388Z # Subtest: a stopped session keeps polling so another tab can start a new session
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9919992Z ok 3 - a stopped session keeps polling so another tab can start a new session
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9920732Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9921063Z   duration_ms: 1.3108
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9921424Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9921743Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9924544Z # Subtest: a delayed status response cannot undo a successful control action
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9925567Z ok 4 - a delayed status response cannot undo a successful control action
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9926311Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9926615Z   duration_ms: 1.3976
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9926952Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9927243Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9969555Z # Subtest: a rejected control action preserves the current feed
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9970693Z ok 5 - a rejected control action preserves the current feed
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9971466Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9971780Z   duration_ms: 9.3975
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9972153Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9972458Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9985389Z # Subtest: polling recovers automatically from a temporary network failure
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9987857Z ok 6 - polling recovers automatically from a temporary network failure
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9988522Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9988852Z   duration_ms: 1.7382
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9989226Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9989539Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9991005Z # Subtest: polling recovers automatically from a temporary server failure
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9992169Z ok 7 - polling recovers automatically from a temporary server failure
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9992817Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9993114Z   duration_ms: 1.5652
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9993466Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9993753Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9995767Z # Subtest: an expired login stops polling and keeps the login message visible
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9996932Z ok 8 - an expired login stops polling and keeps the login message visible
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9997757Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9998132Z   duration_ms: 1.0847
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9998494Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:00.9998873Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0009891Z # Subtest: a stalled status request times out and allows the next scheduled poll
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0013123Z ok 9 - a stalled status request times out and allows the next scheduled poll
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0016563Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0016949Z   duration_ms: 3.3629
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0017298Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0017591Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0041345Z # Subtest: a stalled control request releases the controls and checks status without repeating POST
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0045208Z ok 10 - a stalled control request releases the controls and checks status without repeating POST
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0046060Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0046385Z   duration_ms: 3.4425
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0046759Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0047080Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0048806Z # Subtest: cloud mode updates the saved state of rows already in the feed
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0051186Z ok 11 - cloud mode updates the saved state of rows already in the feed
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0052204Z   ---
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0052531Z   duration_ms: 1.3796
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0052903Z   type: 'test'
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0053216Z   ...
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0168647Z 1..11
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0169023Z # tests 11
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0170341Z # suites 0
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0171300Z # pass 11
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0172273Z # fail 0
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0173323Z # cancelled 0
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0174297Z # skipped 0
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0175257Z # todo 0
+checks	UNKNOWN STEP	2026-10-19T23:29:01.0176284Z # duration_ms 115.4417
+checks	UNKNOWN STEP	2026-10-19T23:29:01.1760409Z Post job cleanup.
+checks	UNKNOWN STEP	2026-10-19T23:29:01.3416890Z (node:8356) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	UNKNOWN STEP	2026-10-19T23:29:01.3418296Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	UNKNOWN STEP	2026-10-19T23:29:01.4933050Z [command]"C:\Program Files\Git\usr\bin\tar.exe" --posix -cf cache.tzst --exclude cache.tzst -P -C D:/a/AlgoGuard/AlgoGuard --files-from manifest.txt --force-local --use-compress-program "zstd -T0"
+checks	UNKNOWN STEP	2026-10-19T23:29:02.2055909Z (node:8356) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+checks	UNKNOWN STEP	2026-10-19T23:29:02.8692639Z Sent 64981801 of 64981801 (100.0%), 91.9 MBs/sec
+checks	UNKNOWN STEP	2026-10-19T23:29:03.0103122Z Cache saved with the key: node-cache-Windows-x64-npm-768698a862c9e0a8361a99337dc01cc70bf4508d204def6d346afd121a1917a4
+checks	UNKNOWN STEP	2026-10-19T23:29:03.0412904Z Post job cleanup.
+checks	UNKNOWN STEP	2026-10-19T23:29:03.1957028Z (node:1824) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	UNKNOWN STEP	2026-10-19T23:29:03.1957987Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	UNKNOWN STEP	2026-10-19T23:29:03.2304018Z Post job cleanup.
+checks	UNKNOWN STEP	2026-10-19T23:29:03.4309877Z [command]"C:\Program Files\Git\bin\git.exe" version
+checks	UNKNOWN STEP	2026-10-19T23:29:03.4682907Z git version 2.56.0.windows.2
+checks	UNKNOWN STEP	2026-10-19T23:29:03.4763329Z Temporarily overriding HOME='D:\a\_temp\1c550c8a-159d-440b-b5bd-ae2886842642' before making global git config changes
+checks	UNKNOWN STEP	2026-10-19T23:29:03.4765985Z Adding repository directory to the temporary git global config as a safe directory
+checks	UNKNOWN STEP	2026-10-19T23:29:03.4778780Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\AlgoGuard\AlgoGuard
+checks	UNKNOWN STEP	2026-10-19T23:29:03.5221567Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+checks	UNKNOWN STEP	2026-10-19T23:29:03.5633632Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+checks	UNKNOWN STEP	2026-10-19T23:29:04.1304293Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+checks	UNKNOWN STEP	2026-10-19T23:29:04.1643629Z http.https://github.com/.extraheader
+checks	UNKNOWN STEP	2026-10-19T23:29:04.1689968Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+checks	UNKNOWN STEP	2026-10-19T23:29:04.2090796Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+checks	UNKNOWN STEP	2026-10-19T23:29:04.7727452Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+checks	UNKNOWN STEP	2026-10-19T23:29:04.8106986Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+checks	UNKNOWN STEP	2026-10-19T23:29:05.3652516Z Cleaning up orphan processes
+checks	UNKNOWN STEP	2026-10-19T23:29:05.3869094Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
