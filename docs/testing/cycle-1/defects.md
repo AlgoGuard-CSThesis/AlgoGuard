@@ -120,7 +120,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 
@@ -156,7 +156,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 
@@ -192,7 +192,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 
@@ -228,7 +228,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 
@@ -335,7 +335,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo) |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 
@@ -370,7 +370,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC A and PC B, hosted Supabase pilot (Tokyo) |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 
@@ -575,7 +575,7 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, administrator |
 | Status | Open |
 | Fixed in commit | â€” |
-| Re-test result | â€” |
+| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
 
 **Steps to reproduce**
 

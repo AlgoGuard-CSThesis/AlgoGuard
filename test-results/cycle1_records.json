@@ -953,6 +953,56 @@
       "evidence": "test-results/ui_20261020/final/final_ui.json (smoke), smk_replay.png (the TC-01/TC-02 screenshots were not captured)"
     },
     {
+      "time": "2026-10-20 10:43",
+      "case": "UAT-01.1",
+      "card": "UAT-01",
+      "build": "213d0be",
+      "expected": "UAT scenario 1: replay (Sample traffic 5,000 flows, Fast, Sequential, Save attacks) for about 2 minutes - flows marked Attack/Normal with confidence, Attacks and Alerts Queued rising together, Pending back to 0 and Synced = Queued after Stop, no error.",
+      "actual": "Dry run on the final build, analyst account, 10:41:35-10:43:35: 169 flows, 123 Attack / 46 Normal, 123 alerts queued, 123 synced, 0 pending, 0 not stored; 50 Recent Flows rows with a verdict on screen; no error message.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/uat/uat_ui.json (scenario1), uat_s1_replay.png"
+    },
+    {
+      "time": "2026-10-20 10:44",
+      "case": "UAT-01.2",
+      "card": "UAT-01",
+      "build": "213d0be",
+      "expected": "UAT scenario 2: acknowledge then resolve an Open alert - status Acknowledged, then Resolved with a Reopen button; each action once; a Logs entry for each.",
+      "actual": "Alert #4633 (Open): Acknowledge -> 'Alert #4633 marked Acknowledged.', status Acknowledged; Resolve -> 'Alert #4633 marked Resolved.', status Resolved, Reopen shown and Resolve gone; Logs #5671 'Alert 4633 marked Acknowledged.' and #5672 'Alert 4633 marked Resolved.', one entry each. Rapid double-clicking was not tried.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/uat/uat_ui.json (scenario2), uat_s2_alerts.png, uat_s2_logs.png"
+    },
+    {
+      "time": "2026-10-20 10:44",
+      "case": "UAT-01.3",
+      "card": "UAT-01",
+      "build": "213d0be",
+      "expected": "UAT scenario 3: report from three selected alerts - at the top of Operational Reports with type, time (UTC), owner and installation; '3 alerts of evidence' listing the picked alerts; a JSON download.",
+      "actual": "Alerts #4633, #4632, #4631 selected -> 'Report saved together with its alert evidence.'; Reports top row '#1 Operational evidence 2026-10-20 02:44:08 celpca d535e2fd'; report page 'generated 2026-10-20 02:44:08 UTC - 3 alerts of evidence' listing exactly #4631-#4633; JSON button returns HTTP 200 application/json naming all three alerts.",
+      "status": "Pass",
+      "evidence": "test-results/ui_20261020/uat/uat_ui.json (scenario3), uat_s3_reports.png, uat_s3_report_detail.png"
+    },
+    {
+      "time": "2026-10-20 10:44",
+      "case": "UAT-01.4",
+      "card": "UAT-01",
+      "build": "213d0be",
+      "expected": "UAT scenario 4: an administrator approves a test analyst awaiting approval; the analyst can then monitor without restarting.",
+      "actual": "Not executed: needs the Administrator account and a test analyst prepared to be awaiting approval on an installation; neither was prepared (passwords are not typed by the test agent, and no accounts are created on the shared pilot for this). The approval flow is covered by the automated test test_enrollment_on_login_and_administrator_approval (tests/test_cloud_app.py) and the Stage 5F pilot.",
+      "status": "Not executed",
+      "evidence": "docs/testing/cycle-1/UAT scenarios.md"
+    },
+    {
+      "time": "2026-10-20 10:44",
+      "case": "TC-15",
+      "card": "UAT-01",
+      "build": "213d0be",
+      "expected": "Product Owner, signed in as an analyst, replays algoguard_big.csv, opens an alert, acknowledges and resolves it: alerts raised for attacks; review actions logged; Product Owner accepts.",
+      "actual": "The replay, alert review and report steps were run as a dry run on the final build: alerts raised for attacks (123), review actions logged (UAT-01.1 to UAT-01.3, all Pass); scenario 4 not run. Blocked on the last step: the Product Owner's accept/reject decision and signature on the UAT sheet, to be added later. (Her permission to accept was relayed by the Lead Architect on 2026-10-20; not signed.)",
+      "status": "Blocked",
+      "evidence": "Test Log rows UAT-01.1 to UAT-01.4; test-results/ui_20261020/uat/; docs/testing/cycle-1/UAT scenarios.md"
+    },
+    {
       "time": "2026-10-20 10:20",
       "case": "USE-01.3",
       "card": "USE-01",
@@ -1116,7 +1166,7 @@
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
     },
     {
@@ -1133,7 +1183,7 @@
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
     },
     {
@@ -1150,7 +1200,7 @@
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
     },
     {
@@ -1167,7 +1217,7 @@
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row TC-03; test-results/evaluation_20261019_153649/"
     },
     {
@@ -1218,7 +1268,7 @@
       "environment": "PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo)",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row PRF-01.P1; docs/migration/05f-pilot.md §4, §5 finding 3, §7 L2"
     },
     {
@@ -1235,7 +1285,7 @@
       "environment": "PC A and PC B, hosted Supabase pilot (Tokyo)",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row PRF-01.P2; docs/migration/05f-pilot.md §4, §5 finding 4, §7 L1"
     },
     {
@@ -1337,7 +1387,7 @@
       "environment": "PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, administrator",
       "status": "Open",
       "fixed_in": "",
-      "retest": "",
+      "retest": "Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1.",
       "evidence": "Test Log row TC-11; test-results/ui_20261020/tc11_live.json"
     },
     {
@@ -1523,7 +1573,7 @@
     {
       "criterion": "3.3 · Overall pass rate across executed test cases",
       "target": ">= 95%",
-      "measured": "84.6% of executed test cases (11 of 13: TC-01, TC-02, TC-04, TC-05, TC-08, TC-09, TC-10, TC-12, TC-13, TC-14, TC-16 passed on their latest run; TC-03 and TC-11 failed; TC-06, TC-07, TC-15 not executed). 78.7% of executed Test Log rows (74 Pass of 94, earlier failed runs included).",
+      "measured": "84.6% of executed test cases (11 of 13: TC-01, TC-02, TC-04, TC-05, TC-08, TC-09, TC-10, TC-12, TC-13, TC-14, TC-16 passed on their latest run; TC-03 and TC-11 failed; TC-06 and TC-07 not executed; TC-15 blocked on the Product Owner's decision). 79.4% of executed Test Log rows (77 Pass of 97, earlier failed runs included).",
       "result": "Not met",
       "source": "Test Log"
     },

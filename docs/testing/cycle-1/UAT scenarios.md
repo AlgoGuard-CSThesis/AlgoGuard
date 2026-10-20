@@ -1,13 +1,13 @@
 # AlgoGuard test cycle 1 — User acceptance scenarios (UAT-01)
 
 **For:** Pauleen Joy O. Gomez, Product Owner (card UAT-01, test case TC-15)
-**Build:** `AlgoGuard-CSThesis/AlgoGuard` main, product code `940e082` (test tooling `dafe5e5`) · **Where:** PC A, app at http://127.0.0.1:5000 in cloud mode
+**Build:** `AlgoGuard-CSThesis/AlgoGuard` main, final build `213d0be` (written for product code `940e082`) · **Where:** PC A, app at http://127.0.0.1:5000 in cloud mode
 
 You run these four scenarios yourself and decide whether AlgoGuard is acceptable. Each scenario says what to do and what you should see. Tick **Pass** or **Fail**, write anything surprising under *Notes*, and sign. A failed step is a useful result: note what you saw and carry on with the next scenario.
 
 **Before you start**
 - Sign in yourself. Don't write passwords anywhere, and keep e-mail addresses out of screenshots.
-- Times on some pages are shown in UTC (8 hours behind the PC clock). This is already being tracked; it is not something you need to check.
+- Times are shown in UTC, 8 hours behind the PC clock; every page now says so (DEF-16, fixed).
 
 ---
 
@@ -84,9 +84,20 @@ Result: ☐ Pass ☐ Fail ☐ Not run   Notes: _________________________________
 
 ---
 
+## Dry run by the test team (2026-10-20, final build 213d0be)
+
+Scenarios 1–3 were run once on PC A, signed in as the PC A analyst, so you can see what to expect. They do not replace your own run or your decision; tick the boxes above from what you see yourself.
+
+| Scenario | Result of the dry run | Evidence |
+|---|---|---|
+| 1 | 169 flows, 123 Attack / 46 Normal, 123 alerts queued and synced, 0 pending, no error | `test-results/ui_20261020/uat/uat_s1_replay.png` |
+| 2 | Alert #4633: Open → Acknowledged → Resolved, Reopen shown; one log entry per action (#5671, #5672). Rapid double-clicking was not tried | `uat_s2_alerts.png`, `uat_s2_logs.png` |
+| 3 | Report #1 from alerts #4631–#4633: "3 alerts of evidence", the same three alerts, JSON download works | `uat_s3_reports.png`, `uat_s3_report_detail.png` |
+| 4 | Not run: the Administrator account and a test analyst awaiting approval were not prepared | — |
+
 ## Acceptance decision
 
-Defects open at the time of UAT are listed in `docs/testing/cycle-1/defects.md` and on the Testing Kanban (DEF cards). The Master Test Plan's exit criteria require **zero open Critical or High defects**; at the time of writing, DEF-04 to DEF-07 (detection quality) are High.
+Defects open at the time of UAT are listed in `docs/testing/cycle-1/defects.md` and on the Testing Kanban (DEF cards). The Master Test Plan's exit criteria require **zero open Critical or High defects**; DEF-04 to DEF-07 (detection quality) are High and were deferred to test cycle 2. DEF-10, DEF-11 and DEF-17 (Medium, throughput and lag) are also deferred. The other eleven defects found in cycle 1 are fixed and closed.
 
 ☐ **Accept** the build for this cycle   ☐ **Accept with conditions** (write them below)   ☐ **Reject**
 
