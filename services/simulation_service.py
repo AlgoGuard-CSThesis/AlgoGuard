@@ -94,38 +94,40 @@ def _build_input_frame(payload, artifact):
         raise SimulationServiceError("Prediction input must be a JSON object.")
     feature_columns = artifact.get("feature_columns") or []
     numeric_columns = set(artifact.get("numeric_columns") or [])
-    defaults = artifact.get("feature_defaults") or {}
     if not feature_columns:
         raise SimulationServiceError("The deployed artifact has no feature schema.")
+    # A manual record is classified only as entered: a guessed default would be stored as if
+    # it had been observed (DEF-12).
+    missing = [
+        column for column in feature_columns
+        if payload.get(column) is None or not str(payload.get(column)).strip()
+    ]
+    if missing:
+        raise SimulationServiceError(
+            f"Enter a value for every field; missing: {', '.join(missing)}."
+        )
 
     row = {}
     for column in feature_columns:
-        value = payload.get(column, defaults.get(column))
+        value = payload[column]
         if column in numeric_columns:
-            if value in (None, ""):
-                row[column] = None
-            else:
-                try:
-                    row[column] = float(value)
-                except (TypeError, ValueError, OverflowError) as error:
-                    raise SimulationServiceError(
-                        f"{column} must contain a finite numerical value."
-                    ) from error
-                if not np.isfinite(row[column]):
-                    raise SimulationServiceError(
-                        f"{column} must contain a finite numerical value."
-                    )
-                if column in NON_NEGATIVE_FEATURES and row[column] < 0:
-                    raise SimulationServiceError(f"{column} cannot be negative.")
-                if abs(row[column]) > MAX_MODEL_VALUE:
-                    raise SimulationServiceError(
-                        f"{column} is too large to classify; enter a smaller value."
-                    )
+            try:
+                row[column] = float(value)
+            except (TypeError, ValueError, OverflowError) as error:
+                raise SimulationServiceError(
+                    f"{column} must contain a finite numerical value."
+                ) from error
+            if not np.isfinite(row[column]):
+                raise SimulationServiceError(f"{column} must contain a finite numerical value.")
+            if column in NON_NEGATIVE_FEATURES and row[column] < 0:
+                raise SimulationServiceError(f"{column} cannot be negative.")
+            if abs(row[column]) > MAX_MODEL_VALUE:
+                raise SimulationServiceError(
+                    f"{column} is too large to classify; enter a smaller value."
+                )
         else:
-            row[column] = None if value in (None, "") else str(value)
-    # Scikit-learn imputes NaN; persistence and JSON keep missing values as null.
-    frame_row = {column: np.nan if value is None else value for column, value in row.items()}
-    return pd.DataFrame([frame_row], columns=feature_columns), row
+            row[column] = str(value)
+    return pd.DataFrame([row], columns=feature_columns), row
 
 
 def run_simulation(payload):

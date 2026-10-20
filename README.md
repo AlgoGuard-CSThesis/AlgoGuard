@@ -369,8 +369,11 @@ The prediction and monitor-start APIs require a JSON object and the
 `Content-Type: application/json` header. Malformed JSON, arrays, and scalar values
 are rejected before any prediction is stored or monitor session is started.
 
-In the JSON API, omitted fields use the saved training defaults. Explicit `null`
-or empty numeric fields are imputed by the saved pipeline and recorded as `null`.
+Every field of the saved feature schema is required, in the form and in the JSON API:
+an omitted, `null` or empty field is refused with "Enter a value for every field;
+missing: ..." and nothing is stored, so a guessed default is never recorded as if it
+had been observed. Counts, sizes, rates, durations, TTLs and gaps cannot be negative,
+and values beyond the model's numeric range are refused in plain language.
 Non-finite numbers such as `NaN` or `Infinity` are rejected with a validation error.
 Very large finite byte counts retain their feature values even when the optional
 packet-size summary exceeds the database's integer range; that summary is stored as `null`.

@@ -619,10 +619,11 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         form_data = {field["name"]: field.get("default", "") for field in schema["fields"]}
         result = None
         if request.method == "POST":
-            form_data.update(request.form.to_dict())
-            form_data.pop("_csrf_token", None)
+            submitted = request.form.to_dict()
+            submitted.pop("_csrf_token", None)
+            form_data.update(submitted)
             try:
-                result = manual_prediction(pinned, deployment, form_data)
+                result = manual_prediction(pinned, deployment, submitted)
             except SimulationServiceError as error:
                 flash(str(error), "danger")
         return render_template("simulation.html", schema=schema, form_data=form_data,

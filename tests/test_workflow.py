@@ -291,29 +291,54 @@ def reject_nonfinite_json(value):
     raise AssertionError(f"Response contains invalid JSON number: {value}")
 
 
-@pytest.mark.parametrize("field", ["dur", "sbytes", "dbytes"])
-@pytest.mark.parametrize("missing", [None, ""])
-def test_missing_numeric_prediction_is_imputed_and_saved_as_null(
+def full_row(trained_bundle, **changes):
+    """A complete manual record (the training defaults) with some fields changed."""
+    return {**trained_bundle["prepared"].feature_defaults, **changes}
+
+
+@pytest.mark.parametrize("field", ["dur", "sbytes", "dbytes", "proto"])
+@pytest.mark.parametrize("missing", ["omitted", None, "", "  "])
+def test_missing_or_empty_prediction_fields_are_refused_without_storing(
     authenticated_client, trained_bundle, field, missing
 ):
+    """DEF-12: a guessed default must not be stored as if it had been observed."""
     deploy_stacking(trained_bundle)
-    response = authenticated_client.post("/predict", json={field: missing})
+    before = db.get_detection_stats()["total_flows"]
+    row = full_row(trained_bundle)
+    if missing == "omitted":
+        del row[field]
+    else:
+        row[field] = missing
+
+    response = authenticated_client.post("/predict", json=row)
+
+    assert response.status_code == 400
+    assert response.get_json()["message"] == (
+        f"Enter a value for every field; missing: {field}."
+    )
+    assert db.get_detection_stats()["total_flows"] == before
+
+
+def test_manual_prediction_form_refuses_an_empty_field_without_storing(
+    authenticated_client, trained_bundle
+):
+    deploy_stacking(trained_bundle)
+    before = db.get_detection_stats()["total_flows"]
+    form = {key: str(value) for key, value in full_row(trained_bundle, dur="").items()}
+    page = authenticated_client.post("/simulation", data=form).get_data(as_text=True)
+
+    assert "Enter a value for every field; missing: dur." in page
+    assert db.get_detection_stats()["total_flows"] == before
+
+
+def test_complete_prediction_row_is_classified_and_saved(authenticated_client, trained_bundle):
+    deploy_stacking(trained_bundle)
+    response = authenticated_client.post("/predict", json=full_row(trained_bundle))
 
     assert response.status_code == 200
     result = json.loads(response.get_data(as_text=True), parse_constant=reject_nonfinite_json)
     assert result["prediction"] in {"Normal", "Attack"}
-    assert result["flow_data"][field] is None
-    with db.get_connection() as connection:
-        saved = connection.execute(
-            """SELECT nt.feature_payload, p.input_payload, nt.packet_size
-               FROM prediction p JOIN network_traffic nt ON nt.traffic_id = p.traffic_id
-               WHERE p.prediction_id = ?""",
-            (result["prediction_id"],),
-        ).fetchone()
-    assert saved["packet_size"] >= 0
-    for column in ("feature_payload", "input_payload"):
-        payload = json.loads(saved[column], parse_constant=reject_nonfinite_json)
-        assert payload[field] is None
+    assert result["prediction_id"]
 
 
 @pytest.mark.parametrize("invalid", ["NaN", "Infinity", "-Infinity", float("nan"), float("inf")])
@@ -323,7 +348,7 @@ def test_nonfinite_prediction_input_is_rejected_without_storing(
     deploy_stacking(trained_bundle)
     before = db.get_detection_stats()["total_flows"]
 
-    response = authenticated_client.post("/predict", json={"sbytes": invalid})
+    response = authenticated_client.post("/predict", json=full_row(trained_bundle, sbytes=invalid))
 
     assert response.status_code == 400
     assert "sbytes must contain a finite numerical value" in response.get_json()["message"]
@@ -337,7 +362,7 @@ def test_negative_flow_values_are_rejected_without_storing(
     deploy_stacking(trained_bundle)
     before = db.get_detection_stats()["total_flows"]
 
-    response = authenticated_client.post("/predict", json={field: -5})
+    response = authenticated_client.post("/predict", json=full_row(trained_bundle, **{field: -5}))
 
     assert response.status_code == 400
     assert response.get_json()["message"] == f"{field} cannot be negative."
@@ -350,7 +375,7 @@ def test_values_beyond_the_model_range_are_rejected_in_plain_language(
     deploy_stacking(trained_bundle)
     before = db.get_detection_stats()["total_flows"]
 
-    response = authenticated_client.post("/predict", json={"sbytes": 1e308})
+    response = authenticated_client.post("/predict", json=full_row(trained_bundle, sbytes=1e308))
 
     assert response.status_code == 400
     message = response.get_json()["message"]
@@ -383,7 +408,7 @@ def test_large_finite_prediction_values_preserve_the_flow_without_integer_overfl
     authenticated_client, trained_bundle, field
 ):
     deploy_stacking(trained_bundle)
-    response = authenticated_client.post("/predict", json={field: 1e20})
+    response = authenticated_client.post("/predict", json=full_row(trained_bundle, **{field: 1e20}))
 
     assert response.status_code == 200, response.get_json()
     result = response.get_json()

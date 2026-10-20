@@ -584,9 +584,11 @@ def simulation_demo():
     form_data = {field["name"]: field.get("default", "") for field in schema.get("fields", [])}
     result = None
     if request.method == "POST":
-        form_data.update(request.form.to_dict())
+        submitted = request.form.to_dict()
+        submitted.pop("_csrf_token", None)
+        form_data.update(submitted)
         try:
-            result = _execute_prediction(form_data, "Prediction")
+            result = _execute_prediction(submitted, "Prediction")
         except SimulationServiceError as error:
             flash(str(error), "danger")
         except Exception:
