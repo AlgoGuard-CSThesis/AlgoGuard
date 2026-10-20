@@ -1,0 +1,34 @@
+{
+  "applied": "2026-10-20 10:21",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "REG-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 8
+    },
+    {
+      "card": "SYS-01",
+      "action": "edit body",
+      "boxes_ticked": 0,
+      "results_lines": 5
+    },
+    {
+      "card": "DEF-08",
+      "action": "status Review -> Done"
+    },
+    {
+      "card": "DOC-05",
+      "action": "status To Do -> Review"
+    },
+    {
+      "card": "DOC-06",
+      "action": "status To Do -> Review"
+    },
+    {
+      "card": "DEF-08",
+      "action": "edit DEF body from defects.md"
+    }
+  ]
+}

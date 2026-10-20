@@ -1,0 +1,103 @@
+{
+  "started": "2026-10-20 10:20:17",
+  "labels": {
+    "time": "2026-10-20 10:20:39",
+    "dashboard_last_at": "2026-10-20 01:46:58 UTC",
+    "dashboard_deployed_at": "2026-10-08 06:10:49 UTC",
+    "dashboard_double_utc": 0,
+    "dashboard_alert_and_log_utc_suffixes": 7,
+    "logs_header_utc": true,
+    "logs_message_cells_none": 0,
+    "alerts_header_utc": true,
+    "monitor_header_utc": true,
+    "reports_header_utc": true,
+    "nodes_decided_header_utc": true
+  },
+  "def12": {
+    "flows_before": "2,551",
+    "form_empty_dur_no_browser_check": {
+      "time": "2026-10-20 10:20:50",
+      "validation_message": "Please fill out this field.",
+      "messages": [
+        "Enter a value for every field; missing: dur."
+      ],
+      "result_shown": false,
+      "result_cards_before": 0
+    },
+    "api_omitted_dur": {
+      "time": "2026-10-20 10:20:54",
+      "status": 400,
+      "body": "{\"message\":\"Enter a value for every field; missing: dur.\",\"status\":\"error\"}\n"
+    },
+    "api_null_dur": {
+      "time": "2026-10-20 10:20:54",
+      "status": 400,
+      "body": "{\"message\":\"Enter a value for every field; missing: dur.\",\"status\":\"error\"}\n"
+    },
+    "api_empty_dur": {
+      "time": "2026-10-20 10:20:55",
+      "status": 400,
+      "body": "{\"message\":\"Enter a value for every field; missing: dur.\",\"status\":\"error\"}\n"
+    },
+    "flows_after": "2,551"
+  },
+  "smoke": {
+    "tc01": {
+      "time": "2026-10-20 10:21:17",
+      "screenshot": "smk_tc01_normal.png",
+      "verdict": "NORMAL",
+      "confidence": "84.11%",
+      "details": {
+        "Model": "Stacking Ensemble",
+        "Deployment": "#1",
+        "Latency": "2258.082 ms",
+        "Event": "3749a191-22ce-4933-af01-f73c052d3166",
+        "Saved": "Saved on this computer - pending upload",
+        "Prediction": "Assigned after upload",
+        "Alert": "Not created"
+      },
+      "messages": []
+    },
+    "tc02": {
+      "time": "2026-10-20 10:21:21",
+      "screenshot": "smk_tc02_attack.png",
+      "verdict": "ATTACK",
+      "confidence": "92.95%",
+      "details": {
+        "Model": "Stacking Ensemble",
+        "Deployment": "#1",
+        "Latency": "321.678 ms",
+        "Event": "392c17c9-cd71-417a-91fd-cfbbd5dbfa2b",
+        "Saved": "Saved on this computer - pending upload",
+        "Prediction": "Assigned after upload",
+        "Alert": "Created when the record uploads"
+      },
+      "messages": []
+    },
+    "replay": {
+      "started": "2026-10-20 10:21:22",
+      "stopped": "2026-10-20 10:23:22",
+      "read_at": "2026-10-20 10:23:24",
+      "stats": {
+        "statFlows": "169",
+        "statProgress": "169 of 5,000 flows",
+        "statAttacks": "123",
+        "statRatio": "72.78% of the stream",
+        "statNormals": "46",
+        "statAlerts": "123",
+        "statLatency": "Average latency 318.889 ms",
+        "statDeployment": "#1 (pinned for this capture)",
+        "statMismatches": "6",
+        "statPersisted": "123",
+        "statSynced": "123",
+        "statPending": "0",
+        "statDropped": "0",
+        "statUpload": "active",
+        "statLag": "N/A",
+        "statCapture": "0",
+        "message": ""
+      }
+    }
+  },
+  "finished": "2026-10-20 10:23:24"
+}
