@@ -42,7 +42,7 @@ def live_schema_note(feature_columns):
     """Explain when a model cannot run on captured traffic (DEF-08), or return None.
 
     Local mode may train on other column sets for Manual Prediction and CSV replay; Live
-    Monitor packet capture and cloud publishing accept only the 15 flow features.
+    Monitor packet capture and cloud publishing accept only the 16 flow features.
     """
     missing = [column for column in FLOW_FEATURE_COLUMNS if column not in feature_columns]
     extra = [column for column in feature_columns if column not in FLOW_FEATURE_COLUMNS]
@@ -51,7 +51,7 @@ def live_schema_note(feature_columns):
     parts = ([f"missing {', '.join(missing)}"] if missing else []) + (
         [f"extra {', '.join(extra)}"] if extra else [])
     return (
-        f"these features are not the 15 live flow features ({'; '.join(parts)}). The model "
+        f"these features are not the 16 live flow features ({'; '.join(parts)}). The model "
         "works for Manual Prediction and CSV replay with the same columns, but Live Monitor "
         "packet capture and cloud publishing will refuse it."
     )

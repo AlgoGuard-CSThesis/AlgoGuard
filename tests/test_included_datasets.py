@@ -15,12 +15,13 @@ EXPECTED_COLUMNS = [
     "sbytes",
     "dbytes",
     "rate",
-    "sttl",
-    "dttl",
     "sload",
     "dload",
     "sinpkt",
     "dinpkt",
+    "ct_dst_src_ltm",
+    "ct_dst_ltm",
+    "ct_srv_dst",
     "label",
 ]
 

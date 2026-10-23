@@ -118,7 +118,7 @@ def _read_and_validate_csv(file_path):
     flow_features = [c for c in usable_features.columns if c in FLOW_FEATURE_COLUMNS]
     if len(flow_features) == len(FLOW_FEATURE_COLUMNS):
         # A file with the full flow schema (e.g. the raw UNSW-NB15 export) trains on exactly the
-        # 15 features live traffic can provide. Extra columns such as id or attack_cat would leak
+        # 16 features live traffic can provide. Extra columns such as id or attack_cat would leak
         # the label and give a model that cannot be published or used on captured flows.
         usable_features = usable_features[flow_features]
 

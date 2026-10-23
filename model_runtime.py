@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 WORKFLOW_VERSION = "stacking-five-v3"
-FEATURE_SCHEMA_VERSION = "unsw-nb15-fifteen-v1"
+FEATURE_SCHEMA_VERSION = "unsw-nb15-flow-window-v2"
 PYTHON_VERSION = "3.14.6"
 LOCK_PATH = Path(__file__).with_name("requirements-model.lock")
 MAX_MODEL_BYTES = 512 * 1024 * 1024
@@ -74,7 +74,7 @@ def verify_artifact_contract(artifact):
         raise ModelDeliveryError("Retrain this artifact with the locked model runtime.")
     columns = artifact.get("feature_columns", [])
     if len(columns) != len(FLOW_FEATURE_COLUMNS) or set(columns) != set(FLOW_FEATURE_COLUMNS):
-        raise ModelDeliveryError("Retrain using the supported fifteen-feature schema.")
+        raise ModelDeliveryError("Retrain using the supported flow feature schema.")
 
 
 def verify_manifest(manifest):

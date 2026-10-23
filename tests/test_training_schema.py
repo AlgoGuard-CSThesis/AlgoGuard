@@ -1,4 +1,4 @@
-"""Training uses the 15 flow features when a CSV carries them, never label-derived columns."""
+"""Training uses the 16 flow features when a CSV carries them, never label-derived columns."""
 from pathlib import Path
 
 import pandas as pd

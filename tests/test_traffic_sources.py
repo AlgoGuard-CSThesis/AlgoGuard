@@ -121,8 +121,7 @@ def test_pcap_source_aggregates_packets_into_flows(tmp_path):
     assert event["destination_port"] == 80
     assert event["record"]["state"] == "FIN"
     assert event["record"]["spkts"] >= 4
-    assert event["record"]["sttl"] == 62
-    assert event["record"]["dttl"] == 250
+    assert "sttl" not in event["record"]  # TTLs do not transfer from UNSW-NB15 to live traffic
 
 
 def test_pcap_source_rejects_captures_without_ip_flows(tmp_path):

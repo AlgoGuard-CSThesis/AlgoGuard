@@ -28,6 +28,19 @@ FEATURE_GUIDE = {
     "dload": ("Destination load", "Destination bits per second."),
     "sinpkt": ("Source packet gap", "Mean time between source packets, in milliseconds."),
     "dinpkt": ("Destination packet gap", "Mean time between destination packets, in milliseconds."),
+    "ct_dst_src_ltm": (
+        "Same host pair",
+        "Of the last 100 connections, how many had this source and destination (1 or more).",
+    ),
+    "ct_dst_ltm": (
+        "Same destination",
+        "Of the last 100 connections, how many went to this destination (1 or more).",
+    ),
+    "ct_srv_dst": (
+        "Same service and destination",
+        "Of the last 100 connections, how many used this service to this destination "
+        "(1 or more).",
+    ),
 }
 
 

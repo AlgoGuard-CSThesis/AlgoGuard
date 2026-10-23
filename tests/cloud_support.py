@@ -20,7 +20,7 @@ CSRF = re.compile(r'name="_csrf_token" value="([^"]+)"')
 
 
 def train_stacking_artifact(folder):
-    """A real, current fifteen-feature Stacking artifact trained on a small sample."""
+    """A real, current flow-schema Stacking artifact trained on a small sample."""
     from services.preprocessing_service import prepare_dataset
     from services.training_service import train_and_compare_models
 

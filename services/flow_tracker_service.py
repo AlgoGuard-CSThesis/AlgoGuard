@@ -1,9 +1,20 @@
 """Packet-to-flow aggregation for AlgoGuard.
 
 Turns individual data packets into bidirectional network flows and computes the
-same 15 UNSW-NB15-style features the deployed model was trained on: ``dur``,
+same 16 UNSW-NB15-style features the deployed model was trained on: ``dur``,
 ``proto``, ``service``, ``state``, ``spkts``, ``dpkts``, ``sbytes``, ``dbytes``,
-``rate``, ``sttl``, ``dttl``, ``sload``, ``dload``, ``sinpkt`` and ``dinpkt``.
+``rate``, ``sload``, ``dload``, ``sinpkt`` and ``dinpkt`` describe the flow
+itself; ``ct_dst_src_ltm``, ``ct_dst_ltm`` and ``ct_srv_dst`` count, among the
+last 100 finished connections including this one, those with the same source and
+destination address, the same destination address, and the same service and
+destination address. Only destination-keyed counts are used: on a single
+capturing PC almost every connection shares the source address, so source-keyed
+counts would sit at the window size and mean nothing.
+
+UNSW-NB15's TTL features (``sttl``, ``dttl``) are not used. In the dataset they
+mostly identify the lab's own hosts; a Windows PC sends with TTL 128, a value the
+dataset never contains, and models trained with TTLs flagged most benign live
+traffic as attacks (test-results/def_fixes_20261023/ttl_experiment.json).
 
 The tracker is deliberately independent of any capture library: it consumes
 lightweight :class:`PacketInfo` values, so unit tests can drive it with
@@ -17,16 +28,20 @@ approximation is largest. The research workspace quantifies that gap before
 live verdicts are trusted.
 """
 
+from collections import deque
 from dataclasses import dataclass, field
 
 IDLE_TIMEOUT_SECONDS = 15.0
 ACTIVE_TIMEOUT_SECONDS = 120.0
 SWEEP_INTERVAL_SECONDS = 1.0
+# UNSW-NB15's connection-history features look at the last 100 connections.
+CONNECTION_WINDOW = 100
 
+CONNECTION_COUNT_COLUMNS = ("ct_dst_src_ltm", "ct_dst_ltm", "ct_srv_dst")
 FLOW_FEATURE_COLUMNS = (
     "dur", "proto", "service", "state", "spkts", "dpkts", "sbytes", "dbytes",
-    "rate", "sttl", "dttl", "sload", "dload", "sinpkt", "dinpkt",
-)
+    "rate", "sload", "dload", "sinpkt", "dinpkt",
+) + CONNECTION_COUNT_COLUMNS
 
 # UNSW-NB15 uses Bro-derived service names; this port map covers the services
 # present in the bundled datasets. Unknown ports report "-", exactly as the
@@ -82,8 +97,6 @@ class _FlowState:
     dpkts: int = 0
     sbytes: int = 0
     dbytes: int = 0
-    sttl: int = 0
-    dttl: int = 0
     src_intervals: list = field(default_factory=list)
     dst_intervals: list = field(default_factory=list)
     last_src_ts: float | None = None
@@ -164,7 +177,7 @@ def _mean_interval_ms(intervals):
 
 
 def compute_features(flow):
-    """Compute the 15 deployed feature values for one finished flow."""
+    """Compute the 13 per-flow feature values; the tracker adds the connection counts."""
     dur = max(flow.last_ts - flow.first_ts, 0.0)
     total_packets = flow.spkts + flow.dpkts
     rate = ((total_packets - 1) / dur) if dur > 0 and total_packets > 1 else 0.0
@@ -181,8 +194,6 @@ def compute_features(flow):
         "sbytes": flow.sbytes,
         "dbytes": flow.dbytes,
         "rate": round(rate, 6),
-        "sttl": flow.sttl,
-        "dttl": flow.dttl,
         "sload": round(sload, 6),
         "dload": round(dload, 6),
         "sinpkt": round(_mean_interval_ms(flow.src_intervals), 6),
@@ -223,6 +234,7 @@ class FlowTracker:
         self.active_timeout = float(active_timeout)
         self._flows = {}
         self._draining = {}
+        self._recent = deque(maxlen=CONNECTION_WINDOW)
         self._last_sweep_ts = 0.0
         self.packets_seen = 0
         self.flows_emitted = 0
@@ -300,16 +312,12 @@ class FlowTracker:
         if is_forward:
             flow.spkts += 1
             flow.sbytes += info.length
-            if flow.sttl == 0:
-                flow.sttl = info.ttl
             if flow.last_src_ts is not None:
                 flow.src_intervals.append(info.ts - flow.last_src_ts)
             flow.last_src_ts = info.ts
         else:
             flow.dpkts += 1
             flow.dbytes += info.length
-            if flow.dttl == 0:
-                flow.dttl = info.ttl
             if flow.last_dst_ts is not None:
                 flow.dst_intervals.append(info.ts - flow.last_dst_ts)
             flow.last_dst_ts = info.ts
@@ -343,6 +351,20 @@ class FlowTracker:
         return info.proto == "tcp" and "A" in flags and not any(f in flags for f in "FSRP")
 
     def _count(self, events):
+        """Count emitted flows and add their connection-history features, in emission order.
+
+        UNSW-NB15 orders connections by their last packet; emission order follows it closely
+        (idle-timeout flows are reported up to one sweep late).
+        """
+        for event in events:
+            features = event["features"]
+            src, dst, service = event["source_ip"], event["destination_ip"], features["service"]
+            self._recent.append((src, dst, service))
+            features["ct_dst_src_ltm"] = sum(1 for s, d, _ in self._recent if s == src and d == dst)
+            features["ct_dst_ltm"] = sum(1 for _, d, _ in self._recent if d == dst)
+            features["ct_srv_dst"] = sum(
+                1 for _, d, sv in self._recent if d == dst and sv == service
+            )
         self.flows_emitted += len(events)
         return events
 
@@ -375,8 +397,7 @@ class FlowTracker:
         remaining = [_emit(flow, "flush") for flow in self._flows.values()]
         self._flows.clear()
         self._draining.clear()
-        self.flows_emitted += len(remaining)
-        return remaining
+        return self._count(remaining)
 
     @property
     def active_flows(self):

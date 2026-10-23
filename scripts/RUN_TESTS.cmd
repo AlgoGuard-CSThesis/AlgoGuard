@@ -22,8 +22,11 @@ echo === Automated test suites ===
 python scripts\run_test_suites.py %FLAGS%
 
 echo.
-echo === Detection evaluation of the cloud-deployed model (training run 3) ===
-python scripts\evaluate_model.py --model saved_models\run_3\stacking.joblib --compare-dir saved_models\run_3
+echo === Detection evaluation of the deployed model (training run 8, feature schema v2) ===
+if not exist research\dataset\processed\flow_window_v2\holdout_eval.csv (
+  python scripts\build_flow_datasets.py --evidence test-results\flow_datasets
+)
+python scripts\evaluate_model.py --model saved_models\run_8\stacking.joblib --compare-dir saved_models\run_8 --data research\dataset\processed\flow_window_v2\holdout_eval.csv --train-csv research\dataset\processed\flow_window_v2\training.csv
 
 echo.
 echo Finished. Results are in the test-results folder. You can close this window.

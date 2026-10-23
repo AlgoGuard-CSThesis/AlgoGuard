@@ -33,8 +33,9 @@ from tests.cloud_support import (
 
 MANUAL_FLOW = {
     "dur": "5.5", "proto": "tcp", "service": "-", "state": "INT", "spkts": "2", "dpkts": "0",
-    "sbytes": "900000", "dbytes": "0", "rate": "900", "sttl": "254", "dttl": "0",
+    "sbytes": "900000", "dbytes": "0", "rate": "900",
     "sload": "1000000", "dload": "0", "sinpkt": "0.01", "dinpkt": "0",
+    "ct_dst_src_ltm": "1", "ct_dst_ltm": "1", "ct_srv_dst": "1",
 }
 
 

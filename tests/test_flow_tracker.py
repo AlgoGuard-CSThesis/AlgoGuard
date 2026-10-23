@@ -4,6 +4,8 @@ import pytest
 
 from services.flow_tracker_service import (
     ACTIVE_TIMEOUT_SECONDS,
+    CONNECTION_WINDOW,
+    FLOW_FEATURE_COLUMNS,
     IDLE_TIMEOUT_SECONDS,
     FlowTracker,
     PacketInfo,
@@ -88,8 +90,6 @@ def test_complete_tcp_session_emits_one_finished_flow():
     assert features["dpkts"] == 3
     assert features["sbytes"] == 60 + 52 + 350 + 52 + 52
     assert features["dbytes"] == 60 + 1200 + 52
-    assert features["sttl"] == 62
-    assert features["dttl"] == 254
     assert features["dur"] == pytest.approx(0.220, abs=1e-6)
     assert features["rate"] == pytest.approx((8 - 1) / 0.220, rel=1e-4)
     assert features["sload"] == pytest.approx(features["sbytes"] * 8 / 0.220, rel=1e-4)
@@ -193,8 +193,7 @@ def test_active_timeout_slice_keeps_the_original_orientation():
     assert new_slice["features"]["spkts"] == 0
     assert new_slice["features"]["dpkts"] == 1
     assert new_slice["features"]["dbytes"] == 1200
-    assert new_slice["features"]["sttl"] == 0
-    assert new_slice["features"]["dttl"] == 254
+    assert new_slice["features"]["sbytes"] == 0
 
 
 def test_completed_connections_do_not_accumulate_drain_state():
@@ -239,11 +238,12 @@ def test_syn_without_answer_is_req():
     assert flows[0]["features"]["state"] == "REQ"
 
 
-def test_features_are_the_fifteen_deployed_columns():
+def test_features_are_the_sixteen_deployed_columns():
     tracker = FlowTracker()
     tracker.add_packet(udp_packet(1.0, CLIENT, SERVER, 40000, 53))
     flow = tracker.flush()[0]
-    assert set(flow["features"]) == {
+    assert set(flow["features"]) == set(FLOW_FEATURE_COLUMNS)
+    assert set(FLOW_FEATURE_COLUMNS) == {
         "dur",
         "proto",
         "service",
@@ -253,13 +253,56 @@ def test_features_are_the_fifteen_deployed_columns():
         "sbytes",
         "dbytes",
         "rate",
-        "sttl",
-        "dttl",
         "sload",
         "dload",
         "sinpkt",
         "dinpkt",
+        "ct_dst_src_ltm",
+        "ct_dst_ltm",
+        "ct_srv_dst",
     }
+
+
+def _reset_flow(tracker, ts, src, dst, sport, dport):
+    """One TCP connection that ends at once with RST, so it is emitted immediately."""
+    return tracker.add_packet(tcp_packet(ts, src, dst, sport, dport, flags="R"))
+
+
+def test_connection_counts_follow_destination_and_service_and_include_this_flow():
+    tracker = FlowTracker()
+    other = "10.0.0.7"
+    first = _reset_flow(tracker, 1.0, CLIENT, SERVER, 50000, 80)[0]["features"]
+    assert (first["ct_dst_src_ltm"], first["ct_dst_ltm"], first["ct_srv_dst"]) == (1, 1, 1)
+
+    _reset_flow(tracker, 1.1, CLIENT, SERVER, 50001, 443)  # same pair, other service
+    _reset_flow(tracker, 1.2, other, SERVER, 50002, 80)  # other source, same service
+    last = _reset_flow(tracker, 1.3, CLIENT, SERVER, 50003, 80)[0]["features"]
+    assert last["ct_dst_src_ltm"] == 3  # CLIENT -> SERVER three times
+    assert last["ct_dst_ltm"] == 4  # every connection went to SERVER
+    assert last["ct_srv_dst"] == 3  # http to SERVER three times
+
+    elsewhere = _reset_flow(tracker, 1.4, CLIENT, other, 50004, 80)[0]["features"]
+    assert (elsewhere["ct_dst_src_ltm"], elsewhere["ct_dst_ltm"], elsewhere["ct_srv_dst"]) == (
+        1, 1, 1)
+
+
+def test_connection_counts_look_back_one_window_only():
+    tracker = FlowTracker()
+    flows = [
+        _reset_flow(tracker, 1.0 + index * 0.01, CLIENT, SERVER, 40000 + index, 80)[0]
+        for index in range(CONNECTION_WINDOW + 20)
+    ]
+    features = flows[-1]["features"]
+    assert features["ct_dst_ltm"] == CONNECTION_WINDOW
+    assert features["ct_dst_src_ltm"] == CONNECTION_WINDOW
+
+
+def test_flushed_flows_get_connection_counts():
+    tracker = FlowTracker()
+    tracker.add_packet(udp_packet(1.0, CLIENT, SERVER, 40000, 53))
+    tracker.add_packet(udp_packet(1.1, CLIENT, SERVER, 40001, 53))
+    flows = tracker.flush()
+    assert [flow["features"]["ct_srv_dst"] for flow in flows] == [1, 2]
 
 
 def test_zero_duration_flow_has_safe_rates():

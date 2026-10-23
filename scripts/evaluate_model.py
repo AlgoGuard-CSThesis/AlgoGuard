@@ -2,15 +2,18 @@
 
 What it does, in order:
   1. Loads the model artifact (.joblib) that train.py produced.
-  2. Loads an evaluation CSV with the 15 AlgoGuard features plus `label`
+  2. Loads an evaluation CSV with the model's features plus `label`
      (and optionally `attack_cat`).
-  3. Removes every evaluation row whose 15 features also appear in a training CSV,
-     so the score is measured only on unseen traffic.
+  3. Removes every evaluation row whose 15 per-flow features also appear in a training CSV,
+     whatever its connection counts, so the score is measured only on unseen traffic.
   4. Predicts the remaining rows and writes the metrics, the confusion matrix,
      recall per attack category, and a check against the test plan targets.
 
 Default data: research/dataset/raw/UNSW_NB15_training-set.csv minus every row that
 appears in the bundled datasets/*.csv (the bundled CSVs are samples of that file).
+A model trained by scripts/build_flow_datasets.py is evaluated on its hold-out instead:
+    --data research/dataset/processed/flow_window_v2/holdout_eval.csv
+    --train-csv research/dataset/processed/flow_window_v2/training.csv
 
 Usage (from the repository folder, inside the venv):
     python scripts/evaluate_model.py --model saved_models/deployed_model.<id>.joblib
@@ -38,8 +41,12 @@ import sklearn
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score
 
 ROOT = Path(__file__).resolve().parents[1]
+# The 15 per-flow features identify a row when checking what training has seen.
 FEATURES = ["dur", "proto", "service", "state", "spkts", "dpkts", "sbytes", "dbytes",
             "rate", "sttl", "dttl", "sload", "dload", "sinpkt", "dinpkt"]
+# Feature schema v2 drops sttl and dttl and adds three connection counts
+# (services/flow_tracker_service.py); models of either schema can be evaluated.
+KNOWN_FEATURES = FEATURES + ["ct_dst_src_ltm", "ct_dst_ltm", "ct_srv_dst"]
 NORMAL_LABELS = {"0", "0.0", "normal", "benign", "legitimate", "clean"}
 COMPARE_KEYS = ("accuracy", "precision", "recall", "f1", "false_positive_rate", "roc_auc",
                 "prediction_ms_per_row")
@@ -95,7 +102,7 @@ def load_artifact(path: Path) -> dict[str, Any]:
     if not isinstance(artifact, dict) or "pipeline" not in artifact:
         raise SystemExit(f"{path} is not an AlgoGuard model artifact (no 'pipeline').")
     cols = artifact.get("feature_columns") or FEATURES
-    if set(cols) != set(FEATURES):
+    if not cols or not set(cols) <= set(KNOWN_FEATURES):
         raise SystemExit(f"{path} expects different features: {cols}")
     return artifact
 
@@ -231,7 +238,7 @@ def main() -> int:
                         help="Model artifact (.joblib) to evaluate.")
     parser.add_argument("--data", type=Path,
                         default=ROOT / "research/dataset/raw/UNSW_NB15_training-set.csv",
-                        help="Evaluation CSV with the 15 features and a label column.")
+                        help="Evaluation CSV with the model's features and a label column.")
     parser.add_argument("--train-csv", type=Path, nargs="*",
                         default=sorted((ROOT / "datasets").glob("*.csv")),
                         help="Training CSVs; their rows are removed from the evaluation data.")
@@ -269,6 +276,9 @@ def main() -> int:
 
     y = to_binary(data[args.label_column])
     artifact = load_artifact(args.model)
+    missing = [c for c in artifact.get("feature_columns") or FEATURES if c not in data.columns]
+    if missing:
+        raise SystemExit(f"Evaluation CSV lacks features the model needs: {missing}")
     print(f"Evaluating {args.model.name} ({artifact.get('model_name', 'unknown model')}) ...")
     metrics, pred = evaluate(artifact, data, y)
 
