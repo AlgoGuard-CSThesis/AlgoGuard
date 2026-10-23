@@ -103,6 +103,10 @@ class TrafficSource:
     def next_event(self, timeout=0.2):
         raise NotImplementedError
 
+    def backlog(self) -> bool:
+        """Whether more events can be read now without waiting, so they can be batched."""
+        return False
+
     def close(self):
         """Release any capture handles; overridden where needed."""
 
@@ -187,6 +191,9 @@ class CsvReplaySource(TrafficSource):
             "flow_last_ts": None,
             "end_reason": "replay",
         }
+
+    def backlog(self):
+        return self._index < len(self._records)
 
 
 class PcapReplaySource(TrafficSource):
@@ -340,6 +347,11 @@ class PcapReplaySource(TrafficSource):
                 raise TrafficSourceError(f"Unable to read the packet capture: {error}") from error
         self.flows_emitted += 1
         return _flow_event(flow)
+
+    def backlog(self):
+        if self._order == "random":
+            return self._index < len(self._flows)
+        return bool(self._pending_flows) or not self._exhausted
 
     def _close_reader(self):
         if self._reader is not None:
@@ -550,6 +562,9 @@ class LiveCaptureSource(TrafficSource):
                 _flow_event(flow) for flow in self._tracker.expire_idle(float(packet.time))
             )
         return self.next_event(timeout=0) if self._pending else None
+
+    def backlog(self):
+        return bool(self._pending) or not self._packets.empty()
 
     def close(self, wait=True):
         if self._sniffer is not None:

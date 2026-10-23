@@ -2,6 +2,8 @@ import json
 import threading
 import time
 
+import joblib
+import pandas as pd
 import pytest
 
 from services import database_service as db
@@ -309,6 +311,103 @@ def test_session_runs_to_completion(fast_monitor, replay_dataset):
     # A finished session must not block the next one.
     start()
     assert monitor.get_status()["session"]["state"] in ("starting", "running")
+
+
+def record_batch_sizes(monkeypatch):
+    sizes = []
+    classify = monitor.classify_rows
+
+    def recording(pipeline, rows, feature_columns):
+        sizes.append(len(rows))
+        return classify(pipeline, rows, feature_columns)
+
+    monkeypatch.setattr(monitor, "classify_rows", recording)
+    return sizes
+
+
+def test_maximum_speed_classifies_waiting_flows_in_batches(
+    monkeypatch, fast_monitor, replay_dataset
+):
+    """DEF-11/DEF-17: an unpaced source is classified in batches, one model call each."""
+    sizes = record_batch_sizes(monkeypatch)
+    start(speed="max")
+    assert wait_for(
+        lambda: monitor.get_status()["session"]["state"] == "completed", timeout=30.0
+    )
+
+    session = monitor.get_status()["session"]
+    assert session["totals"]["flows"] == session["row_total"]
+    flow_batches = sizes[1:]  # the first call is the warm-up row
+    assert sum(flow_batches) == session["row_total"]
+    assert max(flow_batches) > 1
+    assert max(flow_batches) <= monitor.MAX_BATCH
+
+
+def test_paced_replay_still_classifies_one_flow_per_step(
+    monkeypatch, fast_monitor, replay_dataset
+):
+    sizes = record_batch_sizes(monkeypatch)
+    start()
+    assert wait_for(lambda: monitor.get_status()["session"]["totals"]["flows"] >= 5)
+    monitor.stop_session()
+    assert set(sizes) == {1}
+
+
+def test_classify_rows_matches_predict_with_a_single_model_call(trained_bundle):
+    stacking = next(
+        model for model in trained_bundle["result"]["model_results"]
+        if model["model_id"] == "stacking"
+    )
+    artifact = joblib.load(stacking["model_path"])
+    pipeline = artifact["pipeline"]
+    columns = artifact["feature_columns"]
+    rows = trained_bundle["frame"][columns].head(40).to_dict("records")
+
+    calls = []
+
+    class CountingPipeline:
+        classes_ = pipeline.classes_
+
+        def predict_proba(self, frame):
+            calls.append(len(frame))
+            return pipeline.predict_proba(frame)
+
+    verdicts, elapsed_ms = monitor.classify_rows(CountingPipeline(), rows, columns)
+
+    frame = pd.DataFrame(rows, columns=columns)
+    expected = pipeline.predict(frame)
+    probabilities = pipeline.predict_proba(frame)
+    assert calls == [40]
+    assert [label for label, _ in verdicts] == [int(value) for value in expected]
+    for (label, confidence), row in zip(verdicts, probabilities):
+        assert confidence == pytest.approx(row[list(pipeline.classes_).index(label)])
+    assert elapsed_ms >= 0
+
+
+class _ScriptedSource:
+    def __init__(self, events, end=False):
+        self._events = list(events)
+        self._end = end
+
+    def backlog(self):
+        return bool(self._events) or self._end
+
+    def next_event(self, timeout=0.2):
+        if self._events:
+            return self._events.pop(0)
+        raise StopIteration
+
+
+def test_collect_batch_stops_at_the_limit_and_reports_the_end_of_the_source(monkeypatch):
+    monkeypatch.setattr(monitor, "MAX_BATCH", 3)
+    batch, ended = monitor.collect_batch(_ScriptedSource(["b", None, "c", "d"]), "a", False)
+    assert (batch, ended) == (["a", "b", "c"], False)
+
+    batch, ended = monitor.collect_batch(_ScriptedSource(["b"], end=True), "a", False)
+    assert (batch, ended) == (["a", "b"], True)
+
+    batch, ended = monitor.collect_batch(_ScriptedSource(["b", "c"]), "a", True)
+    assert (batch, ended) == (["a"], False)
 
 
 def test_session_completion_waits_for_final_bookkeeping(

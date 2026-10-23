@@ -25,9 +25,6 @@ from contextlib import ExitStack
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-import numpy as np
-import pandas as pd
-
 from cloud_repository import RepositoryError
 from cloud_sync import audit
 from model_runtime import ModelDeliveryError
@@ -484,7 +481,7 @@ class CloudMonitor:
         try:
             warmup = legacy._build_flow_row(dict(defaults), feature_columns, numeric_columns,
                                             defaults)
-            pipeline.predict(pd.DataFrame([warmup], columns=feature_columns))
+            legacy.classify_rows(pipeline, [warmup], feature_columns)
         except Exception:
             pass
         if stop_event.is_set():
@@ -546,6 +543,8 @@ class CloudMonitor:
         final_state = "completed"
         row_index = -1
         last_refresh = 0.0
+        paced_interval = legacy.SPEED_CHOICES[session["speed"]]
+        pacing = source.paced and paced_interval > 0
         try:
             while True:
                 if stop_event.is_set():
@@ -568,40 +567,41 @@ class CloudMonitor:
                         with self.lock:
                             session["capture"] = snapshot
                     continue
-                row_index += 1
-                record = event_data["record"]
-                actual = event_data["actual"]
-                flow_row = legacy._build_flow_row(record, feature_columns, numeric_columns,
-                                                  defaults)
-                frame = pd.DataFrame([flow_row], columns=feature_columns)
-                started = time.perf_counter()
-                predicted = int(pipeline.predict(frame)[0])
-                probabilities = np.asarray(pipeline.predict_proba(frame))[0]
-                classes = list(pipeline.classes_)
-                confidence = (
-                    float(probabilities[classes.index(predicted)]) if predicted in classes else 0.0
-                )
-                latency_ms = (time.perf_counter() - started) * 1000
-                prediction = "Attack" if predicted == 1 else "Normal"
-                lag_ms = None
-                if source_type == "live" and event_data.get("flow_last_ts"):
-                    lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
-                result = {
-                    "prediction": prediction,
-                    "confidence": round(confidence * 100, 2),
-                    "latency_ms": round(latency_ms, 3),
-                }
-                event = flow_event(deployment, result, flow_row, source_tag,
-                                   session["capture_id"], event_data)
-                if stop_event.is_set():
-                    return "stopped"  # Never add work after the capture closed.
-                if legacy._should_persist(session["persist"], prediction):
-                    outcome = self.outbox.submit(context, session["session_id"], event)
-                else:
-                    outcome = {"event_uuid": event["event_uuid"], "persistence": "session_only"}
-                self._record(session, event, event_data, record, row_index, result, actual,
-                             lag_ms, outcome, source)
-                if source.paced and stop_event.wait(legacy.SPEED_CHOICES[session["speed"]]):
+                batch, source_ended = legacy.collect_batch(source, event_data, pacing)
+                flow_rows = [
+                    legacy._build_flow_row(item["record"], feature_columns, numeric_columns,
+                                           defaults)
+                    for item in batch
+                ]
+                verdicts, latency_ms = legacy.classify_rows(pipeline, flow_rows, feature_columns)
+                for event_data, flow_row, (predicted, confidence) in zip(
+                        batch, flow_rows, verdicts):
+                    row_index += 1
+                    record = event_data["record"]
+                    actual = event_data["actual"]
+                    prediction = "Attack" if predicted == 1 else "Normal"
+                    lag_ms = None
+                    if source_type == "live" and event_data.get("flow_last_ts"):
+                        lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
+                    result = {
+                        "prediction": prediction,
+                        "confidence": round(confidence * 100, 2),
+                        "latency_ms": round(latency_ms, 3),
+                    }
+                    event = flow_event(deployment, result, flow_row, source_tag,
+                                       session["capture_id"], event_data)
+                    if stop_event.is_set():
+                        return "stopped"  # Never add work after the capture closed.
+                    if legacy._should_persist(session["persist"], prediction):
+                        outcome = self.outbox.submit(context, session["session_id"], event)
+                    else:
+                        outcome = {"event_uuid": event["event_uuid"],
+                                   "persistence": "session_only"}
+                    self._record(session, event, event_data, record, row_index, result, actual,
+                                 lag_ms, outcome, source)
+                if source_ended:
+                    break
+                if pacing and stop_event.wait(paced_interval):
                     return "stopped"
         except _AuthorizationEnded as ended:
             with self.lock:

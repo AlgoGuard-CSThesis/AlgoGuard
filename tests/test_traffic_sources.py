@@ -439,6 +439,46 @@ def test_own_traffic_is_dropped_even_when_the_bpf_filter_did_not_apply():
     assert source.stats()["excluded"] == 1
 
 
+def test_live_source_backlog_reports_queued_packets_and_pending_flows():
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    assert source.backlog() is False
+
+    for flags in ("S", "R"):
+        packet = scapy_all.IP(src="192.0.2.1", dst="192.0.2.2") / scapy_all.TCP(
+            sport=40000, dport=80, flags=flags)
+        packet.time = 1000.0
+        source._on_packet(packet)
+    assert source.backlog() is True
+
+    assert source.next_event(timeout=0) is None  # SYN: the flow is still open
+    event = source.next_event(timeout=0)  # RST ends it
+    assert event is not None and event["end_reason"] == "rst"
+    assert source.backlog() is False
+
+
+def test_replay_sources_report_a_backlog_until_exhausted(tmp_path, trained_bundle):
+    csv_path = tmp_path / "sample.csv"
+    trained_bundle["frame"].head(2).to_csv(csv_path, index=False)
+    csv_source = CsvReplaySource(str(csv_path))
+    csv_source.prepare()
+    assert csv_source.backlog() is True
+    csv_source.next_event()
+    csv_source.next_event()
+    assert csv_source.backlog() is False
+
+    pcap_source = PcapReplaySource(str(write_sample_pcap(tmp_path / "s.pcap", sessions=1)))
+    pcap_source.prepare()
+    flows = 0
+    while pcap_source.backlog():
+        try:
+            pcap_source.next_event(timeout=0)
+        except StopIteration:
+            break
+        flows += 1
+    assert flows == 2  # one HTTP session and one DNS exchange
+    assert pcap_source.backlog() is False
+
+
 def test_monitor_options_advertise_all_source_types():
     options = monitor.get_options()
     values = {item["value"] for item in options["sources"]}
