@@ -19,6 +19,7 @@ Three traffic sources feed the same classification loop (see
 
 import math
 import os
+import sys
 import threading
 import time
 from collections import deque
@@ -83,6 +84,11 @@ MAX_PERSISTED_PER_SESSION = 300
 # for fifty rows as for one, so a burst no longer queues behind one model call per flow.
 MAX_BATCH = 64
 BATCH_WINDOW_SECONDS = 0.05
+# Python passes its interpreter lock between busy threads every 5 ms by default. A prediction
+# gives the lock up hundreds of times (each tree runs without it), and while capture, upload or
+# page threads are busy every hand-back can wait the full interval: one busy thread made a 70 ms
+# prediction take about a second (DEF-17). At 0.5 ms the same prediction takes about 0.2 s.
+SWITCH_INTERVAL_SECONDS = 0.0005
 ACTIVE_STATES = ("starting", "running", "paused", "stopping")
 TERMINAL_STATES = ("idle", "stopped", "completed", "error")
 
@@ -248,6 +254,12 @@ def _build_flow_row(record, feature_columns, numeric_columns, defaults):
         else:
             row[column] = np.nan if pd.isna(value) or value == "" else str(value)
     return row
+
+
+def prefer_low_latency():
+    """Shorten the interpreter's thread switch interval for monitoring (process-wide)."""
+    if sys.getswitchinterval() > SWITCH_INTERVAL_SECONDS:
+        sys.setswitchinterval(SWITCH_INTERVAL_SECONDS)
 
 
 def collect_batch(source, first_event, pacing):
@@ -466,6 +478,7 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
     # The stack's first prediction pays a one-off warm-up cost. Spend it here,
     # while the page still shows "starting", so the feed opens at full speed and
     # the reported average latency reflects steady-state inference.
+    prefer_low_latency()
     try:
         warmup_row = _build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
         classify_rows(pipeline, [warmup_row], feature_columns)

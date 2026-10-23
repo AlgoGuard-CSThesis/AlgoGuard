@@ -478,6 +478,7 @@ class CloudMonitor:
             self._fail(session, str(error))
             return "error"
 
+        legacy.prefer_low_latency()
         try:
             warmup = legacy._build_flow_row(dict(defaults), feature_columns, numeric_columns,
                                             defaults)

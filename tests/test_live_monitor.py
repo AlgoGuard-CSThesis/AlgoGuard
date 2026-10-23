@@ -1,4 +1,5 @@
 import json
+import sys
 import threading
 import time
 
@@ -341,6 +342,19 @@ def test_maximum_speed_classifies_waiting_flows_in_batches(
     assert sum(flow_batches) == session["row_total"]
     assert max(flow_batches) > 1
     assert max(flow_batches) <= monitor.MAX_BATCH
+
+
+def test_monitoring_shortens_the_thread_switch_interval(fast_monitor, replay_dataset):
+    """DEF-17: busy threads must not stretch each prediction by the default 5 ms hand-over."""
+    previous = sys.getswitchinterval()
+    sys.setswitchinterval(0.005)
+    try:
+        start()
+        assert wait_for(lambda: monitor.get_status()["session"]["totals"]["flows"] >= 1)
+        monitor.stop_session()
+        assert sys.getswitchinterval() == pytest.approx(monitor.SWITCH_INTERVAL_SECONDS)
+    finally:
+        sys.setswitchinterval(previous)
 
 
 def test_paced_replay_still_classifies_one_flow_per_step(
