@@ -29,6 +29,11 @@ select count(*),
        count(distinct event_uuid)
 from public.ingest_event where capture_id = %s
 """
+DETAIL_QUERY = """
+select event_time, received_at, extract(epoch from received_at - event_time)
+from public.ingest_event where capture_id = %s order by event_time
+"""
+DETAIL = "--detail" in sys.argv
 
 
 def main(capture_ids):
@@ -44,6 +49,11 @@ def main(capture_ids):
             after = time.time()
             offset = server - (before + after) / 2  # positive: this PC is behind the database
             for capture_id in capture_ids:
+                if DETAIL:
+                    cursor.execute(DETAIL_QUERY, (capture_id,))
+                    results[f"{capture_id}_timeline"] = [
+                        {"event_time_utc": t.isoformat(), "received_utc": r.isoformat(),
+                         "delay_s": round(float(d), 3)} for t, r, d in cursor.fetchall()]
                 cursor.execute(QUERY, (capture_id,))
                 (count, p50, p95, worst, first_event, last_event, first_received,
                  last_received, unique) = cursor.fetchone()
@@ -67,4 +77,4 @@ def main(capture_ids):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise SystemExit(__doc__)
-    main([int(value) for value in sys.argv[1:]])
+    main([int(value) for value in sys.argv[1:] if value != "--detail"])

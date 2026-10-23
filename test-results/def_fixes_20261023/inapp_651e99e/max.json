@@ -1,0 +1,82 @@
+{
+  "clicked": "2026-10-24 00:16:51",
+  "state": "completed",
+  "flows": 20000,
+  "row_total": 20000,
+  "seconds_running_to_done": 17.25,
+  "flows_per_second": 1159.7,
+  "seconds_click_to_done": 19.19,
+  "screen": {
+    "statFlows": "20,000",
+    "statAttacks": "13,526",
+    "statNormals": "6,474",
+    "statAlerts": "211",
+    "statLatency": "Average latency 44.900 ms",
+    "statDeployment": "#2 (pinned for this capture)",
+    "statPersisted": "300 (capped)",
+    "statSynced": "300",
+    "statPending": "0",
+    "statDropped": "19,700",
+    "statUpload": "active",
+    "statLag": "8258.7 ms avg",
+    "statCapture": "4,454 (1,026 own traffic)",
+    "monitorMessage": "The traffic source finished streaming."
+  },
+  "final": {
+    "attack_ratio": 67.63,
+    "authorization_ends_at": 1792775226,
+    "avg_detection_lag_ms": 0,
+    "avg_latency_ms": 44.9,
+    "capped": true,
+    "capture": null,
+    "capture_id": 47,
+    "cloud": true,
+    "dataset": "algoguard_biggest.csv",
+    "dataset_label": "Sample traffic - 20,000 flows",
+    "deployment": {
+      "deployment_id": 2,
+      "manifest_id": 2,
+      "model_id": 2,
+      "model_name": "Stacking Ensemble",
+      "object_sha256": "1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29",
+      "run_id": 2
+    },
+    "error_message": null,
+    "order": "sequential",
+    "persist": "all",
+    "row_total": 20000,
+    "session_id": "5eca2044-6383-41e1-a615-4c4d4e85ab9d",
+    "source_name": null,
+    "source_type": "csv",
+    "speed": "max",
+    "started_at": "2026-10-23 16:16:51",
+    "state": "completed",
+    "stopped_at": null,
+    "storage_stopped": false,
+    "synchronization": {
+      "dropped": 19700,
+      "in_memory": 0,
+      "pending": 0,
+      "rejected": 0,
+      "reserved": 300,
+      "storage_stopped": false,
+      "synced": 300
+    },
+    "totals": {
+      "alerts": 211,
+      "attacks": 13526,
+      "flows": 20000,
+      "labelled": 20000,
+      "mismatches": 184,
+      "normals": 6474,
+      "persisted": 300,
+      "queued": 300
+    },
+    "upload": {
+      "last_success_age_seconds": 0.6,
+      "reason": null,
+      "retry_in_seconds": null,
+      "state": "active"
+    }
+  }
+}

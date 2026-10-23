@@ -1,0 +1,4 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m pytest -q -m integration
+
+........................s...............................s..........      [100%]
+65 passed, 2 skipped, 577 deselected in 76.25s (0:01:16)
