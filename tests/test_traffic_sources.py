@@ -317,6 +317,29 @@ def test_packet_monitor_rejects_incompatible_model_before_capture(
     close.assert_called_once()
 
 
+def test_live_capture_starts_only_when_the_monitor_is_ready(monkeypatch, deployed_stack):
+    """DEF-17: packets captured during start-up would wait in the queue for late verdicts."""
+    artifact, _ = load_active_artifact()
+    order = []
+    source = Mock(columns=artifact["feature_columns"], row_total=None, paced=False)
+    source.prepare.side_effect = lambda: order.append("start capture")
+    source.stats.return_value = {"packets": 0, "dropped": 0, "flows": 0}
+    source.next_event.side_effect = StopIteration
+    monkeypatch.setattr(monitor, "_make_source", lambda *args, **kwargs: source)
+    monkeypatch.setattr(monitor, "classify_rows",
+                        lambda *args: order.append("warm up") or ([], 0.0))
+    monkeypatch.setattr(monitor, "insert_capture_session",
+                        lambda *args: order.append("capture record") or 7)
+    monkeypatch.setattr(monitor, "finalize_capture_session", lambda *args: None)
+    session = monitor._new_session("live", "test interface", None, "fast", "sequential",
+                                   "none", 1)
+
+    monitor._worker(session, threading.Event(), threading.Event())
+
+    assert order == ["warm up", "capture record", "start capture"]
+    assert session["state"] == "completed"
+
+
 def test_packet_fixtures_do_not_resolve_network_addresses(monkeypatch, tmp_path):
     def reject_lookup(*args, **kwargs):
         raise AssertionError("Packet fixtures must not look up real network addresses")

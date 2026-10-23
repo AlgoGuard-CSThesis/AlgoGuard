@@ -470,8 +470,12 @@ class CloudMonitor:
                     "The traffic source is missing features the deployed model requires: "
                     + ", ".join(missing) + "."
                 )
-            if source_type != "csv":
+            if source_type == "pcap":
                 source.prepare()
+            elif source_type == "live":
+                available, reason = live_capture_available()
+                if not available:
+                    raise TrafficSourceError(reason)
         except TrafficSourceCancelled:
             return "stopped"
         except (LiveMonitorError, TrafficSourceError) as error:
@@ -517,6 +521,14 @@ class CloudMonitor:
             f"#{deployment['deployment_id']}.",
             deployment["model_name"],
         )
+        if source_type == "live":
+            # Capture starts only now that the loop is ready to read packets. Flows that ended
+            # while the model warmed up and the capture was registered in the cloud used to wait
+            # in the queue and got their verdicts late (DEF-17).
+            try:
+                source.prepare()
+            except TrafficSourceError as error:
+                raise LiveMonitorError(str(error)) from None
         return self._loop(session, stop_event, pause_event, repo.context, source, pipeline,
                           feature_columns, numeric_columns, defaults, deployment, source_tag)
 

@@ -454,7 +454,7 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                     "features before starting packet monitoring."
                 )
             raise LiveMonitorError(message)
-        if source_type != "csv":
+        if source_type == "pcap":
             source.prepare()
     except TrafficSourceCancelled:
         if source is not None:
@@ -519,6 +519,19 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
         run_id=deployment_summary["run_id"],
         model_name=deployment_summary["model_name"],
     )
+
+    if source_type == "live":
+        # Capture starts only now that the loop is ready to read packets, so flows ending during
+        # start-up do not wait in the queue for a late verdict (DEF-17).
+        try:
+            source.prepare()
+        except TrafficSourceError as error:
+            with _LOCK:
+                session["error_message"] = str(error)
+            log_system_event(admin_id, "Live Monitor", "monitor_failed", "Failed",
+                             message=str(error))
+            cleanup.close()
+            return "error"
 
     final_state = "completed"
     row_index = -1
