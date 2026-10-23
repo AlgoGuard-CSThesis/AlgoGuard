@@ -301,8 +301,8 @@ automatically. You never have to edit the form.
 ----------------------
 
 These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
-row 1004 counting the header) that the deployed model classifies as Normal with
-about 99.5% confidence:
+line 1005, the header being line 1) that the deployed model classifies as Normal
+with about 99.5% confidence:
 
 Dur:            0.004384
 Proto:          tcp
@@ -334,8 +334,8 @@ different data, the same values may be judged differently.
 -----------------------
 
 These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
-row 4149 counting the header) that the deployed model classifies as Attack with
-about 99.98% confidence:
+line 4150, the header being line 1) that the deployed model classifies as Attack
+with about 99.98% confidence:
 
 Dur:            0.000003
 Proto:          unas
