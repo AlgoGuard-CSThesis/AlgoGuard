@@ -224,8 +224,9 @@ Sample dataset / Capture file / Network interface
 
 Replay speed
     Slow is one flow every 2 seconds, Normal is one flow per second, and Fast
-    is roughly three flows per second. Slower speeds are easier to narrate
-    during a demonstration.
+    is roughly three flows per second. Maximum adds no delay: flows are
+    classified as fast as the model allows, several at a time, which suits a
+    large sample. Slower speeds are easier to narrate during a demonstration.
 
 Flow order
     Sequential replays the file top to bottom. Randomised shuffles it first,
@@ -268,23 +269,26 @@ Go to:
 http://localhost:5000/simulation
 
 The page builds its form from the deployed model itself, so the fields always
-match what that model was trained on. The current model asks for 15 fields:
+match what that model was trained on. The current model asks for 16 fields:
 
-Dur         Flow duration in seconds.
-Proto       Protocol, such as tcp, udp, or gre.
-Service     Application service, such as http, dns, ftp-data, or - for none.
-State       Connection state, such as FIN, INT, CON, or REQ.
-Spkts       Packets sent by the source.
-Dpkts       Packets sent by the destination.
-Sbytes      Bytes sent by the source.
-Dbytes      Bytes sent by the destination.
-Rate        Packets per second.
-Sttl        Source time-to-live.
-Dttl        Destination time-to-live.
-Sload       Source bits per second.
-Dload       Destination bits per second.
-Sinpkt      Average gap between source packets, in milliseconds.
-Dinpkt      Average gap between destination packets, in milliseconds.
+Dur             Flow duration in seconds.
+Proto           Protocol, such as tcp, udp, or gre.
+Service         Application service, such as http, dns, ftp-data, or - for none.
+State           Connection state, such as FIN, INT, CON, or REQ.
+Spkts           Packets sent by the source.
+Dpkts           Packets sent by the destination.
+Sbytes          Bytes sent by the source.
+Dbytes          Bytes sent by the destination.
+Rate            Packets per second.
+Sload           Source bits per second.
+Dload           Destination bits per second.
+Sinpkt          Average gap between source packets, in milliseconds.
+Dinpkt          Average gap between destination packets, in milliseconds.
+Ct_dst_src_ltm  Of the last 100 connections, how many had this source and
+                destination (1 or more).
+Ct_dst_ltm      Of the last 100 connections, how many went to this destination.
+Ct_srv_dst      Of the last 100 connections, how many used this service to this
+                destination.
 
 Every field is required. The page opens pre-filled with a valid example, so you
 can simply change one or two values and press Run Prediction to experiment.
@@ -296,28 +300,30 @@ automatically. You never have to edit the form.
 6. PREDICT NORMAL TEST
 ----------------------
 
-These values are a real flow from the bundled dataset that the deployed model
-classifies as Normal with about 99.9% confidence:
+These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
+row 1004 counting the header) that the deployed model classifies as Normal with
+about 99.5% confidence:
 
-Dur:        1.665064
-Proto:      tcp
-Service:    ftp-data
-State:      FIN
-Spkts:      14
-Dpkts:      6
-Sbytes:     8928
-Dbytes:     320
-Rate:       11.410973
-Sttl:       31
-Dttl:       29
-Sload:      39835.10547
-Dload:      1282.833618
-Sinpkt:     128.081847
-Dinpkt:     332.462
+Dur:            0.004384
+Proto:          tcp
+Service:        ftp-data
+State:          FIN
+Spkts:          8
+Dpkts:          12
+Sbytes:         424
+Dbytes:         8824
+Rate:           4333.94175
+Sload:          677007.3125
+Dload:          14760949.0
+Sinpkt:         0.577714
+Dinpkt:         0.350091
+Ct_dst_src_ltm: 4
+Ct_dst_ltm:     5
+Ct_srv_dst:     3
 
 Why this looks normal:
-A complete FIN connection, traffic flowing in both directions, a low packet
-rate, and ordinary TTL values.
+A complete FIN connection with traffic in both directions: a small request and
+a larger file transfer back, to a destination seen only a few times recently.
 
 Important:
 The verdict comes from the model, not from a hardcoded rule. If you retrain on
@@ -327,27 +333,29 @@ different data, the same values may be judged differently.
 7. PREDICT ANOMALY TEST
 -----------------------
 
-These values are a real flow from the bundled dataset that the deployed model
-classifies as Attack with about 99.9% confidence:
+These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
+row 4149 counting the header) that the deployed model classifies as Attack with
+about 99.98% confidence:
 
-Dur:        0.000003
-Proto:      gre
-Service:    -
-State:      INT
-Spkts:      2
-Dpkts:      0
-Sbytes:     200
-Dbytes:     0
-Rate:       333333.3215
-Sttl:       254
-Dttl:       0
-Sload:      266666656.0
-Dload:      0.0
-Sinpkt:     0.003
-Dinpkt:     0.0
+Dur:            0.000003
+Proto:          unas
+Service:        -
+State:          INT
+Spkts:          2
+Dpkts:          0
+Sbytes:         200
+Dbytes:         0
+Rate:           333333.3215
+Sload:          266666656.0
+Dload:          0.0
+Sinpkt:         0.003
+Dinpkt:         0.0
+Ct_dst_src_ltm: 1
+Ct_dst_ltm:     2
+Ct_srv_dst:     1
 
 Why this looks suspicious:
-The destination never replies (0 packets, 0 bytes, TTL 0), the flow lasts three
+The destination never replies (0 packets, 0 bytes), the flow lasts three
 microseconds, and the packet rate and source load are enormous. That is the
 shape of scanning or flooding traffic rather than a real conversation.
 
@@ -491,7 +499,8 @@ down live detection.
 If asked whether it monitors real traffic:
 
 Yes. In live mode it captures packets from the network card, groups them into
-bidirectional flows, computes the same 15 features the model was trained on,
+bidirectional flows, computes the same 16 features the model was trained on
+(13 describe the flow; 3 count recent connections to the same destination),
 and classifies each flow the moment it ends. The same pipeline also replays
 recorded .pcap files and the labelled UNSW-NB15 samples; the labelled replay
 is what lets the Live Monitor show whether each prediction was correct, which

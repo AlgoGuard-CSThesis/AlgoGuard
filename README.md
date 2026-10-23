@@ -278,11 +278,11 @@ Replay also accepts fewer rows or a single recognized class, since it does not t
 Example:
 
 ```csv
-dur,proto,service,state,spkts,dpkts,sbytes,dbytes,rate,sttl,dttl,sload,dload,sinpkt,dinpkt,label
-2.001348,tcp,-,FIN,16,14,862,802,14.490233,254,252,3233.820312,2977.99292,133.423196,146.368077,Normal
-1.665064,tcp,ftp-data,FIN,14,6,8928,320,11.410973,31,29,39835.10547,1282.833618,128.081847,332.462,Normal
-0.472012,tcp,http,FIN,10,8,834,354,36.016032,254,252,12728.48926,5254.103516,52.445778,60.35343,Attack
-0.320972,tcp,http,FIN,10,8,784,1256,52.964122,62,252,17596.55078,27391.79688,35.663556,38.518145,Attack
+dur,proto,service,state,spkts,dpkts,sbytes,dbytes,rate,sload,dload,sinpkt,dinpkt,ct_dst_src_ltm,ct_dst_ltm,ct_srv_dst,label
+0.017994,tcp,-,FIN,46,46,2870,24004,5057.241402,1248416.125,10440369.0,0.389267,0.396864,2,2,5,Normal
+0.842104,tcp,http,FIN,10,6,508,268,17.812526,4351.006348,2128.003174,87.584222,154.941,2,2,2,Normal
+1.1e-05,udp,-,INT,2,0,320,0,90909.0902,116363632.0,0.0,0.011,0.0,1,1,1,Attack
+8e-06,pipe,-,INT,2,0,200,0,125000.0003,100000000.0,0.0,0.008,0.0,5,2,5,Attack
 ```
 
 Each row is one traffic-flow observation. Each feature column is one measured property. The final `label` is the known class used during supervised training. Adding a row labeled `Attack` does not force future inputs with those exact values to be attacks; it gives the models another labeled example from which to learn.
@@ -295,7 +295,7 @@ Three CSV files are included in `datasets/`:
 - `algoguard_bigger.csv`: 10,000 rows
 - `algoguard_biggest.csv`: 20,000 rows
 
-The files are nested, stratified, non-replacement samples of the labeled UNSW-NB15 training partition. Each file uses the same 15 input features: `dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sttl`, `dttl`, `sload`, `dload`, `sinpkt`, and `dinpkt`. The final binary `label` uses `Normal` and `Attack`. Other source columns, including the identifier and `attack_cat`, were removed to keep training practical and prevent identifier noise or direct target leakage.
+The files are nested, stratified, non-replacement samples of the labeled UNSW-NB15 training partition, drawn from the rows outside the evaluation hold-out (see Retrain and Deploy). Each file uses the same 16 input features: the 13 per-flow features `dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sload`, `dload`, `sinpkt`, and `dinpkt`, and three connection counts: `ct_dst_src_ltm`, `ct_dst_ltm`, and `ct_srv_dst` (of the last 100 connections, how many had the same source and destination address, the same destination address, and the same service and destination address). The final binary `label` uses `Normal` and `Attack`. Other source columns, including the identifier and `attack_cat`, were removed to keep training practical and prevent identifier noise or direct target leakage.
 
 These files serve two purposes: they are the replay sources offered by the Live Monitor, and they are valid inputs to `train.py` when the model is rebuilt. Because each row keeps its true `label`, the Live Monitor can show whether each prediction matched the recorded outcome.
 
@@ -305,11 +305,11 @@ Dataset source and attribution: [The UNSW-NB15 Dataset, UNSW Research](https://r
 
 Open **Live Monitor** and choose a traffic source:
 
-- **Sample replay (labelled flows)**: one of the bundled CSV samples, with replay speed (slow, normal, or fast) and flow order (sequential or randomised). Each verdict is compared against the recorded label.
+- **Sample replay (labelled flows)**: one of the bundled CSV samples, with replay speed (slow, normal, fast, or maximum) and flow order (sequential or randomised). Maximum adds no delay: flows are classified as fast as the model allows, in batches. Each verdict is compared against the recorded label.
 - **Recorded packets (PCAP)**: a `.pcap`, `.pcapng`, or `.cap` file placed in `captures/`. The data packets are aggregated into bidirectional flows by the flow tracker, and the resulting flows are replayed at the chosen speed. Packet-derived flows have no ground-truth label, so the Actual column shows a dash.
 - **Live interface capture**: a network interface, sniffed in real time. Packets are tracked into flows as they arrive; a flow is classified when its TCP connection tears down, after 15 seconds of silence, or in 120-second slices for long-lived connections. Live mode runs at wire pace (speed and order do not apply) and reports detection lag — the time from a flow ending to its verdict — alongside inference latency, plus captured and dropped packet counters. Each live session is recorded in the `capture_session` table.
 
-For packet sources the flow tracker computes the same 15 features the model was trained on (`dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sttl`, `dttl`, `sload`, `dload`, `sinpkt`, `dinpkt`). `service` is inferred from well-known ports and `state` from observed TCP flags, which approximate how the original UNSW-NB15 features were generated; the closer your training data is to your own network's traffic, the better the verdicts (see Retrain and Deploy).
+For packet sources the flow tracker computes the same 16 features the model was trained on: the 13 per-flow features (`dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sload`, `dload`, `sinpkt`, `dinpkt`) and the three connection counts, taken over the last 100 flows the tracker finished. Only destination-keyed counts are used: on one capturing PC almost every connection has the same source address. UNSW-NB15's TTL fields (`sttl`, `dttl`) are not used: in the dataset they mostly identify the lab's own hosts, and Windows' default TTL of 128 never occurs there, so models trained with them flagged most benign live traffic. Flows that end together, such as the connections of one page load, are classified together in one model call. `service` is inferred from well-known ports and `state` from observed TCP flags, which approximate how the original UNSW-NB15 features were generated; the closer your training data is to your own network's traffic, the better the verdicts (see Retrain and Deploy).
 
 CSV replay uses the same Normal/Attack label mapping as training, including numeric
 labels and recognized Normal aliases. Missing or ambiguous labels report an error.
@@ -321,7 +321,7 @@ capture. A session becomes completed, stopped, or failed only after cleanup and
 final database writes finish, so it can be restarted as soon as that state appears.
 
 Packet monitoring checks the deployed model's required fields before opening a
-capture. If any field is outside these 15 features, it reports the missing fields
+capture. If any field is outside these 16 features, it reports the missing fields
 and asks you to train with compatible data. Manual prediction remains available
 for models trained with custom fields.
 
@@ -357,11 +357,24 @@ python train.py my_traffic.csv --deploy --admin your_admin
 
 The last column is the label; the other columns are the features, except that `id`
 and `attack_cat` are always dropped (a row number and the attack name, which would
-leak the label). A file that has all 15 flow features, such as the raw UNSW-NB15
-export, trains on exactly those 15. When a file's features are not the 15 flow
+leak the label). A file that has all 16 flow features, such as the raw UNSW-NB15
+export, trains on exactly those 16. When a file's features are not the 16 flow
 features, `train.py` says so before training and again before `--deploy`: such a
 model still works for Manual Prediction and CSV replay with the same columns, but
 Live Monitor packet capture and cloud publishing refuse it.
+
+The deployed model is trained on the whole UNSW-NB15 training partition except an
+evaluation hold-out (the rows listed in `research/dataset/holdout_ids.csv`), and is
+measured on that hold-out with `scripts/evaluate_model.py`. To rebuild it (about 20 minutes):
+
+```powershell
+python scripts\build_flow_datasets.py --evidence test-results\<folder>
+python train.py research\dataset\processed\flow_window_v2\training.csv --deploy
+python scripts\evaluate_model.py --model saved_models\run_<id>\stacking.joblib --data research\dataset\processed\flow_window_v2\holdout_eval.csv --train-csv research\dataset\processed\flow_window_v2\training.csv
+```
+
+The first command also rewrites the three bundled samples from the same data. Saved models
+are compressed (about 12 MB for this Stacking Ensemble, under the cloud storage limit).
 
 Without `--deploy`, the run trains and ranks all six candidates, writes `reports/training_run_<id>_model_results.csv`, and prints the comparison table without touching the active model. With `--deploy`, the Stacking Ensemble is promoted only if it passes the quality gate; the five individual models are comparison results and can never be deployed. Each deployment saves the Stacking pipeline and its metadata to a separate `saved_models/deployed_model.<unique-id>.joblib` file, then switches the active file reference in one SQLite transaction. Previous files are retained for requests already in progress and deployment history. Existing installations that reference `deployed_model.joblib` continue to work. `ALGOGUARD_DEPLOYED_MODEL_PATH` sets the folder and base filename for new deployment files.
 
