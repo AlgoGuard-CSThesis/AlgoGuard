@@ -1,0 +1,64 @@
+{
+  "started": "2026-10-23 11:22:32",
+  "seconds": 90.0,
+  "flows": 208,
+  "end_reasons": {
+    "rst": 99,
+    "idle_timeout": 99,
+    "fin": 10
+  },
+  "services": {
+    "ssl": 187,
+    "-": 21
+  },
+  "sttl_top": {
+    "128": 147,
+    "0": 29,
+    "55": 17,
+    "255": 11
+  },
+  "attack_share": {
+    "run 7 Stacking (18 features, with TTL)": {
+      "all": 0.9712,
+      "fin": 1.0,
+      "idle_timeout": 0.9495,
+      "rst": 0.9899
+    },
+    "run 8 stacking (16 features)": {
+      "all": 0.8221,
+      "fin": 1.0,
+      "idle_timeout": 0.9596,
+      "rst": 0.6667
+    },
+    "run 8 random_forest (16 features)": {
+      "all": 0.3317,
+      "fin": 0.5,
+      "idle_timeout": 0.5455,
+      "rst": 0.101
+    },
+    "run 8 gradient_boosting (16 features)": {
+      "all": 0.2308,
+      "fin": 0.5,
+      "idle_timeout": 0.3838,
+      "rst": 0.0505
+    },
+    "run 8 adaboost (16 features)": {
+      "all": 0.1683,
+      "fin": 0.5,
+      "idle_timeout": 0.2929,
+      "rst": 0.0101
+    },
+    "run 8 knn (16 features)": {
+      "all": 0.4135,
+      "fin": 0.9,
+      "idle_timeout": 0.3535,
+      "rst": 0.4242
+    },
+    "run 8 naive_bayes (16 features)": {
+      "all": 0.899,
+      "fin": 1.0,
+      "idle_timeout": 0.7879,
+      "rst": 1.0
+    }
+  }
+}

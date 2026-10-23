@@ -1,0 +1,19 @@
+{
+  "live_flows": 100,
+  "schema v2 (18 features)": {
+    "holdout_accuracy": 0.9556,
+    "holdout_f1": 0.9414,
+    "holdout_recall": 0.9197,
+    "holdout_fpr": 0.0216,
+    "holdout_roc_auc": 0.9904,
+    "live_attack_share": 0.8
+  },
+  "schema v2 without sttl, dttl (16)": {
+    "holdout_accuracy": 0.9553,
+    "holdout_f1": 0.941,
+    "holdout_recall": 0.9205,
+    "holdout_fpr": 0.0227,
+    "holdout_roc_auc": 0.9891,
+    "live_attack_share": 0.42
+  }
+}

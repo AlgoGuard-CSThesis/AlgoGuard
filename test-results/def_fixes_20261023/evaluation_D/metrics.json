@@ -1,0 +1,69 @@
+{
+  "context": {
+    "evaluated_at": "2026-10-23T14:26:25",
+    "git_commit": "67032f5",
+    "python": "3.14.6",
+    "scikit_learn": "1.9.0",
+    "model_file": "saved_models\\run_8\\stacking.joblib",
+    "model_sha256": "1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29",
+    "model_name": "Stacking Ensemble",
+    "model_trained_at": "2026-10-23 03:19:00",
+    "data_file": "research\\dataset\\processed\\flow_window_v2\\holdout_eval.csv",
+    "data_sha256": "b76c8788eb64b1653a1b32ffff72f989a29b35671f8524939c9666fa3879ce79",
+    "training_csvs": [
+      "research\\dataset\\processed\\flow_window_v2\\training.csv"
+    ],
+    "rows_loaded": 15939,
+    "rows_removed_seen_in_training": 0
+  },
+  "metrics": {
+    "rows": 15939,
+    "attacks": 6174,
+    "normal": 9765,
+    "accuracy": 0.9519417780287346,
+    "precision": 0.956140350877193,
+    "recall": 0.9180434078393263,
+    "f1": 0.9367046769129069,
+    "false_positive_rate": 0.026625704045058884,
+    "specificity": 0.9733742959549411,
+    "roc_auc": 0.989029925968388,
+    "tp": 5668,
+    "fp": 260,
+    "tn": 9505,
+    "fn": 506,
+    "prediction_seconds_total": 15.597788400002173,
+    "prediction_ms_per_row": 0.978592659514535
+  },
+  "targets": [
+    {
+      "metric": "accuracy",
+      "target": ">= 0.9",
+      "measured": 0.9519,
+      "result": "Met"
+    },
+    {
+      "metric": "f1",
+      "target": ">= 0.9",
+      "measured": 0.9367,
+      "result": "Met"
+    },
+    {
+      "metric": "recall",
+      "target": ">= 0.9",
+      "measured": 0.918,
+      "result": "Met"
+    },
+    {
+      "metric": "false_positive_rate",
+      "target": "<= 0.08",
+      "measured": 0.0266,
+      "result": "Met"
+    },
+    {
+      "metric": "roc_auc",
+      "target": ">= 0.95",
+      "measured": 0.989,
+      "result": "Met"
+    }
+  ]
+}

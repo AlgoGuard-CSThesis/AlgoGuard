@@ -1,0 +1,35 @@
+﻿started 2026-10-23 10:27:23
+Training run #7 created for training.csv.
+Validating and preprocessing the dataset ...
+Prepared 66,393 rows and 18 features.
+
+  [1/6] Training Random Forest ...
+  [1/6] Finished Random Forest
+  [2/6] Training Gradient Boosting ...
+  [2/6] Finished Gradient Boosting
+  [3/6] Training AdaBoost ...
+  [3/6] Finished AdaBoost
+  [4/6] Training K-Nearest Neighbors ...
+  [4/6] Finished K-Nearest Neighbors
+  [5/6] Training Naive Bayes ...
+  [5/6] Finished Naive Bayes
+  [6/6] Training Stacking Ensemble ...
+  [6/6] Finished Stacking Ensemble
+
+Model comparison
+------------------------------------------------------------------------------
+#   Model                    Accuracy         F1    ROC-AUC      Score
+------------------------------------------------------------------------------
+1   Random Forest              97.38%     97.76%     99.68%       0.71
+2   Gradient Boosting          95.72%     96.38%     99.25%       0.71
+3   K-Nearest Neighbors        96.02%     96.61%     98.81%       0.68
+4   AdaBoost                   93.46%     94.42%     98.43%       0.64
+5   Naive Bayes                52.18%     31.82%     60.62%       0.44
+-   Stacking Ensemble          97.34%     97.73%     99.70%          -
+------------------------------------------------------------------------------
+Top individual model: Random Forest
+Report: C:\Users\sanmi\AlgoGuard\reports\training_run_7_model_results.csv
+
+Stacking Ensemble is now the active model.
+Artifact: C:\Users\sanmi\AlgoGuard\saved_models\deployed_model.8d5123ed51124f629951cda0ae9060c8.joblib
+finished 2026-10-23 10:47:39 exit 0

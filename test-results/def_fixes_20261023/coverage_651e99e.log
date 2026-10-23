@@ -1,0 +1,140 @@
+﻿........................................................................ [ 12%]
+........................................................................ [ 25%]
+........................................................................ [ 37%]
+........................................................................ [ 50%]
+........................................................................ [ 62%]
+........................................................................ [ 75%]
+........................................................................ [ 87%]
+........................................................................ [100%]
+============================== warnings summary ===============================
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E36F010>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F89283C400>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E58A5C0>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E58B010>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E58B1F0>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E5889A0>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E58BE20>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E588B80>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E58AC50>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F88E58B5B0>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_live_monitor.py::test_session_classifies_flows_and_emits_ordered_events
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\numpy\_core\fromnumeric.py:67: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F8929FDF30>
+    passkwargs = {k: v for k, v in kwargs.items()
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A92F20>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A90B80>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A91A80>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A91E40>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A90D60>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A90400>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+tests/test_model_architecture.py::test_stacking_artifact_is_current_and_fitted
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle_utils.py:70: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001F897A92D40>
+    and all(e[0].byteorder == ">" for e in array.dtype.fields.values())
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=============================== tests coverage ================================
+_______________ coverage: platform win32, python 3.14.6-final-0 _______________
+
+Name                                 Stmts   Miss  Cover
+--------------------------------------------------------
+services\__init__.py                     0      0   100%
+services\alert_policy.py                14      0   100%
+services\database_service.py           337     62    82%
+services\deployment_service.py         155     35    77%
+services\evaluation_service.py          62      7    89%
+services\flow_tracker_service.py       185      1    99%
+services\live_monitor_service.py       439     53    88%
+services\model_registry.py              36      0   100%
+services\password_policy.py              5      0   100%
+services\preprocessing_service.py      110     12    89%
+services\resource_service.py            42      4    90%
+services\simulation_service.py          86     15    83%
+services\traffic_source_service.py     384     96    75%
+services\training_service.py            95     17    82%
+--------------------------------------------------------
+TOTAL                                 1950    302    85%
+576 passed, 67 deselected, 18 warnings in 144.19s (0:02:24)
