@@ -333,9 +333,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 4c9666c (PC B, 2026-10-10) |
 | Environment | PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo) |
-| Status | Closed |
-| Fixed in commit | — (not reproduced; no code change) |
-| Re-test result | 2026-10-23 16:00 PRF-01.P1 re-test on 67032f5 against the hosted pilot (deployment #2): upload delay (cloud received_at minus event time; PC clock 0.08 s behind the database) p95 1.96 s, 1.80 s and 1.87 s on three captures (143, 136 and 153 events; max 2.51 s; no duplicates) - within 5 s. The 24.06 s of pilot capture 6 was not reproduced, as on 2026-10-16; closed as not reproduced. |
+| Status | Open (reopened 2026-10-24) |
+| Fixed in commit | — |
+| Re-test result | 2026-10-23 16:00 on 67032f5: p95 1.96 s, 1.80 s and 1.87 s on three captures - closed as not reproduced. 2026-10-24 on 651e99e: smoke replay p95 1.55 s (capture 45) and a second live capture p95 1.53 s (capture 48), but live capture 46 p95 6.95 s - one stall of about 6.7 s (events of 00:11:21-00:11:23 received at 00:11:28-00:11:30) while the test's traffic generator was downloading up to 8 pages at once on the same Wi-Fi - and a 300-event burst (capture 47, Maximum replay) p95 5.04 s, because uploads go one request at a time with at most 50 events each (store_flow_batch limit), about 65 events/s. Reopened: intermittent, as in the pilot. Lead Architect decision needed: parallel upload requests (the server deduplicates by event UUID) or a larger server batch (migration), or accept as limit L2 (pending events always upload, only later). |
 
 **Steps to reproduce**
 
@@ -368,9 +368,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | pilot 4c9666c / 9e18f30 |
 | Environment | PC A and PC B, hosted Supabase pilot (Tokyo) |
-| Status | Fixed - re-test pending |
+| Status | Closed |
 | Fixed in commit | d346083 |
-| Re-test result | Maximum replay speed and batched classification added (d346083): one model call classifies up to 64 waiting flows (50 rows in about 58 ms against 52-106 ms per single flow before). The in-app re-test (Maximum-speed replay of algoguard_biggest.csv: flows and acknowledged events per second) waits for a sign-in on the final build 651e99e. |
+| Re-test result | 2026-10-24 00:17 PRF-01.1 and PRF-01.P2 Pass on 651e99e: Maximum-speed replay of algoguard_biggest.csv in the app classified 20,000 flows in 17.25 s (1,159.7 flows/s; plan 3.4 budget >= 20); its 300 stored events were acknowledged by the hosted pilot in 4.6 s (65.2 events/s; pilot budget >= 20). Fix: batched classification and the Maximum replay speed (d346083). |
 
 **Steps to reproduce**
 
@@ -573,9 +573,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 503cb9b |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, administrator |
-| Status | Fixed - re-test pending |
-| Fixed in commit | d346083, 6d3f6cc |
-| Re-test result | 2026-10-23 10:49 same-PC baseline through the old code path: p95 993.4 ms. 14:36 TC-11 harness on 67032f5 (capture and classification code alone): p50 208.6 ms, p95 323.0 ms over 78 FIN/RST flows - met. 15:46 in the app on 67032f5: p50 627.1 ms, p95 888.4 ms over 81 flows - not met. Cause: busy app threads stretch each prediction through Python's 5 ms thread switch interval (one busy thread: 70 ms -> 981 ms per prediction); fixed in 6d3f6cc (0.5 ms while monitoring). The in-app re-test on 651e99e waits for a sign-in. |
+| Status | Closed |
+| Fixed in commit | d346083, 6d3f6cc, c775d13 |
+| Re-test result | 2026-10-23: same-PC baseline through the old path p95 993.4 ms; outside the app on 67032f5 p95 323.0 ms; in the app on 67032f5 p95 888.4 ms (busy threads stretch each prediction through the 5 ms thread switch interval; fixed in 6d3f6cc). 2026-10-24 in the app on 651e99e: p95 601.6 ms (the session's first batch, captured before the loop was ready; fixed in c775d13) and 332.1 ms. 05:11 TC-11 Pass in the app on the final build c775d13: 106 FIN/RST flows, p50 89.4 ms, p95 234.6 ms, max 317.9 ms (first batch at most 317.9 ms); 0 of 4,764 packets dropped. |
 
 **Steps to reproduce**
 

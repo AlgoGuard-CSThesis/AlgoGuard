@@ -1,7 +1,7 @@
 {
   "version": "1.1",
-  "date": "2026-10-23",
-  "summary": "Re-tests of the defects deferred on 2026-10-20 (DEF-04 to DEF-07, DEF-10, DEF-11, DEF-17) after the Lead Architect asked for every defect to be fixed before Iteration 6; new defect DEF-19.",
+  "date": "2026-10-24",
+  "summary": "Re-tests of the defects deferred on 2026-10-20 (DEF-04 to DEF-07, DEF-10, DEF-11, DEF-17) after the Lead Architect asked for every defect to be fixed before Iteration 6: DEF-04 to DEF-07, DEF-11 and DEF-17 closed; DEF-10 closed on 2026-10-23 and reopened on 2026-10-24; new defect DEF-19 (High, Iteration 6); exit criteria re-evaluated.",
   "test_log": [
     {
       "time": "2026-10-23 10:47",
@@ -190,6 +190,175 @@
       "actual": "Training run 9 = the run 8 training repeated on 651e99e into saved_models/cycle1_D2 (no --deploy; 16:06:37-16:11:23, 4.8 min against 18.5 min for run 8, which ran while the PC was busier). On the 15,939 hold-out rows: 0 verdicts differ, largest probability difference 0.0. The files differ (SHA-256 c3a15fc9... vs 1fd819c1...) only because each artifact records its own training time.",
       "status": "Pass",
       "evidence": "test-results/def_fixes_20261023/reproducibility_run8.json, train_D2_console.log"
+    },
+    {
+      "time": "2026-10-24 00:10",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "651e99e",
+      "expected": "SMK-01 re-run on the final build (REG-01 card).",
+      "actual": "App restarted on 651e99e; PC A analyst signed in once in the test Chrome window (00:07). TC-01 Normal row (algoguard_big.csv line 1005) -> NORMAL 99.49%, deployment #2, no alert; TC-02 Attack row (line 4150) -> ATTACK 99.98%, alert created on upload. Replay algoguard_big, Fast, Save attacks, 00:07:51-00:10:00: 297 flows, 208 Attack / 89 Normal, 4 mismatches with the labels, 208 alerts, 208 queued, 208 synced, 0 pending, 0 not stored, no error. Average model latency 40.5 ms (240.3 ms on 67032f5, before the switch-interval fix).",
+      "status": "Pass",
+      "evidence": "test-results/def_fixes_20261023/inapp_651e99e/smoke.json, smoke_*.png"
+    },
+    {
+      "time": "2026-10-24 00:12",
+      "case": "TC-11",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "Live capture: event-to-verdict lag p95 <= 500 ms (excluding flow timeouts).",
+      "actual": "In the app, Live interface capture on Wi-Fi, Save attacks, 90 s with traffic_gen.py (run 1): 4,454 packets, 0 dropped, 1,026 own cloud packets excluded, 202 flows (86 rst, 10 fin, 106 idle timeout). FIN/RST flows n=96: p50 111.7 ms, p95 601.6 ms, max 754.4 ms - not met. Model latency p50 33.9 ms, p95 86.9 ms (134.1 / 445.6 ms on 67032f5). The six flows over 500 ms (598-754 ms) are the session's first batch: capture started before the model warm-up and the cloud registration, so flows ending then waited; without them p95 443 ms. Fixed in c775d13 (capture starts when the loop is ready). 165 of 202 flows (81.7%) labelled Attack (DEF-19).",
+      "status": "Fail",
+      "defect": "DEF-17, DEF-19",
+      "evidence": "test-results/def_fixes_20261023/inapp_651e99e/live_run1.json, live_run1.png"
+    },
+    {
+      "time": "2026-10-24 00:12",
+      "case": "PRF-01.3",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "Packet drop fraction during live capture <= 1% (plan 3.4).",
+      "actual": "0 of 4,454 packets (run 1, 00:10-00:12) and 0 of 4,719 packets (run 2, 00:19-00:21) dropped in 90 s in-app live captures - met.",
+      "status": "Pass",
+      "evidence": "test-results/def_fixes_20261023/inapp_651e99e/live_run1.json, live_run2.json"
+    },
+    {
+      "time": "2026-10-24 00:17",
+      "case": "PRF-01.1",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "Sustained events per second, per client >= 20 (plan 3.4).",
+      "actual": "In the app, Sample replay of algoguard_biggest.csv (20,000 flows) at the new Maximum speed, Save every flow: running to completed in 17.25 s (19.19 s from the Start click) - 1,159.7 flows/s; 13,526 Attack / 6,474 Normal, 184 mismatches with the labels; 300 events stored (the per-session cap) and synced, 19,700 not stored by design; average model latency 44.9 ms. Met (cycle 1: 1.65-1.92 flows/s at Fast).",
+      "status": "Pass",
+      "defect": "DEF-11",
+      "evidence": "test-results/def_fixes_20261023/inapp_651e99e/max.json, max_replay.png"
+    },
+    {
+      "time": "2026-10-24 00:17",
+      "case": "PRF-01.P2",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "Pilot budget: sustained acknowledged events per client >= 20 events/s.",
+      "actual": "The Maximum replay's 300 stored events (capture 47, created within 0.3 s) were all received by the hosted pilot within 4.6 s - 65.2 acknowledged events/s, every event once. Met.",
+      "status": "Pass",
+      "defect": "DEF-11",
+      "evidence": "test-results/def_fixes_20261023/upload_delay_651e99e.json"
+    },
+    {
+      "time": "2026-10-24 00:21",
+      "case": "TC-11",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "Live capture: event-to-verdict lag p95 <= 500 ms (excluding flow timeouts).",
+      "actual": "Run 2, same set-up, 00:18:56-00:20:47: 4,719 packets, 0 dropped, 1,270 own cloud packets excluded, 202 flows (88 rst, 13 fin, 100 idle timeout). FIN/RST flows n=101: p50 60.2 ms, p95 332.1 ms, max 666.3 ms - met. Model latency p50 30.4 ms, p95 119.8 ms. 81.6% labelled Attack (DEF-19). Run 1 failed only through its start-up batch; the deciding re-test is on c775d13.",
+      "status": "Pass",
+      "defect": "DEF-17",
+      "evidence": "test-results/def_fixes_20261023/inapp_651e99e/live_run2.json, live_run2.png"
+    },
+    {
+      "time": "2026-10-24 00:22",
+      "case": "PRF-01.P1",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "Pilot budget: p95 upload acknowledgement (pending -> synced, online) <= 5 s.",
+      "actual": "Hosted pilot, read-only (PC clock 0.031 s behind the database): capture 45 (smoke replay, 208 events) p95 1.55 s; capture 48 (live run 2, 165) p95 1.53 s; capture 46 (live run 1, 165) p95 6.95 s, max 7.05 s - one stall of about 6.7 s (events of 00:11:21-00:11:23 received at 00:11:28-00:11:30, 21 events over 3 s) while traffic_gen.py was downloading up to 8 pages at once on the same Wi-Fi; capture 47 (300-event burst) p95 5.04 s - uploads go one request at a time, at most 50 events each (store_flow_batch), about 65 events/s. Not met on two of four captures; DEF-10 reopened.",
+      "status": "Fail",
+      "defect": "DEF-10",
+      "evidence": "test-results/def_fixes_20261023/upload_delay_651e99e.json, upload_delay_651e99e_capture46_timeline.json"
+    },
+    {
+      "time": "2026-10-24 00:30",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "651e99e",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-11 (d346083): PRF-01.1 1,159.7 flows/s and PRF-01.P2 65.2 acknowledged events/s - closed. DEF-10: closed on 2026-10-23 as not reproduced, reopened after capture 46 (one 6.7 s upload stall) and the 300-event burst (p95 5.04 s); needs a Lead Architect decision. DEF-17 (d346083, 6d3f6cc): in the app p95 601.6 ms (start-up batch) and 332.1 ms; third fix c775d13, re-test pending. Kanban: DEF-11 to Done, DEF-10 back to Review, DEF-17 stays in Review.",
+      "status": "Pass",
+      "defect": "DEF-11",
+      "evidence": "docs/testing/cycle-1/defects.md; test-results/board_updates_20261024_*.json"
+    },
+    {
+      "time": "2026-10-24 00:51",
+      "case": "PRF-01.4",
+      "card": "PRF-01",
+      "build": "651e99e",
+      "expected": "30-minute soak: AlgoGuard process CPU <= 80% and RAM <= 1 GiB, no steady growth (plan 3.4; PRF-01 card).",
+      "actual": "Soak with the larger model (deployment #2): replay of algoguard_biggest.csv at Fast, Save attacks, 2026-10-24 00:21:22 - 2026-10-24 00:51:33; 4,554 flows, 300 stored (capped), 0 pending, average model latency 34.5 ms. soak_sampler.py, 60 samples every 30 s: CPU max 17.86%, mean 17.38% of the machine; RAM max 420.3 MB, 420.2 MB first and 408.8 MB last, mean 394.6 MB in the first half and 401.7 MB in the second - no steady growth. Met. (Cycle 1: CPU max 8.03%, RAM max 352.2 MB; CPU is higher with the 0.5 ms switch interval and about 40% more flows per minute.)",
+      "status": "Pass",
+      "evidence": "test-results/soak_20261024_002122.csv; test-results/def_fixes_20261023/soak_sampler_651e99e.log, inapp_651e99e/soak.json, soak_console.log, soak_end.png"
+    },
+    {
+      "time": "2026-10-24 00:59",
+      "case": "REG-01.1",
+      "card": "REG-01",
+      "build": "c775d13",
+      "expected": "Full automated suite re-run on the final build; no new failures (REG-01 card).",
+      "actual": "Final build c775d13 = 651e99e + the live-capture start order (DEF-17). run_test_suites.py --all 00:52-00:59: pytest 577 passed / 67 deselected; ruff all checks passed; pyright 0 errors; node 11 pass; integration 65 passed, 2 skipped (Npcap capture tests, terminal not elevated); pip-audit no known vulnerabilities; Bandit by severity High 0 / Medium 14 / Low 18 (unchanged). No new failures.",
+      "status": "Pass",
+      "evidence": "test-results/suites_20261024_005203/*.log"
+    },
+    {
+      "time": "2026-10-24 00:26",
+      "case": "ENV-02.1",
+      "card": "ENV-02",
+      "build": "c775d13",
+      "expected": "GitHub Actions CI is green on the build commit (lint, type check, unit tests, browser polling tests).",
+      "actual": "CI run 39986108475 on c775d13: CPython 3.14.6; lint and type check pass; unit tests 561 passed, 21 skipped; browser tests 11 pass - success.",
+      "status": "Pass",
+      "evidence": "test-results/def_fixes_20261023/ci_run_39986108475_c775d13.log; https://github.com/AlgoGuard-CSThesis/AlgoGuard/actions/runs/39986108475"
+    },
+    {
+      "time": "2026-10-24 05:09",
+      "case": "REG-01.2",
+      "card": "REG-01",
+      "build": "c775d13",
+      "expected": "SMK-01 re-run on the final build (REG-01 card).",
+      "actual": "App restarted on c775d13 (00:52); PC A analyst signed in once in the test Chrome window (05:07). TC-01 Normal row (algoguard_big.csv line 1005) -> NORMAL 99.49%, deployment #2, no alert; TC-02 Attack row (line 4150) -> ATTACK 99.98%, alert created on upload. Replay algoguard_big, Fast, Save attacks, 05:07:38-05:09:47: 297 flows, 208 Attack / 89 Normal, 208 alerts, 208 queued, 208 synced, 0 pending, 0 not stored, no error; average model latency 39.7 ms.",
+      "status": "Pass",
+      "evidence": "test-results/def_fixes_20261023/inapp_c775d13/smoke.json, smoke_*.png"
+    },
+    {
+      "time": "2026-10-24 05:11",
+      "case": "TC-11",
+      "card": "PRF-01",
+      "build": "c775d13",
+      "expected": "Live capture: event-to-verdict lag p95 <= 500 ms (excluding flow timeouts).",
+      "actual": "Final build, in the app, Live interface capture on Wi-Fi, Save attacks, 90 s with traffic_gen.py, 05:09:58-05:11:48: 4,764 packets, 0 dropped, 1,273 own cloud packets excluded, 217 flows (96 rst, 10 fin, 111 idle timeout). FIN/RST flows n=106: p50 89.4 ms, p95 234.6 ms, max 317.9 ms - met; the session's first batch is now at most 317.9 ms (600-754 ms before c775d13). Model latency p50 34.2 ms, p95 131.5 ms. 180 Attack verdicts stored and synced (DEF-19).",
+      "status": "Pass",
+      "defect": "DEF-17",
+      "evidence": "test-results/def_fixes_20261023/inapp_c775d13/live.json, live_capture.png"
+    },
+    {
+      "time": "2026-10-24 05:11",
+      "case": "PRF-01.3",
+      "card": "PRF-01",
+      "build": "c775d13",
+      "expected": "Packet drop fraction during live capture <= 1% (plan 3.4).",
+      "actual": "0 of 4,764 packets dropped in the 90 s in-app live capture on the final build - met.",
+      "status": "Pass",
+      "evidence": "test-results/def_fixes_20261023/inapp_c775d13/live.json"
+    },
+    {
+      "time": "2026-10-24 05:12",
+      "case": "PRF-01.P1",
+      "card": "PRF-01",
+      "build": "c775d13",
+      "expected": "Pilot budget: p95 upload acknowledgement (pending -> synced, online) <= 5 s.",
+      "actual": "Hosted pilot, read-only (PC clock 0.01 s ahead of the database): capture 50 (smoke replay, 208 events) p95 1.43 s, max 1.58 s; capture 51 (live, 180 events) p95 1.55 s, max 1.64 s; every event once. Met on both; DEF-10 stays reopened because of the intermittent stall and the burst seen on 651e99e.",
+      "status": "Pass",
+      "defect": "DEF-10",
+      "evidence": "test-results/def_fixes_20261023/upload_delay_c775d13.json"
+    },
+    {
+      "time": "2026-10-24 05:13",
+      "case": "TC-14",
+      "card": "REG-01",
+      "build": "c775d13",
+      "expected": "DEF card marked fixed with its commit: failing case re-run on the fix commit: case passes; no new failures.",
+      "actual": "DEF-17 (d346083, 6d3f6cc, c775d13): TC-11 passes in the app on the final build (p95 234.6 ms) and the full suite and CI pass on it - closed. Seventeen of nineteen defects are now closed; open: DEF-10 (reopened, Lead Architect decision) and DEF-19 (High, Iteration 6). Kanban: DEF-17 to Done.",
+      "status": "Pass",
+      "defect": "DEF-17",
+      "evidence": "docs/testing/cycle-1/defects.md; test-results/board_updates_20261024_*.json"
     }
   ],
   "defect_updates": {
@@ -210,16 +379,16 @@
       "fixed_in": "52d0545 (model published 2026-10-23 as deployment #2)"
     },
     "DEF-10": {
-      "status": "Closed",
-      "fixed_in": "— (not reproduced; no code change)"
+      "status": "Open (reopened 2026-10-24)",
+      "fixed_in": "—"
     },
     "DEF-11": {
-      "status": "Fixed - re-test pending",
+      "status": "Closed",
       "fixed_in": "d346083"
     },
     "DEF-17": {
-      "status": "Fixed - re-test pending",
-      "fixed_in": "d346083, 6d3f6cc"
+      "status": "Closed",
+      "fixed_in": "d346083, 6d3f6cc, c775d13"
     }
   },
   "automated_runs": [
@@ -326,6 +495,144 @@
       "result": "PASS",
       "key": "Training run 9: 0 of 15,939 hold-out verdicts differ from run 8; max probability difference 0.0",
       "log": "test-results/def_fixes_20261023/train_D2_console.log; reproducibility_run8.json"
+    },
+    {
+      "time": "2026-10-24 00:21",
+      "step": "PRF-01.4 soak sampler: python test-results/prf01/soak_sampler.py --minutes 30",
+      "build": "651e99e",
+      "result": "PASS",
+      "key": "60 samples; CPU max 17.86% mean 17.38%; RAM max 420.3 MB, first 420.2, last 408.8",
+      "log": "test-results/soak_20261024_002122.csv; test-results/def_fixes_20261023/soak_sampler_651e99e.log"
+    },
+    {
+      "time": "2026-10-24 00:58",
+      "step": "REG-01 pytest-offline: python -m pytest -q",
+      "build": "c775d13",
+      "result": "PASS",
+      "key": "577 passed, 67 deselected in 340.30s",
+      "log": "test-results/suites_20261024_005203/pytest-offline.log"
+    },
+    {
+      "time": "2026-10-24 00:59",
+      "step": "REG-01 pytest-integration: python -m pytest -q -m integration",
+      "build": "c775d13",
+      "result": "PASS",
+      "key": "65 passed, 2 skipped, 577 deselected in 76.25s",
+      "log": "test-results/suites_20261024_005203/pytest-integration.log"
+    },
+    {
+      "time": "2026-10-24 00:59",
+      "step": "REG-01 bandit",
+      "build": "c775d13",
+      "result": "FAIL",
+      "key": "Exit 1 (issues found). By severity: High 0, Medium 14, Low 18 - unchanged, all Medium justified in SEC-01.3.",
+      "log": "test-results/suites_20261024_005203/bandit.log"
+    },
+    {
+      "time": "2026-10-24 00:26",
+      "step": "GitHub Actions CI run 39986108475",
+      "build": "c775d13",
+      "result": "PASS",
+      "key": "CPython 3.14.6; 561 passed, 21 skipped; lint, type check, browser tests pass",
+      "log": "test-results/def_fixes_20261023/ci_run_39986108475_c775d13.log"
+    }
+  ],
+  "exit_criteria": [
+    {
+      "criterion": "3.3 · 100% of planned Critical test cases executed",
+      "measured": "6 of 7 (86%): TC-01, TC-02, TC-03, TC-04, TC-08, TC-09 executed; TC-06 not executed (second PC unavailable - pilot evidence and the automated two-node test only). Unchanged since v1.0.",
+      "result": "Not met",
+      "source": "Critical = test cases traced to Critical features F2, F7, F8 in the RTM: TC-01, TC-02, TC-03, TC-04, TC-06, TC-08, TC-09; Test Log"
+    },
+    {
+      "criterion": "3.3 · Overall pass rate across executed test cases",
+      "measured": "100% of executed test cases on their latest run (13 of 13: TC-01 to TC-05 and TC-08 to TC-14 and TC-16 pass on the final build c775d13 or earlier builds; TC-06 and TC-07 not executed; TC-15 blocked on the Product Owner). 80.9% of executed Test Log rows (106 Pass of 131, earlier failed runs included).",
+      "result": "Met",
+      "source": "Test Log v1.1"
+    },
+    {
+      "criterion": "3.3 · Open Critical or High severity bugs",
+      "measured": "1 High open (DEF-19, live capture labels most benign traffic as Attack; deferred to Iteration 6 under the plan's risk table); 0 Critical. DEF-04 to DEF-07 closed 2026-10-23.",
+      "result": "Not met",
+      "source": "Defects sheet"
+    },
+    {
+      "criterion": "3.3 · Accuracy on the independent evaluation set",
+      "measured": "95.19% (15,939 hold-out rows the model never saw; deployment #2). Cycle 1 model A: 81.47%.",
+      "result": "Met",
+      "source": "TC-03 · test-results/def_fixes_20261023/evaluation_D"
+    },
+    {
+      "criterion": "3.3 · F1-score on the independent evaluation set",
+      "measured": "93.67% (cycle 1: 79.49%)",
+      "result": "Met",
+      "source": "TC-03 · test-results/def_fixes_20261023/evaluation_D"
+    },
+    {
+      "criterion": "3.3 · Attack recall on the independent evaluation set",
+      "measured": "91.80% (cycle 1: 92.44%)",
+      "result": "Met",
+      "source": "TC-03 · test-results/def_fixes_20261023/evaluation_D"
+    },
+    {
+      "criterion": "3.3 · False-positive rate on the independent evaluation set",
+      "measured": "2.66% (cycle 1: 25.49%)",
+      "result": "Met",
+      "source": "TC-03 · test-results/def_fixes_20261023/evaluation_D"
+    },
+    {
+      "criterion": "3.3 · ROC-AUC on the independent evaluation set",
+      "measured": "0.9890 (cycle 1: 0.9371)",
+      "result": "Met",
+      "source": "TC-03 · test-results/def_fixes_20261023/evaluation_D"
+    },
+    {
+      "criterion": "3.3 · Every performance budget in 3.4 met or waived in writing by the Product Owner",
+      "measured": "All five 3.4 budgets met on the final build or the build before it: lag p95 234.6 ms, 1,159.7 flows/s, 0% packet drop, CPU max 17.86%, RAM max 420.3 MB.",
+      "result": "Met",
+      "source": "3.4 rows below"
+    },
+    {
+      "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
+      "measured": "1 Medium open: DEF-10 (pilot limit L2, reopened 2026-10-24) - workaround documented (pending events always upload, occasionally a few seconds late; no loss or duplicates); no Product Owner sign-off yet. All other Low/Medium defects closed.",
+      "result": "Not met",
+      "source": "Defects sheet; docs/testing/cycle-1/defects.md"
+    },
+    {
+      "criterion": "3.3 · Final Test Completion Report generated and accepted (DOC-06)",
+      "measured": "Generated 2026-10-24 (v1.1; v1.0 of 2026-10-20 unchanged); not yet accepted - approval signatures blank",
+      "result": "Not met",
+      "source": "docs/testing/cycle-1/3 - AlgoGuard Test Completion Report v1.1.docx"
+    },
+    {
+      "criterion": "3.4 · Live event-to-verdict lag, p95 (excluding flow timeouts)",
+      "measured": "234.6 ms p95 (p50 89.4 ms, max 317.9 ms) over 106 flows ended by FIN/RST in a 90 s in-app live capture on the final build c775d13 (cycle 1: 895.6 ms)",
+      "result": "Met",
+      "source": "TC-11 · test-results/def_fixes_20261023/inapp_c775d13/live.json · DEF-17"
+    },
+    {
+      "criterion": "3.4 · Sustained events per second, per client",
+      "measured": "1,159.7 flows/s: 20,000 flows in 17.25 s at the Maximum replay speed in the app on 651e99e; 65.2 acknowledged events/s to the hosted pilot (cycle 1: 1.65-1.92/s at Fast)",
+      "result": "Met",
+      "source": "PRF-01.1, PRF-01.P2 · inapp_651e99e/max.json · DEF-11"
+    },
+    {
+      "criterion": "3.4 · Packet drop fraction during live capture",
+      "measured": "0% (0 of 4,764 packets in the final-build live capture; 0 of 4,454 and 0 of 4,719 on 651e99e)",
+      "result": "Met",
+      "source": "PRF-01.3 · inapp_c775d13/live.json"
+    },
+    {
+      "criterion": "3.4 · AlgoGuard process CPU during a 30-minute soak",
+      "measured": "Max 17.86%, mean 17.38% of the machine (60 samples, 00:21-00:51 on 2026-10-24, larger model and 0.5 ms switch interval; cycle 1: 8.03%)",
+      "result": "Met",
+      "source": "PRF-01.4 · test-results/soak_20261024_002122.csv"
+    },
+    {
+      "criterion": "3.4 · AlgoGuard process RAM during a 30-minute soak",
+      "measured": "Max 420.3 MB; 408.8 MB at the end; mean 394.6 MB first half vs 401.7 MB second half - no steady growth (cycle 1: max 352.2 MB)",
+      "result": "Met",
+      "source": "PRF-01.4 · test-results/soak_20261024_002122.csv"
     }
   ]
 }
