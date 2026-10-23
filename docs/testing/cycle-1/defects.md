@@ -1,4 +1,4 @@
-# AlgoGuard test cycle 1 â€” defect cards
+# AlgoGuard test cycle 1 — defect cards
 
 One section per DEF card. Paste the title into the card title and everything under it into the card body. Source: the Defects sheet of `2 - AlgoGuard Test Log v1.0.xlsx`.
 
@@ -118,9 +118,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Closed |
+| Fixed in commit | 52d0545 (model published 2026-10-23 as deployment #2) |
+| Re-test result | 2026-10-23 14:26 TC-03 Pass on 67032f5: accuracy 95.19% (target >= 90%) for the retrained Stacking Ensemble (training run 8, schema v2, SHA-256 1fd819c1...9f29, published as deployment #2) on the 15,939 hold-out rows it never saw (the cycle 1 SYS-01.6 hold-out; the model trains on the rest of the UNSW-NB15 training file, so these are its only unseen rows): accuracy 95.19%, F1 93.67%, recall 91.80%, false-positive rate 2.66%, ROC-AUC 0.9890 - all five targets met. Root cause: the 15 per-flow features cap any model at about 88% F1 and recall at 8% false positives; feature schema v2 adds three destination connection counts and drops sttl/dttl. 15:44 smoke on deployment #2 passed (Normal 99.49%, Attack 99.98%). |
 
 **Steps to reproduce**
 
@@ -154,9 +154,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Closed |
+| Fixed in commit | 52d0545 (model published 2026-10-23 as deployment #2) |
+| Re-test result | 2026-10-23 14:26 TC-03 Pass on 67032f5: F1 93.67% (target >= 90%) for the retrained Stacking Ensemble (training run 8, schema v2, SHA-256 1fd819c1...9f29, published as deployment #2) on the 15,939 hold-out rows it never saw (the cycle 1 SYS-01.6 hold-out; the model trains on the rest of the UNSW-NB15 training file, so these are its only unseen rows): accuracy 95.19%, F1 93.67%, recall 91.80%, false-positive rate 2.66%, ROC-AUC 0.9890 - all five targets met. Root cause: the 15 per-flow features cap any model at about 88% F1 and recall at 8% false positives; feature schema v2 adds three destination connection counts and drops sttl/dttl. 15:44 smoke on deployment #2 passed (Normal 99.49%, Attack 99.98%). |
 
 **Steps to reproduce**
 
@@ -190,9 +190,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Closed |
+| Fixed in commit | 52d0545 (model published 2026-10-23 as deployment #2) |
+| Re-test result | 2026-10-23 14:26 TC-03 Pass on 67032f5: false-positive rate 2.66% (target <= 8%) for the retrained Stacking Ensemble (training run 8, schema v2, SHA-256 1fd819c1...9f29, published as deployment #2) on the 15,939 hold-out rows it never saw (the cycle 1 SYS-01.6 hold-out; the model trains on the rest of the UNSW-NB15 training file, so these are its only unseen rows): accuracy 95.19%, F1 93.67%, recall 91.80%, false-positive rate 2.66%, ROC-AUC 0.9890 - all five targets met. Root cause: the 15 per-flow features cap any model at about 88% F1 and recall at 8% false positives; feature schema v2 adds three destination connection counts and drops sttl/dttl. 15:44 smoke on deployment #2 passed (Normal 99.49%, Attack 99.98%). |
 
 **Steps to reproduce**
 
@@ -226,9 +226,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | dafe5e5 (product code = 940e082); model SHA-256 9c9f0fb1...847c (deployment #1) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; scikit-learn 1.9.0 |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Closed |
+| Fixed in commit | 52d0545 (model published 2026-10-23 as deployment #2) |
+| Re-test result | 2026-10-23 14:26 TC-03 Pass on 67032f5: ROC-AUC 0.9890 (target >= 0.95) for the retrained Stacking Ensemble (training run 8, schema v2, SHA-256 1fd819c1...9f29, published as deployment #2) on the 15,939 hold-out rows it never saw (the cycle 1 SYS-01.6 hold-out; the model trains on the rest of the UNSW-NB15 training file, so these are its only unseen rows): accuracy 95.19%, F1 93.67%, recall 91.80%, false-positive rate 2.66%, ROC-AUC 0.9890 - all five targets met. Root cause: the 15 per-flow features cap any model at about 88% F1 and recall at 8% false positives; feature schema v2 adds three destination connection counts and drops sttl/dttl. 15:44 smoke on deployment #2 passed (Normal 99.49%, Attack 99.98%). |
 
 **Steps to reproduce**
 
@@ -333,9 +333,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 4c9666c (PC B, 2026-10-10) |
 | Environment | PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo) |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Closed |
+| Fixed in commit | — (not reproduced; no code change) |
+| Re-test result | 2026-10-23 16:00 PRF-01.P1 re-test on 67032f5 against the hosted pilot (deployment #2): upload delay (cloud received_at minus event time; PC clock 0.08 s behind the database) p95 1.96 s, 1.80 s and 1.87 s on three captures (143, 136 and 153 events; max 2.51 s; no duplicates) - within 5 s. The 24.06 s of pilot capture 6 was not reproduced, as on 2026-10-16; closed as not reproduced. |
 
 **Steps to reproduce**
 
@@ -368,9 +368,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | pilot 4c9666c / 9e18f30 |
 | Environment | PC A and PC B, hosted Supabase pilot (Tokyo) |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Fixed - re-test pending |
+| Fixed in commit | d346083 |
+| Re-test result | Maximum replay speed and batched classification added (d346083): one model call classifies up to 64 waiting flows (50 rows in about 58 ms against 52-106 ms per single flow before). The in-app re-test (Maximum-speed replay of algoguard_biggest.csv: flows and acknowledged events per second) waits for a sign-in on the final build 651e99e. |
 
 **Steps to reproduce**
 
@@ -573,9 +573,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 503cb9b |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, administrator |
-| Status | Open |
-| Fixed in commit | â€” |
-| Re-test result | Deferred to test cycle 2 by the Lead Architect (2026-10-20); not fixed or re-tested in cycle 1. |
+| Status | Fixed - re-test pending |
+| Fixed in commit | d346083, 6d3f6cc |
+| Re-test result | 2026-10-23 10:49 same-PC baseline through the old code path: p95 993.4 ms. 14:36 TC-11 harness on 67032f5 (capture and classification code alone): p50 208.6 ms, p95 323.0 ms over 78 FIN/RST flows - met. 15:46 in the app on 67032f5: p50 627.1 ms, p95 888.4 ms over 81 flows - not met. Cause: busy app threads stretch each prediction through Python's 5 ms thread switch interval (one busy thread: 70 ms -> 981 ms per prediction); fixed in 6d3f6cc (0.5 ms while monitoring). The in-app re-test on 651e99e waits for a sign-in. |
 
 **Steps to reproduce**
 
@@ -625,6 +625,40 @@ An empty message cell or a readable message.
 Each 'detection / flow_accepted / success' row has the message 'None' (a Python null rendered as text).
 
 **Evidence:** Test Log row USE-01.3; test-results/ui_20261020/use01/1366_logs.png
+
+No e-mail addresses, passwords or tokens are included in this card or its evidence.
+
+---
+
+## [DEF-19] Live capture labels most benign traffic as Attack: the UNSW-NB15-trained model does not transfer to live flows
+
+| Field | Value |
+|---|---|
+| Found by card | SYS-01.8 / SYS-01 |
+| Card owner | Victor Alexander A. Ong |
+| Date found | 2026-10-23 |
+| Severity | High |
+| Priority | High |
+| Build | 67032f5 (also seen on 52d0545 before commit and on 940e082 in cycle 1) |
+| Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, not elevated |
+| Status | Open |
+| Fixed in commit | — |
+| Re-test result | Deferred to Iteration 6 (Master Test Plan section 8: features derived from live packets differ from the dataset's; cycle 1 accuracy claims are limited to dataset and replay data; re-test in cycle 2). Needs a Product Owner decision for the exit criterion 'zero open High'. |
+
+**Steps to reproduce**
+
+1. Run test-results/def_fixes_20261023/traffic_gen.py (bursts of ordinary HTTPS page loads to public home pages) while capturing live on the Wi-Fi adapter.
+2. Score the captured flows: test-results/def_fixes_20261023/live_paired_check.py, or Live Monitor > Live interface capture in the app.
+
+**Expected result**
+
+Benign traffic is labelled Normal: at most 8% false positives, the plan's target for unseen data.
+
+**Actual result**
+
+Paired check, 208 benign flows (11:22): final model (run 8, 16 features) 82.2% labelled Attack; the same flows with the TTL features (run 7) 97.1%. Base models of run 8 on their own: Random Forest 33.2%, Gradient Boosting 23.1%, AdaBoost 16.8%, K-Nearest Neighbors 41.4%, Naive Bayes 89.9% - the Stacking Ensemble follows Naive Bayes on unfamiliar flows. In the app on 67032f5 (15:46): 153 of 186 flows (82.3%) labelled Attack. Cycle 1 saw 67% (pilot limit L6). Causes found: live TTLs (Windows 128) never occur in UNSW-NB15 (removed in schema v2, 97% -> 82%); remaining live feature differences (byte counting, service and state approximations) and the stacking weight given to Naive Bayes. Workaround: treat live verdicts as unverified triage and make detection claims from replay and PCAP data, as the plan's risk table requires.
+
+**Evidence:** Test Log row SYS-01.8; test-results/def_fixes_20261023/live_paired_check.json, ttl_experiment.json, live_shift_check.json, tc11_harness_before.json, inapp/live.json
 
 No e-mail addresses, passwords or tokens are included in this card or its evidence.
 
