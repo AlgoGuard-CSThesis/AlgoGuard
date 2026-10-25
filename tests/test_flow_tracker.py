@@ -92,9 +92,126 @@ def test_complete_tcp_session_emits_one_finished_flow():
     assert features["dbytes"] == 60 + 1200 + 52
     assert features["dur"] == pytest.approx(0.220, abs=1e-6)
     assert features["rate"] == pytest.approx((8 - 1) / 0.220, rel=1e-4)
-    assert features["sload"] == pytest.approx(features["sbytes"] * 8 / 0.220, rel=1e-4)
+    # UNSW-NB15's load leaves out the first packet's share of the bytes.
+    assert features["sload"] == pytest.approx(features["sbytes"] * 8 * 4 / 5 / 0.220, rel=1e-4)
+    assert features["dload"] == pytest.approx(features["dbytes"] * 8 * 2 / 3 / 0.220, rel=1e-4)
     assert features["sinpkt"] > 0
     assert features["dinpkt"] > 0
+
+
+def test_a_one_packet_direction_has_no_load():
+    tracker = FlowTracker()
+    run_all(
+        tracker,
+        [
+            udp_packet(1.0, CLIENT, SERVER, 40000, 53, length=70),
+            udp_packet(1.5, SERVER, CLIENT, 53, 40000, length=120),
+            udp_packet(2.0, CLIENT, SERVER, 40000, 53, length=70),
+        ],
+    )
+    features = tracker.flush()[0]["features"]
+    assert features["sload"] == pytest.approx(140 * 8 * 1 / 2 / 1.0, rel=1e-4)
+    assert features["dload"] == 0.0
+
+
+def test_a_reset_after_a_finish_reports_rst():
+    tracker = FlowTracker()
+    c2s = {"src": CLIENT, "dst": SERVER, "sport": 52102, "dport": 443}
+    s2c = {"src": SERVER, "dst": CLIENT, "sport": 443, "dport": 52102}
+    flows = run_all(
+        tracker,
+        [
+            tcp_packet(1.0, flags="S", **c2s),
+            tcp_packet(1.1, flags="SA", **s2c),
+            tcp_packet(1.2, flags="FA", **c2s),
+            tcp_packet(1.3, flags="R", **s2c),
+        ],
+    )
+    assert [flow["features"]["state"] for flow in flows] == ["RST"]
+
+
+def test_a_reset_trailing_a_closed_flow_is_not_a_new_flow():
+    tracker = FlowTracker()
+    flows = run_all(
+        tracker,
+        [
+            tcp_packet(1.0, CLIENT, SERVER, 52103, 443, flags="S"),
+            tcp_packet(1.1, SERVER, CLIENT, 443, 52103, flags="R"),
+            tcp_packet(1.2, CLIENT, SERVER, 52103, 443, flags="R"),
+        ],
+    )
+    flows.extend(tracker.flush())
+    assert len(flows) == 1
+
+
+def test_a_large_send_counts_as_its_wire_segments():
+    tracker = FlowTracker()
+    flows = run_all(
+        tracker,
+        [
+            tcp_packet(1.0, CLIENT, SERVER, 52104, 443, flags="S", length=52),
+            PacketInfo(ts=1.1, src_ip=CLIENT, dst_ip=SERVER, src_port=52104, dst_port=443,
+                       proto="tcp", length=2980, ttl=128, tcp_flags="PA", segments=2),
+            tcp_packet(1.3, CLIENT, SERVER, 52104, 443, flags="R", length=40),
+        ],
+    )
+    features = flows[0]["features"]
+    assert features["spkts"] == 4
+    assert features["sbytes"] == 52 + 2980 + 40
+    # Gaps 100 ms, 0 (back-to-back segment) and 200 ms.
+    assert features["sinpkt"] == pytest.approx(100.0, rel=1e-4)
+
+
+@pytest.mark.parametrize("ip_len", [0, None])
+def test_scapy_packets_bigger_than_the_mtu_become_mtu_sized_segments(ip_len):
+    """An outgoing large send (IP length 0) or merged received segments (real length)."""
+    from scapy.layers.inet import IP, TCP
+    from scapy.layers.l2 import Ether
+    from scapy.packet import Raw
+
+    from services.flow_tracker_service import packet_info_from_scapy
+
+    built = Ether() / IP(src=CLIENT, dst=SERVER, len=ip_len) / TCP(
+        sport=52105, dport=443, flags="PA") / Raw(b"x" * 2900)
+    packet = Ether(bytes(built))
+    packet.time = 5.0
+
+    info = packet_info_from_scapy(packet)
+
+    assert info is not None
+    assert info.segments == 2  # 2900 payload bytes in 1460-byte segments
+    assert info.length == 2900 + 2 * 40
+    assert info.tcp_flags == "PA"
+
+
+def test_a_ping_is_an_echo_flow_like_in_unsw_nb15():
+    def icmp(ts, src, dst, icmp_type):
+        return PacketInfo(ts=ts, src_ip=src, dst_ip=dst, src_port=0, dst_port=0, proto="icmp",
+                          length=60, ttl=64, icmp_type=icmp_type)
+
+    tracker = FlowTracker()
+    run_all(tracker, [icmp(1.0, CLIENT, SERVER, 8), icmp(1.02, SERVER, CLIENT, 0)])
+    run_all(tracker, [icmp(2.0, SERVER, "192.168.1.11", 3)])  # unreachable, not an echo
+
+    states = sorted(flow["features"]["state"] for flow in tracker.flush())
+    assert states == ["ECO", "INT"]
+
+
+def test_scapy_packets_count_ip_layer_bytes():
+    from scapy.layers.inet import IP, UDP
+    from scapy.layers.l2 import Ether
+    from scapy.packet import Raw
+
+    from services.flow_tracker_service import packet_info_from_scapy
+
+    packet = Ether(bytes(Ether() / IP(src=CLIENT, dst=SERVER) / UDP(sport=40000, dport=53)
+                         / Raw(b"q" * 30)))
+    packet.time = 5.0
+
+    info = packet_info_from_scapy(packet)
+
+    assert info is not None
+    assert (info.length, info.segments) == (20 + 8 + 30, 1)
 
 
 def test_reset_ends_a_flow_with_rst_state():

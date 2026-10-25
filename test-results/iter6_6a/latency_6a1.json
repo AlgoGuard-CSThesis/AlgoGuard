@@ -1,0 +1,69 @@
+{
+  "model": "saved_models/run_8/stacking.joblib",
+  "started": "2026-10-25 22:28:16",
+  "inference_ms (no other load)": {
+    "batch_1": {
+      "n": 200,
+      "p50": 75.3,
+      "p95": 81.9,
+      "max": 210.6,
+      "mean": 75.9,
+      "per_flow_p50_ms": 75.3
+    },
+    "batch_8": {
+      "n": 200,
+      "p50": 77.5,
+      "p95": 83.6,
+      "max": 88.0,
+      "mean": 76.3,
+      "per_flow_p50_ms": 9.69
+    },
+    "batch_64": {
+      "n": 200,
+      "p50": 109.2,
+      "p95": 120.0,
+      "max": 251.7,
+      "mean": 109.1,
+      "per_flow_p50_ms": 1.71
+    }
+  },
+  "event_to_verdict": {
+    "interface": "Intel(R) Wi-Fi 6 AX203",
+    "seconds": 132.2,
+    "load": {
+      "packets_per_s": 50.3,
+      "flows_per_s": 2.71,
+      "dropped_packets": 0,
+      "batch_size_mean": 3.03,
+      "batch_size_max": 10
+    },
+    "end_reasons": {
+      "fin": 5,
+      "idle_timeout": 256,
+      "rst": 97
+    },
+    "lag_teardown_ms (fin/rst, last packet to verdict)": {
+      "n": 102,
+      "p50": 477.2,
+      "p95": 776.0,
+      "max": 823.6,
+      "mean": 451.0
+    },
+    "lag_idle_ms (expiry to verdict; the idle timeout comes first)": {
+      "n": 256,
+      "p50": 598.0,
+      "p95": 1140.4,
+      "max": 1567.1,
+      "mean": 603.6
+    },
+    "idle_timeout_s": 15.0,
+    "model_call_ms_live": {
+      "n": 118,
+      "p50": 79.4,
+      "p95": 441.9,
+      "max": 583.5,
+      "mean": 121.8
+    }
+  },
+  "upload_delay": "test-results/def_fixes_20261023/upload_delay_c775d13.json"
+}

@@ -36,6 +36,9 @@ ACTIVE_TIMEOUT_SECONDS = 120.0
 SWEEP_INTERVAL_SECONDS = 1.0
 # UNSW-NB15's connection-history features look at the last 100 connections.
 CONNECTION_WINDOW = 100
+# Largest IP packet an Ethernet link carries; a bigger captured TCP packet is a
+# large-send buffer the network card splits into segments of this size.
+ETHERNET_MTU = 1500
 
 CONNECTION_COUNT_COLUMNS = ("ct_dst_src_ltm", "ct_dst_ltm", "ct_srv_dst")
 FLOW_FEATURE_COLUMNS = (
@@ -80,6 +83,9 @@ class PacketInfo:
     length: int
     ttl: int
     tcp_flags: str = ""
+    # Packets this capture becomes on the wire (more than one for a large send).
+    segments: int = 1
+    icmp_type: int | None = None
 
 
 @dataclass
@@ -104,6 +110,7 @@ class _FlowState:
     saw_syn: bool = False
     saw_fin: bool = False
     saw_rst: bool = False
+    saw_echo: bool = False
     fin_forward: bool = False
     fin_reverse: bool = False
 
@@ -111,23 +118,35 @@ class _FlowState:
 def packet_info_from_scapy(packet):
     """Convert a Scapy packet to :class:`PacketInfo`, or ``None`` if not IP traffic.
 
-    Byte accounting uses the IP total length (header plus payload). UNSW-NB15
-    counted link-layer bytes; the constant per-packet difference is a documented
-    approximation measured by the research workspace.
+    Bytes are counted at the IP layer, as UNSW-NB15 counts them: 15% of its TCP
+    rows average fewer bytes per packet than an Ethernet header would allow. Windows
+    captures packets on either side of the network card's segmentation: a large
+    send (IP total length 0) or several received segments merged into one TCP
+    packet bigger than the MTU. It is counted as the MTU-sized segments a network
+    tap such as UNSW-NB15's saw (Stage 6A.1 feature-fidelity comparison).
     """
     ip = packet.getlayer("IP")
     if ip is None:
         return None
+    ip_bytes = int(ip.len) if ip.len else len(bytes(ip))
 
     proto = PROTO_NAMES.get(int(ip.proto), str(int(ip.proto)))
     src_port = dst_port = 0
     tcp_flags = ""
+    segments = 1
+    length = ip_bytes
     layer4 = packet.getlayer("TCP") or packet.getlayer("UDP")
     if layer4 is not None:
         src_port = int(layer4.sport)
         dst_port = int(layer4.dport)
         if proto == "tcp":
             tcp_flags = str(layer4.flags)
+            if ip_bytes > ETHERNET_MTU:
+                headers = int(ip.ihl) * 4 + int(layer4.dataofs) * 4
+                payload = ip_bytes - headers
+                segments = -(-payload // (ETHERNET_MTU - headers))
+                length = payload + segments * headers
+    icmp = packet.getlayer("ICMP") if proto == "icmp" else None
 
     return PacketInfo(
         ts=float(packet.time),
@@ -136,9 +155,11 @@ def packet_info_from_scapy(packet):
         src_port=src_port,
         dst_port=dst_port,
         proto=proto,
-        length=int(ip.len) if ip.len is not None else len(bytes(ip)),
+        length=length,
         ttl=int(ip.ttl),
         tcp_flags=tcp_flags,
+        segments=segments,
+        icmp_type=int(icmp.type) if icmp is not None else None,
     )
 
 
@@ -151,15 +172,18 @@ def _state_for(flow):
     """Approximate the Argus connection state from what the packets showed.
 
     Argus derives richer states from its own state machine; this covers the
-    values that dominate the bundled datasets: FIN (finished), CON (connected,
-    both directions seen), REQ (request without an answer), INT (one-sided),
-    and RST (reset without a finish).
+    values that dominate the bundled datasets: RST (reset, also after a finish,
+    as Argus reports it), FIN (finished), CON (connected, both directions seen),
+    REQ (request without an answer), INT (one-sided) and ECO (ICMP echo, the
+    state UNSW-NB15 gives pings).
     """
+    if flow.proto == "icmp" and flow.saw_echo:
+        return "ECO"
     if flow.proto == "tcp":
-        if flow.saw_fin:
-            return "FIN"
         if flow.saw_rst:
             return "RST"
+        if flow.saw_fin:
+            return "FIN"
         if flow.spkts and flow.dpkts:
             return "CON"
         if flow.saw_syn:
@@ -176,13 +200,25 @@ def _mean_interval_ms(intervals):
     return (sum(intervals) / len(intervals)) * 1000.0
 
 
+def _load_bps(byte_count, packets, dur):
+    """Bits per second as UNSW-NB15 defines load: the first packet's bytes do not count.
+
+    The dataset's ``sload`` equals ``sbytes * 8 * (spkts - 1) / spkts / dur`` in
+    over 99.99% of its training rows (Stage 6A.1 feature-fidelity comparison), so a
+    one-packet direction has load 0.
+    """
+    if dur <= 0 or packets <= 1:
+        return 0.0
+    return byte_count * 8.0 * (packets - 1) / packets / dur
+
+
 def compute_features(flow):
     """Compute the 13 per-flow feature values; the tracker adds the connection counts."""
     dur = max(flow.last_ts - flow.first_ts, 0.0)
     total_packets = flow.spkts + flow.dpkts
     rate = ((total_packets - 1) / dur) if dur > 0 and total_packets > 1 else 0.0
-    sload = (flow.sbytes * 8.0 / dur) if dur > 0 else 0.0
-    dload = (flow.dbytes * 8.0 / dur) if dur > 0 else 0.0
+    sload = _load_bps(flow.sbytes, flow.spkts, dur)
+    dload = _load_bps(flow.dbytes, flow.dpkts, dur)
 
     return {
         "dur": round(dur, 6),
@@ -255,13 +291,14 @@ class FlowTracker:
 
         key, is_forward = self._lookup(info)
 
-        # Swallow the trailing ACK of a teardown whose flow was just emitted,
-        # so every TCP session yields one flow instead of a one-packet stray.
+        # Swallow the trailing ACK or reset of a teardown whose flow was just
+        # emitted, so every TCP session yields one flow instead of a one-packet
+        # stray (Argus keeps them in the same connection).
         reverse_key = (info.dst_ip, info.dst_port, info.src_ip, info.src_port, info.proto)
         drain_key = key if key in self._draining else reverse_key
         drain_deadline = self._draining.get(drain_key)
         if drain_deadline is not None:
-            if info.ts <= drain_deadline and self._is_pure_ack(info):
+            if info.ts <= drain_deadline and self._is_teardown_tail(info):
                 emitted.extend(self._count(self.advance(info.ts)))
                 return emitted
             del self._draining[drain_key]
@@ -309,18 +346,25 @@ class FlowTracker:
             is_forward = True
 
         flow.last_ts = max(flow.last_ts, info.ts)
+        # The segments of a large send leave back to back.
+        extra_gaps = [0.0] * (info.segments - 1)
         if is_forward:
-            flow.spkts += 1
+            flow.spkts += info.segments
             flow.sbytes += info.length
             if flow.last_src_ts is not None:
                 flow.src_intervals.append(info.ts - flow.last_src_ts)
+            flow.src_intervals.extend(extra_gaps)
             flow.last_src_ts = info.ts
         else:
-            flow.dpkts += 1
+            flow.dpkts += info.segments
             flow.dbytes += info.length
             if flow.last_dst_ts is not None:
                 flow.dst_intervals.append(info.ts - flow.last_dst_ts)
+            flow.dst_intervals.extend(extra_gaps)
             flow.last_dst_ts = info.ts
+
+        if info.icmp_type in (0, 8):  # echo reply, echo request
+            flow.saw_echo = True
 
         if info.proto == "tcp":
             flags = info.tcp_flags or ""
@@ -346,9 +390,12 @@ class FlowTracker:
         return emitted
 
     @staticmethod
-    def _is_pure_ack(info):
+    def _is_teardown_tail(info):
+        """A pure ACK or a reset after the flow closed; a new SYN starts a new flow."""
         flags = info.tcp_flags or ""
-        return info.proto == "tcp" and "A" in flags and not any(f in flags for f in "FSRP")
+        if info.proto != "tcp" or "S" in flags:
+            return False
+        return "R" in flags or ("A" in flags and not any(f in flags for f in "FP"))
 
     def _count(self, events):
         """Count emitted flows and add their connection-history features, in emission order.
