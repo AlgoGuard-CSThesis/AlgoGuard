@@ -333,9 +333,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | Medium |
 | Build | 4c9666c (PC B, 2026-10-10) |
 | Environment | PC B (LAPTOP-PNL5IIAJ), Wi-Fi, hosted Supabase pilot (Tokyo) |
-| Status | Open (reopened 2026-10-24) |
+| Status | Open - known limit for cycle 1; fix in Iteration 6 (6C) |
 | Fixed in commit | — |
-| Re-test result | 2026-10-23 16:00 on 67032f5: p95 1.96 s, 1.80 s and 1.87 s on three captures - closed as not reproduced. 2026-10-24 on 651e99e: smoke replay p95 1.55 s (capture 45) and a second live capture p95 1.53 s (capture 48), but live capture 46 p95 6.95 s - one stall of about 6.7 s (events of 00:11:21-00:11:23 received at 00:11:28-00:11:30) while the test's traffic generator was downloading up to 8 pages at once on the same Wi-Fi - and a 300-event burst (capture 47, Maximum replay) p95 5.04 s, because uploads go one request at a time with at most 50 events each (store_flow_batch limit), about 65 events/s. Reopened: intermittent, as in the pilot. Lead Architect decision needed: parallel upload requests (the server deduplicates by event UUID) or a larger server batch (migration), or accept as limit L2 (pending events always upload, only later). |
+| Re-test result | 2026-10-23 16:00 on 67032f5: p95 1.96 s, 1.80 s and 1.87 s on three captures - closed as not reproduced. 2026-10-24 on 651e99e: smoke replay p95 1.55 s (capture 45) and a second live capture p95 1.53 s (capture 48), but live capture 46 p95 6.95 s - one stall of about 6.7 s (events of 00:11:21-00:11:23 received at 00:11:28-00:11:30) while the test's traffic generator was downloading up to 8 pages at once on the same Wi-Fi - and a 300-event burst (capture 47, Maximum replay) p95 5.04 s, because uploads go one request at a time with at most 50 events each (store_flow_batch limit), about 65 events/s. Reopened: intermittent, as in the pilot. Lead Architect decision needed: parallel upload requests (the server deduplicates by event UUID) or a larger server batch (migration), or accept as limit L2 (pending events always upload, only later). 2026-10-25 Lead Architect decision: accepted as known limit L2 for test cycle 1; to be fixed in Iteration 6 Stage 6C (several upload requests at once), with crash and duplicate checks. |
 
 **Steps to reproduce**
 
@@ -641,9 +641,9 @@ No e-mail addresses, passwords or tokens are included in this card or its eviden
 | Priority | High |
 | Build | 67032f5 (also seen on 52d0545 before commit and on 940e082 in cycle 1) |
 | Environment | PC A (SANMIGUEL), Windows 11 Home 26H2 build 26300.9711, Python 3.14.6 venv; Intel Wi-Fi 6 AX203, Npcap 1.88, not elevated |
-| Status | Open |
+| Status | Open - deferred to Iteration 6 (6A) |
 | Fixed in commit | — |
-| Re-test result | Deferred to Iteration 6 (Master Test Plan section 8: features derived from live packets differ from the dataset's; cycle 1 accuracy claims are limited to dataset and replay data; re-test in cycle 2). Needs a Product Owner decision for the exit criterion 'zero open High'. |
+| Re-test result | Deferred to Iteration 6 (Master Test Plan section 8: features derived from live packets differ from the dataset's; cycle 1 accuracy claims are limited to dataset and replay data; re-test in cycle 2). Needs a Product Owner decision for the exit criterion 'zero open High'. 2026-10-25 Lead Architect decision: deferred to Iteration 6 Stage 6A (feature fidelity, independent evaluation, calibration); Product Owner approval not required. |
 
 **Steps to reproduce**
 

@@ -104,6 +104,8 @@ Defects open at the time of UAT are listed in `docs/testing/cycle-1/defects.md` 
 - **DEF-19 (High):** in live capture, about 8 in 10 ordinary flows on a home PC are labelled Attack - the model learned from a lab dataset that does not look like real Wi-Fi traffic. Replay and PCAP results are reliable; live verdicts should be treated as unverified. The Master Test Plan (section 8) expects this and moves it to Iteration 6, but its exit criteria allow no open High defect, so accepting the build means accepting DEF-19 as a known limitation for Iteration 6.
 - **DEF-10 (Medium):** uploads to the cloud usually take under 2 s but occasionally up to about 7 s; nothing is lost or duplicated. Accepting means accepting this as known limit L2 (unless the Lead Architect schedules an upload change).
 
+**Decision (2026-10-25):** the Lead Architect decided that Product Owner approval and signatures are not required for test cycle 1, and closed the cycle. DEF-19 moves to Iteration 6 Stage 6A and DEF-10 to Stage 6C. The boxes below were therefore not filled in; they stay for reference.
+
 ☐ **Accept** the build for this cycle   ☐ **Accept with conditions** (write them below)   ☐ **Reject**
 
 Conditions / reasons: ___________________________________________________________

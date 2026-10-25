@@ -1,7 +1,7 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "date": "2026-10-24",
-  "summary": "Re-tests of the defects deferred on 2026-10-20 (DEF-04 to DEF-07, DEF-10, DEF-11, DEF-17) after the Lead Architect asked for every defect to be fixed before Iteration 6: DEF-04 to DEF-07, DEF-11 and DEF-17 closed; DEF-10 closed on 2026-10-23 and reopened on 2026-10-24; new defect DEF-19 (High, Iteration 6); exit criteria re-evaluated.",
+  "summary": "Re-tests of the defects deferred on 2026-10-20 (DEF-04 to DEF-07, DEF-10, DEF-11, DEF-17) after the Lead Architect asked for every defect to be fixed before Iteration 6: DEF-04 to DEF-07, DEF-11 and DEF-17 closed; DEF-10 closed on 2026-10-23 and reopened on 2026-10-24; new defect DEF-19 (High, Iteration 6); exit criteria re-evaluated. v1.2 (2026-10-25): cycle 1 closed by Lead Architect decision - Product Owner approval and signatures not required; DEF-19 deferred to Iteration 6 Stage 6A; DEF-10 accepted for cycle 1 and scheduled for Stage 6C; TC-06/TC-07 moved to test cycle 2; TC-15 not required.",
   "test_log": [
     {
       "time": "2026-10-23 10:47",
@@ -359,6 +359,16 @@
       "status": "Pass",
       "defect": "DEF-17",
       "evidence": "docs/testing/cycle-1/defects.md; test-results/board_updates_20261024_*.json"
+    },
+    {
+      "time": "2026-10-25 21:43",
+      "case": "TC-15",
+      "card": "UAT-01",
+      "build": "c775d13",
+      "expected": "Product Owner runs the UAT scenarios and records an accept/reject decision (TC-15).",
+      "actual": "Not executed by the Product Owner: the Lead Architect decided on 2026-10-25 that Product Owner approval of cycle 1 is not required. UAT evidence available instead: the test team's dry run of scenarios 1-3 on 213d0be (2026-10-20) and the smoke replay on the final build c775d13 (2026-10-24 05:07-05:09: 297 flows, 208 alerts, all synced).",
+      "status": "Not executed",
+      "evidence": "docs/testing/cycle-1/UAT scenarios.md; Test Log rows UAT-01.1 to UAT-01.4 and REG-01.2 of 2026-10-24 05:09"
     }
   ],
   "defect_updates": {
@@ -379,7 +389,7 @@
       "fixed_in": "52d0545 (model published 2026-10-23 as deployment #2)"
     },
     "DEF-10": {
-      "status": "Open (reopened 2026-10-24)",
+      "status": "Open - known limit for cycle 1; fix in Iteration 6 (6C)",
       "fixed_in": "—"
     },
     "DEF-11": {
@@ -389,6 +399,10 @@
     "DEF-17": {
       "status": "Closed",
       "fixed_in": "d346083, 6d3f6cc, c775d13"
+    },
+    "DEF-19": {
+      "status": "Open - deferred to Iteration 6 (6A)",
+      "fixed_in": "—"
     }
   },
   "automated_runs": [
@@ -540,8 +554,8 @@
   "exit_criteria": [
     {
       "criterion": "3.3 · 100% of planned Critical test cases executed",
-      "measured": "6 of 7 (86%): TC-01, TC-02, TC-03, TC-04, TC-08, TC-09 executed; TC-06 not executed (second PC unavailable - pilot evidence and the automated two-node test only). Unchanged since v1.0.",
-      "result": "Not met",
+      "measured": "6 of 7 (86%): TC-01, TC-02, TC-03, TC-04, TC-08, TC-09 executed; TC-06 not executed (second PC unavailable - pilot evidence and the automated two-node test only). Unchanged since v1.0. Lead Architect decision 2026-10-25: no second PC is available; TC-06 and TC-07 move to test cycle 2; node isolation is covered by the automated two-node tests and the Stage 5F pilot.",
+      "result": "Waived (Lead Architect, 2026-10-25)",
       "source": "Critical = test cases traced to Critical features F2, F7, F8 in the RTM: TC-01, TC-02, TC-03, TC-04, TC-06, TC-08, TC-09; Test Log"
     },
     {
@@ -552,8 +566,8 @@
     },
     {
       "criterion": "3.3 · Open Critical or High severity bugs",
-      "measured": "1 High open (DEF-19, live capture labels most benign traffic as Attack; deferred to Iteration 6 under the plan's risk table); 0 Critical. DEF-04 to DEF-07 closed 2026-10-23.",
-      "result": "Not met",
+      "measured": "1 High open (DEF-19, live capture labels most benign traffic as Attack; deferred to Iteration 6 under the plan's risk table); 0 Critical. DEF-04 to DEF-07 closed 2026-10-23. Lead Architect decision 2026-10-25: DEF-19 deferred to Iteration 6 Stage 6A.",
+      "result": "Waived (Lead Architect, 2026-10-25)",
       "source": "Defects sheet"
     },
     {
@@ -594,14 +608,14 @@
     },
     {
       "criterion": "3.3 · Open Low/Medium defects have documented workarounds and Product Owner sign-off",
-      "measured": "1 Medium open: DEF-10 (pilot limit L2, reopened 2026-10-24) - workaround documented (pending events always upload, occasionally a few seconds late; no loss or duplicates); no Product Owner sign-off yet. All other Low/Medium defects closed.",
-      "result": "Not met",
+      "measured": "1 Medium open: DEF-10 (pilot limit L2) - workaround documented (pending events always upload, occasionally a few seconds late; no loss or duplicates). Lead Architect decision 2026-10-25: accepted as a known limit for cycle 1, fix in Iteration 6 Stage 6C; Product Owner sign-off not required.",
+      "result": "Waived (Lead Architect, 2026-10-25)",
       "source": "Defects sheet; docs/testing/cycle-1/defects.md"
     },
     {
       "criterion": "3.3 · Final Test Completion Report generated and accepted (DOC-06)",
-      "measured": "Generated 2026-10-24 (v1.1; v1.0 of 2026-10-20 unchanged); not yet accepted - approval signatures blank",
-      "result": "Not met",
+      "measured": "Generated 2026-10-24 (v1.1) and 2026-10-25 (v1.2, closure); accepted by the Lead Architect without signatures (decision 2026-10-25).",
+      "result": "Waived (Lead Architect, 2026-10-25)",
       "source": "docs/testing/cycle-1/3 - AlgoGuard Test Completion Report v1.1.docx"
     },
     {
@@ -634,5 +648,9 @@
       "result": "Met",
       "source": "PRF-01.4 · test-results/soak_20261024_002122.csv"
     }
-  ]
+  ],
+  "closure": {
+    "date": "2026-10-25",
+    "decision": "Lead Architect decision (2026-10-25): Product Owner approval and signatures are not required for test cycle 1. Cycle 1 is closed: DEF-19 is deferred to Iteration 6 Stage 6A; DEF-10 is accepted as known limit L2 for cycle 1 and will be fixed in Stage 6C; TC-06 and TC-07 (two PCs) move to test cycle 2 because no second PC is available; TC-15 (UAT by the Product Owner) is not required."
+  }
 }
