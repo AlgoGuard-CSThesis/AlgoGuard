@@ -43,7 +43,8 @@ def main():
     y = to_binary(data["label"])
     artifact = joblib.load(MODEL)
     pipeline = artifact["pipeline"]
-    p = pipeline.predict_proba(data[artifact["feature_columns"]])[:, list(pipeline.classes_).index(1)]
+    attack = list(pipeline.classes_).index(1)
+    p = pipeline.predict_proba(data[artifact["feature_columns"]])[:, attack]
     table, ece = reliability(y, p)
     bands = pd.Series([band(v) for v in p])
     by_band = []
@@ -51,7 +52,8 @@ def main():
         mask = (bands == label).to_numpy()
         by_band.append({"band": label, "rows": int(mask.sum()),
                         "share": round(float(mask.mean()), 4),
-                        "observed_attack_rate": round(float(y[mask].mean()), 4) if mask.any() else None})
+                        "observed_attack_rate":
+                            round(float(y[mask].mean()), 4) if mask.any() else None})
     report = {"final_rows_loaded": int(len(seen)), "removed_as_seen": int(seen.sum()),
               "final_rows": int(len(y)), "attacks": int(y.sum()), "normal": int(len(y) - y.sum()),
               "brier": round(float(brier_score_loss(y, p)), 5), "ece": round(float(ece), 4),
