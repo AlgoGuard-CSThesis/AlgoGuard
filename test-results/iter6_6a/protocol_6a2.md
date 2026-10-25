@@ -1,6 +1,7 @@
 # Stage 6A.2 — evaluation protocol (written before any result was seen)
 
-Written 2026-10-25 22:15 (Asia/Manila), before the final evaluation set was scored by any model.
+Written 2026-10-25 about 21:50 (Asia/Manila; first committed 21:53 as a42ff4b), before the final evaluation set
+was scored by any model. (The first commit gave 22:15 by mistake; only this line was corrected.)
 
 ## Data roles
 
