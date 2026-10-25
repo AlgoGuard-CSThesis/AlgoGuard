@@ -158,6 +158,8 @@ python migrate.py
 
 The application also applies pending migrations at startup, so this command is optional; it exists for upgrading an existing installation without starting the server. Do not delete `database/algoguard.sqlite3` to upgrade an existing installation.
 
+Migration 5 (Stage 6A.3) adds each prediction's attack probability, attack-score band and band-policy version. Predictions stored earlier keep empty scores; no score is invented for them. The cloud database gets the same columns from `supabase/migrations/20261025010000_attack_score_bands.sql`, applied by a maintainer with `python cloud_migrate.py --yes`. Clients without the change keep uploading; their records stay unscored. Until a maintainer applies the cloud migration, this version checks for the new columns and uploads unscored records rather than have them refused.
+
 ## Run the Application
 
 ```powershell
@@ -309,7 +311,7 @@ Open **Live Monitor** and choose a traffic source:
 - **Recorded packets (PCAP)**: a `.pcap`, `.pcapng`, or `.cap` file placed in `captures/`. The data packets are aggregated into bidirectional flows by the flow tracker, and the resulting flows are replayed at the chosen speed. Packet-derived flows have no ground-truth label, so the Actual column shows a dash.
 - **Live interface capture**: a network interface, sniffed in real time. Packets are tracked into flows as they arrive; a flow is classified when its TCP connection tears down, after 15 seconds of silence, or in 120-second slices for long-lived connections. Live mode runs at wire pace (speed and order do not apply) and reports detection lag — the time from a flow ending to its verdict — alongside inference latency, plus captured and dropped packet counters. Each live session is recorded in the `capture_session` table.
 
-For packet sources the flow tracker computes the same 16 features the model was trained on: the 13 per-flow features (`dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sload`, `dload`, `sinpkt`, `dinpkt`) and the three connection counts, taken over the last 100 flows the tracker finished. Only destination-keyed counts are used: on one capturing PC almost every connection has the same source address. UNSW-NB15's TTL fields (`sttl`, `dttl`) are not used: in the dataset they mostly identify the lab's own hosts, and Windows' default TTL of 128 never occurs there, so models trained with them flagged most benign live traffic. Flows that end together, such as the connections of one page load, are classified together in one model call. `service` is inferred from well-known ports and `state` from observed TCP flags, which approximate how the original UNSW-NB15 features were generated; the closer your training data is to your own network's traffic, the better the verdicts (see Retrain and Deploy).
+For packet sources the flow tracker computes the same 16 features the model was trained on: the 13 per-flow features (`dur`, `proto`, `service`, `state`, `spkts`, `dpkts`, `sbytes`, `dbytes`, `rate`, `sload`, `dload`, `sinpkt`, `dinpkt`) and the three connection counts, taken over the last 100 flows the tracker finished. Only destination-keyed counts are used: on one capturing PC almost every connection has the same source address. UNSW-NB15's TTL fields (`sttl`, `dttl`) are not used: in the dataset they mostly identify the lab's own hosts, and Windows' default TTL of 128 never occurs there, so models trained with them flagged most benign live traffic. Flows that end together, such as the connections of one page load, are classified together in one model call. `service` is inferred from well-known ports and `state` from observed TCP flags (pings report `ECO`), which approximate how the original UNSW-NB15 features were generated. Byte counts are IP-layer and the loads leave out the first packet, as in UNSW-NB15, and a TCP packet larger than the 1,500-byte MTU counts as the segments that crossed the wire (Windows captures before the network card splits or after it merges them); the closer your training data is to your own network's traffic, the better the verdicts (see Retrain and Deploy).
 
 CSV replay uses the same Normal/Attack label mapping as training, including numeric
 labels and recognized Normal aliases. Missing or ambiguous labels report an error.
@@ -326,6 +328,8 @@ and asks you to train with compatible data. Manual prediction remains available
 for models trained with custom fields.
 
 Then choose a storage mode and Start; Pause, Resume, and Stop control the session. The page polls for new classifications, so reloading the browser re-attaches to a session that is still running rather than orphaning it.
+
+Each feed row shows the verdict, its confidence and the **attack score**: the model's probability that the flow is an attack, as a band (Low below 50%, Medium from 50%, High from 70%, Very high from 90%) and a percentage. The band travels with the classification, so rows the session did not save show it too. See Accuracy, Scores and Their Limits before reading a score as a measured likelihood.
 
 The feed reconnects automatically after temporary connection failures. Requests
 time out after ten seconds; if a control response is lost, the page checks the
@@ -382,9 +386,19 @@ The default minimums are Accuracy 70%, F1-score 70%, and ROC-AUC 70%. They can b
 
 Artifacts from earlier deployment workflows are intentionally treated as legacy. After upgrading, run `train.py` on a dataset to create a `stacking-five-v3` artifact; an older individual or Stacking artifact cannot be reactivated under the current policy.
 
+## Accuracy, Scores and Their Limits
+
+Stage 6A measured the deployed model (training run 8, Stacking Ensemble) on data it has never seen and checked live features against Argus. The evidence is in `docs/migration/06a-evidence.md`, `test-results/iter6_6a/`; the main limits are:
+
+- **Replay accuracy is not an accuracy claim.** The bundled samples are drawn from the training rows, so the Live Monitor's match rate on them shows the model reproduces its training data, nothing more.
+- **Untouched evaluation.** On the official UNSW-NB15 training partition, minus every row already seen (108,739 rows), the model reaches accuracy 86.0%, F1 85.2%, recall 75.9%, false-positive rate 2.5% and ROC-AUC 0.969. Accuracy, F1 and recall miss the 90% targets, and Fuzzers attacks are caught only 21.9% of the time. The repository's file named `UNSW_NB15_training-set.csv` is in fact the official testing partition, which all models were trained on.
+- **Calibration.** On the hold-out the scores are well calibrated (expected calibration error 0.015), so no calibrator was added. On the untouched set they are not (0.112): 21.9% of the flows scored Low were attacks.
+- **Live traffic.** Live features now follow UNSW-NB15's definitions, and proto, service, state, spkts, sbytes, sinpkt, rate and ct_srv_dst match Argus within the predeclared tolerances. Flow boundaries (teardown and idle timeout) keep dur, dpkts, dbytes, the loads, dinpkt and two connection counts from passing. On a capture of ordinary web browsing the model still labels about 73% of benign flows Attack (DEF-19): the dataset's 2015 lab traffic does not resemble today's HTTPS. Treat live verdicts as unvalidated.
+- **Latency.** One model call takes about 75 ms for one flow and 109 ms for 64; under live load, from a flow's last packet to its verdict took a median of 273–477 ms and a 95th percentile of 606–776 ms in two runs on 2026-10-25, above the 500 ms test budget the app met on 2026-10-24. Upload to the cloud adds about 0.8–0.9 s (median).
+
 ## Manual Prediction
 
-The Prediction page builds its fields from the active artifact's saved feature schema. A prediction stores Normal or Attack, confidence, model name, timestamp, latency, and alert status. Attack creates an alert and audit events; Normal does not create an attack alert. The same path is available as JSON at `POST /predict` for an authenticated session.
+The Prediction page builds its fields from the active artifact's saved feature schema. A prediction stores Normal or Attack, confidence, the attack probability with its band and band-policy version, model name, timestamp, latency, and alert status. Confidence belongs to the verdict (a confident Normal has a high confidence and a Low attack score); the attack score is always the Attack class's probability. Attack creates an alert and audit events; Normal does not create an attack alert. The same path is available as JSON at `POST /predict` for an authenticated session.
 
 The prediction and monitor-start APIs require a JSON object and the
 `Content-Type: application/json` header. Malformed JSON, arrays, and scalar values
@@ -401,7 +415,7 @@ packet-size summary exceeds the database's integer range; that summary is stored
 
 ## System Logs and Alerts
 
-Alert History contains anomalous predictions from both the Live Monitor and manual prediction, with the source and destination of each flow. Severity follows the model's confidence: High at 90% or more, Medium from 75%, Low below that (`services/alert_policy.py`). Alerts start Open and are moved to Acknowledged or Resolved (or reopened) from the Alerts page in both SQLite and cloud mode; the dashboard's Open Alerts counts only Open alerts, and every change is logged.
+Alert History contains anomalous predictions from both the Live Monitor and manual prediction, with the source and destination of each flow. Alerts, reports, the dashboard and the monitor feed show the same attack-score band (`services/alert_policy.py`, policy `attack-score-bands-v1`). The score is a probability, not a measure of impact, and no band is called Critical. Alerts stored before scores existed show **Not scored** with their legacy severity (High, Medium or Low by confidence), which is still recorded for older readers. Changing a band threshold requires a new policy version; the cloud database accepts only versions its migrations define. Alerts start Open and are moved to Acknowledged or Resolved (or reopened) from the Alerts page in both SQLite and cloud mode; the dashboard's Open Alerts counts only Open alerts, and every change is logged.
 
 System Logs contain authentication, validation, preprocessing, training, ranking, deployment, live monitoring, prediction, reporting, and application events. Logs are newest first and support date, module, status, model, run ID, and text filters.
 

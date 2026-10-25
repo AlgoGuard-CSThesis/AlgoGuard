@@ -41,6 +41,22 @@ NODE_SCOPED = {
     "capture_session", "network_traffic", "prediction", "alert", "report", "report_alert",
     "system_log", "ingest_event", "alert_detail",
 }
+SCORE_KEYS = ("attack_probability", "attack_score_band", "score_band_policy")
+PREDICTION_KEYS = {"predicted_label", "confidence_score", "latency_ms", "model_name",
+                   "input_payload", *SCORE_KEYS}
+
+
+def _score_matches_policy(prediction):
+    """The database's check: no score at all, or a v1 band that matches its probability."""
+    probability, band, policy = (prediction.get(key) for key in SCORE_KEYS)
+    if probability is None and band is None and policy is None:
+        return True
+    if (policy != "attack-score-bands-v1" or not isinstance(probability, (int, float))
+            or not 0 <= probability <= 1):
+        return False
+    expected = ("Very high" if probability >= 0.9 else "High" if probability >= 0.7
+                else "Medium" if probability >= 0.5 else "Low")
+    return band == expected
 
 
 class Refusal(Exception):
@@ -124,6 +140,8 @@ class FakeSupabase:
         self.signed = {}
         self.faults = []
         self.offline = False
+        # False imitates a database without the Stage 6A.3 migration.
+        self.attack_scores = True
         self.access_ttl = 3600
         self.calls = []
         self.logouts = []
@@ -323,7 +341,8 @@ class FakeSupabase:
                              "confidence_score": prediction["confidence_score"],
                              "model_name": prediction["model_name"],
                              "source_ip": traffic["source_ip"],
-                             "destination_ip": traffic["destination_ip"]})
+                             "destination_ip": traffic["destination_ip"],
+                             **{key: prediction.get(key) for key in SCORE_KEYS}})
         else:
             rows = list(self.tables[table])
         if table in NODE_SCOPED:
@@ -348,6 +367,9 @@ class FakeSupabase:
     # -- PostgREST reads -----------------------------------------------------
 
     def _select(self, table, query, profile):
+        if table == "prediction" and not self.attack_scores and any(
+                name == "select" and "attack_" in value for name, value in query):
+            raise Refusal(400, "column does not exist")
         rows = self._visible(table, profile)
         for name, value in query:
             if name in ("select", "order", "limit", "offset"):
@@ -449,6 +471,11 @@ class FakeSupabase:
             if not isinstance(event, dict) or set(event) - allowed or event.get(
                     "prediction", {}).get("predicted_label") not in ("Normal", "Attack"):
                 raise Refusal(400, "invalid flow")
+            known = PREDICTION_KEYS if self.attack_scores else PREDICTION_KEYS - set(SCORE_KEYS)
+            if set(event["prediction"]) - known:
+                raise Refusal(400, "invalid flow")
+            if not _score_matches_policy(event["prediction"]):
+                raise Refusal(400, "invalid flow reference or value")
             if event.get("capture_id") is not None:
                 capture = next((row for row in self.tables["capture_session"]
                                 if row["capture_id"] == event["capture_id"]), None)

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_attack_score.html" import attack_score, attack_score_note %}
 
 {% block title %}Alerts | AlgoGuard{% endblock %}
 
@@ -8,7 +9,7 @@
 {%- endmacro %}
 
 {% block content %}
-<header class="page-heading"><div><p class="eyebrow">Anomaly Records</p><h1>Alert History</h1><p class="page-meta">{% if config.CLOUD_MODE %}{{ alerts|length }} alert{{ '' if alerts|length == 1 else 's' }} on this page, newest first &middot; node <code>{{ node_id[:8] }}</code>{% else %}{{ alerts|length }} most recent alert{{ '' if alerts|length == 1 else 's' }}{% endif %} &middot; acknowledge an alert when you start looking into it, resolve it when it is handled</p></div><a class="btn btn-outline-light" href="{{ url_for('simulation_demo') }}"><i class="bi bi-activity" aria-hidden="true"></i> Prediction</a></header>
+<header class="page-heading"><div><p class="eyebrow">Anomaly Records</p><h1>Alert History</h1><p class="page-meta">{% if config.CLOUD_MODE %}{{ alerts|length }} alert{{ '' if alerts|length == 1 else 's' }} on this page, newest first &middot; node <code>{{ node_id[:8] }}</code>{% else %}{{ alerts|length }} most recent alert{{ '' if alerts|length == 1 else 's' }}{% endif %} &middot; acknowledge an alert when you start looking into it, resolve it when it is handled</p><p class="page-meta">{{ attack_score_note() }}</p></div><a class="btn btn-outline-light" href="{{ url_for('simulation_demo') }}"><i class="bi bi-activity" aria-hidden="true"></i> Prediction</a></header>
 
 {% if config.CLOUD_MODE %}
 <form class="panel filter-panel" method="get">
@@ -26,7 +27,7 @@
 <section class="panel">
     <div class="table-responsive">
         <table class="table data-table align-middle mb-0 alert-table">
-            <thead><tr>{% if config.CLOUD_MODE %}<th><span class="visually-hidden">Select for report</span></th>{% endif %}<th>Alert</th><th>Detected (UTC)</th><th>Source &rarr; Destination</th><th>Prediction</th><th>Confidence</th><th>Severity</th><th>Status</th><th>Review</th><th>Description</th></tr></thead>
+            <thead><tr>{% if config.CLOUD_MODE %}<th><span class="visually-hidden">Select for report</span></th>{% endif %}<th>Alert</th><th>Detected (UTC)</th><th>Source &rarr; Destination</th><th>Prediction</th><th>Confidence</th><th>Attack score</th><th>Status</th><th>Review</th><th>Description</th></tr></thead>
             <tbody>
                 {% for alert in alerts %}
                 {% set reviewed = alert.alert_status in ('Acknowledged', 'Resolved') %}
@@ -38,7 +39,7 @@
                     {# Every alert is an Attack verdict, so the cell names the model that made it. #}
                     <td>#{{ alert.prediction_id }}<small>{{ alert.model_name or 'Legacy model' }}</small></td>
                     <td>{{ '%.2f%%'|format(alert.confidence_score) if alert.confidence_score is not none else 'N/A' }}</td>
-                    <td><span class="status-badge severity-{{ (alert.severity_level or 'unknown')|lower }}">{{ alert.severity_level }}</span></td>
+                    <td>{{ attack_score(alert.attack_probability, alert.attack_score_band, alert.severity_level) }}</td>
                     <td><span class="status-badge review-{{ (alert.alert_status or 'unknown')|lower }}">{{ alert.alert_status }}</span></td>
                     <td>
                         <form class="inline-form" method="post" action="{{ url_for('update_alert', alert_id=alert.alert_id) }}">

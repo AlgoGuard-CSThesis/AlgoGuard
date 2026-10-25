@@ -365,6 +365,21 @@ class CloudRepository:
             raise RepositoryError("not_found")  # Hidden and absent records stay indistinguishable.
         return result
 
+    def attack_scores_supported(self) -> bool:
+        """Whether the database stores attack scores (the Stage 6A.3 migration is applied).
+
+        A database without the columns refuses the select. It would also refuse an upload that
+        carries scores, permanently, so the client leaves them out instead.
+        """
+        try:
+            self._request("GET", "/rest/v1/prediction",
+                          params={"select": "attack_probability", "limit": 0})
+        except RepositoryError as error:
+            if error.category == "validation":
+                return False
+            raise
+        return True
+
     def rpc(self, name: str, body: dict):
         if not isinstance(name, str) or not _RPC_NAME.fullmatch(name) or not isinstance(body, dict):
             raise RepositoryError("validation")

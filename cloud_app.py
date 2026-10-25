@@ -39,7 +39,13 @@ from flask import Flask, flash, g, jsonify, redirect, render_template, request, 
 from flask import session as flask_session
 
 from cloud_auth import CloudAuth, MemorySession, MemorySessionInterface
-from cloud_monitor import CloudMonitor, LiveMonitorError, deployment_summary, flow_event
+from cloud_monitor import (
+    CloudMonitor,
+    LiveMonitorError,
+    attack_scores_supported,
+    deployment_summary,
+    flow_event,
+)
 from cloud_outbox import Outbox, restrict_owner
 from cloud_repository import RepositoryError
 from cloud_sync import SyncWorker, audit
@@ -414,7 +420,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
 
     def manual_prediction(pinned, deployment, payload):
         outcome = predict_with_artifact(pinned.artifact, payload)
-        event = flow_event(deployment, outcome, outcome["flow_data"], "simulation", None)
+        event = flow_event(deployment, outcome, outcome["flow_data"], "simulation", None,
+                           include_scores=attack_scores_supported(g.repo))
         submitted = services.outbox.submit(g.repo.context, "manual", event, capped=False)
         persistence = submitted["persistence"]
         if persistence == "in_memory":
@@ -423,6 +430,9 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         return {
             "prediction": outcome["prediction"],
             "confidence": outcome["confidence"],
+            "attack_probability": outcome["attack_probability"],
+            "attack_score_band": outcome["attack_score_band"],
+            "score_band_policy": outcome["score_band_policy"],
             "latency_ms": outcome["latency_ms"],
             "deployed_model_name": deployment["model_name"],
             "deployment_id": deployment["deployment_id"],

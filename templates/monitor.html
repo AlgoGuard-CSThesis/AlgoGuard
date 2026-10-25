@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_attack_score.html" import attack_score_note %}
 
 {% block title %}Live Monitor | AlgoGuard{% endblock %}
 {% block body_class %}dashboard-body{% endblock %}
@@ -148,6 +149,7 @@
             </div>
             <span class="status-pill active">{{ deployment.model_name }}</span>
         </div>
+        <p class="monitor-hint">{{ attack_score_note() }}</p>
         <div class="table-responsive monitor-feed-scroll" tabindex="0" role="region" aria-label="Live monitor feed">
             <table class="table table-dark table-hover align-middle mb-0 feed-table{% if config.CLOUD_MODE %} cloud-feed{% endif %}">
                 <thead>
@@ -158,12 +160,13 @@
                         <th>Service</th>
                         <th>Verdict</th>
                         <th>Confidence</th>
+                        <th>Attack score</th>
                         <th>Actual</th>
                         {% if config.CLOUD_MODE %}<th>Saved</th>{% endif %}
                     </tr>
                 </thead>
                 <tbody id="feedBody">
-                    <tr class="feed-empty-row"><td colspan="{{ 8 if config.CLOUD_MODE else 7 }}">Start a session to see classified traffic.</td></tr>
+                    <tr class="feed-empty-row"><td colspan="{{ 9 if config.CLOUD_MODE else 8 }}">Start a session to see classified traffic.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -436,6 +439,22 @@
             const confidence = Number(event.confidence);
             appendTextCell(Number.isFinite(confidence) ? confidence.toFixed(2) + "%" : "—");
 
+            // The band arrives with the event (Stage 6A.3), so no database lookup is needed.
+            const scoreCell = document.createElement("td");
+            const scoreBadge = document.createElement("span");
+            const band = event.attack_score_band;
+            const probability = Number(event.attack_probability);
+            if (band && event.attack_probability !== null && Number.isFinite(probability)) {
+                scoreBadge.className = "status-badge score-"
+                    + String(band).toLowerCase().replace(/ /g, "-");
+                scoreBadge.textContent = band + " · " + (probability * 100).toFixed(1) + "%";
+            } else {
+                scoreBadge.className = "status-badge score-none";
+                scoreBadge.textContent = "Not scored";
+            }
+            scoreCell.appendChild(scoreBadge);
+            row.appendChild(scoreCell);
+
             const actualCell = document.createElement("td");
             if (event.actual === null || event.actual === undefined) {
                 actualCell.textContent = "—";
@@ -525,7 +544,7 @@
         const row = document.createElement("tr");
         row.className = "feed-empty-row";
         const cell = document.createElement("td");
-        cell.colSpan = CLOUD_MODE ? 8 : 7;
+        cell.colSpan = CLOUD_MODE ? 9 : 8;
         cell.textContent = "Waiting for classified traffic…";
         row.appendChild(cell);
         feedBody.replaceChildren(row);

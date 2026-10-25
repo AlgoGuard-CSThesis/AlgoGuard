@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_attack_score.html" import attack_score, attack_score_note %}
 
 {% block title %}Manual Prediction | AlgoGuard{% endblock %}
 
@@ -80,10 +81,12 @@
                 <strong>{{ result.confidence }}%</strong>
                 <small>Model confidence</small>
             </div>
+            <p class="monitor-hint">{{ attack_score_note() }}</p>
             {% if config.CLOUD_MODE %}
             <dl class="detail-list simulation-detail-list">
                 <div><dt>Model</dt><dd>{{ result.deployed_model_name }}</dd></div>
                 <div><dt>Deployment</dt><dd>#{{ result.deployment_id }}</dd></div>
+                <div><dt>Attack score</dt><dd>{{ attack_score(result.attack_probability, result.attack_score_band) }}</dd></div>
                 <div><dt>Latency</dt><dd>{{ result.latency_ms }} ms</dd></div>
                 <div><dt>Event</dt><dd><code>{{ result.event_uuid }}</code></dd></div>
                 <div><dt>Saved</dt><dd>{{ result.persistence_label }}</dd></div>
@@ -95,6 +98,7 @@
             <dl class="detail-list simulation-detail-list">
                 <div><dt>Model</dt><dd>{{ result.deployed_model_name }}</dd></div>
                 <div><dt>Source run</dt><dd>#{{ result.source_run_id }}</dd></div>
+                <div><dt>Attack score</dt><dd>{{ attack_score(result.attack_probability, result.attack_score_band) }}</dd></div>
                 <div><dt>Latency</dt><dd>{{ result.latency_ms }} ms</dd></div>
                 <div><dt>Prediction</dt><dd>#{{ result.prediction_id }}</dd></div>
                 <div><dt>Alert</dt><dd>{{ 'Created #' ~ result.alert_id if result.alert_created else 'Not created' }}</dd></div>

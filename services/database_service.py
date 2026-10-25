@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from werkzeug.security import generate_password_hash
 
 from config import get_config
-from services.alert_policy import ALERT_STATUSES, severity_for_confidence
+from services.alert_policy import ALERT_STATUSES, attack_score_fields, severity_for_confidence
 from services.model_registry import MODEL_WORKFLOW_VERSION
 from services.password_policy import PASSWORD_RULE_TEXT, password_is_strong
 
@@ -51,6 +51,13 @@ PREDICTION_COLUMNS = {
     "latency_ms": "REAL",
     "alert_created": "INTEGER NOT NULL DEFAULT 0",
     "input_payload": "TEXT",
+}
+
+# Stage 6A.3. Rows stored before these columns existed stay unscored (NULL).
+ATTACK_SCORE_COLUMNS = {
+    "attack_probability": "REAL",
+    "attack_score_band": "TEXT",
+    "score_band_policy": "TEXT",
 }
 
 SYSTEM_LOG_COLUMNS = {
@@ -224,6 +231,9 @@ def initialize_database():
                 latency_ms REAL,
                 alert_created INTEGER NOT NULL DEFAULT 0,
                 input_payload TEXT,
+                attack_probability REAL,
+                attack_score_band TEXT,
+                score_band_policy TEXT,
                 FOREIGN KEY (traffic_id) REFERENCES network_traffic (traffic_id),
                 FOREIGN KEY (model_id) REFERENCES detection_model (model_id),
                 FOREIGN KEY (deployment_id) REFERENCES model_deployment (deployment_id)
@@ -288,6 +298,7 @@ def initialize_database():
         _apply_training_workflow_migration(connection)
         _apply_traffic_count_migration(connection)
         _apply_legacy_metric_compatibility_migration(connection)
+        _apply_attack_score_migration(connection)
         _ensure_indexes(connection)
 
     seed_default_admin()
@@ -376,6 +387,20 @@ def _apply_legacy_metric_compatibility_migration(connection):
     connection.execute(
         "INSERT INTO schema_migration (version, name, applied_at) VALUES (?, ?, ?)",
         (4, "legacy_metric_column_compatibility", utc_now()),
+    )
+
+
+def _apply_attack_score_migration(connection):
+    """Add the attack probability and its band; existing predictions keep no invented score."""
+    migration = connection.execute(
+        "SELECT version FROM schema_migration WHERE version = 5"
+    ).fetchone()
+    if migration:
+        return
+    _add_missing_columns(connection, "prediction", ATTACK_SCORE_COLUMNS)
+    connection.execute(
+        "INSERT INTO schema_migration (version, name, applied_at) VALUES (?, ?, ?)",
+        (5, "attack_score_bands", utc_now()),
     )
 
 
@@ -942,6 +967,7 @@ def insert_prediction(
     latency_ms=None,
     input_payload=None,
     alert_created=False,
+    attack_probability=None,
 ):
     """Store a single-record prediction without dataset-level metrics."""
     with get_connection() as connection:
@@ -956,6 +982,7 @@ def insert_prediction(
             latency_ms,
             input_payload,
             alert_created,
+            attack_probability,
         )
 
 
@@ -970,15 +997,18 @@ def _insert_prediction(
     latency_ms=None,
     input_payload=None,
     alert_created=False,
+    attack_probability=None,
 ):
+    score = attack_score_fields(attack_probability)
     cursor = connection.execute(
         """
         INSERT INTO prediction (
             traffic_id, model_id, deployment_id, model_name,
             predicted_label, confidence_score, prediction_timestamp,
-            latency_ms, alert_created, input_payload
+            latency_ms, alert_created, input_payload,
+            attack_probability, attack_score_band, score_band_policy
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         (
             traffic_id,
@@ -991,6 +1021,9 @@ def _insert_prediction(
             _safe_float(latency_ms),
             int(bool(alert_created)),
             json.dumps(input_payload or {}, default=str),
+            score["attack_probability"],
+            score["attack_score_band"],
+            score["score_band_policy"],
         ),
     )
     return cursor.lastrowid
@@ -1041,11 +1074,13 @@ def store_classified_flow(
     create_alert=False,
     alert_severity=None,
     alert_description=None,
+    attack_probability=None,
 ):
     """Atomically store a classified flow, its prediction, and optional alert.
 
-    Without an explicit ``alert_severity`` the alert's severity follows the
-    prediction's confidence.
+    Without an explicit ``alert_severity`` the alert's (legacy) severity follows the
+    prediction's confidence. ``attack_probability`` is the Attack class's probability;
+    its band is derived and stored with it.
     """
     with get_connection() as connection:
         traffic_id = _insert_network_traffic_from_flow(
@@ -1064,6 +1099,7 @@ def store_classified_flow(
             latency_ms,
             flow_data,
             alert_created=create_alert,
+            attack_probability=attack_probability,
         )
         alert_id = None
         if create_alert:
@@ -1082,6 +1118,7 @@ def list_alerts(limit=100):
         rows = connection.execute(
             """
             SELECT a.*, p.predicted_label, p.confidence_score, p.model_name,
+                   p.attack_probability, p.attack_score_band, p.score_band_policy,
                    p.prediction_timestamp, t.source_ip, t.destination_ip,
                    t.source_port, t.destination_port, t.protocol, t.dataset_source
             FROM alert a

@@ -31,6 +31,7 @@ import numpy as np
 import pandas as pd
 
 from config import get_config
+from services.alert_policy import attack_probability, attack_score_fields
 from services.database_service import (
     finalize_capture_session,
     insert_capture_session,
@@ -284,11 +285,12 @@ def collect_batch(source, first_event, pacing):
     return batch, False
 
 
-def classify_rows(pipeline, rows, feature_columns):
+def score_rows(pipeline, rows, feature_columns):
     """Classify flow rows with one ``predict_proba`` call.
 
-    Returns ``(class, confidence)`` per row and the model time in milliseconds. The class with
-    the highest probability is what ``predict`` returns, so the model runs once, not twice.
+    Returns ``(class, confidence, attack probability)`` per row and the model time in
+    milliseconds. The class with the highest probability is what ``predict`` returns, so the
+    model runs once, not twice; the attack probability is the Attack class's own column.
     """
     frame = pd.DataFrame(rows, columns=feature_columns)
     start = time.perf_counter()
@@ -298,8 +300,14 @@ def classify_rows(pipeline, rows, feature_columns):
     verdicts = []
     for row in probabilities:
         index = int(np.argmax(row))
-        verdicts.append((int(classes[index]), float(row[index])))
+        verdicts.append((int(classes[index]), float(row[index]), attack_probability(row, classes)))
     return verdicts, elapsed_ms
+
+
+def classify_rows(pipeline, rows, feature_columns):
+    """``score_rows`` without the attack probability: ``(class, confidence)`` per row."""
+    verdicts, elapsed_ms = score_rows(pipeline, rows, feature_columns)
+    return [(predicted, confidence) for predicted, confidence, _ in verdicts], elapsed_ms
 
 
 def _should_persist(mode, prediction):
@@ -325,6 +333,7 @@ def _store_flow(deployment, flow_data, result, source_tag):
         deployment_id=deployment.get("deployment_id"),
         model_name=deployment.get("model_name"),
         latency_ms=result["latency_ms"],
+        attack_probability=result["attack_probability"],
         create_alert=is_attack,
         alert_description=(
             f"Attack detected by {deployment.get('model_name')} during live monitoring."
@@ -572,8 +581,8 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                 _build_flow_row(item["record"], feature_columns, numeric_columns, defaults)
                 for item in batch
             ]
-            verdicts, latency_ms = classify_rows(pipeline, flow_rows, feature_columns)
-            for event_data, flow_row, (predicted_value, confidence) in zip(
+            verdicts, latency_ms = score_rows(pipeline, flow_rows, feature_columns)
+            for event_data, flow_row, (predicted_value, confidence, attack_score) in zip(
                 batch, flow_rows, verdicts
             ):
                 row_index += 1
@@ -596,6 +605,7 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                     "prediction": prediction,
                     "confidence": round(confidence * 100, 2),
                     "latency_ms": round(latency_ms, 3),
+                    **attack_score_fields(attack_score),
                 }
 
                 # Decide under the lock, write outside it, then record the outcome.
@@ -644,6 +654,8 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                             "row_index": row_index,
                             "prediction": prediction,
                             "confidence": result["confidence"],
+                            "attack_probability": result["attack_probability"],
+                            "attack_score_band": result["attack_score_band"],
                             "latency_ms": result["latency_ms"],
                             "detection_lag_ms": (
                                 round(detection_lag_ms, 1) if detection_lag_ms is not None else None

@@ -29,7 +29,7 @@ from cloud_repository import RepositoryError
 from cloud_sync import audit
 from model_runtime import ModelDeliveryError
 from services import live_monitor_service as legacy
-from services.alert_policy import severity_for_confidence
+from services.alert_policy import attack_score_fields, severity_for_confidence
 from services.traffic_source_service import (
     LiveCaptureSource,
     TrafficSourceCancelled,
@@ -41,6 +41,9 @@ LiveMonitorError = legacy.LiveMonitorError
 FINAL_PERSISTENCE = {"synced", "rejected", "dropped", "session_only"}
 DRAIN_SECONDS = 5
 TRACKED_UPDATES = 50
+# A database without attack-score columns is asked again after this long.
+SCORE_SUPPORT_RECHECK_SECONDS = 300.0
+_SCORE_SUPPORT = {}  # project URL -> (supported, monotonic time of the check)
 
 
 def _utc_iso():
@@ -59,7 +62,27 @@ def _port(value):
     return port if 0 <= port <= 65535 else None
 
 
-def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=None):
+def attack_scores_supported(repo):
+    """Whether uploads may carry attack scores (Stage 6A.3), cached per cloud project.
+
+    The hosted database refuses score fields permanently until its migration is applied, so a
+    client that cannot confirm support leaves them out; the event stays valid, only unscored.
+    A confirmed database is not asked again; an unconfirmed one is asked again after a while.
+    """
+    known = _SCORE_SUPPORT.get(repo.base_url)
+    now = time.monotonic()
+    if known and (known[0] or now - known[1] < SCORE_SUPPORT_RECHECK_SECONDS):
+        return known[0]
+    try:
+        supported = repo.attack_scores_supported()
+    except RepositoryError:
+        return False
+    _SCORE_SUPPORT[repo.base_url] = (supported, now)
+    return supported
+
+
+def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=None,
+               include_scores=True):
     """One immutable store_flow_batch event; its UUID is fixed before any upload."""
     endpoints = endpoints or {}
     event_time = _utc_iso()
@@ -86,6 +109,9 @@ def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=
             "model_name": deployment.get("model_name") or "Stacking Ensemble",
         },
     }
+    if include_scores and result.get("attack_probability") is not None:
+        body["prediction"].update({key: result[key] for key in (
+            "attack_probability", "attack_score_band", "score_band_policy")})
     if result["prediction"] == "Attack":
         body["alert"] = {
             "severity_level": severity_for_confidence(result["confidence"]),
@@ -445,6 +471,7 @@ class CloudMonitor:
         if stop_event.is_set():
             return "stopped"
         deployment = deployment_summary(repo, pinned)
+        include_scores = attack_scores_supported(repo)
         artifact = pinned.artifact
         feature_columns = list(artifact.get("feature_columns") or [])
         numeric_columns = set(artifact.get("numeric_columns") or [])
@@ -530,7 +557,8 @@ class CloudMonitor:
             except TrafficSourceError as error:
                 raise LiveMonitorError(str(error)) from None
         return self._loop(session, stop_event, pause_event, repo.context, source, pipeline,
-                          feature_columns, numeric_columns, defaults, deployment, source_tag)
+                          feature_columns, numeric_columns, defaults, deployment, source_tag,
+                          include_scores=include_scores)
 
     def _check_authorization(self, session):
         identity = session["identity"]
@@ -551,7 +579,7 @@ class CloudMonitor:
                 "records stay on this computer and can be exported.")
 
     def _loop(self, session, stop_event, pause_event, context, source, pipeline, feature_columns,
-              numeric_columns, defaults, deployment, source_tag):
+              numeric_columns, defaults, deployment, source_tag, include_scores=True):
         source_type = session["source_type"]
         final_state = "completed"
         row_index = -1
@@ -586,8 +614,8 @@ class CloudMonitor:
                                            defaults)
                     for item in batch
                 ]
-                verdicts, latency_ms = legacy.classify_rows(pipeline, flow_rows, feature_columns)
-                for event_data, flow_row, (predicted, confidence) in zip(
+                verdicts, latency_ms = legacy.score_rows(pipeline, flow_rows, feature_columns)
+                for event_data, flow_row, (predicted, confidence, attack_score) in zip(
                         batch, flow_rows, verdicts):
                     row_index += 1
                     record = event_data["record"]
@@ -600,9 +628,10 @@ class CloudMonitor:
                         "prediction": prediction,
                         "confidence": round(confidence * 100, 2),
                         "latency_ms": round(latency_ms, 3),
+                        **attack_score_fields(attack_score),
                     }
                     event = flow_event(deployment, result, flow_row, source_tag,
-                                       session["capture_id"], event_data)
+                                       session["capture_id"], event_data, include_scores)
                     if stop_event.is_set():
                         return "stopped"  # Never add work after the capture closed.
                     if legacy._should_persist(session["persist"], prediction):
@@ -660,6 +689,8 @@ class CloudMonitor:
                 "row_index": row_index,
                 "prediction": result["prediction"],
                 "confidence": result["confidence"],
+                "attack_probability": result.get("attack_probability"),
+                "attack_score_band": result.get("attack_score_band"),
                 "latency_ms": result["latency_ms"],
                 "detection_lag_ms": round(lag_ms, 1) if lag_ms is not None else None,
                 "actual": actual,

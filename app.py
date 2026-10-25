@@ -226,6 +226,7 @@ def _execute_prediction(payload, log_module):
             latency_ms=result["latency_ms"],
             create_alert=is_attack,
             alert_description=f"Attack predicted by {result['deployed_model_name']}.",
+            attack_probability=result["attack_probability"],
         )
 
         if is_attack:

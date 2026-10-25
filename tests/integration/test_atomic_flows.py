@@ -195,3 +195,69 @@ def test_repository_pagination_and_bigint_results(cloud, scope, local_stack):
         cloud["sql"](
             "select setval('public.network_traffic_traffic_id_seq',%s,true)", (with_sequence,)
         )
+
+
+SCORED = {"attack_probability": 0.93, "attack_score_band": "Very high",
+          "score_band_policy": "attack-score-bands-v1"}
+
+
+def scored_event(scope, **score):
+    payload = event(scope)
+    payload["prediction"].update({**SCORED, **score})
+    return payload
+
+
+def test_attack_scores_are_stored_and_older_clients_stay_unscored(cloud, scope, local_stack):
+    """6A.3: the score travels with the prediction; an older client's event still commits."""
+    repo = repository(cloud, scope, local_stack)
+    assert repo.attack_scores_supported()
+    scored = repo.store_flows([scored_event(scope)])[0]
+    older = repo.store_flows([event(scope)])[0]
+    rows = dict(
+        (row[0], row[1:]) for row in cloud["sql"](
+            "select prediction_id,attack_probability,attack_score_band,score_band_policy "
+            "from public.prediction where prediction_id in (%s,%s)",
+            (int(scored.prediction_id), int(older.prediction_id)),
+        )
+    )
+    assert rows[int(scored.prediction_id)] == (0.93, "Very high", "attack-score-bands-v1")
+    assert rows[int(older.prediction_id)] == (None, None, None)
+    alerts = repo.list_records("alert_detail", filters={"alert_id": [scored.alert_id]}).rows
+    assert alerts[0]["attack_score_band"] == "Very high"
+    assert alerts[0]["severity_level"] == "High"
+
+
+@pytest.mark.parametrize(
+    "score",
+    [
+        {"attack_score_band": "Low"},
+        {"attack_score_band": "Critical"},
+        {"score_band_policy": "attack-score-bands-v0"},
+        {"attack_probability": 1.5, "attack_score_band": "Very high"},
+        {"attack_probability": -0.1, "attack_score_band": "Low"},
+        {"attack_score_band": None},
+        {"attack_probability": None},
+    ],
+)
+def test_a_score_that_does_not_match_its_policy_is_refused(cloud, scope, local_stack, score):
+    with pytest.raises(RepositoryError) as caught:
+        repository(cloud, scope, local_stack).store_flows([scored_event(scope, **score)])
+    assert caught.value.category == "validation"
+
+
+def test_a_direct_prediction_insert_cannot_store_a_mismatched_band(cloud, scope, local_stack):
+    repo = repository(cloud, scope, local_stack)
+    receipt = repo.store_flows([event(scope, alert=False)])[0]
+    row = cloud["sql"](
+        "select node_id,owner_profile_id,traffic_id,model_id,deployment_id "
+        "from public.prediction where prediction_id=%s",
+        (int(receipt.prediction_id),),
+    )[0]
+    forged = {
+        "node_id": str(row[0]), "owner_profile_id": row[1], "traffic_id": row[2],
+        "model_id": row[3], "deployment_id": row[4], "predicted_label": "Attack",
+        "prediction_timestamp": "2026-09-26 01:02:03", "attack_probability": 0.2,
+        "attack_score_band": "Very high", "score_band_policy": "attack-score-bands-v1",
+    }
+    result = cloud["request"]("POST", "/rest/v1/prediction", cloud["users"][1], json=forged)
+    assert result.status_code == 400

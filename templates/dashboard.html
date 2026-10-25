@@ -187,7 +187,7 @@
                     <div class="event-row">
                         <span class="event-mark danger" aria-hidden="true"><i class="bi bi-exclamation-triangle-fill"></i></span>
                         <div>
-                            <strong>{{ alert.severity_level }} severity &middot; {{ '%.2f'|format(alert.confidence_score) if alert.confidence_score is not none else 'N/A' }}%</strong>
+                            <strong>{% if alert.attack_score_band and alert.attack_probability is not none %}{{ alert.attack_score_band }} attack score &middot; {{ '%.1f'|format(alert.attack_probability * 100) }}%{% else %}Not scored &middot; legacy {{ alert.severity_level }} severity{% endif %}</strong>
                             <small>{{ alert.detected_at }} UTC &middot; {% if alert.source_ip and alert.source_ip != 'manual' %}{{ alert.source_ip }} &rarr; {{ alert.destination_ip or '-' }}{% else %}{{ alert.model_name or 'Unknown model' }}{% endif %}</small>
                         </div>
                         <span class="status-badge review-{{ (alert.alert_status or 'unknown')|lower }}">{{ alert.alert_status }}</span>

@@ -4,6 +4,7 @@ import threading
 import time
 
 import joblib
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -316,13 +317,13 @@ def test_session_runs_to_completion(fast_monitor, replay_dataset):
 
 def record_batch_sizes(monkeypatch):
     sizes = []
-    classify = monitor.classify_rows
+    score = monitor.score_rows
 
     def recording(pipeline, rows, feature_columns):
         sizes.append(len(rows))
-        return classify(pipeline, rows, feature_columns)
+        return score(pipeline, rows, feature_columns)
 
-    monkeypatch.setattr(monitor, "classify_rows", recording)
+    monkeypatch.setattr(monitor, "score_rows", recording)
     return sizes
 
 
@@ -396,6 +397,35 @@ def test_classify_rows_matches_predict_with_a_single_model_call(trained_bundle):
     for (label, confidence), row in zip(verdicts, probabilities):
         assert confidence == pytest.approx(row[list(pipeline.classes_).index(label)])
     assert elapsed_ms >= 0
+
+
+def test_score_rows_reads_the_attack_class_by_value_not_position():
+    """A model that lists Attack first must still give the Attack column's probability."""
+
+    class ReversedClasses:
+        classes_ = np.array([1, 0])
+
+        def predict_proba(self, frame):
+            return np.array([[0.2, 0.8], [0.95, 0.05]])[: len(frame)]
+
+    verdicts, _ = monitor.score_rows(ReversedClasses(), [{"x": 1}, {"x": 2}], ["x"])
+
+    # Row 1: Normal with 80% confidence, so a Low attack score of 0.2.
+    assert verdicts[0] == (0, pytest.approx(0.8), pytest.approx(0.2))
+    assert verdicts[1] == (1, pytest.approx(0.95), pytest.approx(0.95))
+
+
+def test_monitor_feed_rows_carry_the_attack_score_and_band(fast_monitor, replay_dataset):
+    start(speed="max")
+    assert wait_for(lambda: monitor.get_status()["session"]["state"] == "completed", timeout=30.0)
+
+    events = monitor.get_status()["events"]
+    assert events
+    for event in events:
+        assert 0.0 <= event["attack_probability"] <= 1.0
+        assert event["attack_score_band"] in ("Low", "Medium", "High", "Very high")
+        if event["prediction"] == "Normal":
+            assert event["attack_probability"] <= 0.5
 
 
 class _ScriptedSource:
@@ -517,3 +547,9 @@ def test_monitor_routes_drive_a_session(authenticated_client, fast_monitor, repl
     assert "totals" in status["session"]
 
     assert authenticated_client.post("/monitor/stop").status_code == 200
+
+
+def test_the_monitor_page_has_an_attack_score_column(authenticated_client, fast_monitor):
+    page = authenticated_client.get("/monitor").get_data(as_text=True)
+    assert "<th>Attack score</th>" in page and "does not measure impact" in page
+    assert 'colspan="8"' in page  # the empty feed row spans the added column
