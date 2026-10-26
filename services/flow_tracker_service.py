@@ -53,7 +53,10 @@ FLOW_FEATURE_COLUMNS = (
 
 # UNSW-NB15 uses Bro-derived service names; this port map covers the services
 # present in the bundled datasets. Unknown ports report "-", exactly as the
-# dataset does for unidentified traffic.
+# dataset does for unidentified traffic. Port 443 is deliberately left out: the
+# dataset's "ssl" occurs only in attack rows (20 of 20 training rows, 56 of 56 in
+# the official training partition), so a model trained on it reads every HTTPS
+# connection as an attack (DEF-19). HTTPS therefore reports "-" as well.
 SERVICE_PORTS = {
     20: "ftp-data",
     21: "ftp",
@@ -65,7 +68,6 @@ SERVICE_PORTS = {
     80: "http",
     110: "pop3",
     161: "snmp",
-    443: "ssl",
     587: "smtp",
     1812: "radius",
     6667: "irc",

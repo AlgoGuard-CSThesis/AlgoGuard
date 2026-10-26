@@ -230,7 +230,8 @@ def test_reset_ends_a_flow_with_rst_state():
     flows = tracker.close_due(1.1 + CLOSE_HOLD_SECONDS + 0.001)
     assert len(flows) == 1
     assert flows[0]["features"]["state"] == "RST"
-    assert flows[0]["features"]["service"] == "ssl"
+    # HTTPS reports "-": the dataset's "ssl" occurs only in attack rows (DEF-19).
+    assert flows[0]["features"]["service"] == "-"
 
 
 def test_udp_exchange_is_con_and_one_sided_udp_is_int():
