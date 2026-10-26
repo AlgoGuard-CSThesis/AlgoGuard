@@ -63,11 +63,13 @@ def main():
     bands = {name: 0 for name, _ in BANDS}
     for score in attack:
         bands[next(name for name, floor in BANDS if score >= floor)] += 1
-    by_proto = {}
+    by_proto, by_service = {}, {}
     for flow, score in zip(flows, attack):
-        entry = by_proto.setdefault(flow["features"]["proto"], [0, 0])
-        entry[0] += 1
-        entry[1] += int(score >= 0.5)
+        for table, value in ((by_proto, flow["features"]["proto"]),
+                             (by_service, flow["features"]["service"])):
+            entry = table.setdefault(value, [0, 0])
+            entry[0] += 1
+            entry[1] += int(score >= 0.5)
     print(json.dumps({
         "label": args.label, "capture": args.pcap.name, "model": args.model.as_posix(),
         "flows": len(flows),
@@ -76,6 +78,8 @@ def main():
         "attack_score_median": round(float(np.median(attack)), 4),
         "bands": bands,
         "attack_by_proto": {proto: {"flows": n, "attack": a} for proto, (n, a) in by_proto.items()},
+        "attack_by_service": {name: {"flows": n, "attack": a}
+                              for name, (n, a) in by_service.items()},
     }, indent=2))
 
 

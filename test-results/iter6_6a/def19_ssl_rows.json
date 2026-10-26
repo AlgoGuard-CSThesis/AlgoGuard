@@ -1,0 +1,19 @@
+{
+  "rows": 56,
+  "attacks": 56,
+  "by_category": {
+    "Exploits": 39,
+    "Generic": 13,
+    "DoS": 4
+  },
+  "service ssl": {
+    "flagged": 56,
+    "recall": 1.0,
+    "median_score": 0.9996
+  },
+  "service -": {
+    "flagged": 54,
+    "recall": 0.9643,
+    "median_score": 0.9735
+  }
+}

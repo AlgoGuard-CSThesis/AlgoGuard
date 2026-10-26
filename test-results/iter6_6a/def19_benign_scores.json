@@ -1,0 +1,158 @@
+{
+  "generator: before (ssl)": {
+    "label": "before (ssl)",
+    "capture": "generator.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 110,
+    "labelled_attack": 76,
+    "attack_share": 0.6909,
+    "attack_score_median": 0.6421,
+    "bands": {
+      "very_high": 20,
+      "high": 25,
+      "medium": 31,
+      "low": 34
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 102,
+        "attack": 68
+      },
+      "icmp": {
+        "flows": 4,
+        "attack": 4
+      },
+      "udp": {
+        "flows": 4,
+        "attack": 4
+      }
+    },
+    "attack_by_service": {
+      "ssl": {
+        "flows": 102,
+        "attack": 68
+      },
+      "-": {
+        "flows": 4,
+        "attack": 4
+      },
+      "dns": {
+        "flows": 4,
+        "attack": 4
+      }
+    }
+  },
+  "generator: after (443 -> -)": {
+    "label": "after (443 -> -)",
+    "capture": "generator.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 110,
+    "labelled_attack": 11,
+    "attack_share": 0.1,
+    "attack_score_median": 0.0097,
+    "bands": {
+      "very_high": 6,
+      "high": 2,
+      "medium": 3,
+      "low": 99
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 102,
+        "attack": 3
+      },
+      "icmp": {
+        "flows": 4,
+        "attack": 4
+      },
+      "udp": {
+        "flows": 4,
+        "attack": 4
+      }
+    },
+    "attack_by_service": {
+      "-": {
+        "flows": 106,
+        "attack": 7
+      },
+      "dns": {
+        "flows": 4,
+        "attack": 4
+      }
+    }
+  },
+  "browser: before (ssl)": {
+    "label": "before (ssl)",
+    "capture": "browser.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 542,
+    "labelled_attack": 523,
+    "attack_share": 0.9649,
+    "attack_score_median": 0.9246,
+    "bands": {
+      "very_high": 295,
+      "high": 137,
+      "medium": 91,
+      "low": 19
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 403,
+        "attack": 384
+      },
+      "udp": {
+        "flows": 139,
+        "attack": 139
+      }
+    },
+    "attack_by_service": {
+      "http": {
+        "flows": 20,
+        "attack": 12
+      },
+      "ssl": {
+        "flows": 494,
+        "attack": 485
+      },
+      "-": {
+        "flows": 28,
+        "attack": 26
+      }
+    }
+  },
+  "browser: after (443 -> -)": {
+    "label": "after (443 -> -)",
+    "capture": "browser.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 542,
+    "labelled_attack": 144,
+    "attack_share": 0.2657,
+    "attack_score_median": 0.1726,
+    "bands": {
+      "very_high": 44,
+      "high": 58,
+      "medium": 42,
+      "low": 398
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 403,
+        "attack": 74
+      },
+      "udp": {
+        "flows": 139,
+        "attack": 70
+      }
+    },
+    "attack_by_service": {
+      "http": {
+        "flows": 20,
+        "attack": 12
+      },
+      "-": {
+        "flows": 522,
+        "attack": 132
+      }
+    }
+  }
+}
