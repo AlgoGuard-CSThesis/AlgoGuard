@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_attack_score.html" import attack_score, attack_score_note %}
+{% from "_node_scope.html" import node_select, received, scope_label %}
 
 {% block title %}Alerts | AlgoGuard{% endblock %}
 
@@ -9,11 +10,14 @@
 {%- endmacro %}
 
 {% block content %}
-<header class="page-heading"><div><p class="eyebrow">Anomaly Records</p><h1>Alert History</h1><p class="page-meta">{% if config.CLOUD_MODE %}{{ alerts|length }} alert{{ '' if alerts|length == 1 else 's' }} on this page, newest first &middot; node <code>{{ node_id[:8] }}</code>{% else %}{{ alerts|length }} most recent alert{{ '' if alerts|length == 1 else 's' }}{% endif %} &middot; acknowledge an alert when you start looking into it, resolve it when it is handled</p><p class="page-meta">{{ attack_score_note() }}</p></div><a class="btn btn-outline-light" href="{{ url_for('simulation_demo') }}"><i class="bi bi-activity" aria-hidden="true"></i> Prediction</a></header>
+<header class="page-heading"><div><p class="eyebrow">Anomaly Records</p><h1>Alert History</h1><p class="page-meta">{% if config.CLOUD_MODE %}{{ alerts|length }} alert{{ '' if alerts|length == 1 else 's' }} on this page, newest first, from {{ scope_label(scope) }}{% else %}{{ alerts|length }} most recent alert{{ '' if alerts|length == 1 else 's' }}{% endif %} &middot; acknowledge an alert when you start looking into it, resolve it when it is handled</p><p class="page-meta">{{ attack_score_note() }}</p></div><a class="btn btn-outline-light" href="{{ url_for('simulation_demo') }}"><i class="bi bi-activity" aria-hidden="true"></i> Prediction</a></header>
 
 {% if config.CLOUD_MODE %}
 <form class="panel filter-panel" method="get">
     <div class="filter-grid">
+        {{ node_select(scope) }}
+        <div><label class="form-label" for="date_from">From (UTC)</label><input class="form-control" type="date" id="date_from" name="date_from" value="{{ dates.date_from }}"></div>
+        <div><label class="form-label" for="date_to">To (UTC)</label><input class="form-control" type="date" id="date_to" name="date_to" value="{{ dates.date_to }}"></div>
         <div><label class="form-label" for="alert_status">Status</label><select class="form-select" id="alert_status" name="alert_status"><option value="">All statuses</option>{% for option in alert_statuses %}<option value="{{ option }}"{% if alert_status == option %} selected{% endif %}>{{ option }}</option>{% endfor %}</select></div>
         <div class="filter-actions"><button class="btn btn-accent" type="submit"><i class="bi bi-funnel-fill" aria-hidden="true"></i> Apply</button><a class="btn btn-outline-light" href="{{ url_for('alert_history') }}">Clear</a></div>
     </div>
@@ -27,14 +31,16 @@
 <section class="panel">
     <div class="table-responsive">
         <table class="table data-table align-middle mb-0 alert-table">
-            <thead><tr>{% if config.CLOUD_MODE %}<th><span class="visually-hidden">Select for report</span></th>{% endif %}<th>Alert</th><th>Detected (UTC)</th><th>Source &rarr; Destination</th><th>Prediction</th><th>Confidence</th><th>Attack score</th><th>Status</th><th>Review</th><th>Description</th></tr></thead>
+            <thead><tr>{% if config.CLOUD_MODE %}<th><span class="visually-hidden">Select for report</span></th>{% endif %}<th>Alert</th>{% if config.CLOUD_MODE %}<th>Computer</th>{% endif %}<th>Detected (UTC)</th><th>Source &rarr; Destination</th><th>Prediction</th><th>Confidence</th><th>Attack score</th><th>Status</th><th>Review</th><th>Description</th></tr></thead>
             <tbody>
                 {% for alert in alerts %}
                 {% set reviewed = alert.alert_status in ('Acknowledged', 'Resolved') %}
                 <tr>
-                    {% if config.CLOUD_MODE %}<td><input class="form-check-input" type="checkbox" name="alert_id" value="{{ alert.alert_id }}" form="reportForm" aria-label="Include alert {{ alert.alert_id }} in a report"></td>{% endif %}
+                    {# A report is created on this installation, so only its own alerts can be selected. #}
+                    {% if config.CLOUD_MODE %}<td>{% if alert.node_id == node_id %}<input class="form-check-input" type="checkbox" name="alert_id" value="{{ alert.alert_id }}" form="reportForm" aria-label="Include alert {{ alert.alert_id }} in a report">{% endif %}</td>{% endif %}
                     <td><strong>#{{ alert.alert_id }}</strong></td>
-                    <td class="text-nowrap">{{ alert.detected_at }}</td>
+                    {% if config.CLOUD_MODE %}<td>{{ alert.computer or 'Unknown computer' }}<small><code>{{ alert.node_id[:8] }}</code>{% if alert.node_id == node_id %} &middot; this computer{% endif %}</small></td>{% endif %}
+                    <td class="text-nowrap">{{ alert.detected_at }}{% if config.CLOUD_MODE %}{{ received(alert) }}{% endif %}</td>
                     <td class="feed-endpoints">{% if alert.source_ip and alert.source_ip != 'manual' %}{{ endpoint(alert.source_ip, alert.source_port) }} &rarr; {{ endpoint(alert.destination_ip, alert.destination_port) }}{% else %}<span class="text-muted-soft" title="Manual predictions have no network endpoints">Manual entry</span>{% endif %}</td>
                     {# Every alert is an Attack verdict, so the cell names the model that made it. #}
                     <td>#{{ alert.prediction_id }}<small>{{ alert.model_name or 'Legacy model' }}</small></td>
@@ -42,17 +48,19 @@
                     <td>{{ attack_score(alert.attack_probability, alert.attack_score_band, alert.severity_level) }}</td>
                     <td><span class="status-badge review-{{ (alert.alert_status or 'unknown')|lower }}">{{ alert.alert_status }}</span></td>
                     <td>
+                        {% if config.CLOUD_MODE and not alert.writable %}<span class="text-muted-soft" title="Reviewed on a computer this account is a member of">View only</span>{% else %}
                         <form class="inline-form" method="post" action="{{ url_for('update_alert', alert_id=alert.alert_id) }}">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
-                            {% if config.CLOUD_MODE %}<input type="hidden" name="offset" value="{{ offset }}"><input type="hidden" name="filter" value="{{ alert_status }}">{% endif %}
+                            {% if config.CLOUD_MODE %}<input type="hidden" name="offset" value="{{ offset }}"><input type="hidden" name="filter" value="{{ alert_status }}"><input type="hidden" name="node" value="{{ scope.value }}"><input type="hidden" name="date_from" value="{{ dates.date_from }}"><input type="hidden" name="date_to" value="{{ dates.date_to }}">{% endif %}
                             {% if not reviewed %}<button class="btn btn-sm btn-outline-light" type="submit" name="alert_status" value="Acknowledged" aria-label="Acknowledge alert {{ alert.alert_id }}">Acknowledge</button>{% endif %}
                             {% if alert.alert_status != 'Resolved' %}<button class="btn btn-sm btn-outline-light" type="submit" name="alert_status" value="Resolved" aria-label="Resolve alert {{ alert.alert_id }}">Resolve</button>{% else %}<button class="btn btn-sm btn-outline-light" type="submit" name="alert_status" value="Open" aria-label="Reopen alert {{ alert.alert_id }}">Reopen</button>{% endif %}
                         </form>
+                        {% endif %}
                     </td>
                     <td class="description-cell">{{ alert.description }}</td>
                 </tr>
                 {% else %}
-                <tr><td colspan="{{ 10 if config.CLOUD_MODE else 9 }}"><div class="empty-state"><i class="bi bi-shield-check" aria-hidden="true"></i><h2>No alerts recorded</h2>{% if config.CLOUD_MODE %}<p>Alerts appear here after their records upload. Queued records are shown on the dashboard.</p>{% endif %}</div></td></tr>
+                <tr><td colspan="{{ 11 if config.CLOUD_MODE else 9 }}"><div class="empty-state"><i class="bi bi-shield-check" aria-hidden="true"></i><h2>No alerts recorded</h2>{% if config.CLOUD_MODE %}<p>Alerts appear here after their records upload. Queued records are shown on the dashboard.</p>{% endif %}</div></td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -60,8 +68,8 @@
     {% if config.CLOUD_MODE %}
     <div class="pagination-bar">
         <button class="btn btn-accent btn-sm" type="submit" form="reportForm"{% if not alerts %} disabled{% endif %}><i class="bi bi-file-earmark-plus" aria-hidden="true"></i> Create report from selected</button>
-        {% if offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('alert_history', offset=[offset - page_size, 0]|max, alert_status=alert_status) }}"><i class="bi bi-chevron-left" aria-hidden="true"></i> Newer</a>{% endif %}
-        {% if next_offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('alert_history', offset=next_offset, alert_status=alert_status) }}">Older <i class="bi bi-chevron-right" aria-hidden="true"></i></a>{% endif %}
+        {% if offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('alert_history', offset=[offset - page_size, 0]|max, alert_status=alert_status or none, node=scope.value or none, date_from=dates.date_from or none, date_to=dates.date_to or none) }}"><i class="bi bi-chevron-left" aria-hidden="true"></i> Newer</a>{% endif %}
+        {% if next_offset %}<a class="btn btn-sm btn-outline-light" href="{{ url_for('alert_history', offset=next_offset, alert_status=alert_status or none, node=scope.value or none, date_from=dates.date_from or none, date_to=dates.date_to or none) }}">Older <i class="bi bi-chevron-right" aria-hidden="true"></i></a>{% endif %}
     </div>
     {% endif %}
 </section>

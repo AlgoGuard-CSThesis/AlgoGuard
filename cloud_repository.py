@@ -223,11 +223,13 @@ class CloudRepository:
         descending=False,
         between: tuple[str | None, str | None] | None = None,
         search: str | None = None,
+        node_id: UUID | None = None,
     ) -> Page:
         """Offset pagination ordered by immutable keys; concurrent inserts may shift pages.
 
-        all_visible_nodes removes only the convenience node filter. RLS still
-        limits analysts to assigned nodes and permits Administrator observation.
+        all_visible_nodes removes only the convenience node filter, and `node_id` names another
+        node instead of this installation's. RLS still limits analysts to assigned nodes and
+        permits Administrator observation, whatever the filter says.
         ``between`` bounds the resource's canonical UTC text column inclusively;
         ``search`` is a case-insensitive substring over fixed text columns.
         """
@@ -237,13 +239,14 @@ class CloudRepository:
             or not 1 <= page_size <= 100
             or type(offset) is not int
             or not 0 <= offset <= 1_000_000
+            or (node_id is not None and not isinstance(node_id, UUID))
         ):
             raise RepositoryError("validation")
         key, scoped = RESOURCES[resource]
         order = ",".join(part + (".desc" if descending else ".asc") for part in key.split(","))
         params = {"select": "*", "order": order, "limit": page_size + 1, "offset": offset}
         if scoped and not all_visible_nodes:
-            params["node_id"] = "eq." + str(self.context.node_id)
+            params["node_id"] = "eq." + str(node_id or self.context.node_id)
         for name, value in (filters or {}).items():
             if name not in FILTERS:
                 raise RepositoryError("validation")

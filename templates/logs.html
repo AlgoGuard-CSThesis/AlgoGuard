@@ -1,13 +1,15 @@
 {% extends "base.html" %}
+{% from "_node_scope.html" import node_select, received, scope_label %}
 
 {% block title %}System Logs | AlgoGuard{% endblock %}
 
 {% block content %}
-<header class="page-heading"><div><p class="eyebrow">Audit Trail</p><h1>System Logs</h1><p class="page-meta">{% if logs.total is not none %}{{ logs.total }} matching event{{ '' if logs.total == 1 else 's' }}{% else %}Newest first &middot; page {{ logs.page }}{% endif %}</p></div></header>
+<header class="page-heading"><div><p class="eyebrow">Audit Trail</p><h1>System Logs</h1><p class="page-meta">{% if logs.total is not none %}{{ logs.total }} matching event{{ '' if logs.total == 1 else 's' }}{% else %}Newest first &middot; page {{ logs.page }}{% endif %}{% if config.CLOUD_MODE %} &middot; {{ scope_label(scope) }}{% endif %}</p></div></header>
 
 <form class="panel filter-panel" method="get">
     <div class="filter-grid">
         <div class="search-field"><label class="form-label" for="search">Search</label><div class="input-icon"><i class="bi bi-search"></i><input class="form-control" id="search" name="search" value="{{ filters.search }}" placeholder="Message, action, dataset, model, run"></div></div>
+        {% if config.CLOUD_MODE %}{{ node_select(scope) }}{% endif %}
         <div><label class="form-label" for="module">Module</label><select class="form-select" id="module" name="module"><option value="">All modules</option>{% for option in filter_options.modules %}<option value="{{ option }}"{% if filters.module == option %} selected{% endif %}>{{ option }}</option>{% endfor %}</select></div>
         <div><label class="form-label" for="status">Status</label><select class="form-select" id="status" name="status"><option value="">All statuses</option>{% for option in filter_options.statuses %}<option value="{{ option }}"{% if filters.status == option %} selected{% endif %}>{{ option }}</option>{% endfor %}</select></div>
         <div><label class="form-label" for="model">Model</label><select class="form-select" id="model" name="model"><option value="">All models</option>{% for option in filter_options.models %}<option value="{{ option }}"{% if filters.model == option %} selected{% endif %}>{{ option }}</option>{% endfor %}</select></div>
@@ -21,18 +23,18 @@
 <section class="panel log-table-panel">
     <div class="table-responsive">
         <table class="table data-table align-middle mb-0">
-            <thead><tr><th>ID</th><th>Timestamp (UTC)</th><th>Module</th><th>Action</th><th>Status</th><th>Message</th><th>Context</th><th>Admin</th><th>IP</th></tr></thead>
+            <thead><tr><th>ID</th>{% if config.CLOUD_MODE %}<th>Computer</th>{% endif %}<th>Timestamp (UTC)</th><th>Module</th><th>Action</th><th>Status</th><th>Message</th><th>Context</th><th>Admin</th><th>IP</th></tr></thead>
             <tbody>
                 {% for log in logs["items"] %}
-                <tr><td>#{{ log.log_id }}</td><td class="text-nowrap">{{ log.timestamp }}</td><td>{{ log.module }}</td><td><code>{{ log.action }}</code></td><td><span class="status-badge status-{{ log.status|lower }}">{{ log.status }}</span></td><td class="description-cell">{{ log.message if log.message is not none else '' }}</td><td>{% if log.run_id %}<span class="log-run-ref">Run #{{ log.run_id }}</span>{% endif %}{% if log.dataset_filename %}<small>{{ log.dataset_filename }}</small>{% endif %}{% if log.model_name %}<small>{{ log.model_name }}</small>{% endif %}{% if log.prediction_id %}<small>Prediction #{{ log.prediction_id }}</small>{% endif %}</td><td>{{ log.admin_username or 'System' }}</td><td>{{ log.ip_address or 'N/A' }}</td></tr>
+                <tr><td>#{{ log.log_id }}</td>{% if config.CLOUD_MODE %}<td>{{ log.computer or ('Not tied to a computer' if not log.node_id else 'Unknown computer') }}</td>{% endif %}<td class="text-nowrap">{{ log.timestamp }}{% if config.CLOUD_MODE %}{{ received(log) }}{% endif %}</td><td>{{ log.module }}</td><td><code>{{ log.action }}</code></td><td><span class="status-badge status-{{ log.status|lower }}">{{ log.status }}</span></td><td class="description-cell">{{ log.message if log.message is not none else '' }}</td><td>{% if log.run_id %}<span class="log-run-ref">Run #{{ log.run_id }}</span>{% endif %}{% if log.dataset_filename %}<small>{{ log.dataset_filename }}</small>{% endif %}{% if log.model_name %}<small>{{ log.model_name }}</small>{% endif %}{% if log.prediction_id %}<small>Prediction #{{ log.prediction_id }}</small>{% endif %}</td><td>{{ log.admin_username or 'System' }}</td><td>{{ log.ip_address or 'N/A' }}</td></tr>
                 {% else %}
-                <tr><td colspan="9"><div class="empty-state"><i class="bi bi-search"></i><h2>No matching logs</h2></div></td></tr>
+                <tr><td colspan="{{ 10 if config.CLOUD_MODE else 9 }}"><div class="empty-state"><i class="bi bi-search"></i><h2>No matching logs</h2></div></td></tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     {% macro page_link(page, label, icon, disabled) -%}
-        <a class="btn btn-sm btn-outline-light{% if disabled %} disabled{% endif %}" href="{{ url_for('system_logs', page=page, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search) }}" aria-label="{{ label }}"{% if disabled %} aria-disabled="true" tabindex="-1"{% endif %}><i class="bi {{ icon }}" aria-hidden="true"></i></a>
+        <a class="btn btn-sm btn-outline-light{% if disabled %} disabled{% endif %}" href="{{ url_for('system_logs', page=page, date_from=filters.date_from, date_to=filters.date_to, module=filters.module, status=filters.status, model=filters.model, run_id=filters.run_id, search=filters.search, node=(scope.value or none) if config.CLOUD_MODE else none) }}" aria-label="{{ label }}"{% if disabled %} aria-disabled="true" tabindex="-1"{% endif %}><i class="bi {{ icon }}" aria-hidden="true"></i></a>
     {%- endmacro %}
     {% if logs.total is none and (logs.page > 1 or logs.has_next) %}
     <nav class="pagination-bar" aria-label="System log pages">

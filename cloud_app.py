@@ -222,6 +222,54 @@ def _parallel(tasks):
     return results
 
 
+def _upload_delay(event_text, received):
+    """Seconds between an event's own (UTC text) time and the server's receipt, else None."""
+    try:
+        event = datetime.strptime(str(event_text)[:19], "%Y-%m-%d %H:%M:%S")
+    except (TypeError, ValueError):
+        return None
+    stamp = _parse_time(received)
+    if stamp is None:
+        return None
+    return (stamp - event.replace(tzinfo=timezone.utc)).total_seconds()
+
+
+def _date_bounds(values):
+    """Inclusive UTC text bounds from YYYY-MM-DD form values; invalid dates are cleared."""
+    bounds = []
+    for key, suffix in (("date_from", "00:00:00"), ("date_to", "23:59:59")):
+        value = values.get(key, "")
+        try:
+            bounds.append(f"{datetime.strptime(value, '%Y-%m-%d'):%Y-%m-%d} {suffix}"
+                          if value else None)
+        except ValueError:
+            flash("Dates must use the YYYY-MM-DD format.", "warning")
+            values[key] = ""
+            bounds.append(None)
+    return tuple(bounds) if any(bounds) else None
+
+
+def _list_view(values):
+    """The computer and date choice of a list page, kept when an action returns to it."""
+    kept = {}
+    node = (values.get("node") or "").strip()
+    if node == "all":
+        kept["node"] = node
+    elif node:
+        try:
+            kept["node"] = str(UUID(node))
+        except ValueError:
+            pass
+    for key in ("date_from", "date_to"):
+        value = (values.get(key) or "").strip()
+        try:
+            datetime.strptime(value, "%Y-%m-%d")
+        except ValueError:
+            continue
+        kept[key] = value
+    return kept
+
+
 def _raise_first(results, names):
     for name in names:
         if isinstance(results[name], Exception):
@@ -394,6 +442,38 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
               f"{identity.username} signed out of this installation.")
         services.sync.unregister(identity)
         services.auth.logout(identity)
+
+    def node_scope(repo):
+        """Which nodes a list shows (6B.1): ``?node=`` empty for this installation (the default),
+        ``all`` for every node the account can see, or one of those nodes. Row security still
+        decides what any choice returns, so a hand-edited URL shows nothing extra."""
+        nodes = repo.list_records("node", page_size=100, all_visible_nodes=True).rows
+        names = {row["node_id"]: row["display_name"] for row in nodes}
+        local = str(services.node_id)
+        wanted = request.args.get("node", "").strip()
+        choice = {"value": "", "query": {}, "names": names,
+                  "options": sorted(((node, name) for node, name in names.items() if node != local),
+                                    key=lambda item: item[1].lower())}
+        if wanted == "all":
+            choice.update(value="all", query={"all_visible_nodes": True})
+        elif wanted and wanted != local:
+            try:
+                node = str(UUID(wanted))
+            except ValueError:
+                node = None
+            if node in names:
+                choice.update(value=node, query={"node_id": UUID(node)})
+            else:
+                flash("That computer is not visible to this account; showing this computer.",
+                      "warning")
+        return choice
+
+    def writable_nodes(repo, profile_id):
+        """Nodes this account may act on: this installation plus its approved memberships."""
+        rows = repo.list_records(
+            "node_membership", page_size=100, all_visible_nodes=True,
+            filters={"profile_id": profile_id, "status": "approved"}).rows
+        return {str(services.node_id)} | {row["node_id"] for row in rows}
 
     def profile_names(repo, profile_ids):
         wanted = sorted({int(value) for value in profile_ids if value is not None})[:100]
@@ -690,14 +770,32 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
     def alert_history():
         offset = _offset()
         alert_status = request.args.get("alert_status", "").strip()[:40]
-        page = g.repo.list_records(
-            "alert_detail", offset=offset, page_size=PAGE_SIZE, descending=True,
-            filters={"alert_status": alert_status} if alert_status else None,
-        )
+        dates = {key: request.args.get(key, "").strip() for key in ("date_from", "date_to")}
+        between = _date_bounds(dates)
+        repo = g.repo
+        scope = node_scope(repo)
+        profile_id = g.identity.profile_id
+        results = _parallel({
+            "page": lambda: repo.list_records(
+                "alert_detail", offset=offset, page_size=PAGE_SIZE, descending=True,
+                filters={"alert_status": alert_status} if alert_status else None,
+                between=between, **scope["query"]),
+            "writable": lambda: writable_nodes(repo, profile_id),
+        })
+        _raise_first(results, ("page", "writable"))
+        page = results["page"]
+        alerts = [
+            {**row, "computer": scope["names"].get(row["node_id"]),
+             "received_at": _utc_text(row.get("created_at")),
+             "upload_delay": _upload_delay(row.get("detected_at"), row.get("created_at")),
+             "writable": row["node_id"] in results["writable"]}
+            for row in page.rows
+        ]
         return render_template(
-            "alerts.html", alerts=page.rows, next_offset=page.next_offset, offset=offset,
+            "alerts.html", alerts=alerts, next_offset=page.next_offset, offset=offset,
             page_size=PAGE_SIZE, alert_status=alert_status, report_request_id=str(uuid4()),
-            node_id=str(services.node_id), alert_statuses=ALERT_STATUSES,
+            node_id=str(services.node_id), alert_statuses=ALERT_STATUSES, scope=scope,
+            dates=dates,
         )
 
     @app.post("/alerts/<int:alert_id>/status")
@@ -709,6 +807,7 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             "alert_history",
             offset=min(max(0, request.form.get("offset", 0, type=int)), MAX_OFFSET),
             alert_status=status_filter if status_filter in ALERT_STATUSES else None,
+            **_list_view(request.form),
         )
         if alert_status not in ALERT_STATUSES:
             flash("Choose Open, Acknowledged, or Resolved.", "danger")
@@ -756,11 +855,13 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                 bounds.append(None)
         search = filters["search"][:100] or None
         repo = g.repo
+        scope = node_scope(repo)
         results = _parallel({
             "page": lambda: repo.list_records(
                 "system_log", page_size=LOG_PAGE_SIZE,
                 offset=(page_number - 1) * LOG_PAGE_SIZE, filters=equal or None,
                 descending=True, between=tuple(bounds) if any(bounds) else None, search=search,
+                **scope["query"],
             ),
             "options": repo.log_filter_options,
         })
@@ -773,7 +874,11 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         page = results["page"]
         names = profile_names(g.repo, [row.get("profile_id") for row in page.rows])
         items = [
-            {**row, "admin_username": names.get(row.get("profile_id"))} for row in page.rows
+            {**row, "admin_username": names.get(row.get("profile_id")),
+             "computer": scope["names"].get(row.get("node_id")),
+             "received_at": _utc_text(row.get("created_at")),
+             "upload_delay": _upload_delay(row.get("timestamp"), row.get("created_at"))}
+            for row in page.rows
         ]
         return render_template(
             "logs.html",
@@ -781,6 +886,7 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                   "has_next": page.next_offset is not None},
             filters=filters,
             filter_options=options,
+            scope=scope,
         )
 
     @app.route("/reports", methods=["GET", "POST"])
@@ -812,10 +918,13 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                   else "Report saved together with its alert evidence.", "success")
             return redirect(url_for("report_detail", report_id=report_id))
         offset = _offset()
-        page = g.repo.list_records("report", offset=offset, page_size=PAGE_SIZE, descending=True)
+        scope = node_scope(g.repo)
+        page = g.repo.list_records("report", offset=offset, page_size=PAGE_SIZE, descending=True,
+                                   **scope["query"])
         return render_template(
             "reports.html", reports=page.rows, next_offset=page.next_offset, offset=offset,
             usernames=profile_names(g.repo, [row.get("owner_profile_id") for row in page.rows]),
+            scope=scope,
         )
 
     def report_evidence(report_id):
