@@ -326,8 +326,12 @@ def test_live_capture_starts_only_when_the_monitor_is_ready(monkeypatch, deploye
     source.stats.return_value = {"packets": 0, "dropped": 0, "flows": 0}
     source.next_event.side_effect = StopIteration
     monkeypatch.setattr(monitor, "_make_source", lambda *args, **kwargs: source)
-    monkeypatch.setattr(monitor, "classify_rows",
+    monkeypatch.setattr(monitor, "score_rows",
                         lambda *args: order.append("warm up") or ([], 0.0))
+    scorer = Mock(fallback_reason=None)
+    scorer.score.return_value = ([], 0.0)
+    monkeypatch.setattr(monitor, "LiveScorer",
+                        lambda *args: order.append("inference process") or scorer)
     monkeypatch.setattr(monitor, "insert_capture_session",
                         lambda *args: order.append("capture record") or 7)
     monkeypatch.setattr(monitor, "finalize_capture_session", lambda *args: None)
@@ -336,8 +340,9 @@ def test_live_capture_starts_only_when_the_monitor_is_ready(monkeypatch, deploye
 
     monitor._worker(session, threading.Event(), threading.Event())
 
-    assert order == ["warm up", "capture record", "start capture"]
+    assert order == ["warm up", "inference process", "capture record", "start capture"]
     assert session["state"] == "completed"
+    scorer.close.assert_called_once()
 
 
 def test_packet_fixtures_do_not_resolve_network_addresses(monkeypatch, tmp_path):
@@ -473,7 +478,8 @@ def test_live_source_backlog_reports_queued_packets_and_pending_flows():
     assert source.backlog() is True
 
     assert source.next_event(timeout=0) is None  # SYN: the flow is still open
-    event = source.next_event(timeout=0)  # RST ends it
+    assert source.next_event(timeout=0) is None  # RST: held for packets still in flight
+    event = source.next_event(timeout=0)  # the hold has passed
     assert event is not None and event["end_reason"] == "rst"
     assert source.backlog() is False
 
@@ -544,3 +550,47 @@ def test_ignored_packets_still_expire_idle_flows(monkeypatch, ignored_type):
     assert event["end_reason"] == "idle_timeout"
     assert event["destination_port"] == 53
     assert source.packets_captured == 1
+
+
+def start_tracking(source):
+    """What prepare() does after the sniffer starts, without a capture device."""
+    source._worker = threading.Thread(target=source._track, daemon=True)
+    source._worker.start()
+
+
+def test_live_flows_finish_while_the_monitor_is_busy_classifying():
+    """DEF-17: a dedicated thread turns packets into flows; no next_event call is needed."""
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    start_tracking(source)
+    try:
+        for flags in ("S", "R"):
+            packet = scapy_all.IP(src="192.0.2.1", dst="192.0.2.2") / scapy_all.TCP(
+                sport=40001, dport=80, flags=flags)
+            packet.time = 1000.0
+            source._on_packet(packet)
+        deadline = time.time() + 5
+        while not source.backlog() and time.time() < deadline:
+            time.sleep(0.01)
+        assert source.backlog() is True  # finished before the monitor asked for it
+        event = source.next_event(timeout=0)
+        assert event is not None and event["end_reason"] == "rst"
+        assert source.backlog() is False
+    finally:
+        source.close()
+    assert source._worker is not None and not source._worker.is_alive()
+
+
+def test_a_failing_flow_tracker_thread_is_reported(monkeypatch):
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    monkeypatch.setattr(traffic_sources, "packet_info_from_scapy",
+                        Mock(side_effect=RuntimeError("bad packet")))
+    start_tracking(source)
+    try:
+        source._on_packet(scapy_all.IP() / scapy_all.UDP())
+        worker = source._worker
+        assert worker is not None
+        worker.join(timeout=5)
+        with pytest.raises(TrafficSourceError, match="Flow tracking stopped"):
+            source.next_event(timeout=0)
+    finally:
+        source.close()

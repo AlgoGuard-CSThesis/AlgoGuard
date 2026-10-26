@@ -30,6 +30,7 @@ from cloud_sync import audit
 from model_runtime import ModelDeliveryError
 from services import live_monitor_service as legacy
 from services.alert_policy import attack_score_fields, severity_for_confidence
+from services.inference_worker import LiveScorer
 from services.traffic_source_service import (
     LiveCaptureSource,
     TrafficSourceCancelled,
@@ -510,12 +511,24 @@ class CloudMonitor:
             return "error"
 
         legacy.prefer_low_latency()
+        warmup = legacy._build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
         try:
-            warmup = legacy._build_flow_row(dict(defaults), feature_columns, numeric_columns,
-                                            defaults)
             legacy.classify_rows(pipeline, [warmup], feature_columns)
         except Exception:
             pass
+        # Live capture scores in a separate process so the capture threads are never kept
+        # waiting behind a prediction (DEF-17); replays score here.
+        scorer = None
+        if source_type == "live":
+            scorer = LiveScorer(
+                pipeline, feature_columns,
+                lambda model, rows, columns: legacy.score_rows(model, rows, columns))
+            cleanup.callback(scorer.close)
+            if scorer.fallback_reason is None:
+                try:
+                    scorer.score([warmup])
+                except Exception:
+                    pass
         if stop_event.is_set():
             return "stopped"
 
@@ -558,7 +571,7 @@ class CloudMonitor:
                 raise LiveMonitorError(str(error)) from None
         return self._loop(session, stop_event, pause_event, repo.context, source, pipeline,
                           feature_columns, numeric_columns, defaults, deployment, source_tag,
-                          include_scores=include_scores)
+                          include_scores=include_scores, scorer=scorer)
 
     def _check_authorization(self, session):
         identity = session["identity"]
@@ -579,7 +592,8 @@ class CloudMonitor:
                 "records stay on this computer and can be exported.")
 
     def _loop(self, session, stop_event, pause_event, context, source, pipeline, feature_columns,
-              numeric_columns, defaults, deployment, source_tag, include_scores=True):
+              numeric_columns, defaults, deployment, source_tag, include_scores=True,
+              scorer=None):
         source_type = session["source_type"]
         final_state = "completed"
         row_index = -1
@@ -614,7 +628,11 @@ class CloudMonitor:
                                            defaults)
                     for item in batch
                 ]
-                verdicts, latency_ms = legacy.score_rows(pipeline, flow_rows, feature_columns)
+                if scorer is not None:
+                    verdicts, latency_ms = scorer.score(flow_rows)
+                else:
+                    verdicts, latency_ms = legacy.score_rows(pipeline, flow_rows,
+                                                             feature_columns)
                 for event_data, flow_row, (predicted, confidence, attack_score) in zip(
                         batch, flow_rows, verdicts):
                     row_index += 1

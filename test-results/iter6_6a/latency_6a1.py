@@ -8,6 +8,9 @@
    moment the flow could expire (last packet + idle timeout) to the verdict; the timeout itself
    is reported beside it. Packet and flow rates during the run are the load.
 
+`--scorer process` scores live flows in the separate inference process the monitor uses since the
+DEF-17 fix (services/inference_worker.py) instead of in this process.
+
 Upload (synchronisation) delay is not re-measured here: the figures on the final cycle-1 build
 are in test-results/def_fixes_20261023/upload_delay_c775d13.json. No addresses are recorded.
 
@@ -30,6 +33,7 @@ import pandas as pd  # noqa: E402
 
 from services import live_monitor_service as monitor  # noqa: E402
 from services.flow_tracker_service import IDLE_TIMEOUT_SECONDS  # noqa: E402
+from services.inference_worker import LiveScorer  # noqa: E402
 from services.traffic_source_service import (  # noqa: E402
     LiveCaptureSource,
     list_capture_interfaces,
@@ -64,9 +68,13 @@ def inference(pipeline, columns, numeric, defaults, repeats):
     return results
 
 
-def live(pipeline, columns, numeric, defaults, seconds):
+def live(pipeline, columns, numeric, defaults, seconds, scorer_kind="in-process"):
     interface = next(item for item in list_capture_interfaces()
                      if "wi-fi" in item["label"].lower())
+    scorer = (LiveScorer(pipeline, columns, monitor.score_rows)
+              if scorer_kind == "process" else None)
+    if scorer is not None:
+        scorer.score([monitor._build_flow_row(dict(defaults), columns, numeric, defaults)])
     source = LiveCaptureSource(interface["value"])
     source.prepare()
     generator = subprocess.Popen(
@@ -82,7 +90,10 @@ def live(pipeline, columns, numeric, defaults, seconds):
             batch = monitor.collect_batch(source, event, False)[0]
             rows = [monitor._build_flow_row(item["record"], columns, numeric, defaults)
                     for item in batch]
-            _verdicts, model_ms = monitor.classify_rows(pipeline, rows, columns)
+            if scorer is not None:
+                _verdicts, model_ms = scorer.score(rows)
+            else:
+                _verdicts, model_ms = monitor.classify_rows(pipeline, rows, columns)
             now = time.time()
             batches.append({"size": len(batch), "model_ms": model_ms})
             for item in batch:
@@ -94,6 +105,8 @@ def live(pipeline, columns, numeric, defaults, seconds):
     finally:
         source.close()
         generator.wait()
+        if scorer is not None:
+            scorer.close()
     elapsed = time.time() - started
 
     def lags(*reasons):
@@ -101,6 +114,8 @@ def live(pipeline, columns, numeric, defaults, seconds):
 
     return {
         "interface": interface["label"].split(" (")[0],
+        "scorer": scorer_kind if scorer is None or scorer.fallback_reason is None
+        else f"in-process (fallback: {scorer.fallback_reason})",
         "seconds": round(elapsed, 1),
         "load": {"packets_per_s": round(stats["packets"] / elapsed, 1),
                  "flows_per_s": round(len(flows) / elapsed, 2),
@@ -124,6 +139,7 @@ def main():
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--seconds", type=float, default=120.0)
     parser.add_argument("--repeats", type=int, default=200)
+    parser.add_argument("--scorer", choices=("in-process", "process"), default="in-process")
     parser.add_argument("--out", type=Path,
                         default=Path(__file__).resolve().parent / "latency_6a1.json")
     args = parser.parse_args()
@@ -141,7 +157,7 @@ def main():
         "started": time.strftime("%Y-%m-%d %H:%M:%S"),
         "inference_ms (no other load)": inference(pipeline, columns, numeric, defaults,
                                                   args.repeats),
-        "event_to_verdict": live(pipeline, columns, numeric, defaults, args.seconds),
+        "event_to_verdict": live(pipeline, columns, numeric, defaults, args.seconds, args.scorer),
         "upload_delay": "test-results/def_fixes_20261023/upload_delay_c775d13.json",
     }
     args.out.write_text(json.dumps(report, indent=2), encoding="utf-8")

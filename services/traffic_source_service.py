@@ -393,6 +393,10 @@ def build_capture_filter(exclude_ports=None):
     return " and ".join(clauses)
 
 
+# While a closed flow is held for its last packets, a quiet capture checks this often.
+CLOSE_POLL_SECONDS = 0.02
+
+
 class LiveCaptureSource(TrafficSource):
     """Sniff data packets from a network interface and emit flows as they end.
 
@@ -433,14 +437,19 @@ class LiveCaptureSource(TrafficSource):
         )
         self._tracker = FlowTracker(**({"idle_timeout": idle_timeout} if idle_timeout else {}))
         self._packets = queue.Queue(maxsize=10000)
+        self._flows = queue.Queue()
         self._sniffer = None
+        # Live capture turns packets into flows on this thread, so a flow is finished the
+        # moment its last packet arrives even while the monitor is busy classifying.
+        self._worker = None
+        self._worker_error = None
+        self._stopping = threading.Event()
         self._lock = threading.Lock()
         self.packets_captured = 0
         self.packets_dropped = 0
         self.packets_excluded = 0
         self.packets_excluded_cloud = 0
         self.flows_emitted = 0
-        self._pending = []
         self._last_idle_check = 0.0
 
     def _is_own_traffic(self, info):
@@ -481,6 +490,17 @@ class LiveCaptureSource(TrafficSource):
                 self._start_sniffer(None)
             except TrafficSourceError:
                 raise filtered_error from None
+        self._worker = threading.Thread(target=self._track, name="algoguard-flow-tracker",
+                                        daemon=True)
+        self._worker.start()
+
+    def _track(self):
+        """Worker loop: turn captured packets into flows until the source closes."""
+        try:
+            while not self._stopping.is_set():
+                self._process(timeout=0.2)
+        except Exception as error:  # surfaced to the monitor by next_event
+            self._worker_error = error
 
     def _start_sniffer(self, bpf_filter):
         from scapy.sendrecv import AsyncSniffer
@@ -527,18 +547,35 @@ class LiveCaptureSource(TrafficSource):
                     "Packet capture stopped unexpectedly. Check the interface and "
                     f"restart monitoring. Details: {exception or 'capture thread exited'}"
                 )
-        if self._pending:
-            self.flows_emitted += 1
-            return self._pending.pop(0)
+        if self._worker_error is not None:
+            raise TrafficSourceError(
+                "Flow tracking stopped unexpectedly. Restart monitoring. "
+                f"Details: {self._worker_error}"
+            )
+        if self._worker is None and self._flows.empty():
+            # Without the worker (before prepare, as in tests) one packet is processed here.
+            self._process(timeout)
+            timeout = 0
+        try:
+            event = self._flows.get(timeout=timeout)
+        except queue.Empty:
+            return None
+        self.flows_emitted += 1
+        return event
 
+    def _process(self, timeout):
+        """Turn at most one captured packet into finished flows, or expire idle flows when quiet."""
+        if self._tracker.closing_flows:
+            timeout = min(timeout, CLOSE_POLL_SECONDS)
         try:
             packet = self._packets.get(timeout=timeout)
         except queue.Empty:
             now = time.time()
+            self._emit(self._tracker.close_due(now))
             if now - self._last_idle_check >= 1.0:
                 self._last_idle_check = now
-                self._pending.extend(_flow_event(flow) for flow in self._tracker.expire_idle(now))
-            return None
+                self._emit(self._tracker.expire_idle(now))
+            return
 
         info = packet_info_from_scapy(packet)
         own = self._own_traffic_kind(info) if info is not None else None
@@ -554,17 +591,21 @@ class LiveCaptureSource(TrafficSource):
         if info is not None:
             with self._lock:
                 self.packets_captured += 1
-            self._pending.extend(_flow_event(flow) for flow in self._tracker.add_packet(info))
+            self._emit(self._tracker.add_packet(info))
         else:
             # Ignored packets still advance capture time. Otherwise a steady
             # stream of excluded traffic prevents quiet flows from expiring.
-            self._pending.extend(
-                _flow_event(flow) for flow in self._tracker.expire_idle(float(packet.time))
-            )
-        return self.next_event(timeout=0) if self._pending else None
+            self._emit(self._tracker.expire_idle(float(packet.time)))
+
+    def _emit(self, flows):
+        for flow in flows:
+            self._flows.put(_flow_event(flow))
 
     def backlog(self):
-        return bool(self._pending) or not self._packets.empty()
+        if self._worker is not None:
+            # Only finished flows count: waiting for packets would delay the batch.
+            return not self._flows.empty()
+        return not self._flows.empty() or not self._packets.empty()
 
     def close(self, wait=True):
         if self._sniffer is not None:
@@ -573,6 +614,9 @@ class LiveCaptureSource(TrafficSource):
             except Exception:
                 pass
             self._sniffer = None
+        self._stopping.set()
+        if self._worker is not None and wait and self._worker is not threading.current_thread():
+            self._worker.join(timeout=1.0)
         self._maintenance.close()
 
     def stats(self):

@@ -31,7 +31,7 @@ import numpy as np
 import pandas as pd
 
 from config import get_config
-from services.alert_policy import attack_probability, attack_score_fields
+from services.alert_policy import attack_score_fields
 from services.database_service import (
     finalize_capture_session,
     insert_capture_session,
@@ -40,6 +40,10 @@ from services.database_service import (
     utc_now,
 )
 from services.deployment_service import DeploymentError, load_active_artifact
+from services.inference_worker import LiveScorer
+
+# classify_rows stays importable from here for the cycle-1 lag harness and older callers.
+from services.scoring_service import classify_rows, score_rows  # noqa: F401
 from services.traffic_source_service import (
     CsvReplaySource,
     LiveCaptureSource,
@@ -285,31 +289,6 @@ def collect_batch(source, first_event, pacing):
     return batch, False
 
 
-def score_rows(pipeline, rows, feature_columns):
-    """Classify flow rows with one ``predict_proba`` call.
-
-    Returns ``(class, confidence, attack probability)`` per row and the model time in
-    milliseconds. The class with the highest probability is what ``predict`` returns, so the
-    model runs once, not twice; the attack probability is the Attack class's own column.
-    """
-    frame = pd.DataFrame(rows, columns=feature_columns)
-    start = time.perf_counter()
-    probabilities = np.asarray(pipeline.predict_proba(frame))
-    elapsed_ms = (time.perf_counter() - start) * 1000
-    classes = list(pipeline.classes_)
-    verdicts = []
-    for row in probabilities:
-        index = int(np.argmax(row))
-        verdicts.append((int(classes[index]), float(row[index]), attack_probability(row, classes)))
-    return verdicts, elapsed_ms
-
-
-def classify_rows(pipeline, rows, feature_columns):
-    """``score_rows`` without the attack probability: ``(class, confidence)`` per row."""
-    verdicts, elapsed_ms = score_rows(pipeline, rows, feature_columns)
-    return [(predicted, confidence) for predicted, confidence, _ in verdicts], elapsed_ms
-
-
 def _should_persist(mode, prediction):
     if mode == "none":
         return False
@@ -488,11 +467,30 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
     # while the page still shows "starting", so the feed opens at full speed and
     # the reported average latency reflects steady-state inference.
     prefer_low_latency()
+    warmup_row = _build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
     try:
-        warmup_row = _build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
-        classify_rows(pipeline, [warmup_row], feature_columns)
+        score_rows(pipeline, [warmup_row], feature_columns)
     except Exception:
         pass
+
+    # Live capture scores in a separate process so the capture threads are never kept waiting
+    # behind a prediction (DEF-17); replays have no capture threads and score here.
+    scorer = None
+    if source_type == "live":
+        scorer = LiveScorer(pipeline, feature_columns,
+                            lambda model, rows, columns: score_rows(model, rows, columns))
+        cleanup.callback(scorer.close)
+        if scorer.fallback_reason:
+            log_system_event(
+                admin_id, "Live Monitor", "inference_process_unavailable", "Warning",
+                message=(f"{scorer.fallback_reason} Flows are scored inside the monitor; "
+                         "verdicts may be slower under load."),
+            )
+        else:
+            try:
+                scorer.score([warmup_row])
+            except Exception:
+                pass
 
     if stop_event.is_set():
         cleanup.close()
@@ -581,7 +579,10 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                 _build_flow_row(item["record"], feature_columns, numeric_columns, defaults)
                 for item in batch
             ]
-            verdicts, latency_ms = score_rows(pipeline, flow_rows, feature_columns)
+            if scorer is not None:
+                verdicts, latency_ms = scorer.score(flow_rows)
+            else:
+                verdicts, latency_ms = score_rows(pipeline, flow_rows, feature_columns)
             for event_data, flow_row, (predicted_value, confidence, attack_score) in zip(
                 batch, flow_rows, verdicts
             ):
