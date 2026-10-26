@@ -4,6 +4,7 @@ import pytest
 
 from services.flow_tracker_service import (
     ACTIVE_TIMEOUT_SECONDS,
+    CLOSE_HOLD_SECONDS,
     CONNECTION_WINDOW,
     FLOW_FEATURE_COLUMNS,
     IDLE_TIMEOUT_SECONDS,
@@ -85,16 +86,16 @@ def test_complete_tcp_session_emits_one_finished_flow():
     assert features["proto"] == "tcp"
     assert features["service"] == "http"
     assert features["state"] == "FIN"
-    # The trailing ACK of the teardown is swallowed, not a second flow.
-    assert features["spkts"] == 5
+    # The final ACK arrives within the closing hold, so it is counted, as Argus counts it.
+    assert features["spkts"] == 6
     assert features["dpkts"] == 3
-    assert features["sbytes"] == 60 + 52 + 350 + 52 + 52
+    assert features["sbytes"] == 60 + 52 + 350 + 52 + 52 + 52
     assert features["dbytes"] == 60 + 1200 + 52
-    assert features["dur"] == pytest.approx(0.220, abs=1e-6)
-    assert features["rate"] == pytest.approx((8 - 1) / 0.220, rel=1e-4)
+    assert features["dur"] == pytest.approx(0.240, abs=1e-6)
+    assert features["rate"] == pytest.approx((9 - 1) / 0.240, rel=1e-4)
     # UNSW-NB15's load leaves out the first packet's share of the bytes.
-    assert features["sload"] == pytest.approx(features["sbytes"] * 8 * 4 / 5 / 0.220, rel=1e-4)
-    assert features["dload"] == pytest.approx(features["dbytes"] * 8 * 2 / 3 / 0.220, rel=1e-4)
+    assert features["sload"] == pytest.approx(features["sbytes"] * 8 * 5 / 6 / 0.240, rel=1e-4)
+    assert features["dload"] == pytest.approx(features["dbytes"] * 8 * 2 / 3 / 0.240, rel=1e-4)
     assert features["sinpkt"] > 0
     assert features["dinpkt"] > 0
 
@@ -127,6 +128,7 @@ def test_a_reset_after_a_finish_reports_rst():
             tcp_packet(1.3, flags="R", **s2c),
         ],
     )
+    flows.extend(tracker.flush())
     assert [flow["features"]["state"] for flow in flows] == ["RST"]
 
 
@@ -155,6 +157,7 @@ def test_a_large_send_counts_as_its_wire_segments():
             tcp_packet(1.3, CLIENT, SERVER, 52104, 443, flags="R", length=40),
         ],
     )
+    flows.extend(tracker.flush())
     features = flows[0]["features"]
     assert features["spkts"] == 4
     assert features["sbytes"] == 52 + 2980 + 40
@@ -223,6 +226,8 @@ def test_reset_ends_a_flow_with_rst_state():
             tcp_packet(1.1, SERVER, CLIENT, 443, 52101, flags="R"),
         ],
     )
+    assert flows == []  # held for packets still in flight
+    flows = tracker.close_due(1.1 + CLOSE_HOLD_SECONDS + 0.001)
     assert len(flows) == 1
     assert flows[0]["features"]["state"] == "RST"
     assert flows[0]["features"]["service"] == "ssl"
@@ -381,8 +386,9 @@ def test_features_are_the_sixteen_deployed_columns():
 
 
 def _reset_flow(tracker, ts, src, dst, sport, dport):
-    """One TCP connection that ends at once with RST, so it is emitted immediately."""
-    return tracker.add_packet(tcp_packet(ts, src, dst, sport, dport, flags="R"))
+    """One TCP connection that ends at once with RST, taken out after its closing hold."""
+    tracker.add_packet(tcp_packet(ts, src, dst, sport, dport, flags="R"))
+    return tracker.close_due(ts + 1.0)
 
 
 def test_connection_counts_follow_destination_and_service_and_include_this_flow():
@@ -430,3 +436,34 @@ def test_zero_duration_flow_has_safe_rates():
     assert features["rate"] == 0.0
     assert features["sload"] == 0.0
     assert features["sinpkt"] == 0.0
+
+
+def test_the_closing_hold_counts_packets_in_flight_and_then_releases_the_flow():
+    """Argus counts the server's last data and reset that arrive just after the client's reset."""
+    tracker = FlowTracker()
+    c2s = {"src": CLIENT, "dst": SERVER, "sport": 52110, "dport": 443}
+    s2c = {"src": SERVER, "dst": CLIENT, "sport": 443, "dport": 52110}
+    run_all(tracker, [
+        tcp_packet(1.0, flags="S", **c2s),
+        tcp_packet(1.02, flags="SA", **s2c),
+        tcp_packet(1.04, flags="R", **c2s),
+        tcp_packet(1.06, flags="PA", length=500, **s2c),  # in flight, inside the hold
+    ])
+    # A later packet of another connection, after the hold, releases the flow.
+    flows = tracker.add_packet(udp_packet(1.2, CLIENT, SERVER, 40000, 53))
+    assert len(flows) == 1
+    features = flows[0]["features"]
+    assert (features["spkts"], features["dpkts"], features["dbytes"]) == (2, 2, 60 + 500)
+    assert features["dur"] == pytest.approx(0.06, abs=1e-6)
+    # A trailing reset after the hold is swallowed, not a new flow.
+    assert tracker.add_packet(tcp_packet(1.3, flags="R", **s2c)) == []
+    assert len(tracker.flush()) == 1  # only the DNS flow
+
+
+def test_a_new_connection_on_the_same_ports_ends_the_hold_at_once():
+    tracker = FlowTracker()
+    c2s = {"src": CLIENT, "dst": SERVER, "sport": 52111, "dport": 443}
+    run_all(tracker, [tcp_packet(1.0, flags="S", **c2s), tcp_packet(1.01, flags="R", **c2s)])
+    flows = tracker.add_packet(tcp_packet(1.02, flags="S", **c2s))
+    assert [flow["end_reason"] for flow in flows] == ["rst"]
+    assert tracker.active_flows == 1

@@ -34,6 +34,11 @@ from dataclasses import dataclass, field
 IDLE_TIMEOUT_SECONDS = 15.0
 ACTIVE_TIMEOUT_SECONDS = 120.0
 SWEEP_INTERVAL_SECONDS = 1.0
+# A closed TCP flow is held this long so packets already in flight are counted, as Argus counts
+# them (18 of 20 such tails arrived within 50 ms in the Stage 6A.1 capture).
+CLOSE_HOLD_SECONDS = 0.05
+# Trailing ACKs and resets this long after the hold are swallowed rather than becoming new flows.
+DRAIN_SECONDS = 2.0
 # UNSW-NB15's connection-history features look at the last 100 connections.
 CONNECTION_WINDOW = 100
 # Largest IP packet an Ethernet link carries; a bigger captured TCP packet is a
@@ -255,10 +260,10 @@ def _emit(flow, reason):
 class FlowTracker:
     """Track live packets into flows and emit them as they finish.
 
-    Flows end on TCP teardown (FIN or RST), after ``idle_timeout`` seconds of
-    silence, or in ``active_timeout``-second slices for long-lived flows so a
-    large transfer is reported while it is still happening. All timing is
-    packet-timestamp driven.
+    Flows end on TCP teardown (FIN or RST, held ``CLOSE_HOLD_SECONDS`` for packets still
+    in flight), after ``idle_timeout`` seconds of silence, or in ``active_timeout``-second
+    slices for long-lived flows so a large transfer is reported while it is still happening.
+    All timing is packet-timestamp driven.
     """
 
     def __init__(
@@ -269,6 +274,7 @@ class FlowTracker:
         self.idle_timeout = float(idle_timeout)
         self.active_timeout = float(active_timeout)
         self._flows = {}
+        self._closing = {}  # key -> (flow, end reason, hold deadline)
         self._draining = {}
         self._recent = deque(maxlen=CONNECTION_WINDOW)
         self._last_sweep_ts = 0.0
@@ -286,21 +292,33 @@ class FlowTracker:
 
     def add_packet(self, info):
         """Feed one packet in; return the list of flows this packet finished."""
-        emitted = []
         self.packets_seen += 1
+        # Flows whose closing hold has passed end before this packet is counted.
+        emitted = self._close_due(info.ts, info)
 
         key, is_forward = self._lookup(info)
+        reverse_key = (info.dst_ip, info.dst_port, info.src_ip, info.src_port, info.proto)
 
-        # Swallow the trailing ACK or reset of a teardown whose flow was just
+        # A packet within the closing hold still belongs to the connection: Argus counts the
+        # server's last data or reset that arrive just after the client's reset or final FIN.
+        closing_key = key if key in self._closing else (
+            reverse_key if reverse_key in self._closing else None)
+        if closing_key is not None:
+            flow = self._closing[closing_key][0]
+            self._add_to_flow(flow, info, (info.src_ip, info.src_port) == (flow.src_ip,
+                                                                            flow.src_port))
+            emitted.extend(self.advance(info.ts))
+            return self._count(emitted)
+
+        # Swallow the trailing ACK or reset of a teardown whose flow was already
         # emitted, so every TCP session yields one flow instead of a one-packet
         # stray (Argus keeps them in the same connection).
-        reverse_key = (info.dst_ip, info.dst_port, info.src_ip, info.src_port, info.proto)
         drain_key = key if key in self._draining else reverse_key
         drain_deadline = self._draining.get(drain_key)
         if drain_deadline is not None:
             if info.ts <= drain_deadline and self._is_teardown_tail(info):
-                emitted.extend(self._count(self.advance(info.ts)))
-                return emitted
+                emitted.extend(self.advance(info.ts))
+                return self._count(emitted)
             del self._draining[drain_key]
         flow = self._flows.get(key)
 
@@ -345,6 +363,21 @@ class FlowTracker:
             self._flows[key] = flow
             is_forward = True
 
+        self._add_to_flow(flow, info, is_forward)
+
+        if info.proto == "tcp":
+            teardown_complete = flow.fin_forward and flow.fin_reverse
+            if flow.saw_rst or teardown_complete:
+                # Held for CLOSE_HOLD_SECONDS so the connection's last packets are counted.
+                del self._flows[key]
+                self._closing[key] = (flow, "fin" if teardown_complete else "rst",
+                                      info.ts + CLOSE_HOLD_SECONDS)
+
+        emitted.extend(self.advance(info.ts))
+        return self._count(emitted)
+
+    @staticmethod
+    def _add_to_flow(flow, info, is_forward):
         flow.last_ts = max(flow.last_ts, info.ts)
         # The segments of a large send leave back to back.
         extra_gaps = [0.0] * (info.segments - 1)
@@ -379,16 +412,20 @@ class FlowTracker:
             if "R" in flags:
                 flow.saw_rst = True
 
-            teardown_complete = flow.fin_forward and flow.fin_reverse
-            if flow.saw_rst or teardown_complete:
-                emitted.append(_emit(flow, "fin" if teardown_complete else "rst"))
-                del self._flows[key]
-                self._draining[key] = info.ts + 2.0
-
-        emitted = self._count(emitted)
-        emitted.extend(self._count(self.advance(info.ts)))
-        return emitted
-
+    def _close_due(self, now_ts, info=None):
+        """Emit closing flows whose hold has passed, or that a new SYN on their ports replaces."""
+        due = []
+        for key, (flow, reason, deadline) in list(self._closing.items()):
+            new_connection = (
+                info is not None and info.proto == "tcp" and "S" in (info.tcp_flags or "")
+                and "A" not in (info.tcp_flags or "")
+                and {(info.src_ip, info.src_port), (info.dst_ip, info.dst_port)}
+                == {(flow.src_ip, flow.src_port), (flow.dst_ip, flow.dst_port)})
+            if now_ts > deadline or new_connection:
+                del self._closing[key]
+                due.append(_emit(flow, reason))
+                self._draining[key] = deadline + DRAIN_SECONDS
+        return due
     @staticmethod
     def _is_teardown_tail(info):
         """A pure ACK or a reset after the flow closed; a new SYN starts a new flow."""
@@ -437,11 +474,21 @@ class FlowTracker:
 
     def expire_idle(self, now_ts):
         """Public idle sweep for timer-driven callers (live capture)."""
-        return self._count(self.advance(now_ts))
+        return self._count(self._close_due(now_ts) + self.advance(now_ts))
+
+    def close_due(self, now_ts):
+        """Emit only the closing flows whose hold has passed (frequent timer in live capture)."""
+        return self._count(self._close_due(now_ts))
+
+    @property
+    def closing_flows(self):
+        return len(self._closing)
 
     def flush(self):
         """Emit every in-progress flow; used when a capture or replay ends."""
-        remaining = [_emit(flow, "flush") for flow in self._flows.values()]
+        remaining = [_emit(flow, reason) for flow, reason, _ in self._closing.values()]
+        remaining += [_emit(flow, "flush") for flow in self._flows.values()]
+        self._closing.clear()
         self._flows.clear()
         self._draining.clear()
         return self._count(remaining)
