@@ -1,0 +1,271 @@
+{
+  "capture": "capture_6a1c.pcap",
+  "reference": "argus_flows_c_wire.csv",
+  "algoguard_flows": 102,
+  "argus_ipv4_flows": 102,
+  "matched": 102,
+  "unmatched_algoguard": 0,
+  "unmatched_algoguard_by_end_reason": {},
+  "unmatched_argus": 0,
+  "unmatched_argus_by_proto": {},
+  "features": {
+    "proto": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "spkts": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dpkts": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "sbytes": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dbytes": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dur": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "rate": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "sload": {
+      "matched": 102,
+      "agree": 0,
+      "share": 0.0,
+      "supported": false,
+      "median_difference": 0.0885,
+      "examples_of_disagreement": []
+    },
+    "dload": {
+      "matched": 102,
+      "agree": 99,
+      "share": 0.9706,
+      "supported": true,
+      "median_difference": 0.0122,
+      "examples_of_disagreement": []
+    },
+    "sinpkt": {
+      "matched": 102,
+      "agree": 98,
+      "share": 0.9608,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dinpkt": {
+      "matched": 102,
+      "agree": 99,
+      "share": 0.9706,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "state": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "service": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "ct_dst_src_ltm": {
+      "matched": 102,
+      "agree": 95,
+      "share": 0.9314,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "ct_dst_ltm": {
+      "matched": 102,
+      "agree": 95,
+      "share": 0.9314,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "ct_srv_dst": {
+      "matched": 102,
+      "agree": 102,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    }
+  },
+  "diagnostic_flows_with_packet_over_mtu": 90,
+  "diagnostic_share_agreeing_without_such_flows": {
+    "proto": 1.0,
+    "spkts": 1.0,
+    "dpkts": 1.0,
+    "sbytes": 1.0,
+    "dbytes": 1.0,
+    "dur": 1.0,
+    "rate": 1.0,
+    "sload": 0.0,
+    "dload": 0.75,
+    "sinpkt": 0.6667,
+    "dinpkt": 0.75,
+    "state": 1.0,
+    "service": 1.0,
+    "ct_dst_src_ltm": 0.75,
+    "ct_dst_ltm": 0.75,
+    "ct_srv_dst": 1.0
+  },
+  "diagnostic_load_share_agreeing_with_argus_bytes_at_ip_layer": {
+    "sload": 0.9902,
+    "dload": 0.9902
+  },
+  "examples": [
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 9,
+        "dpkts": 12,
+        "sbytes": 2122,
+        "dbytes": 7184,
+        "dur": 0.064775,
+        "sinpkt": 8.096874
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 9.0,
+        "dpkts": 12.0,
+        "sbytes": 2248.0,
+        "dbytes": 7352.0,
+        "dur": 0.064775,
+        "sinpkt": 8.096875
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 30,
+        "dpkts": 50,
+        "sbytes": 3256,
+        "dbytes": 62883,
+        "dur": 0.129105,
+        "sinpkt": 4.4519
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 30.0,
+        "dpkts": 50.0,
+        "sbytes": 3676.0,
+        "dbytes": 63583.0,
+        "dur": 0.129105,
+        "sinpkt": 4.451896
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 9,
+        "dpkts": 17,
+        "sbytes": 2128,
+        "dbytes": 12663,
+        "dur": 0.151962,
+        "sinpkt": 18.995255
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 9.0,
+        "dpkts": 17.0,
+        "sbytes": 2254.0,
+        "dbytes": 12901.0,
+        "dur": 0.151962,
+        "sinpkt": 18.99525
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 42,
+        "dpkts": 97,
+        "sbytes": 3442,
+        "dbytes": 133209,
+        "dur": 0.307389,
+        "sinpkt": 6.519632
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 42.0,
+        "dpkts": 97.0,
+        "sbytes": 4030.0,
+        "dbytes": 134567.0,
+        "dur": 0.307389,
+        "sinpkt": 6.519634
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 31,
+        "dpkts": 54,
+        "sbytes": 3006,
+        "dbytes": 70650,
+        "dur": 0.315269,
+        "sinpkt": 10.508966
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 31.0,
+        "dpkts": 54.0,
+        "sbytes": 3440.0,
+        "dbytes": 71406.0,
+        "dur": 0.315269,
+        "sinpkt": 10.508967
+      }
+    }
+  ]
+}
