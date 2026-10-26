@@ -30,6 +30,8 @@ HANDOFF_LIMIT = 1000
 TOTAL_BYTES = 100 * 1024 * 1024
 SESSION_LIMIT = 300
 MAX_AGE = 7 * 86400
+# Expired and rejected records stay visible (without payload) this long before they go (6B.3).
+TOMBSTONE_AGE = 28 * 86400
 BATCH_LIMIT = 50
 EVENT_BYTES = 65536
 SUMMARY_BYTES = 4096
@@ -371,6 +373,11 @@ class Outbox:
                 "select count(*) from lifecycle where user_id=? and node_id=? and status='pending'",
                 (user_id, node_id),
             ).fetchone()[0]
+            expired = self.db.execute(
+                "select count(*) from event where user_id=? and node_id=? and status='rejected' "
+                "and reason='expired'",
+                (user_id, node_id),
+            ).fetchone()[0]
         with self.lock:
             memory = sum(
                 1 for item in self.memory_status.values() if item[1:3] == (user_id, node_id)
@@ -379,6 +386,7 @@ class Outbox:
                 "pending": 0, "synced": 0, "rejected": 0,
             }
             result.update({row[0]: row[1] for row in rows})
+            result["expired"] = expired  # included in rejected: never uploaded within 7 days
             result.update(
                 in_memory=memory,
                 dropped=self.dropped,
@@ -442,32 +450,49 @@ class Outbox:
         return result
 
     def expire(self, now=None):
-        cutoff = (time.time() if now is None else now) - MAX_AGE
+        """Expire records older than seven days without hiding them (6B.3).
+
+        A record never uploaded becomes rejected with reason ``expired``; a record the cloud
+        rejected keeps its reason. Either way the payload is dropped to free space, but the
+        record stays counted and exported as rejected, never as synced, until it is
+        ``TOMBSTONE_AGE`` old. Synced receipts carry no payload and go after seven days.
+        Returns how many pending records expired.
+        """
+        now = time.time() if now is None else now
+        cutoff, forget = now - MAX_AGE, now - TOMBSTONE_AGE
         with self.db_lock, self.db:
             lost = self.db.execute(
-                "select count(*) from event where created_at<? and status<>'synced'", (cutoff,)
+                "select count(*) from event where created_at<? and status='pending'", (cutoff,)
             ).fetchone()[0]
-            self.db.execute("delete from event where created_at<?", (cutoff,))
+            self.db.execute(
+                "update event set status='rejected',reason='expired' "
+                "where created_at<? and status='pending'", (cutoff,))
+            self.db.execute(
+                "update event set payload='{}' where created_at<? and status='rejected' "
+                "and payload<>'{}'", (cutoff,))
+            self.db.execute(
+                "delete from event where (status='synced' and created_at<?) or created_at<?",
+                (cutoff, forget))
             self.db.execute(
                 "delete from reservation where created_at<? and session_id not in "
-                "(select session_id from event)",
+                "(select session_id from event where status='pending')",
                 (cutoff,),
             )
             lost_summaries = self.db.execute(
                 "select count(*) from lifecycle where created_at<? and status='pending'",
                 (cutoff,),
             ).fetchone()[0]
-            self.db.execute("delete from lifecycle where created_at<?", (cutoff,))
+            self.db.execute(
+                "update lifecycle set status='rejected',reason='expired',payload='{}' "
+                "where created_at<? and status='pending'", (cutoff,))
+            self.db.execute("delete from lifecycle where created_at<?", (forget,))
         with self.lock:
-            self.dropped += lost
             self.summaries_dropped += lost_summaries
             for key, created in list(self.reservation_times.items()):
                 if created < cutoff:
                     self.reservation_times.pop(key, None)
                     self.reservations.pop(key, None)
         return lost
-
-    # -- reserved summaries: capture finalisation and audit entries ----------
 
     def save_lifecycle(self, context, summary_id, payload, kind="capture"):
         """Store a bounded summary outside the flow quota, or raise OSError/ValueError."""

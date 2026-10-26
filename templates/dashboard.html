@@ -70,7 +70,7 @@
             <div><dt>Upload status</dt><dd>{{ upload.state|replace('_', ' ')|capitalize }}{% if upload.reason %} ({{ upload.reason|replace('_', ' ') }}){% endif %}</dd></div>
             <div><dt>Pending upload</dt><dd>{{ '{:,}'.format(sync_status.pending) }} durable{% if sync_status.in_memory %}, {{ '{:,}'.format(sync_status.in_memory) }} in memory (not yet saved){% endif %}</dd></div>
             <div><dt>Synced</dt><dd>{{ '{:,}'.format(sync_status.synced) }} committed in the cloud</dd></div>
-            <div><dt>Rejected</dt><dd>{{ '{:,}'.format(sync_status.rejected) }}</dd></div>
+            <div><dt>Rejected</dt><dd>{{ '{:,}'.format(sync_status.rejected) }}{% if sync_status.expired %} ({{ '{:,}'.format(sync_status.expired) }} expired: not uploaded within 7 days){% endif %}</dd></div>
             <div><dt>Not stored</dt><dd>{{ '{:,}'.format(sync_status.dropped) }}{% if sync_status.disk_failed %} &middot; local storage stopped ({{ sync_status.loss_reason }}){% endif %}</dd></div>
         </dl>
         {% if not node_approved and node_approved is not none %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Retention | AlgoGuard{% endblock %}
+
+{% macro bytes(value) -%}
+{%- set mb = (value or 0) / 1048576 -%}{{ '%.1f'|format(mb) }} MB
+{%- endmacro %}
+
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">Data Retention</p><h1>Retention and Capacity</h1><p class="page-meta">Operational records (flows, predictions, alerts, logs, closed capture sessions) are kept {{ operational_days }} days and reports {{ report_days }} days, measured from when the cloud received them; a computer's own clock never decides what is deleted. An alert cited by a kept report stays with its whole flow. Models, deployments and running captures are never touched.</p></div></header>
+
+{% set expiring = preview.expiring %}
+{% set kept = preview.kept %}
+<section class="dashboard-layout mb-3">
+    <div class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">Preview</p><h2>A cleanup now would remove</h2></div></div>
+        <dl class="detail-list">
+            <div><dt>Flows (traffic, prediction and alert)</dt><dd>{{ '{:,}'.format(expiring.flows) }}</dd></div>
+            <div><dt>Alerts among them</dt><dd>{{ '{:,}'.format(expiring.alerts) }}</dd></div>
+            <div><dt>Other log entries</dt><dd>{{ '{:,}'.format(expiring.logs) }}</dd></div>
+            <div><dt>Reports older than {{ report_days }} days</dt><dd>{{ '{:,}'.format(expiring.reports) }}</dd></div>
+            <div><dt>Closed capture sessions</dt><dd>{{ '{:,}'.format(expiring.closed_sessions) }}</dd></div>
+        </dl>
+        <form method="post" data-confirm="Permanently remove the records listed here? Deleted records can only come back from a backup.">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="request_id" value="{{ request_id }}">
+            <button class="btn btn-accent" type="submit"{% if not (expiring.flows or expiring.logs or expiring.reports or expiring.closed_sessions) %} disabled{% endif %}><i class="bi bi-trash3" aria-hidden="true"></i> Remove expired records</button>
+        </form>
+        <p class="monitor-hint">Runs in batches of {{ batch }} (at most {{ max_batches }} per click); each batch is recorded below and in System Logs.</p>
+    </div>
+    <div class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">Holds</p><h2>Kept although old</h2></div></div>
+        <dl class="detail-list">
+            <div><dt>Alerts cited by a kept report</dt><dd>{{ '{:,}'.format(kept.alerts_held_by_reports) }}</dd></div>
+            <div><dt>Capture sessions still open</dt><dd>{{ '{:,}'.format(kept.active_sessions) }}</dd></div>
+            <div><dt>Model releases (never removed)</dt><dd>{% for status, count in preview.models_kept.items() %}{{ count }} {{ status }}{% if not loop.last %}, {% endif %}{% else %}None{% endfor %}</dd></div>
+        </dl>
+    </div>
+</section>
+
+<section class="panel mb-3">
+    <div class="panel-heading"><div><p class="eyebrow">Capacity</p><h2>Database {{ bytes(preview.capacity.database_bytes) }} of {{ database_limit_mb }} MB ({{ '%.1f'|format(database_share * 100) }}%)</h2></div>
+        {% if database_share >= 0.8 %}<span class="status-badge danger">Pressure: run a cleanup or shorten what is kept</span>{% elif database_share >= 0.5 %}<span class="status-badge warning">Half full</span>{% else %}<span class="status-badge success">Room to grow</span>{% endif %}</div>
+    <div class="table-responsive">
+        <table class="table data-table align-middle mb-0">
+            <thead><tr><th>Table</th><th>Rows</th><th>Size</th></tr></thead>
+            <tbody>
+                {% for table, size in preview.capacity.tables|dictsort %}
+                <tr><td><code>{{ table }}</code></td><td>{{ '{:,}'.format(preview.capacity.rows.get(table)) if preview.capacity.rows.get(table) is not none else '-' }}</td><td>{{ bytes(size) }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% if preview.suspect_client_times %}
+<section class="panel mb-3">
+    <div class="panel-heading"><div><p class="eyebrow">Clocks to check</p><h2>Records whose computer time looks wrong</h2></div></div>
+    <p class="monitor-hint">These records carry an event time more than 5 minutes after the cloud received them, or more than 8 days before. Their computer's clock is probably wrong. They are kept and removed by the cloud's receipt time like every other record; only their displayed event time is unreliable.</p>
+    <div class="table-responsive">
+        <table class="table data-table align-middle mb-0">
+            <thead><tr><th>Computer</th><th>Records</th></tr></thead>
+            <tbody>{% for node, count in preview.suspect_client_times.items() %}<tr><td>{{ node_names.get(node, 'Unknown computer') }}<small><code>{{ node[:8] }}</code></small></td><td>{{ count }}</td></tr>{% endfor %}</tbody>
+        </table>
+    </div>
+</section>
+{% endif %}
+
+<section class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">Audit</p><h2>Recent cleanup batches</h2></div></div>
+    <div class="table-responsive">
+        <table class="table data-table align-middle mb-0">
+            <thead><tr><th>When (UTC)</th><th>Result</th></tr></thead>
+            <tbody>
+                {% for log in history %}<tr><td class="text-nowrap">{{ log.timestamp }}</td><td class="description-cell">{{ log.message }}</td></tr>
+                {% else %}<tr><td colspan="2"><div class="empty-state"><i class="bi bi-clock-history"></i><h2>No cleanup has run yet</h2></div></td></tr>{% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

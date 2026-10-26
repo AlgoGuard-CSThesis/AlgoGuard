@@ -1,7 +1,7 @@
 import time
 from uuid import uuid4
 
-from cloud_outbox import MAX_AGE, Outbox
+from cloud_outbox import MAX_AGE, TOMBSTONE_AGE, Outbox
 from cloud_repository import FlowReceipt, UserNodeContext
 
 
@@ -116,8 +116,33 @@ def test_permanent_rejection_export_and_seven_day_expiry(tmp_path):
         exported = spool.export_pending(owner)
         assert exported[0]["status"] == "rejected" and exported[0]["payload"] == row
         assert spool.export_pending(context()) == []
-        assert spool.expire(time.time() + MAX_AGE + 1) == 1
-        assert spool.export_pending(owner) == []
+        # After seven days the rejected record stays visible, without its payload (6B.3).
+        assert spool.expire(time.time() + MAX_AGE + 1) == 0
+        exported = spool.export_pending(owner)
+        assert exported[0]["status"] == "rejected" and exported[0]["reason"] == "permission"
+        assert exported[0]["payload"] == {}
         assert "capture" not in spool.reservations
+        spool.expire(time.time() + TOMBSTONE_AGE + 1)
+        assert spool.export_pending(owner) == []
+    finally:
+        spool.close()
+
+
+def test_an_unsent_event_expires_as_rejected_never_as_synced(tmp_path):
+    """6B.3: local pending events expire after seven days and stay visible as expired."""
+    owner = context()
+    spool = Outbox(tmp_path / "outbox")
+    spool.start()
+    try:
+        row = event()
+        spool.submit(owner, "capture", row)
+        assert spool.drain()
+        assert spool.expire(time.time() + MAX_AGE + 1) == 1
+        assert spool.pending(owner) == []
+        counts = spool.counts(owner)
+        assert (counts["pending"], counts["rejected"], counts["synced"]) == (0, 1, 0)
+        assert counts["expired"] == 1
+        exported = spool.export_pending(owner)
+        assert exported[0]["status"] == "rejected" and exported[0]["reason"] == "expired"
     finally:
         spool.close()

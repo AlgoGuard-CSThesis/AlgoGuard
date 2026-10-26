@@ -389,6 +389,18 @@ class CloudRepository:
         return self.rpc("report_node_health",
                         {"p_node_id": str(self.context.node_id), "p_health": health})
 
+    def retention_preview(self, operational_days=30, report_days=90):
+        """What a cleanup would remove and keep now, and how full the database is (6B.3)."""
+        return self.rpc("retention_preview", {"p_operational_days": operational_days,
+                                              "p_report_days": report_days})
+
+    def retention_apply(self, request_id: UUID, batch_size=500, operational_days=30,
+                        report_days=90):
+        """Remove one bounded batch of expired records; a repeated request replays (6B.3)."""
+        return self.rpc("retention_apply", {
+            "p_request_id": str(request_id), "p_batch_size": batch_size,
+            "p_operational_days": operational_days, "p_report_days": report_days})
+
     def rpc(self, name: str, body: dict):
         if not isinstance(name, str) or not _RPC_NAME.fullmatch(name) or not isinstance(body, dict):
             raise RepositoryError("validation")

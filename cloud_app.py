@@ -33,7 +33,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import cast
 from urllib.parse import urlsplit
-from uuid import UUID, uuid4
+from uuid import UUID, uuid4, uuid5
 
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, url_for
 from flask import session as flask_session
@@ -104,6 +104,12 @@ PAGE_SIZE = 50
 LOG_PAGE_SIZE = 25
 # A node whose last report the server received longer ago than this is shown as stale (6B.2).
 STALE_AFTER_SECONDS = 180
+# Retention (6B.3): initial targets, batch bounds, and the hosted plan's database size.
+OPERATIONAL_DAYS = 30
+REPORT_DAYS = 90
+RETENTION_BATCH = 500
+RETENTION_MAX_BATCHES = 20
+DATABASE_LIMIT_BYTES = 500 * 1024 * 1024
 MAX_OFFSET = 1_000_000
 
 OwnerContext = namedtuple("OwnerContext", "user_id profile_id node_id")
@@ -1074,6 +1080,54 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         rows.sort(key=lambda row: (row["status"] != "approved", row["display_name"].lower()))
         return render_template("computers.html", computers=rows,
                                stale_after_minutes=STALE_AFTER_SECONDS // 60)
+
+    @app.route("/retention", methods=["GET", "POST"])
+    def retention():
+        """Audited cleanup for administrators: preview first, then bounded batches (6B.3)."""
+        if "administrator" not in services.auth.current_roles(g.identity):
+            flash("Only Administrator accounts can manage data retention.", "danger")
+            return redirect(url_for("dashboard"))
+        repo = g.repo
+        if request.method == "POST":
+            request_id = _form_uuid()
+            removed, batches, more = {}, 0, True
+            # Batch ids derive from the form's id, so a repeated submit replays, never repeats.
+            while more and batches < RETENTION_MAX_BATCHES:
+                result = repo.retention_apply(uuid5(request_id, str(batches)), RETENTION_BATCH,
+                                              OPERATIONAL_DAYS, REPORT_DAYS)
+                batches += 1
+                more = bool(result.get("more"))
+                for key, value in (result.get("removed") or {}).items():
+                    removed[key] = removed.get(key, 0) + int(value)
+            flash(f"Removed {removed.get('flows', 0):,} flows ({removed.get('alerts', 0):,} "
+                  f"alerts), {removed.get('logs', 0):,} log entries, "
+                  f"{removed.get('reports', 0):,} reports and "
+                  f"{removed.get('closed_sessions', 0):,} closed capture sessions in {batches} "
+                  f"batch{'' if batches == 1 else 'es'}"
+                  + (". More remain: run the cleanup again." if more else "."),
+                  "warning" if more else "success")
+            return redirect(url_for("retention"))
+        results = _parallel({
+            "preview": lambda: repo.retention_preview(OPERATIONAL_DAYS, REPORT_DAYS),
+            "history": lambda: repo.list_records(
+                "system_log", page_size=10, descending=True, all_visible_nodes=True,
+                filters={"module": "Retention"}).rows,
+            "nodes": lambda: repo.list_records("node", page_size=100,
+                                               all_visible_nodes=True).rows,
+        })
+        _raise_first(results, ("preview",))
+        preview = results["preview"]
+        history = [] if isinstance(results["history"], Exception) else results["history"]
+        names = ({} if isinstance(results["nodes"], Exception)
+                 else {row["node_id"]: row["display_name"] for row in results["nodes"]})
+        database = int(preview["capacity"]["database_bytes"])
+        return render_template(
+            "retention.html", preview=preview, history=history, node_names=names,
+            operational_days=OPERATIONAL_DAYS, report_days=REPORT_DAYS,
+            database_share=database / DATABASE_LIMIT_BYTES,
+            database_limit_mb=DATABASE_LIMIT_BYTES // (1024 * 1024),
+            request_id=str(uuid4()), batch=RETENTION_BATCH, max_batches=RETENTION_MAX_BATCHES,
+        )
 
     @app.route("/admins", methods=["GET", "POST"])
     def manage_admins():
