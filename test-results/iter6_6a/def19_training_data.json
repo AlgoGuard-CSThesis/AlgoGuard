@@ -1,0 +1,47 @@
+{
+  "base_rows": 66393,
+  "base_attack_share": 0.5898,
+  "captures": {
+    "train_generator.pcap": {
+      "flows": 410,
+      "by_proto": {
+        "tcp": 405,
+        "icmp": 4,
+        "udp": 1
+      },
+      "by_service": {
+        "-": 409,
+        "dns": 1
+      },
+      "by_state": {
+        "RST": 360,
+        "REQ": 40,
+        "FIN": 5,
+        "ECO": 4,
+        "INT": 1
+      }
+    },
+    "train_browser.pcap": {
+      "flows": 2050,
+      "by_proto": {
+        "tcp": 1562,
+        "udp": 488
+      },
+      "by_service": {
+        "-": 2025,
+        "http": 23,
+        "dns": 2
+      },
+      "by_state": {
+        "CON": 1206,
+        "FIN": 391,
+        "RST": 332,
+        "INT": 99,
+        "REQ": 22
+      }
+    }
+  },
+  "local_rows": 2460,
+  "combined_rows": 68853,
+  "combined_attack_share": 0.5687
+}

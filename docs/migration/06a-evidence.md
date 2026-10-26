@@ -129,3 +129,23 @@ Protocol `test-results/iter6_6a/protocol_6a2.md` (a42ff4b, before scoring); resu
 `final_eval_supplement.json`, `evaluation_final/`; scripts `capture_fidelity.py`, `compare_fidelity.py`,
 `wire_equivalent.py`, `benign_attack_share.py`, `latency_6a1.py`, `calibration_6a2.py`,
 `final_eval_supplement.py`. Captures and datasets stay outside git under `research/dataset/processed/`.
+
+## Addendum, 2026-10-26: the open findings fixed
+
+The sections above record Stage 6A as finished on 2026-10-25 and stay as written. The next day the open findings
+were worked on, each under a protocol committed before its result was seen:
+
+| Finding | Fix | Result |
+|---|---|---|
+| Live lag p95 606–776 ms under load (DEF-17 budget 500 ms) | Live sessions score in a separate process (`services/inference_worker.py`, 5b5a36a) and capture and decode packets in another (`services/capture_worker.py`); flows are tracked on their own thread | Outside the app: p95 332.4 ms (`latency_def17_fix.json`). In the app, two 90 s runs: FIN/RST lag p50 89.1 and 91.8 ms, p95 113.7 and 129.2 ms, n = 59 and 82 (`tc11_inapp_def17_fix.json`) |
+| 8 of 16 features unsupported (flow boundaries) | A closed TCP flow is held 50 ms for packets in flight; the wire-equivalent reference gives every packet its own timestamp and drops 802.1Q tags, as a tap would (cffb952) | On a fresh capture, predeclared in `protocol_6a1_confirmation.md`: 15 of 16 supported, all 102 flows matched; `sload` agrees on 99.0% only with the Ethernet-header correction (`results_6a1_confirmation.md`) |
+| DEF-19: 73% of benign flows labelled Attack | Part 1 (6cb88e6): HTTPS reports `-`, because UNSW-NB15's `ssl` rows are all attacks. Part 2: run 10 = run 8's rows plus 2,460 benign PC flows, deployed with `train.py --deploy-run 10` | Part 1 alone: 10.0% and 26.6% (`results_def19.md`). Run 10 on captures recorded after training: 3.2% (familiar sites), 6.6% (unseen sites); untouched dataset F1 0.8538, recall 0.7602 (`results_def19_part2.md`) |
+
+The research release gate stays **unmet**: accuracy, F1 and recall on the untouched set miss the 90% targets, `sload`
+needs the link-layer correction, attacks on live traffic are untested, and the benign evidence comes from one PC.
+Iteration 6 continues as a limited research pilot, now with live features that match the dataset's definitions and a
+false-alarm rate on this PC within target.
+
+Open items now: apply the 6A.3 migration to the hosted pilot (`python cloud_migrate.py --yes`); publish local model
+60 (run 10) to the pilot with `publish_model.py`; re-test DEF-17 and DEF-19 formally in test cycle 2; PC B
+`git pull`.

@@ -335,7 +335,7 @@ different data, the same values may be judged differently.
 
 These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
 line 4150, the header being line 1) that the deployed model classifies as Attack
-with about 99.98% confidence:
+with about 99.95% confidence (attack score Very high):
 
 Dur:            0.000003
 Proto:          unas

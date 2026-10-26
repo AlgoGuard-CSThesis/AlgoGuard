@@ -228,11 +228,20 @@ def build_parser():
             "the Stacking Ensemble for the web application to use."
         ),
     )
-    parser.add_argument("csv_path", help="Path to a labelled network traffic CSV.")
+    parser.add_argument("csv_path", nargs="?", help="Path to a labelled network traffic CSV.")
     parser.add_argument(
         "--deploy",
         action="store_true",
         help="Deploy the Stacking Ensemble if it passes the quality gate.",
+    )
+    parser.add_argument(
+        "--deploy-run",
+        type=int,
+        metavar="RUN_ID",
+        help=(
+            "Deploy the Stacking Ensemble of an already trained run, without training "
+            "again (for a run that was evaluated before deployment)."
+        ),
     )
     parser.add_argument(
         "--admin",
@@ -251,7 +260,19 @@ def build_parser():
 
 
 def main(argv=None):
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    if args.deploy_run is not None:
+        if args.csv_path or args.deploy:
+            parser.error("--deploy-run takes no CSV and no --deploy.")
+        initialize_database()
+        admin_id = _resolve_admin_id(args.admin)
+        if admin_id is None:
+            return 1
+        return 0 if _deploy_stacking(args.deploy_run, admin_id) else 1
+    if not args.csv_path:
+        parser.error("a CSV path is required unless --deploy-run is given.")
 
     csv_path = os.path.abspath(args.csv_path)
     if not os.path.isfile(csv_path):
