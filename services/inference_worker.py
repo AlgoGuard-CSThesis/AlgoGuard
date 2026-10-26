@@ -8,43 +8,25 @@ the capture threads (p95 336-379 ms in the same conditions).
 
 The child is this module run as ``python -m services.inference_worker``, not ``multiprocessing``,
 whose Windows start method would re-run the application's start-up script. It talks over its
-own stdin/stdout pipes in length-prefixed pickles, which only the two processes can read. The
+own stdin/stdout pipes (`services.process_pipe`), which only the two processes can read. The
 pipeline it receives is the one the monitor already loaded and verified.
 """
 
-import pickle
-import struct
 import subprocess
 import sys
 import threading
 from pathlib import Path
 
+from services.process_pipe import PIPE_ERRORS
+from services.process_pipe import receive as _receive
+from services.process_pipe import send as _send
+
 ROOT = Path(__file__).resolve().parents[1]
-_HEADER = struct.Struct("!Q")
 START_TIMEOUT_SECONDS = 60.0
 
 
 class InferenceWorkerError(RuntimeError):
     """The inference process could not start or stopped answering."""
-
-
-def _send(stream, value):
-    data = pickle.dumps(value, protocol=pickle.HIGHEST_PROTOCOL)
-    stream.write(_HEADER.pack(len(data)))
-    stream.write(data)
-    stream.flush()
-
-
-def _receive(stream):
-    header = stream.read(_HEADER.size)
-    if len(header) < _HEADER.size:
-        raise EOFError("The other process closed the pipe.")
-    (size,) = _HEADER.unpack(header)
-    data = stream.read(size)
-    if len(data) < size:
-        raise EOFError("The other process closed the pipe.")
-    # Only ever data from the process pair that created this pipe.
-    return pickle.loads(data)
 
 
 class InferenceWorker:
@@ -65,7 +47,7 @@ class InferenceWorker:
         try:
             _send(self._process.stdin, (pipeline, list(feature_columns)))
             ready = _receive(self._process.stdout)
-        except (OSError, EOFError, pickle.PickleError) as error:
+        except PIPE_ERRORS as error:
             self.close()
             raise InferenceWorkerError(f"The inference process did not start: {error}") from None
         finally:
@@ -82,7 +64,7 @@ class InferenceWorker:
             try:
                 _send(self._process.stdin, rows)
                 reply = _receive(self._process.stdout)
-            except (OSError, EOFError, pickle.PickleError):
+            except PIPE_ERRORS:
                 raise InferenceWorkerError("The inference process stopped answering.") from None
         if isinstance(reply, tuple) and len(reply) == 2 and reply[0] == "error":
             raise InferenceWorkerError(f"The inference process failed: {reply[1]}")

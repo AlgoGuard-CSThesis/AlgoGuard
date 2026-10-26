@@ -590,9 +590,12 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                 record = event_data["record"]
                 actual = event_data["actual"]
                 prediction = "Attack" if predicted_value == 1 else "Normal"
-                detection_lag_ms = None
+                detection_lag_ms = tracking_lag_ms = None
                 if source_type == "live" and event_data.get("flow_last_ts"):
                     detection_lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
+                    if event_data.get("finished_at"):
+                        tracking_lag_ms = max(
+                            (event_data["finished_at"] - event_data["flow_last_ts"]) * 1000, 0.0)
 
                 flow_data = {column: _json_safe(value) for column, value in flow_row.items()}
                 flow_data["source_ip"] = event_data["source_ip"]
@@ -660,6 +663,9 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                             "latency_ms": result["latency_ms"],
                             "detection_lag_ms": (
                                 round(detection_lag_ms, 1) if detection_lag_ms is not None else None
+                            ),
+                            "tracking_lag_ms": (
+                                round(tracking_lag_ms, 1) if tracking_lag_ms is not None else None
                             ),
                             "actual": actual,
                             "match": None if actual is None else actual == prediction,

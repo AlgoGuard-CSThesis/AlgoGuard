@@ -20,6 +20,11 @@ from uuid import uuid4
 
 LEASE_SECONDS = 120
 MAX_LEASES = 4096
+# Live capture asks about every TCP packet. A connection's first SYN always reads the registry
+# (the lease is committed before the SYN is sent); its later packets reuse that answer this long.
+# Each registry read lets other threads run first, which slowed flow tracking in the app (DEF-17).
+ANSWER_SECONDS = 30.0
+MAX_ANSWERS = 4096
 
 
 class SharedConnections:
@@ -27,6 +32,7 @@ class SharedConnections:
         self.path = Path(state_dir) / "connections" / "leases.sqlite3"
         self.lock = threading.RLock()
         self.reader = None
+        self._answers = {}  # connection -> (maintenance?, monotonic time of the read)
 
     def _write(self, callback):
         from cloud_outbox import restrict_owner
@@ -58,8 +64,23 @@ class SharedConnections:
             "update lease set expires=? where id=?",
             [(time.time() + LEASE_SECONDS, identity) for identity in identities]))
 
-    def matches(self, protocol, src, sport, dst, dport):
-        if protocol.lower() != "tcp" or not self.path.exists():
+    def matches(self, protocol, src, sport, dst, dport, new_connection=False):
+        if protocol.lower() != "tcp":
+            return False
+        connection = frozenset(((src, sport), (dst, dport)))
+        with self.lock:
+            known = self._answers.get(connection)
+            if (not new_connection and known is not None
+                    and time.monotonic() - known[1] < ANSWER_SECONDS):
+                return known[0]
+            answer = self._read(src, sport, dst, dport)
+            if len(self._answers) >= MAX_ANSWERS:
+                self._answers.clear()
+            self._answers[connection] = (answer, time.monotonic())
+            return answer
+
+    def _read(self, src, sport, dst, dport):
+        if not self.path.exists():
             return False
         # Reads have no polling delay: the writer commits before sending SYN.
         with self.lock:

@@ -15,13 +15,35 @@ def test_shared_attribution_is_exact_and_expires(tmp_path):
     assert not reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543)
     lease = writer.add("10.0.0.1", 51000, "203.0.113.2", 6543)
     try:
-        assert reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543)
+        # The lease is committed before the SYN, so the connection's SYN always sees it.
+        assert reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543,
+                              new_connection=True)
         assert reader.matches("tcp", "203.0.113.2", 6543, "10.0.0.1", 51000)
         assert not reader.matches("tcp", "10.0.0.1", 51001, "203.0.113.2", 6543)
         assert not reader.matches("udp", "10.0.0.1", 51000, "203.0.113.2", 6543)
         with sqlite3.connect(writer.path) as conn:
             conn.execute("update lease set expires=? where id=?", (time.time() - 1, lease))
-        assert not reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543)
+        assert not reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543,
+                                  new_connection=True)
+    finally:
+        reader.close()
+
+
+def test_later_packets_reuse_the_answer_and_a_new_syn_reads_again(tmp_path, monkeypatch):
+    """Capture asks about every packet; only a connection's SYN needs to read the registry."""
+    writer = SharedConnections(tmp_path)
+    reader = SharedConnections(tmp_path)
+    writer.add("10.0.0.1", 51000, "203.0.113.2", 6543)
+    reads = []
+    original = reader._read
+    monkeypatch.setattr(reader, "_read", lambda *args: reads.append(args) or original(*args))
+    try:
+        assert reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543, new_connection=True)
+        for _ in range(5):
+            assert reader.matches("tcp", "203.0.113.2", 6543, "10.0.0.1", 51000)
+        assert len(reads) == 1
+        assert reader.matches("tcp", "10.0.0.1", 51000, "203.0.113.2", 6543, new_connection=True)
+        assert len(reads) == 2
     finally:
         reader.close()
 

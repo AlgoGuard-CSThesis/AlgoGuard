@@ -1,5 +1,6 @@
 """Tests for the Live Monitor's traffic sources, including PCAP replay."""
 
+import queue
 import sqlite3
 import threading
 import time
@@ -14,6 +15,7 @@ import config
 from services import live_monitor_service as monitor
 from services import traffic_source_service as traffic_sources
 from services.deployment_service import load_active_artifact
+from services.flow_tracker_service import PacketInfo
 from services.traffic_source_service import (
     CsvReplaySource,
     PcapReplaySource,
@@ -515,13 +517,14 @@ def test_monitor_options_advertise_all_source_types():
     assert isinstance(options["captures"], list)
 
 
-@pytest.mark.parametrize("exception", [None, OSError("capture device disconnected")])
-def test_live_source_reports_a_capture_thread_that_exits_after_startup(exception):
+def test_live_source_reports_a_capture_process_that_stops_after_startup():
     source = traffic_sources.LiveCaptureSource("test interface")
-    source._sniffer = Mock(exception=exception)
-    source._sniffer.thread.is_alive.return_value = False
+    capture = Mock()
+    capture.receive.side_effect = traffic_sources.CaptureWorkerError("capture device disconnected")
+    source._capture = capture
+    source._track()
 
-    with pytest.raises(TrafficSourceError, match="capture.*stopped"):
+    with pytest.raises(TrafficSourceError, match="capture.*stopped.*disconnected"):
         source.next_event(timeout=0)
 
 
@@ -552,41 +555,67 @@ def test_ignored_packets_still_expire_idle_flows(monkeypatch, ignored_type):
     assert source.packets_captured == 1
 
 
+class FakeCapture:
+    """Stands in for the capture process: hands the tracking thread the frames a test queues."""
+
+    def __init__(self):
+        self.frames = queue.Queue()
+
+    def send(self, *infos):
+        self.frames.put(("packets", list(infos), None, 0))
+
+    def receive(self):
+        frame = self.frames.get(timeout=10)
+        if isinstance(frame, Exception):
+            raise frame
+        return frame
+
+    def close(self, wait=True):
+        self.frames.put(traffic_sources.CaptureWorkerError("closed"))
+
+
 def start_tracking(source):
-    """What prepare() does after the sniffer starts, without a capture device."""
+    """What prepare() does once the capture process runs, without a capture device."""
+    capture = FakeCapture()
+    source._capture = capture
     source._worker = threading.Thread(target=source._track, daemon=True)
     source._worker.start()
+    return capture
+
+
+def tcp_info(ts, flags):
+    return PacketInfo(ts=ts, src_ip="192.0.2.1", dst_ip="192.0.2.2", src_port=40001, dst_port=80,
+                      proto="tcp", length=40, ttl=64, tcp_flags=flags)
 
 
 def test_live_flows_finish_while_the_monitor_is_busy_classifying():
-    """DEF-17: a dedicated thread turns packets into flows; no next_event call is needed."""
+    """DEF-17: a dedicated thread turns captured packets into flows; next_event is not needed."""
     source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
-    start_tracking(source)
+    capture = start_tracking(source)
     try:
-        for flags in ("S", "R"):
-            packet = scapy_all.IP(src="192.0.2.1", dst="192.0.2.2") / scapy_all.TCP(
-                sport=40001, dport=80, flags=flags)
-            packet.time = 1000.0
-            source._on_packet(packet)
+        capture.send(tcp_info(1000.0, "S"), tcp_info(1000.0, "R"))
         deadline = time.time() + 5
         while not source.backlog() and time.time() < deadline:
             time.sleep(0.01)
         assert source.backlog() is True  # finished before the monitor asked for it
         event = source.next_event(timeout=0)
         assert event is not None and event["end_reason"] == "rst"
+        assert source.packets_captured == 2
         assert source.backlog() is False
     finally:
         source.close()
-    assert source._worker is not None and not source._worker.is_alive()
+    worker = source._worker
+    assert worker is not None
+    worker.join(timeout=5)
+    assert not worker.is_alive()
 
 
 def test_a_failing_flow_tracker_thread_is_reported(monkeypatch):
     source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
-    monkeypatch.setattr(traffic_sources, "packet_info_from_scapy",
-                        Mock(side_effect=RuntimeError("bad packet")))
-    start_tracking(source)
+    monkeypatch.setattr(source._tracker, "add_packet", Mock(side_effect=RuntimeError("bad packet")))
+    capture = start_tracking(source)
     try:
-        source._on_packet(scapy_all.IP() / scapy_all.UDP())
+        capture.send(tcp_info(1000.0, "S"))
         worker = source._worker
         assert worker is not None
         worker.join(timeout=5)
