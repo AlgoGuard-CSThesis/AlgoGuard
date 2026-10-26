@@ -33,12 +33,19 @@ MEMBERSHIP_RECHECK_SECONDS = 15.0
 MAX_BACKOFF_SECONDS = 60.0
 MAX_BATCHES_PER_TICK = 10
 PERMANENT_EVENT_ERRORS = {"validation", "conflict"}
+# Node health (6B.2) is reported this often while the user is signed in; administrators see a
+# node as stale after three missed reports.
+HEARTBEAT_SECONDS = 60.0
 
 
 class SyncWorker:
-    def __init__(self, auth, outbox, *, clock=time.monotonic, rng=random.random):
+    def __init__(self, auth, outbox, *, clock=time.monotonic, rng=random.random, health=None):
         self.auth = auth
         self.outbox = outbox
+        # Builds this installation's health report from a user/node context (set by the app).
+        self.health = health
+        self.last_heartbeat = {}
+        self.heartbeat_error = {}
         self.clock = clock
         self.rng = rng
         self.identities = {}
@@ -77,10 +84,12 @@ class SyncWorker:
                     self.last_authorization.pop(owner, None)
 
     def unregister(self, identity):
+        """Stop uploading and reporting health for this user (logout)."""
         owner = str(identity.user_id)
         with self.lock:
             if self.identities.get(owner) is identity:
                 del self.identities[owner]
+                self.last_heartbeat.pop(owner, None)
 
     def status(self, identity):
         owner = str(identity.user_id)
@@ -171,6 +180,7 @@ class SyncWorker:
                     break
             self._summaries(repo)
             self.outbox.recheck_capacity()
+            self._heartbeat(repo, owner)
             with self.lock:
                 self.retry.pop(owner, None)
                 self.last_error.pop(owner, None)
@@ -191,6 +201,19 @@ class SyncWorker:
                 else:
                     # permission/protocol: stop uploads; keep events pending and exportable.
                     self.blocked[owner] = error.category
+
+    def _heartbeat(self, repo, owner):
+        """Report node health at most once a minute; a failed report never stops uploads."""
+        if self.health is None or (
+                self.clock() - self.last_heartbeat.get(owner, -1e9) < HEARTBEAT_SECONDS):
+            return
+        self.last_heartbeat[owner] = self.clock()
+        try:
+            repo.report_node_health(self.health(repo.context))
+        except RepositoryError as error:
+            self.heartbeat_error[owner] = error.category
+        else:
+            self.heartbeat_error.pop(owner, None)
 
     # -- background loop -----------------------------------------------------
 

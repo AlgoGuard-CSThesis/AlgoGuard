@@ -339,6 +339,14 @@ class CloudMonitor:
         )
         return public
 
+    def capture_state(self):
+        """The capture's state for node health (6B.2): idle when no session is active."""
+        with self.lock:
+            state = self.session["state"] if self.session else "idle"
+        if state == "error":
+            return "error"
+        return state if state in legacy.ACTIVE_STATES else "idle"
+
     def status(self, identity, since_seq=0, session_id=None):
         try:
             since_seq = int(since_seq or 0)

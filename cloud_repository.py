@@ -77,6 +77,7 @@ RESOURCES = {
     "user_role": ("profile_id,role", False),
     "node": ("node_id", True),
     "node_membership": ("membership_id", True),
+    "node_health": ("node_id", True),
     "capture_session": ("capture_id", True),
     "network_traffic": ("traffic_id", True),
     "prediction": ("prediction_id", True),
@@ -379,6 +380,11 @@ class CloudRepository:
                 return False
             raise
         return True
+
+    def report_node_health(self, health: dict):
+        """Report this installation's health; the server records its own receipt time (6B.2)."""
+        return self.rpc("report_node_health",
+                        {"p_node_id": str(self.context.node_id), "p_health": health})
 
     def rpc(self, name: str, body: dict):
         if not isinstance(name, str) or not _RPC_NAME.fullmatch(name) or not isinstance(body, dict):

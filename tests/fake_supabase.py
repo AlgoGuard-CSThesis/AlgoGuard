@@ -30,7 +30,7 @@ from jwt.algorithms import ECAlgorithm
 TABLES = (
     "profile", "user_role", "node", "node_membership", "capture_session", "network_traffic",
     "prediction", "alert", "report", "report_alert", "system_log", "ingest_event",
-    "model_manifest", "model_summary", "deployment_summary", "training_summary",
+    "model_manifest", "model_summary", "deployment_summary", "training_summary", "node_health",
 )
 KEYS = {
     "profile": "profile_id", "node_membership": "membership_id", "capture_session": "capture_id",
@@ -39,7 +39,7 @@ KEYS = {
 }
 NODE_SCOPED = {
     "capture_session", "network_traffic", "prediction", "alert", "report", "report_alert",
-    "system_log", "ingest_event", "alert_detail",
+    "system_log", "ingest_event", "alert_detail", "node_health",
 }
 SCORE_KEYS = ("attack_probability", "attack_score_band", "score_band_policy")
 PREDICTION_KEYS = {"predicted_label", "confidence_score", "latency_ms", "model_name",
@@ -406,6 +406,29 @@ class FakeSupabase:
         if body.get("p_profile_id") != profile["profile_id"] or not self._can_write(
                 profile, body.get(node_key)):
             raise Refusal(403, "access denied")
+
+    def _rpc_report_node_health(self, body, profile):
+        """Like the database: an approved member's report, stamped with the server's own time."""
+        node_id = body.get("p_node_id")
+        if not self._can_write(profile, node_id):
+            raise Refusal(403, "access denied")
+        health = body.get("p_health")
+        keys = {"app_version", "deployment_id", "capture_status", "pending_events",
+                "dropped_events", "rejected_events"}
+        states = ("idle", "starting", "running", "paused", "stopping", "error")
+        if (not isinstance(health, dict) or set(health) - keys
+                or health.get("capture_status") not in states):
+            raise Refusal(400, "invalid health report")
+        received = datetime.now(timezone.utc).isoformat()
+        row = {"node_id": node_id, "reported_by": profile["profile_id"], "received_at": received,
+               **health}
+        with self.lock:
+            self.tables["node_health"] = [r for r in self.tables["node_health"]
+                                          if r["node_id"] != node_id] + [row]
+            node = self._node(node_id)
+            if node is not None:
+                node["last_seen_at"] = received
+        return received
 
     def _rpc_current_node_access(self, body, profile):
         return self._can_write(profile, body["p_node_id"])

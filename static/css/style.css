@@ -1057,3 +1057,9 @@ code {
         scroll-behavior: auto !important;
     }
 }
+
+/* Node health (6B.2): a stale computer's last report may no longer be true. */
+.health-stale td:not(:first-child):not(:nth-child(3)) {
+    color: var(--muted);
+    opacity: 0.7;
+}

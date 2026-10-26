@@ -38,6 +38,7 @@ from uuid import UUID, uuid4
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, url_for
 from flask import session as flask_session
 
+from app_version import app_version
 from cloud_auth import CloudAuth, MemorySession, MemorySessionInterface
 from cloud_monitor import (
     CloudMonitor,
@@ -101,6 +102,8 @@ PERSISTENCE_LABELS = {
 }
 PAGE_SIZE = 50
 LOG_PAGE_SIZE = 25
+# A node whose last report the server received longer ago than this is shown as stale (6B.2).
+STALE_AFTER_SECONDS = 180
 MAX_OFFSET = 1_000_000
 
 OwnerContext = namedtuple("OwnerContext", "user_id profile_id node_id")
@@ -130,7 +133,23 @@ def build_services(cfg):
     sync = SyncWorker(auth, outbox)
     models = ActiveModelStore(state_dir / "models")
     monitor = CloudMonitor(auth, outbox, sync, models)
+    sync.health = lambda context: node_health_report(context, outbox, models, monitor)
     return CloudServices(node_id, auth, outbox, sync, models, monitor)
+
+
+def node_health_report(context, outbox, models, monitor):
+    """What an installation reports about itself (6B.2); no capture can be controlled remotely."""
+    counts = outbox.counts(context)
+    pinned = models.current
+    deployment = pinned.manifest.get("deployment_id") if pinned is not None else None
+    return {
+        "app_version": app_version(),
+        "deployment_id": int(deployment) if deployment else None,
+        "capture_status": monitor.capture_state(),
+        "pending_events": int(counts["pending"]) + int(counts["in_memory"] or 0),
+        "dropped_events": int(counts["dropped"] or 0),
+        "rejected_events": int(counts["rejected"]),
+    }
 
 
 def _safe_next_url(next_url):
@@ -150,6 +169,15 @@ def _safe_next_url(next_url):
     ):
         return url_for("dashboard")
     return next_url
+
+
+def _parse_time(value):
+    """A timezone-aware datetime for a timestamptz string, else None."""
+    try:
+        stamp = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return stamp if stamp.tzinfo is not None else stamp.replace(tzinfo=timezone.utc)
 
 
 def _utc_text(value):
@@ -904,6 +932,39 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             pending=[row for row in memberships if row["status"] == "pending"],
             memberships=memberships,
         )
+
+    @app.get("/computers")
+    def computers():
+        """Node health for administrators: what each installation last reported, and when."""
+        if "administrator" not in services.auth.current_roles(g.identity):
+            flash("Only Administrator accounts can view computer health.", "danger")
+            return redirect(url_for("dashboard"))
+        repo = g.repo
+        results = _parallel({
+            "nodes": lambda: repo.list_records("node", page_size=100,
+                                               all_visible_nodes=True).rows,
+            "health": lambda: repo.list_records("node_health", page_size=100,
+                                                all_visible_nodes=True).rows,
+        })
+        _raise_first(results, ("nodes",))
+        health = results["health"]
+        if isinstance(health, Exception):
+            if isinstance(health, RepositoryError) and health.category == "authentication":
+                raise health
+            health = []  # a database without the 6B.2 migration has no health reports yet
+        reports = {row["node_id"]: row for row in health}
+        now = datetime.now(timezone.utc)
+        rows = []
+        for node in results["nodes"]:
+            report = reports.get(node["node_id"])
+            received = _parse_time(report["received_at"]) if report else None
+            age = (now - received).total_seconds() if received else None
+            rows.append({**node, "report": report, "age_seconds": age,
+                         "stale": age is None or age > STALE_AFTER_SECONDS,
+                         "this_node": node["node_id"] == str(services.node_id)})
+        rows.sort(key=lambda row: (row["status"] != "approved", row["display_name"].lower()))
+        return render_template("computers.html", computers=rows,
+                               stale_after_minutes=STALE_AFTER_SECONDS // 60)
 
     @app.route("/admins", methods=["GET", "POST"])
     def manage_admins():

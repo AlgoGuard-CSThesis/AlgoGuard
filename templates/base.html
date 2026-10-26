@@ -34,6 +34,7 @@
                     {{ nav_link(request.endpoint, ('nodes',), 'nodes', 'bi-hdd-network', 'Nodes') }}
                     {% endif %}
                     {% if session.get("admin_role") == "Administrator" %}
+                    {% if config.CLOUD_MODE %}{{ nav_link(request.endpoint, ('computers',), 'computers', 'bi-pc-display', 'Computers') }}{% endif %}
                     {{ nav_link(request.endpoint, ('manage_admins',), 'manage_admins', 'bi-people-fill', 'Accounts' if config.CLOUD_MODE else 'Admins') }}
                     {% endif %}
                     <li class="nav-item nav-admin"><span class="nav-link"><i class="bi bi-person-badge"></i> {{ session.get("admin_username", "Admin") }}{% if config.CLOUD_MODE %} <span class="status-badge cloud-badge" title="Cloud pilot mode: records are uploaded to the shared project">Cloud</span>{% endif %}</span></li>

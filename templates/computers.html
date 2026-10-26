@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Computers | AlgoGuard{% endblock %}
+
+{# A report's age is measured from the server's receipt time, never the installation's clock. #}
+{% macro age(seconds) -%}
+{%- if seconds is none -%}never
+{%- elif seconds < 90 -%}{{ seconds|round|int }} s ago
+{%- elif seconds < 5400 -%}{{ (seconds / 60)|round|int }} min ago
+{%- elif seconds < 172800 -%}{{ (seconds / 3600)|round|int }} h ago
+{%- else -%}{{ (seconds / 86400)|round|int }} days ago{%- endif %}
+{%- endmacro %}
+
+{% block content %}
+<header class="page-heading"><div><p class="eyebrow">Node Health</p><h1>Computers</h1><p class="page-meta">What each enrolled installation last reported while someone was signed in to it. A computer is stale when the cloud has received no report for {{ stale_after_minutes }} minutes; its last report is then shown greyed out, because it may no longer be true. Capture is controlled only on the computer itself.</p></div></header>
+
+<section class="panel">
+    <div class="table-responsive">
+        <table class="table data-table align-middle node-table mb-0">
+            <thead><tr><th>Computer</th><th>Enrollment</th><th>Last seen</th><th>Capture</th><th>App version</th><th>Model deployment</th><th>Uploads waiting</th><th>Dropped</th><th>Rejected</th></tr></thead>
+            <tbody>
+                {% for item in computers %}
+                {% set report = item.report %}
+                <tr class="{{ 'health-stale' if item.stale else '' }}">
+                    <td><strong>{{ item.display_name }}</strong><small><code>{{ item.node_id[:8] }}</code>{% if item.this_node %} &middot; this installation{% endif %}</small></td>
+                    <td><span class="status-badge status-{{ item.status }}{% if item.status == 'approved' %} success{% elif item.status in ('revoked', 'rejected') %} danger{% endif %}">{{ item.status|capitalize }}</span></td>
+                    <td>{% if item.stale %}<span class="status-badge score-none">Stale</span>{% else %}<span class="status-badge success">Reporting</span>{% endif %}<small>{{ age(item.age_seconds) }}{% if report %} &middot; {{ report.received_at[:19]|replace('T', ' ') }} UTC{% endif %}</small></td>
+                    {% if report %}
+                    <td>{{ report.capture_status|capitalize }}</td>
+                    <td><code>{{ report.app_version }}</code></td>
+                    <td>{{ '#' ~ report.deployment_id if report.deployment_id else 'Not loaded' }}</td>
+                    <td>{{ report.pending_events }}</td>
+                    <td>{{ report.dropped_events }}</td>
+                    <td>{{ report.rejected_events }}</td>
+                    {% else %}
+                    <td colspan="6" class="text-muted-soft">No health report received yet</td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr><td colspan="9"><div class="empty-state"><i class="bi bi-pc-display"></i><h2>No enrolled computers</h2></div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
