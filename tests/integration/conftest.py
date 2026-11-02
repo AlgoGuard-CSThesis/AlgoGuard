@@ -24,6 +24,7 @@ from stack_support import (
     load_local_env,
 )
 
+from .app_fixtures import published  # noqa: F401
 from .cloud_fixtures import cloud, scope  # noqa: F401
 
 REPO_ROOT = Path(__file__).resolve().parents[2]

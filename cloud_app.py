@@ -410,7 +410,21 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
     def repository_error(error):
         message = ERROR_MESSAGES.get(error.category, "The cloud response could not be verified.")
         status = ERROR_STATUS.get(error.category, 503)
-        if error.category == "authentication" and not g.get("bearer"):
+        renewal = (renew_sign_in() if error.category == "authentication" and not g.get("bearer")
+                   else None)
+        if renewal == "renewed":
+            # The cloud refused a token that has not expired here (a revoked signing key, for
+            # example) and the refresh token still works: the page or poll repeats (6C.1).
+            if wants_json():
+                return json_error("Your sign-in was renewed. Retrying.", 503)
+            if request.method == "GET":
+                return redirect(request.full_path if request.query_string else request.path)
+            flash("Your sign-in was renewed. Repeat the last action.", "warning")
+            return redirect(url_for("dashboard"))
+        if renewal == "transient":
+            # Renewal must wait for the cloud; the sign-in stays in place.
+            message, status = ERROR_MESSAGES["transient"], 503
+        elif error.category == "authentication" and not g.get("bearer"):
             session.identity = None
             if not wants_json():
                 flash("Your sign-in ended. Log in online to continue.", "warning")
@@ -440,6 +454,21 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         return json_error(str(error), 400)
 
     # -- helpers ---------------------------------------------------------------
+
+    def renew_sign_in():
+        """Renew a browser sign-in whose current token the cloud refused (6C.1).
+
+        Returns ``renewed``, ``transient`` (try again when the cloud answers), or None when the
+        sign-in has ended.
+        """
+        identity, repo = g.get("identity"), g.get("repo")
+        if identity is None or repo is None or not identity.active:
+            return None
+        try:
+            services.auth.repository(identity, refused=repo.context.access_token)
+        except RepositoryError as error:
+            return "transient" if error.retryable and identity.active else None
+        return "renewed" if identity.active else None
 
     def end_identity(identity, action="logout"):
         """Stop the old capture, clear its tokens; its pending records stay its own."""
@@ -615,7 +644,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         session.clear()
         session_interface.forget(session)
         response = redirect(url_for("login", logged_out="1"))
-        response.delete_cookie(app.config["SESSION_COOKIE_NAME"], path="/")
+        response.delete_cookie(app.config["SESSION_COOKIE_NAME"], path="/", httponly=True,
+                               samesite="Lax", secure=app.config["SESSION_COOKIE_SECURE"])
         return response
 
     # -- pages -----------------------------------------------------------------

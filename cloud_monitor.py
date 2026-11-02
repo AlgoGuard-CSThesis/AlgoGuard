@@ -587,9 +587,16 @@ class CloudMonitor:
             raise _AuthorizationEnded(
                 "Your sign-in ended. Capture stopped locally; log in online to continue.")
         if time.time() >= identity.expires_at:
-            # Refresh did not happen before expiry (the upload worker refreshes
-            # ahead of time while online), so the sign-in ends here as well: the
+            # Refresh did not happen before expiry (the upload worker refreshes ahead of time
+            # while online, but a computer may have slept past it). A refresh token that still
+            # works renews the sign-in here (6C.1); otherwise the sign-in ends, because the
             # operating table requires an online login before anything resumes.
+            try:
+                self.auth.repository(identity)
+            except RepositoryError:
+                pass
+            if identity.active and time.time() < identity.expires_at:
+                return
             identity.clear()
             raise _AuthorizationEnded(
                 "Your sign-in expired and could not be refreshed. Capture stopped locally; "

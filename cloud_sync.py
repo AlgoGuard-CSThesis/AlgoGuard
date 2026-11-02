@@ -164,6 +164,7 @@ class SyncWorker:
         owner = str(identity.user_id)
         if owner in self.blocked:
             return
+        repo = None
         try:
             repo = self.auth.repository(identity)
             now = self.clock()
@@ -186,21 +187,44 @@ class SyncWorker:
                 self.last_error.pop(owner, None)
                 self.last_success[owner] = self.clock()
         except RepositoryError as error:
+            category = error.category
+            if category == "authentication":
+                # Outside the worker lock: renewal is a network call.
+                category = self._renew(identity, repo)
             with self.lock:
                 self.last_error[owner] = error.category
-                if error.retryable:
+                if category == "transient":
                     attempt = min(self.retry.get(owner, (0, 0))[0] + 1, 10)
                     delay = min(MAX_BACKOFF_SECONDS, 2 ** (attempt - 1)) * (
                         0.5 + 0.5 * self.rng()
                     )
                     self.retry[owner] = (attempt, self.clock() + delay)
-                elif error.category == "authentication":
+                elif category == "renewed":
+                    self.last_authorization.pop(owner, None)  # Recheck membership next pass.
+                elif category == "authentication":
                     identity.clear()
                     if self.identities.get(owner) is identity:
                         del self.identities[owner]
                 else:
                     # permission/protocol: stop uploads; keep events pending and exportable.
-                    self.blocked[owner] = error.category
+                    self.blocked[owner] = category
+
+    def _renew(self, identity, repo):
+        """The cloud refused this user's token: renew the sign-in once (6C.1).
+
+        Returns ``renewed`` when a refresh token that still works kept the user signed in (after
+        a signing-key revocation, for example; uploads resume on the next pass), ``transient``
+        when renewal must wait for the cloud, and ``authentication`` when the sign-in has ended
+        and the user's events wait for their next online login.
+        """
+        if repo is None or not identity.active:
+            return "authentication"
+        try:
+            self.auth.repository(identity, refused=repo.context.access_token)
+        except RepositoryError as error:
+            return "transient" if error.retryable else "authentication"
+        return "renewed"
+
 
     def _heartbeat(self, repo, owner):
         """Report node health at most once a minute; a failed report never stops uploads."""

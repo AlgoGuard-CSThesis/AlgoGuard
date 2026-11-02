@@ -139,6 +139,8 @@ class FakeSupabase:
     def __init__(self):
         self.signing_key = ec.generate_private_key(ec.SECP256R1())
         self.kid = "fake-es256"
+        # Earlier signing keys that still verify after a rotation, until they are revoked (6C.1).
+        self.previous_keys = {}
         self.lock = threading.RLock()
         self.tables = {name: [] for name in TABLES}
         self.counters = {name: itertools.count(1) for name in TABLES}
@@ -283,10 +285,29 @@ class FakeSupabase:
         return jwt.encode(claims, self.signing_key, algorithm="ES256",
                           headers={"kid": self.kid})
 
+    def rotate_signing_key(self):
+        """New tokens use a new key; the old key keeps verifying until revoked, as in Supabase."""
+        with self.lock:
+            self.previous_keys[self.kid] = self.signing_key
+            self.signing_key = ec.generate_private_key(ec.SECP256R1())
+            self.kid = f"fake-es256-{len(self.previous_keys) + 1}"
+
+    def revoke_previous_keys(self):
+        """Tokens signed with an earlier key are refused from now on."""
+        with self.lock:
+            self.previous_keys.clear()
+
+    def _keys(self):
+        with self.lock:
+            return {**self.previous_keys, self.kid: self.signing_key}
+
     def _jwks(self):
-        jwk = json.loads(ECAlgorithm.to_jwk(self.signing_key.public_key()))
-        jwk.update(kid=self.kid, alg="ES256", use="sig")
-        return {"keys": [jwk]}
+        keys = []
+        for kid, key in self._keys().items():
+            jwk = json.loads(ECAlgorithm.to_jwk(key.public_key()))
+            jwk.update(kid=kid, alg="ES256", use="sig")
+            keys.append(jwk)
+        return {"keys": keys}
 
     def _subject(self, headers):
         if headers.get("apikey") != self.publishable_key:
@@ -298,7 +319,10 @@ class FakeSupabase:
         if token == self.publishable_key:
             return None
         try:
-            claims = jwt.decode(token, self.signing_key.public_key(), algorithms=["ES256"],
+            key = self._keys().get(jwt.get_unverified_header(token).get("kid"))
+            if key is None:
+                raise jwt.InvalidTokenError("unknown or revoked signing key")
+            claims = jwt.decode(token, key.public_key(), algorithms=["ES256"],
                                 audience="authenticated", issuer=f"{self.url}/auth/v1")
         except jwt.InvalidTokenError:
             raise Refusal(401, "invalid token") from None
