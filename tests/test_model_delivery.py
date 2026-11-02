@@ -133,6 +133,51 @@ def test_signed_url_cannot_change_destination(delivery):
         cache.load_active()
 
 
+def test_an_interrupted_download_leaves_no_lasting_part_file(delivery):
+    """6C.3: a crash before promotion leaves a .part file; the next load removes stale ones."""
+    import os
+    import time
+
+    cache, manifest, content, _, _ = delivery
+    cache.directory.mkdir(parents=True, exist_ok=True)
+    stale = cache.directory / "tmpcrashed.part"
+    stale.write_bytes(content[: len(content) // 2])
+    old = time.time() - 3600
+    os.utime(stale, (old, old))
+    fresh = cache.directory / "tmpdownloading.part"  # another download may still be writing
+    fresh.write_bytes(b"in progress")
+    pinned = cache.load_active()
+    assert pinned.artifact["test"] == "verified bytes"
+    assert not stale.exists() and fresh.exists()
+    assert pinned.cache_path.read_bytes() == content
+
+
+def test_older_cached_releases_are_removed_once_a_new_one_verifies(delivery, monkeypatch):
+    """6C.3: the cache keeps the release just verified and the one in use before it."""
+    from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
+
+    cache, manifest, _, signed, _ = delivery
+    loaded = []
+    for number in range(3):
+        buffer = io.BytesIO()
+        joblib.dump({"workflow_version": "stacking-five-v3", "test": f"release {number}",
+                     "training_runtime": training_runtime(),
+                     "feature_columns": list(FLOW_FEATURE_COLUMNS)}, buffer)
+        content = buffer.getvalue()
+        digest = hashlib.sha256(content).hexdigest()
+        manifest.update(manifest_id=10 + number, deployment_id=20 + number,
+                        object_sha256=digest, object_bytes=len(content),
+                        object_path=f"releases/{uuid4()}/{digest}.joblib")
+        signed["signedURL"] = f"/object/sign/models/{manifest['object_path']}?token=secret"
+        monkeypatch.setattr(cache, "_opener",
+                            SimpleNamespace(open=lambda *a, value=content, **k: io.BytesIO(value)))
+        loaded.append(cache.load_active(reuse=loaded[-1] if loaded else None))
+        assert loaded[-1].artifact["test"] == f"release {number}"
+    assert sorted(cache.directory.glob("*.joblib")) == sorted(
+        [loaded[1].cache_path, loaded[2].cache_path])
+    assert loaded[0].artifact["test"] == "release 0"  # an object already loaded is unaffected
+
+
 def test_runtime_mismatch_prevents_deserialization(delivery, monkeypatch):
     _, manifest, _, _, _ = delivery
     monkeypatch.setattr("model_runtime.platform.python_version", lambda: "3.13.0")

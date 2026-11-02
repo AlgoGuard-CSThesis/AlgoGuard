@@ -258,6 +258,10 @@ Imports preserve historical identities and evidence while leaving cloud writes
 disabled until explicitly enabled. These tools do not switch the active app.
 Follow [the cutover and recovery procedure](docs/migration/05e-cutover.md),
 including the separate Auth/platform recovery requirements, before using them.
+`cleanup_model_objects.py` lists model uploads that nothing uses (failed or
+abandoned publications older than 24 hours) and removes them only with `--yes`;
+active, published and superseded models are always kept. See
+[Stage 6C](docs/migration/06c-recovery.md).
 
 ## CSV Contract
 

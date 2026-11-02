@@ -6,6 +6,7 @@ import hashlib
 import os
 import tempfile
 import threading
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -16,6 +17,10 @@ from types import MappingProxyType
 from cloud_connections import owned_opener
 from cloud_repository import RepositoryError, _NoRedirect
 from model_runtime import ModelDeliveryError, verify_artifact_contract, verify_manifest
+
+# A download that ended without promotion (the computer crashed or lost power) leaves a .part
+# file; one older than this is no longer being written and is removed (6C.3).
+STALE_PART_SECONDS = 600
 
 
 @dataclass(frozen=True)
@@ -83,6 +88,7 @@ class ModelCache:
         ):
             return reuse
         self.directory.mkdir(parents=True, exist_ok=True)
+        self._remove_stale_parts()
         destination = self.directory / (
             f"{manifest['manifest_id']}-{manifest['object_sha256']}.joblib"
         )
@@ -106,13 +112,47 @@ class ModelCache:
             raise
         except Exception:
             raise ModelDeliveryError("The verified model could not be loaded.") from None
+        self._remove_other_releases(keep={destination,
+                                          reuse.cache_path if reuse is not None else None})
         return PinnedModel(artifact, MappingProxyType(manifest), destination)
+
+    def _remove_stale_parts(self):
+        cutoff = time.time() - STALE_PART_SECONDS
+        for path in self.directory.glob("*.part"):
+            try:
+                if path.stat().st_mtime < cutoff:
+                    path.unlink()
+            except OSError:
+                pass  # In use or already gone; the next load tries again.
+
+    def _remove_other_releases(self, keep):
+        """Keep the release just verified and the one this process used before it (6C.3).
+
+        Older cached releases are only copies: the protected manifest decides what is active,
+        and a later start downloads and verifies again whatever it names.
+        """
+        for path in self.directory.glob("*.joblib"):
+            if path not in keep:
+                try:
+                    path.unlink()
+                except OSError:
+                    pass
 
     def _download(self, manifest, destination):
         path = urllib.parse.quote(manifest["object_path"], safe="/")
-        signed = self.repository._request(
-            "POST", "/storage/v1/object/sign/models/" + path, body={"expiresIn": 60}
-        )
+        try:
+            signed = self.repository._request(
+                "POST", "/storage/v1/object/sign/models/" + path, body={"expiresIn": 60}
+            )
+        except RepositoryError as error:
+            if error.category in ("authentication", "permission"):
+                raise  # The sign-in or membership needs attention, not the model.
+            if error.retryable:
+                raise ModelDeliveryError("Model download failed. Reconnect and retry.") from None
+            # Storage answers 400 when the published object is missing (6C.3).
+            raise ModelDeliveryError(
+                "The published model file is unavailable. Contact maintenance."
+            ) from None
         if not isinstance(signed, dict) or not isinstance(signed.get("signedURL"), str):
             raise ModelDeliveryError("Model download authorization failed.")
         signed_path = signed["signedURL"]
