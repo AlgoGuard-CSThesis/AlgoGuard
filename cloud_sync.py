@@ -9,7 +9,9 @@ Failure handling:
 
 * transient (network, 429, 5xx) - capped exponential backoff with jitter; the
   server deduplicates by event UUID, so a lost acknowledgement is reconciled
-  by simply sending the same events again;
+  by simply sending the same events again. Up to ``UPLOAD_PARALLELISM`` batches
+  are in flight at once (DEF-10); they never share an event, and every batch
+  of a pass has finished before the next pass reads the spool again;
 * validation/conflict - permanent for the offending event only: a failed batch
   is split so one bad event cannot reject 49 good ones;
 * permission (revoked membership, deactivated account) - uploads stop with an
@@ -26,12 +28,16 @@ import threading
 import time
 from uuid import uuid4
 
+from cloud_outbox import BATCH_LIMIT
 from cloud_repository import RepositoryError
 
 INTERVAL_SECONDS = 1.0
 MEMBERSHIP_RECHECK_SECONDS = 15.0
 MAX_BACKOFF_SECONDS = 60.0
 MAX_BATCHES_PER_TICK = 10
+# DEF-10: one request at a time managed about 65 events/s to the Tokyo pilot, so a burst of 300
+# waited up to 5 s. Four requests at once keep each batch at 50 events (the server's limit).
+UPLOAD_PARALLELISM = 4
 PERMANENT_EVENT_ERRORS = {"validation", "conflict"}
 # Node health (6B.2) is reported this often while the user is signed in; administrators see a
 # node as stale after three missed reports.
@@ -39,9 +45,11 @@ HEARTBEAT_SECONDS = 60.0
 
 
 class SyncWorker:
-    def __init__(self, auth, outbox, *, clock=time.monotonic, rng=random.random, health=None):
+    def __init__(self, auth, outbox, *, clock=time.monotonic, rng=random.random, health=None,
+                 parallelism=UPLOAD_PARALLELISM):
         self.auth = auth
         self.outbox = outbox
+        self.parallelism = max(1, int(parallelism))
         # Builds this installation's health report from a user/node context (set by the app).
         self.health = health
         self.last_heartbeat = {}
@@ -135,6 +143,53 @@ class SyncWorker:
         self.outbox.acknowledge(repo.context, receipts)
         return len(receipts)
 
+    def _store_parallel(self, repo, batches):
+        """Upload disjoint batches at once and wait for all of them (DEF-10).
+
+        Each batch is acknowledged or rejected on its own, so a failed batch never undoes another
+        one's receipts. The most serious failure is raised afterwards: a refusal (authentication,
+        permission) before a local storage error, and either before a transient one.
+        """
+        if len(batches) == 1:
+            self._store(repo, batches[0])
+            return
+        failures: list[BaseException | None] = [None] * len(batches)
+
+        def upload(index, batch):
+            try:
+                self._store(repo, batch)
+            except BaseException as error:  # Re-raised below, in the worker thread.
+                failures[index] = error
+
+        # Daemon threads, not a pool: a request stuck until its 10 s timeout must never hold up
+        # closing the application.
+        threads = [threading.Thread(target=upload, args=(index, batch), daemon=True,
+                                    name="algoguard-upload-batch")
+                   for index, batch in enumerate(batches)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+        errors = [error for error in failures if error is not None]
+        if errors:
+            raise min(errors, key=lambda error: (
+                0 if isinstance(error, RepositoryError) and not error.retryable
+                else 2 if isinstance(error, RepositoryError) else 1))
+
+    def _upload(self, repo):
+        """Send pending events, ``parallelism`` batches at a time, at most 10 batches a pass."""
+        sent = 0
+        while sent < MAX_BATCHES_PER_TICK:
+            width = min(self.parallelism, MAX_BATCHES_PER_TICK - sent)
+            events = self.outbox.pending(repo.context, limit=width * BATCH_LIMIT)
+            if not events:
+                return
+            self._store_parallel(repo, [events[start:start + BATCH_LIMIT]
+                                        for start in range(0, len(events), BATCH_LIMIT)])
+            sent += width
+            if len(events) < width * BATCH_LIMIT:
+                return
+
     def _summaries(self, repo):
         for summary_id, kind, payload in self.outbox.pending_summaries(repo.context):
             try:
@@ -172,13 +227,7 @@ class SyncWorker:
                 if not repo.node_access():
                     raise RepositoryError("permission")
                 self.last_authorization[owner] = now
-            for _ in range(MAX_BATCHES_PER_TICK):
-                events = self.outbox.pending(repo.context)
-                if not events:
-                    break
-                self._store(repo, events)
-                if len(events) < 50:
-                    break
+            self._upload(repo)
             self._summaries(repo)
             self.outbox.recheck_capacity()
             self._heartbeat(repo, owner)
@@ -224,7 +273,6 @@ class SyncWorker:
         except RepositoryError as error:
             return "transient" if error.retryable else "authentication"
         return "renewed"
-
 
     def _heartbeat(self, repo, owner):
         """Report node health at most once a minute; a failed report never stops uploads."""

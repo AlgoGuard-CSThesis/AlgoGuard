@@ -32,7 +32,13 @@ SESSION_LIMIT = 300
 MAX_AGE = 7 * 86400
 # Expired and rejected records stay visible (without payload) this long before they go (6B.3).
 TOMBSTONE_AGE = 28 * 86400
+# Synced receipts only record what this computer uploaded; the cloud keeps the records. Each still
+# occupies about 1.2 KiB of spool pages, so a sustained 25 events/s filled the flow budget in about
+# 35 minutes. The newest receipts are kept for seven days, at most this many (6C.4).
+SYNCED_KEEP = 10_000
 BATCH_LIMIT = 50
+# One read may cover several batches that upload in parallel (DEF-10); each stays within 50.
+PENDING_LIMIT = 10 * BATCH_LIMIT
 EVENT_BYTES = 65536
 SUMMARY_BYTES = 4096
 # Separate reserved capacity: capture summaries can never be crowded out by audit
@@ -225,7 +231,16 @@ class Outbox:
                 self.queue.task_done()
 
     def _directory_bytes(self):
-        return sum(path.stat().st_size for path in self.directory.iterdir() if path.is_file())
+        total = 0
+        for path in self.directory.iterdir():
+            try:
+                if path.is_file():
+                    total += path.stat().st_size
+            except FileNotFoundError:
+                # Another thread's transaction removed its rollback journal after the listing.
+                # Counting it as a disk failure stopped saving for the rest of the session (6C.4).
+                continue
+        return total
 
     def _used_bytes(self):
         return (
@@ -327,12 +342,13 @@ class Outbox:
     # -- upload side ---------------------------------------------------------
 
     def pending(self, context, limit=BATCH_LIMIT):
+        """The oldest pending events, at most ``PENDING_LIMIT`` (several upload batches)."""
         with self.db_lock:
             rows = self.db.execute(
                 "select event_uuid,payload from event "
                 "where user_id=? and profile_id=? and node_id=? "
                 "and status='pending' order by created_at,event_uuid limit ?",
-                _owner(context) + (min(int(limit), BATCH_LIMIT),),
+                _owner(context) + (min(int(limit), PENDING_LIMIT),),
             ).fetchall()
         return [json.loads(row["payload"]) for row in rows]
 
@@ -455,7 +471,8 @@ class Outbox:
         A record never uploaded becomes rejected with reason ``expired``; a record the cloud
         rejected keeps its reason. Either way the payload is dropped to free space, but the
         record stays counted and exported as rejected, never as synced, until it is
-        ``TOMBSTONE_AGE`` old. Synced receipts carry no payload and go after seven days.
+        ``TOMBSTONE_AGE`` old. Synced receipts carry no payload and go after seven days, or once
+        ``SYNCED_KEEP`` newer receipts exist.
         Returns how many pending records expired.
         """
         now = time.time() if now is None else now
@@ -473,6 +490,11 @@ class Outbox:
             self.db.execute(
                 "delete from event where (status='synced' and created_at<?) or created_at<?",
                 (cutoff, forget))
+            # Oldest receipts first: their pages empty out whole and are reused.
+            self.db.execute(
+                "delete from event where status='synced' and rowid<=coalesce((select rowid "
+                "from event where status='synced' order by rowid desc limit 1 offset ?),-1)",
+                (SYNCED_KEEP,))
             self.db.execute(
                 "delete from reservation where created_at<? and session_id not in "
                 "(select session_id from event where status='pending')",
