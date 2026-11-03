@@ -212,6 +212,18 @@ stack. If the Edge Function tests fail with HTTP 503, run
 administrator terminal. `SUSTAINED_SECONDS=900` runs the sustained-load test for 15 minutes
 instead of 90 seconds (`SUSTAINED_REPORT=<file>` saves its figures).
 
+Two release checks are opt-in because they take longer and need more than the lane:
+
+- `set RUN_CLEAN_INSTALL=1` builds the analyst package from the last commit, installs it into an
+  empty folder with `SETUP_ALGOGUARD.cmd` (packages from the internet) and uses it as an analyst
+  would (`tests/integration/test_clean_install.py`; `CLEAN_INSTALL_MODEL=<model .joblib>` and
+  `CLEAN_INSTALL_REPORT=<file>` are optional).
+- `set RUN_UI_WALK=1` with `UI_WALK_PYTHON=<python.exe of an environment with playwright>` walks
+  every page in Microsoft Edge at 1366 px and 390 px (`tests/integration/test_ui_walk.py`;
+  `UI_WALK_OUTPUT=<folder>` keeps the report and screenshots).
+
+Run both before a release; Stage 6D's results are in `test-results/iter6_6d/`.
+
 GitHub Actions runs the lint, type, offline and polling checks for every push to `main`.
 
 **Settings for tests and automation.** These override `.env` and are mostly used by the test
