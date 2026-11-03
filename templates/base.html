@@ -116,6 +116,19 @@
             const message = event.target.getAttribute("data-confirm");
             if (message && !window.confirm(message)) {
                 event.preventDefault();
+                return;
+            }
+            // A second click while the first submission is on its way would repeat the action
+            // (pilot finding 16: an alert marked Resolved twice). The buttons are disabled once
+            // the browser has taken the clicked button's value.
+            if (event.target.method === "post") {
+                const buttons = Array.from(event.target.querySelectorAll("button[type=submit]"));
+                if (event.submitter) {
+                    buttons.push(event.submitter);
+                }
+                window.setTimeout(function () {
+                    buttons.forEach(function (button) { button.disabled = true; });
+                }, 0);
             }
         });
     </script>

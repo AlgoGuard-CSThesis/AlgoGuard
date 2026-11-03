@@ -312,6 +312,26 @@ def test_manual_prediction_reports_queued_state_until_acknowledged(cloud):
     assert client.get("/api/events/00000000-0000-4000-8000-000000000000").status_code == 404
 
 
+def test_malformed_json_is_refused_before_anything_is_queued_or_started(cloud):
+    """6D.4: the cloud console's counterpart of test_invalid_json_bodies_are_rejected..."""
+    client = signed_in(cloud.app)
+    cloud.services.sync.close()
+    identity = next(iter(cloud.app.session_interface.sessions.values())).identity
+    before = cloud.services.outbox.counts(identity)
+    for endpoint in ("/predict", "/monitor/start"):
+        for body, content_type in (("{broken json", "application/json"),
+                                   ("[]", "application/json"), ("[1]", "application/json"),
+                                   ("false", "application/json"), ("null", "application/json"),
+                                   ('"flow"', "application/json"), ("", "application/json"),
+                                   ("{}", "text/plain")):
+            response = client.post(endpoint, data=body, content_type=content_type,
+                                   headers={"X-CSRF-Token": client.csrf})
+            assert response.status_code == 400, (endpoint, body)
+            assert "valid JSON object" in response.get_json()["message"]
+    assert cloud.services.outbox.counts(identity) == before
+    assert cloud.services.monitor.session is None
+
+
 def test_an_unknown_address_gets_the_consoles_own_not_found_page(cloud):
     client = signed_in(cloud.app)
     page = client.get("/no-such-page")

@@ -1008,6 +1008,18 @@ code {
     vertical-align: middle;
 }
 
+/* A long badge in a panel heading (Retention's capacity warning) wraps instead of widening a
+   phone screen (6D.4). */
+.panel-heading {
+    flex-wrap: wrap;
+}
+
+.panel-heading > .status-badge,
+.panel-heading > .status-pill {
+    max-width: 100%;
+    white-space: normal;
+}
+
 /* Screen-reader labels inside a table are absolutely positioned. Without a positioned wrapper
    they escape its horizontal scrolling and widen the whole page (Accounts, 6D.4). */
 .table-responsive {
