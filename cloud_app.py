@@ -446,6 +446,16 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             detail="Models are published by the maintainer; this installation never trains.",
         ), 503
 
+    @app.errorhandler(404)
+    def not_found(_error):
+        """An unknown address gets the console's own page, not the framework's (6D.4)."""
+        if wants_json():
+            return json_error("Not found.", 404)
+        return render_template(
+            "cloud_message.html", title="Page not found", icon="bi-signpost-split",
+            message="There is no AlgoGuard page at this address.", detail=None,
+        ), 404
+
     @app.errorhandler(LiveMonitorError)
     def monitor_error(error):
         return json_error(str(error), 409)

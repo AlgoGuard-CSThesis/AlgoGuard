@@ -1008,6 +1008,12 @@ code {
     vertical-align: middle;
 }
 
+/* Screen-reader labels inside a table are absolutely positioned. Without a positioned wrapper
+   they escape its horizontal scrolling and widen the whole page (Accounts, 6D.4). */
+.table-responsive {
+    position: relative;
+}
+
 .password-rules {
     color: var(--muted);
     font-size: 0.82rem;

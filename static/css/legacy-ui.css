@@ -756,7 +756,8 @@ h2 {
     .details-grid,
     .admin-layout,
     .login-page {
-        grid-template-columns: 1fr;
+        /* minmax(0, ...): a wide table scrolls inside its panel instead of widening the page */
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .login-identity {

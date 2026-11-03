@@ -312,6 +312,16 @@ def test_manual_prediction_reports_queued_state_until_acknowledged(cloud):
     assert client.get("/api/events/00000000-0000-4000-8000-000000000000").status_code == 404
 
 
+def test_an_unknown_address_gets_the_consoles_own_not_found_page(cloud):
+    client = signed_in(cloud.app)
+    page = client.get("/no-such-page")
+    assert page.status_code == 404
+    text = page.get_data(as_text=True)
+    assert "Page not found" in text and "Return to dashboard" in text
+    assert client.get("/no-such-page", headers={"Authorization": "Bearer x"}).status_code in (
+        401, 404)
+
+
 def test_manual_prediction_uploads_its_attack_score_and_band(cloud):
     client = signed_in(cloud.app)
     result = post_json(client, "/predict", MANUAL_FLOW).get_json()
