@@ -7,19 +7,30 @@ https://github.com/users/pqauoz/projects/5/views/1
 Testing Kanban Board
 https://github.com/users/bry22191919-hash/projects/4/views/2
 
-AlgoGuard is a local Flask application that detects anomalies in network traffic using a deployed Stacking Ensemble. The web application is **inference-only**: it classifies traffic flow by flow in the Live Monitor, or one record at a time on the Prediction page. Model training and deployment happen offline through `train.py`, so the running detector is never disturbed by a training job.
+AlgoGuard detects anomalies in network traffic. Analysts run it on their own Windows computers: it classifies each network flow as Normal or Attack with a deployed Stacking Ensemble, and stores detections in a shared cloud project (Supabase) where administrators manage accounts, approve computers and review every installation's records. Models are trained and published by a maintainer; analyst installations only download and verify them.
 
-The Live Monitor accepts three traffic sources through one pipeline: **live packet capture** from a network interface (data packets are aggregated into flows in real time and classified the moment each flow ends), **recorded packet captures** (`.pcap` files replayed through the same flow tracker, reproducibly), and the original **labelled CSV replay** of the bundled UNSW-NB15 samples, which keeps ground-truth labels visible for accuracy demonstrations. Live capture requires the Npcap driver and elevated privileges on Windows; when they are absent, both replay modes keep working and the monitor explains why live mode is unavailable. AlgoGuard observes and classifies traffic; it never blocks it, and it stores flow metadata only, never packet payloads. Capture live traffic only on networks you are authorized to monitor.
+The Live Monitor accepts three traffic sources through one pipeline: **live packet capture** from a network interface (packets are grouped into flows in real time and each flow is classified when it ends), **recorded packet captures** (`.pcap` files replayed through the same flow tracker), and **labelled CSV replay** of bundled UNSW-NB15 samples, which keeps ground-truth labels visible for demonstrations. Live capture needs the Npcap driver and administrator rights on Windows; without them both replay sources keep working. AlgoGuard observes and classifies traffic; it never blocks it, and it stores flow metadata only, never packet payloads. Capture live traffic only on networks you are authorized to monitor.
+
+## Which guide to read
+
+| You are | Read |
+|---|---|
+| An analyst installing or using AlgoGuard, or an administrator managing accounts and computers | [docs/ANALYST_GUIDE.md](docs/ANALYST_GUIDE.md) |
+| The maintainer: cloud project, migrations, first administrator, training and publishing models, analyst packages, backups, cutover, recovery, tests | [docs/MAINTAINER_GUIDE.md](docs/MAINTAINER_GUIDE.md) |
+| Reviewing how and why it was built | [AlgoGuard Iterations (plan).md](<AlgoGuard Iterations (plan).md>), [the backlog](<AlgoGuard Migration (backlog).md>) and the stage records in [docs/migration/](docs/migration/) |
+
+**Analyst quick start.** Install Python 3.14.6, unzip the analyst package (or clone this repository), run `SETUP_ALGOGUARD.cmd` and enter the project URL and publishable key from your administrator, then run `START_ALGOGUARD.cmd` (as administrator for live capture), open `http://127.0.0.1:5000` and sign in. An administrator approves the computer once on the Nodes page.
 
 ## Runtime Architecture
 
-The application has two detection surfaces and one offline training tool:
-
-| Surface | Purpose |
-| --- | --- |
-| Live Monitor (`/monitor`) | Streams flows from a live interface, a PCAP recording, or a CSV sample through the deployed model, one at a time, with a live feed, timeline chart, and running attack/normal statistics. |
-| Prediction (`/simulation`, `POST /predict`) | Classifies a single hand-entered flow, also available as a JSON API. |
-| `train.py` | Trains and ranks the six candidates offline and deploys the Stacking Ensemble when it passes the quality gate. |
+| Part | Where it runs | Purpose |
+|---|---|---|
+| Web console (`app.py` → `cloud_app.py`) | Each analyst computer, on `127.0.0.1` only | Sign-in, Dashboard, Live Monitor, Manual Prediction, Alerts, Reports, Logs, Nodes; for administrators also Accounts, Computers and Retention. |
+| Capture and scoring processes (`services/capture_worker.py`, `services/inference_worker.py`) | Each analyst computer | Packet capture and model scoring in separate processes, so neither waits behind the other or the web pages. |
+| Local queue (`cloud_outbox.py`, `cloud_sync.py`) | Each analyst computer, in `.algoguard/` | Saves each stored detection on disk first, then uploads it in the background; records survive restarts and outages. |
+| Model delivery (`model_delivery.py`, `model_runtime.py`) | Each analyst computer | Downloads the active published model, checks its hash and runtime, and pins it for each capture. |
+| Cloud project (`supabase/`) | Supabase | Auth (online e-mail/password sign-in), the database with row-level security per user and installation, the private model store and the account-administration function. |
+| Maintainer tools (`train.py`, `publish_model.py`, `cloud_migrate.py`, `bootstrap_admin.py`, `cloud_recovery.py`, `legacy_*.py`, `scripts/`) | The maintainer's computer only | Training, publishing, schema changes, the first administrator, backups, cutover and analyst packages. Never part of the analyst package. |
 
 `train.py` trains these exact candidates:
 
@@ -42,226 +53,95 @@ This ranking is for research comparison only and never chooses the deployed mode
 
 ## Main Workflow
 
-Offline, run only when the model needs to be rebuilt:
+On the maintainer's computer, when the model needs to be rebuilt:
 
 ```text
 python train.py <csv> --deploy
-  -> validation and independent training-run record
-  -> stratified split
-  -> five leakage-safe individual pipelines
-  -> individual-model comparison ranking
-  -> Stacking training with the five base learners
-  -> Stacking evaluation and quality gate
-  -> Stacking deployed as the active artifact
+  -> validation and independent training-run record (local SQLite training store)
+  -> stratified split, five leakage-safe individual pipelines, comparison ranking
+  -> Stacking training, evaluation and quality gate
+  -> Stacking becomes the maintainer's local active model
+python publish_model.py --model-id <id> --publication-id <uuid> --yes
+  -> runtime and feature checks, immutable upload, hash verification
+  -> the single active model of the cloud project
 ```
 
-Online, the everyday detection path:
+On each analyst computer, every day:
 
 ```text
-python app.py
-  -> Live Monitor replays flows through the active artifact
-     (or Prediction classifies one hand-entered flow)
-  -> Normal / Attack verdict with confidence and latency
-  -> Attack raises an alert
-  -> prediction, alert, and audit events stored in SQLite
+START_ALGOGUARD.cmd  (python app.py)
+  -> online sign-in; this installation approved by an administrator
+  -> the active model is downloaded once, verified and cached
+  -> Live Monitor or Manual Prediction classifies flows: Normal / Attack,
+     confidence, attack score and latency
+  -> stored detections are saved on this computer, then uploaded;
+     an Attack becomes an alert in the cloud
 ```
-
-Training history, results, deployments, predictions, alerts, reports, admin accounts, and audit events are stored in SQLite. Reports, per-run artifacts, and the active artifact are runtime files excluded from Git.
 
 ## Project Structure
 
 ```text
 AlgoGuard/
-|-- app.py
-|-- train.py
-|-- migrate.py
-|-- requirements.txt
-|-- requirements-dev.txt
-|-- services/
-|   |-- database_service.py
-|   |-- deployment_service.py
-|   |-- evaluation_service.py
-|   |-- flow_tracker_service.py
-|   |-- live_monitor_service.py
-|   |-- model_registry.py
-|   |-- preprocessing_service.py
-|   |-- resource_service.py
-|   |-- simulation_service.py
-|   |-- traffic_source_service.py
-|   `-- training_service.py
-|-- templates/
-|-- static/
-|   |-- css/          (style.css imports legacy-ui.css)
-|   `-- vendor/       (Bootstrap 5.3.3 + Bootstrap Icons, served locally)
-|-- tests/
-|-- datasets/
-|   |-- algoguard_big.csv
-|   |-- algoguard_bigger.csv
-|   `-- algoguard_biggest.csv
-|-- captures/
-|-- database/
-|-- saved_models/
-|-- reports/
-`-- research/
+|-- app.py                     web console entry point (cloud mode by default)
+|-- cloud_*.py                 cloud application, sign-in, local queue, uploads, recovery
+|-- model_delivery.py          verified model download and cache
+|-- config.py                  settings (.env), checked with `python config.py`
+|-- SETUP_ALGOGUARD.cmd        analyst setup: packages and .env
+|-- START_ALGOGUARD.cmd        analyst start
+|-- train.py, publish_model.py, cloud_migrate.py, bootstrap_admin.py,
+|   cleanup_model_objects.py, legacy_backup.py, legacy_import.py   maintainer tools
+|-- services/                  flow tracking, capture, scoring, legacy local services
+|-- templates/, static/        pages and styles (Bootstrap vendored; works offline)
+|-- datasets/                  bundled UNSW-NB15 replay samples
+|-- captures/                  your .pcap files for replay (not in git)
+|-- supabase/                  migrations, account function, local stack config
+|-- scripts/                   dataset building, evaluation, capture checks, packaging
+|-- docs/                      guides, stage records (migration/), test cycles (testing/)
+|-- tests/                     offline suite; tests/integration/ needs the local stack
+|-- research/                  archived notebook workspace (not used by the app)
+`-- database/, saved_models/, reports/   maintainer training records (not in git)
 ```
 
-`app.py` serves detection only; the training services are reached through `train.py`. `uploads/` is retained for historical runtime files and is no longer written to.
+`research/` is an archived notebook workspace and is not imported by the application. `ALGOGUARD_USER_MANUAL.txt` is the older end-user and demonstration guide: its explanations of pages, flow fields and test values still apply, while installation and sign-in now follow the analyst guide. `uploads/` is kept for historical runtime files and is no longer written to.
 
-`research/` is an archived notebook workspace and is not imported by the Flask application. `AlgoGuard Iterations (plan).md` documents the completed Iterations 1–4 and the architecture for the cloud migration; `AlgoGuard Migration (backlog).md` is the stage-by-stage task list for Iterations 5–6; `ALGOGUARD_USER_MANUAL.txt` is the end-user and demo guide.
+## Installation
 
-## Installation on Windows PowerShell
+Analysts follow [the analyst guide](docs/ANALYST_GUIDE.md): Python 3.14.6, `SETUP_ALGOGUARD.cmd`, the two cloud settings, `START_ALGOGUARD.cmd`. Maintainers clone the repository and install the development and maintainer requirements as in [the maintainer guide](docs/MAINTAINER_GUIDE.md):
 
-Requirements: Python 3.10 or newer and Git. Clone the repository, then run all commands from the project root, the directory containing `app.py` and `requirements.txt`:
-
-```powershell
-git clone https://github.com/pqauoz/AlgoGuard.git
+```bat
+git clone https://github.com/AlgoGuard-CSThesis/AlgoGuard.git
 cd AlgoGuard
-py -m venv venv
-.\venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
+py -3.14 -m venv venv
+venv\Scripts\python.exe -m pip install -r requirements-dev.txt -r requirements-maintainer.txt
 ```
 
-If PowerShell blocks activation (`running scripts is disabled on this system`), either allow it for the current window or call the environment's interpreter directly:
+Use the Python version recorded in `requirements-model.lock` (3.14.6): published models record their exact runtime, and loading refuses a mismatch. The web interface is self-contained (Bootstrap and its icons are vendored under `static/vendor/`).
 
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass   # then .\venv\Scripts\Activate.ps1
-# or
-.\venv\Scripts\python.exe -m pip install -r requirements.txt
-.\venv\Scripts\python.exe app.py
-```
+`python config.py` checks the settings without starting anything. `python app.py` serves the cloud application when `.env` holds `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`; without them it refuses to start and says how to set it up. AlgoGuard listens on `127.0.0.1` with the debugger off; cloud mode refuses any other host.
 
-The web interface is fully self-contained: Bootstrap and its icon font are vendored under `static/vendor/`, so the application runs without internet access once the Python packages are installed.
+## Cloud Mode
 
-## First Run on a Fresh Clone
+Only the project URL and publishable key belong in an analyst `.env`; a secret or service key, a non-HTTPS remote URL, or a non-loopback `ALGOGUARD_HOST` is refused at startup. Maintainer credentials live in `.env.maintainer` and are read only by maintainer tools.
 
-A fresh clone contains code and the sample datasets only. The trained model, the SQLite database, reports, and captures are runtime files excluded from Git, so a new installation has **no deployed model** until you train one. Do this once, in order:
+- **Sign-in is online, every start.** Log in with the e-mail and password an Administrator created. Tokens live in process memory and are renewed in the background; the browser cookie is a random session ID. A cached model never permits offline sign-in.
+- **Installation approval.** The first sign-in enrolls this installation (node). An Administrator approves it on the Nodes page; until then monitoring and uploads are refused with an explanation.
+- **Models come from the maintainer.** The verified active model is downloaded into the local cache and pinned for each capture. Analysts never train.
+- **Local state** lives in `.algoguard/` (`ALGOGUARD_STATE_DIR`): the installation ID (`node-id`), the owner-restricted upload queue, and the model cache.
 
-```powershell
-python train.py datasets\algoguard_big.csv --deploy   # ~20-60 s; trains six candidates, deploys Stacking
-python app.py                                          # start the detector
-```
+Stored detections are queued locally and uploaded in the background, up to four batches at a time, so a slow or lost connection never stalls classification. Each record reports one of `in_memory` (not yet saved), `durable_pending` (saved on this computer), `synced` (committed in the cloud), `dropped` (not stored: session cap, full queue, or local capacity), or `rejected` (refused by the cloud; kept for export). Only `synced` means the cloud has the record. Pending records survive restart, upload only under the account that produced them, expire after seven days, and can be downloaded from the dashboard's **Export pending records**. The analyst guide explains these states and their limits in plain terms.
 
-Open `http://127.0.0.1:5000`.
+**API in cloud mode.** `POST /predict` returns `event_uuid` and `persistence`; `prediction_id` and `alert_id` are `null` until the upload is acknowledged. Poll `GET /api/events/<event_uuid>` for `synced: true` and the database IDs. JSON endpoints (`/predict`, `/api/events/...`, `/monitor/...`, `/outbox/export`, `/api/reports/...`) also accept `Authorization: Bearer <access token>` without a cookie or CSRF token; HTML pages accept only the browser session. See `docs/migration/05d-integration.md`.
 
-The first command creates `database/algoguard.sqlite3` and prints a **one-time random password for the `admin` account** (the account is created by whichever command touches the new database first: `train.py`, `migrate.py`, or `app.py`). Copy it from the terminal before it scrolls away; it is never shown again. To pick the first credentials yourself, set `ALGOGUARD_ADMIN_USERNAME` and `ALGOGUARD_ADMIN_PASSWORD` before that first command (see Run the Application).
+## Legacy Local Mode
 
-If you open the site before training, every page explains that no model is deployed and shows the command above; nothing else is broken.
+Before the cloud migration AlgoGuard kept everything in a local SQLite database. That mode remains for installations that have not been moved to the cloud yet, for the maintainer's training records, and for the test suite, but it is no longer what `app.py` starts by default. It runs only with `ALGOGUARD_DB_MODE=sqlite` set in `.env` or the environment, and prints a notice at startup. In this mode:
 
-## Database Migration
+- `python train.py datasets\algoguard_big.csv --deploy` must run once on a new database, since a fresh clone has no model; it creates `database/algoguard.sqlite3` and prints a one-time random password for the `admin` account (set `ALGOGUARD_ADMIN_USERNAME` and `ALGOGUARD_ADMIN_PASSWORD` before the first command to choose them).
+- `python migrate.py` applies the additive SQLite migrations; `app.py` also applies them at startup. Do not delete the database to upgrade.
+- Administrators create Administrator or Analyst accounts on the Admins page. New passwords need 12 to 128 characters with upper- and lower-case letters, a digit, and a symbol. Sign-in pauses for 15 minutes after 5 failures for one account or 20 from one address.
+- `ALGOGUARD_SECRET_KEY` sets a persistent session-signing key; without it, sessions end when the process restarts. `ALGOGUARD_SECURE_COOKIES=1` marks the session cookie `Secure` (only behind HTTPS). `ALGOGUARD_HOST=0.0.0.0` exposes the console to other machines; only do that on a network you control.
 
-Migrations are additive and preserve existing rows:
-
-```powershell
-python migrate.py
-```
-
-The application also applies pending migrations at startup, so this command is optional; it exists for upgrading an existing installation without starting the server. Do not delete `database/algoguard.sqlite3` to upgrade an existing installation.
-
-Migration 5 (Stage 6A.3) adds each prediction's attack probability, attack-score band and band-policy version. Predictions stored earlier keep empty scores; no score is invented for them. The cloud database gets the same columns from `supabase/migrations/20261025010000_attack_score_bands.sql`, applied by a maintainer with `python cloud_migrate.py --yes`. Clients without the change keep uploading; their records stay unscored. Until a maintainer applies the cloud migration, this version checks for the new columns and uploads unscored records rather than have them refused.
-
-## Run the Application
-
-```powershell
-python app.py
-```
-
-Open `http://127.0.0.1:5000`.
-
-AlgoGuard listens on `127.0.0.1` with the debugger off by default, because it handles captured network traffic. Both are opt-in:
-
-```powershell
-$env:FLASK_DEBUG = "1"          # developer reloader and debugger
-$env:ALGOGUARD_HOST = "0.0.0.0" # reachable from other machines - only on a network you control
-$env:ALGOGUARD_PORT = "5000"    # also the port excluded from live capture
-```
-
-Less common overrides: `ALGOGUARD_SECURE_COOKIES=1` marks the session cookie `Secure` (only behind HTTPS); `ALGOGUARD_DATABASE_PATH` and `ALGOGUARD_DEPLOYED_MODEL_PATH` relocate the SQLite file and the active artifact, which is how the test suite and disposable installations avoid touching `database/` and `saved_models/`. Environment variables set with `$env:` last for the current PowerShell window only.
-
-On a new database, AlgoGuard creates the `admin` account with a random password
-and prints it once in the terminal of whichever command created the database
-(`train.py`, `migrate.py`, or `app.py`). Store it immediately. To choose the
-first account credentials yourself, set these environment values before first
-startup:
-
-```powershell
-$env:ALGOGUARD_ADMIN_USERNAME = "your_admin"
-$env:ALGOGUARD_ADMIN_PASSWORD = "a-strong-password"
-$env:ALGOGUARD_ADMIN_EMAIL = "admin@example.com"
-$env:ALGOGUARD_SECRET_KEY = "a-long-random-secret"
-python app.py
-```
-
-When `ALGOGUARD_SECRET_KEY` is omitted, the local single-process server generates
-an unpredictable temporary key. That is safer than a shared development secret,
-but it signs sessions only until the process restarts. Set a persistent random
-key before exposing the app or running more than one server process.
-
-Multiple accounts are supported. Administrators can create Administrator or
-Analyst accounts from the Admins page. Password hashes and accounts persist in
-SQLite. New passwords need 12 to 128 characters with upper- and lower-case
-letters, a digit, and a symbol, the same rule as cloud accounts. Sign-in pauses
-for 15 minutes after 5 failures for one account or 20 from one address. These first-run settings do not replace an account already stored in the
-database. Login state uses a signed Flask browser session and ends when the session
-cookie is cleared, the user logs out, or an ephemeral signing key changes after
-restart; it is not a permanent login token.
-
-## Cloud Pilot Mode (Stage 5D)
-
-Set these in `.env` to run the isolated cloud pilot instead of the SQLite application:
-
-```ini
-ALGOGUARD_DB_MODE=supabase
-NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-```
-
-`python app.py` then serves the cloud application and never opens or creates the
-SQLite business database. Only the publishable key belongs in an analyst `.env`;
-a secret or service key, a non-HTTPS remote URL, or a non-loopback
-`ALGOGUARD_HOST` is refused at startup.
-
-- **Sign-in is online, every start.** Log in with the email and password an
-  Administrator created. Tokens live in process memory; the browser cookie is a
-  random session ID. A cached model never permits offline sign-in.
-- **Node approval.** The first sign-in enrolls this installation. An
-  Administrator approves it on the Nodes page; until then monitoring and uploads
-  are refused with an explanation.
-- **Models come from the maintainer.** The verified active model is downloaded
-  into the local cache and pinned for each capture. Analysts never train.
-- **Local state** lives in `.algoguard/` (`ALGOGUARD_STATE_DIR`): the installation
-  ID (`node-id`), the owner-restricted outbox spool, and the model cache.
-
-Persistent detections are queued locally and uploaded in the background, so a
-slow or lost connection never stalls classification. Each record reports one of
-`in_memory` (not yet saved), `durable_pending` (saved on this computer),
-`synced` (committed in the cloud), `dropped` (not stored: session cap, full
-handoff, or local capacity), or `rejected` (refused by the cloud; kept for
-export). Only `synced` means the cloud has the record. Pending records survive
-restart, upload only under the account that produced them, expire after seven
-days, and can be downloaded from the dashboard's **Export pending records**.
-
-**API change in cloud mode.** `POST /predict` returns `event_uuid` and
-`persistence`; `prediction_id` and `alert_id` are `null` until the upload is
-acknowledged. Poll `GET /api/events/<event_uuid>` for `synced: true` and the
-database IDs. JSON endpoints (`/predict`, `/api/events/...`, `/monitor/...`,
-`/outbox/export`, `/api/reports/...`) also accept
-`Authorization: Bearer <access token>` without a cookie or CSRF token; HTML pages
-accept only the browser session. See `docs/migration/05d-integration.md`.
-
-## Legacy Import and Recovery (Stage 5E)
-
-Maintainers can inventory and consistently back up an existing installation with
-`legacy_backup.py`, import a verified snapshot with `legacy_import.py`, and export
-or restore cloud business data and pending events with `cloud_recovery.py`.
-Imports preserve historical identities and evidence while leaving cloud writes
-disabled until explicitly enabled. These tools do not switch the active app.
-Follow [the cutover and recovery procedure](docs/migration/05e-cutover.md),
-including the separate Auth/platform recovery requirements, before using them.
-`cleanup_model_objects.py` lists model uploads that nothing uses (failed or
-abandoned publications older than 24 hours) and removes them only with `--yes`;
-active, published and superseded models are always kept. See
-[Stage 6C](docs/migration/06c-recovery.md).
+Moving such an installation to the cloud is a maintainer task: [the maintainer guide](docs/MAINTAINER_GUIDE.md) section 8 and [the cutover procedure](docs/migration/05e-cutover.md). Cloud records cannot be converted back into a local database.
 
 ## CSV Contract
 
@@ -339,23 +219,23 @@ The feed reconnects automatically after temporary connection failures. Requests
 time out after ten seconds; if a control response is lost, the page checks the
 session status without repeating the action. An expired login prompts you to log in again.
 
-**Live capture prerequisites (Windows):** install [Npcap](https://npcap.com) with the "WinPcap API-compatible mode" default, and run AlgoGuard from a terminal with Administrator rights. Without them, the monitor lists live capture as unavailable with the reason, and replay sources continue to work.
+**Live capture prerequisites (Windows):** install [Npcap](https://npcap.com) with its defaults ("WinPcap API-compatible mode"). If Npcap was installed for administrators only, run AlgoGuard with Administrator rights. Without them, the monitor lists live capture as unavailable with the reason, and replay sources continue to work.
 
 AlgoGuard excludes its own web traffic from capture. Without this, monitoring the interface the application serves from would classify the browser's own status polling and the feed would fill with AlgoGuard watching itself. The exclusion covers the port from `ALGOGUARD_PORT` and is applied both in the capture filter and per packet, so it still holds when a driver cannot compile the filter. Packets skipped this way are reported as "own traffic" beside the captured-packet count.
 
-Storage modes bound how much the session writes to SQLite:
+Storage modes bound how much the session stores (in cloud mode, through the local upload queue):
 
 - **Session only** stores nothing; the feed is live output alone.
 - **Save attacks** (default) stores only attack flows, each with a prediction and an alert.
 - **Save every flow** stores every classification.
 
-Persisting sessions stop writing after 300 records and mark themselves capped; classification continues. Stored flows are tagged `live_monitor` (replay sources) or `live_capture` (live interface) in `network_traffic`, so monitoring traffic stays distinguishable from manual predictions. Flows from packet sources store their real endpoint addresses and ports; CSV replay rows keep cosmetic private-range endpoints, since the samples carry no addresses.
+Persisting sessions stop storing after 300 records and mark themselves capped; classification continues. Stored flows are tagged `live_monitor` (replay sources) or `live_capture` (live interface) in `network_traffic`, so monitoring traffic stays distinguishable from manual predictions. Flows from packet sources store their real endpoint addresses and ports; CSV replay rows keep cosmetic private-range endpoints, since the samples carry no addresses.
 
 One monitoring session runs per process. The artifact is loaded once when a session starts, so a redeployment mid-session is picked up the next time the monitor is started. Open monitor tabs track session IDs and reset their feeds when another tab starts a new session.
 
 ## Retrain and Deploy
 
-Training is a terminal task, not a web page:
+Training is a maintainer task in a terminal, not a web page, and its records stay in the maintainer's local SQLite training store; publishing a trained model to the cloud is described in the maintainer guide:
 
 ```powershell
 python train.py datasets\algoguard_big.csv
@@ -426,14 +306,14 @@ System Logs contain authentication, validation, preprocessing, training, ranking
 
 ## Quality Assurance
 
-Install QA tools and run all checks:
+Install QA tools and run all checks (the maintainer guide, section 9, also covers the integration lane against the local Supabase stack):
 
-```powershell
-python -m pip install -r requirements-dev.txt
+```bat
+venv\Scripts\python.exe -m pip install -r requirements-dev.txt -r requirements-maintainer.txt
 npm ci
 npm run typecheck
-python -m ruff check .
-python -m pytest -q
+venv\Scripts\python.exe -m ruff check .
+venv\Scripts\python.exe -m pytest -q
 ```
 
 The browser polling checks use Node.js's built-in test runner (no npm packages):
@@ -456,24 +336,22 @@ The ruff rule set is pinned in `pyproject.toml` (`E`, `F`, `W`, `I`) so the chec
 
 ## Troubleshooting
 
-`ModuleNotFoundError`: activate the same virtual environment where dependencies were installed, or invoke `.\venv\Scripts\python.exe` directly.
+Analyst problems (setup, sign-in, approval, models, uploads, capture) are covered in the analyst guide's Troubleshooting table. For maintainers:
 
-Lost the admin password on a fresh installation: stop the server, delete `database/algoguard.sqlite3` (only if it holds nothing you need), set `ALGOGUARD_ADMIN_USERNAME` and `ALGOGUARD_ADMIN_PASSWORD`, and start again; the new database is seeded with those credentials. Redeploy the model afterwards because the deployment record lived in the deleted database.
+`AlgoGuard cannot start. This installation is not set up yet.`: `.env` has no cloud settings. Fill them in, or set `ALGOGUARD_DB_MODE=sqlite` for legacy local mode. `python config.py` reports what is wrong without starting anything.
 
-`python` opens the Microsoft Store or is not recognised: use `py` instead of `python` for the `venv` step, then run everything through the activated environment.
+`ModuleNotFoundError`: use the virtual environment where the requirements were installed, `venv\Scripts\python.exe`.
+
+`python` opens the Microsoft Store or is not recognised: use `py -3.14` for the `venv` step, then run everything through `venv\Scripts\python.exe`.
 
 Invalid CSV: confirm the file is CSV, the target is last, exactly two target classes exist, and both classes have enough rows.
 
-No active deployment: run `python train.py <csv> --deploy` and confirm Stacking passed the quality gate.
+No active deployment in legacy local mode or before publishing: run `python train.py <csv> --deploy` and confirm Stacking passed the quality gate. Missing artifact: the active deployment's record must point to an existing model file; use the artifact path printed by `train.py`, or redeploy.
 
-Missing artifact: the active deployment's database record must point to an existing model file. Use the artifact path printed by `train.py` rather than assuming a fixed filename. Redeploy with `python train.py <csv> --deploy` if the referenced file is missing.
+Live Monitor will not start: a session is already running, so stop it first. Live capture unavailable: install Npcap and run AlgoGuard with Administrator rights, then reload the Monitor page; flows appear when they end (TCP teardown or 15 seconds of idle), not on the first packet.
 
-Live Monitor will not start: a session is already running, so stop it first. If it reports an error immediately, the deployed artifact is missing or does not match the deployment record.
-
-Live capture unavailable: install Npcap (Windows) and run AlgoGuard with Administrator rights, then reload the Monitor page. If a capture starts but classifies nothing, confirm the selected interface is the one carrying traffic; flows appear when they end (TCP teardown or 15 seconds of idle), not on the first packet.
-
-Forgot local password: do not delete a database containing needed records. For a disposable new local installation only, recreate the database and seed credentials. Production-style password reset administration is outside this prototype's scope.
+Lost the `admin` password of a disposable legacy local database: stop the server, delete `database/algoguard.sqlite3` (only if it holds nothing you need), set `ALGOGUARD_ADMIN_USERNAME` and `ALGOGUARD_ADMIN_PASSWORD`, start again and redeploy. Cloud passwords are reset in the Supabase dashboard; AlgoGuard has no password-reset page.
 
 ## Scope
 
-AlgoGuard is intended for academic and controlled local use. Model quality depends on representative, correctly labeled data. It captures and classifies traffic on a single host, stores flow metadata only, and never blocks traffic or inspects payloads; it is not a replacement for a production IDS/IPS or a security operations platform.
+AlgoGuard is intended for academic and controlled use, released at the scope of its documented pilot: its research targets (accuracy, F1 and recall of 90% on untouched data, and attack detection on live traffic) are not met, as recorded under Accuracy, Scores and Their Limits. Model quality depends on representative, correctly labeled data. Each installation captures and classifies traffic on its own host, stores flow metadata only, and never blocks traffic or inspects payloads; administrators can observe installations but not control their captures. It is not a replacement for a production IDS/IPS or a security operations platform.
