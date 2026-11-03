@@ -77,6 +77,33 @@ def test_the_upload_worker_renews_a_refused_token_without_ending_the_session(clo
     assert client.get("/").status_code == 200  # the browser session is the same sign-in
 
 
+def test_uploads_resume_by_themselves_once_the_installation_is_approved(cloud):
+    """6D.3: found by the clean install. A new installation is refused until an administrator
+    approves it; its uploads used to stay blocked after approval until Retry uploads."""
+    import cloud_sync
+
+    client = signed_in(cloud.app)
+    identity = identity_of(cloud)
+    owner = str(identity.user_id)
+    worker = cloud.services.sync
+    worker.close()
+    event = post_json(client, "/predict", MANUAL_FLOW).get_json()["event_uuid"]
+    cloud.fake.revoke(cloud.analyst["profile_id"], cloud.node)  # not approved (any more)
+    worker.last_authorization.clear()
+    worker.sync_once(identity)
+    assert worker.blocked[owner] == "permission"
+    worker.permission_checked[owner] -= cloud_sync.PERMISSION_RECHECK_SECONDS
+    worker.sync_once(identity)  # rechecked: still not approved, so still blocked
+    assert worker.blocked[owner] == "permission"
+    cloud.fake.approve(cloud.analyst["profile_id"], cloud.node)
+    worker.sync_once(identity)  # checked moments ago: waits for the next recheck
+    assert owner in worker.blocked
+    worker.permission_checked[owner] -= cloud_sync.PERMISSION_RECHECK_SECONDS
+    worker.sync_once(identity)
+    assert owner not in worker.blocked
+    assert cloud.services.outbox.statuses(identity, [event])[event]["persistence"] == "synced"
+
+
 def test_a_cloud_that_refuses_the_renewed_token_too_ends_the_sign_in(cloud):
     client = signed_in(cloud.app)
     identity = identity_of(cloud)

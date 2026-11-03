@@ -33,6 +33,9 @@ from cloud_repository import RepositoryError
 
 INTERVAL_SECONDS = 1.0
 MEMBERSHIP_RECHECK_SECONDS = 15.0
+# While uploads are blocked because this installation is not (or no longer) approved, approval
+# is checked again this often, so uploads start by themselves once an administrator approves it.
+PERMISSION_RECHECK_SECONDS = 30.0
 MAX_BACKOFF_SECONDS = 60.0
 MAX_BATCHES_PER_TICK = 10
 # DEF-10: one request at a time managed about 65 events/s to the Tokyo pilot, so a burst of 300
@@ -58,6 +61,7 @@ class SyncWorker:
         self.rng = rng
         self.identities = {}
         self.blocked = {}
+        self.permission_checked = {}  # owner -> when a permission block last rechecked approval
         self.retry = {}
         self.last_error = {}
         self.last_success = {}
@@ -215,9 +219,36 @@ class SyncWorker:
                 continue
             self.outbox.finish_lifecycle(repo.context, summary_id)
 
+    def _approval_restored(self, identity, owner):
+        """Lift a permission block once the installation is approved (Stage 6D.3).
+
+        A new installation is refused from its first sign-in until an administrator approves it;
+        without this, its uploads stayed blocked after approval until the analyst pressed Retry
+        uploads or signed in again. Approval is checked at most every PERMISSION_RECHECK_SECONDS.
+        Other blocks still wait for Retry uploads.
+        """
+        with self.lock:
+            if self.blocked.get(owner) != "permission":
+                return False
+            now = self.clock()
+            if now - self.permission_checked.get(owner, -1e9) < PERMISSION_RECHECK_SECONDS:
+                return False
+            self.permission_checked[owner] = now
+        try:
+            approved = self.auth.repository(identity).node_access()
+        except RepositoryError:
+            return False  # still refused, or the cloud is unreachable: check again later
+        if not approved:
+            return False
+        with self.lock:
+            self.blocked.pop(owner, None)
+            self.permission_checked.pop(owner, None)
+            self.last_authorization[owner] = self.clock()
+        return True
+
     def sync_once(self, identity):
         owner = str(identity.user_id)
-        if owner in self.blocked:
+        if owner in self.blocked and not self._approval_restored(identity, owner):
             return
         repo = None
         try:
@@ -257,6 +288,7 @@ class SyncWorker:
                 else:
                     # permission/protocol: stop uploads; keep events pending and exportable.
                     self.blocked[owner] = category
+                    self.permission_checked[owner] = self.clock()
 
     def _renew(self, identity, repo):
         """The cloud refused this user's token: renew the sign-in once (6C.1).

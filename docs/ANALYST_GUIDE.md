@@ -71,7 +71,8 @@ called a node) and asks for approval. Until an administrator approves it, the Da
    `d535e2fd-...`).
 2. Send it to your administrator. They approve your account on that installation on the
    **Nodes** page.
-3. Reload the Dashboard. It shows **Node approved**; no restart is needed.
+3. Reload the Dashboard. It shows **Node approved**; no restart is needed. Records you saved
+   before approval start uploading within a minute.
 
 The installation's identity is stored in the `.algoguard` folder inside AlgoGuard. Do not copy,
 move, rename or share that folder: a different folder is a different installation that needs
@@ -211,7 +212,7 @@ Administrators also see:
 | `The published model file is unavailable.` or another model message ending "tell your administrator" | Tell your administrator; this is fixed in the cloud, not on your computer. |
 | Live capture is listed as unavailable | Install Npcap (the message says if it is missing), or start AlgoGuard with **Run as administrator**, then reload the Live Monitor. |
 | A live session shows no rows | Pick the network card that carries your traffic. Rows appear when flows end, not on their first packet. |
-| Upload status **Blocked** | Uploads were refused (for example while access was revoked). After the administrator restores access, press **Retry uploads** on the Dashboard, or sign out and in again. |
+| Upload status **Blocked** | Uploads were refused: this installation is not approved for you, or your access was revoked. Once the administrator approves or restores it, uploads resume by themselves within a minute; **Retry uploads** on the Dashboard resumes them at once. |
 | Rows shown as **Not stored** | Expected after 300 records in a session. Otherwise the Dashboard names the cause: a full queue (wait for uploads) or a disk problem (free disk space; saving resumes by itself). |
 | Records shown as **Rejected** | Use **Export pending records** and give the file to your administrator. |
 | Older records have disappeared from Alerts or Logs | An administrator may have run a retention cleanup (section 8). |
