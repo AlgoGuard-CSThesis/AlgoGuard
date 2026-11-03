@@ -463,7 +463,8 @@ class CloudMonitor:
             raise LiveMonitorError({
                 "authentication": "Online login is required before monitoring can start.",
                 "permission": "This installation needs an administrator-approved membership "
-                              "before it can monitor.",
+                              "before it can monitor. Give your administrator the installation "
+                              "ID shown on the Dashboard.",
                 "transient": "The cloud is unreachable. Monitoring needs an online, "
                              "authorized start; pending records stay on this computer.",
             }.get(error.category, "The cloud response could not be verified.")) from None
