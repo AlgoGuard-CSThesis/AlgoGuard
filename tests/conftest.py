@@ -14,6 +14,9 @@ for name in list(os.environ):
         "FLASK_DEBUG", "NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
     ):
         os.environ.pop(name)
+# Most unit tests exercise the legacy local application and its shared services;
+# cloud-mode tests build their own application and configuration.
+os.environ["ALGOGUARD_DB_MODE"] = "sqlite"
 os.environ["ALGOGUARD_DATABASE_PATH"] = str(TEST_RUNTIME / "test.sqlite3")
 os.environ["ALGOGUARD_DEPLOYED_MODEL_PATH"] = str(TEST_RUNTIME / "models" / "deployed_model.joblib")
 os.environ["ALGOGUARD_SAVED_MODEL_FOLDER"] = str(TEST_RUNTIME / "models")

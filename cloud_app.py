@@ -79,7 +79,8 @@ JSON_ENDPOINTS = {
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 ERROR_MESSAGES = {
     "authentication": "Online login is required.",
-    "permission": "Your account or this installation needs administrator approval.",
+    "permission": "Your account or this installation needs administrator approval. Give your "
+                  "administrator the installation ID shown on the Dashboard.",
     "transient": "The cloud is unavailable. Pending records stay on this computer.",
     "conflict": "This request conflicts with an existing record.",
     "validation": "Check the submitted values.",
@@ -529,8 +530,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         """Display metadata for the active release without downloading its bytes."""
         rows = repo.list_records("model_manifest", filters={"status": "active"}).rows
         if len(rows) != 1:
-            raise ModelDeliveryError("No active compatible model is published. "
-                                     "Contact maintenance.")
+            raise ModelDeliveryError("No model is published for this project yet. Tell your "
+                                     "administrator; the maintainer publishes models.")
         manifest = dict(rows[0])
         verify_manifest(manifest)
         found = _parallel({

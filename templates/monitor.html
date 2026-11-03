@@ -20,10 +20,10 @@
 {% if not available %}
 <section class="panel unavailable-panel">
     <i class="bi bi-cloud-slash"></i>
-    <h2>No active deployment</h2>
+    <h2>{{ 'Model not available' if config.CLOUD_MODE else 'No active deployment' }}</h2>
     <p>{{ unavailable_message }}</p>
     {% if config.CLOUD_MODE %}
-    <p class="monitor-hint">The maintainer publishes verified models; analyst installations never train locally. Monitoring also needs an online sign-in and an approved node.</p>
+    <p class="monitor-hint">The maintainer publishes verified models; analyst installations never train locally. Monitoring also needs an online sign-in and an administrator-approved installation (see the Dashboard).</p>
     {% else %}
     <p class="monitor-hint">Deploy the Stacking Ensemble from a terminal with <code>python train.py datasets/algoguard_big.csv --deploy</code>.</p>
     {% endif %}

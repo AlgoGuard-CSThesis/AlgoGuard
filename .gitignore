@@ -77,3 +77,7 @@ node_modules/
 
 # Stage 5D cloud-mode local state: node identity, outbox spool, model cache.
 .algoguard/
+
+# Stage 6D.1 analyst packages (scripts/build_analyst_package.py) and their build stamp.
+dist/
+/BUILD

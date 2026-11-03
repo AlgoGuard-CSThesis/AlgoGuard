@@ -231,13 +231,18 @@ class AppConfig:
     # --- Fixed, centralized constants (previously hardcoded in app.py) ---
     admin_roles: tuple = field(default=("Administrator", "Analyst"))
 
-    # --- Cloud mode (Stage 5D pilot switch; validated since 5A.2) ---
-    db_mode: str = "sqlite"
+    # --- Cloud mode (the analyst default since Stage 6D.1; validated since 5A.2) ---
+    db_mode: str = "supabase"
     supabase_url: Optional[str] = None
     supabase_publishable_key: Optional[str] = None
 
     # --- Local cloud-mode state (Stage 5D): node identity, outbox, model cache ---
     state_dir: Path = BASE_DIR / ".algoguard"
+
+    @property
+    def cloud_configured(self) -> bool:
+        """Whether cloud mode has its project URL and publishable key."""
+        return bool(self.supabase_url and self.supabase_publishable_key)
 
 
 def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
@@ -252,7 +257,11 @@ def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
         env = {key: value for key, value in file_values.items() if value is not None}
         env.update(os.environ)
 
-    db_mode = _get_str(env, "ALGOGUARD_DB_MODE", "sqlite").strip().lower()
+    # Stage 6D.1: cloud mode is the default. The legacy SQLite business
+    # application runs only when ALGOGUARD_DB_MODE=sqlite is set explicitly
+    # (maintenance, tests, and installations not yet cut over).
+    explicit_mode = _get_optional_str(env, "ALGOGUARD_DB_MODE")
+    db_mode = (explicit_mode or "supabase").strip().lower()
     supabase_url = _get_optional_str(env, "NEXT_PUBLIC_SUPABASE_URL")
     supabase_publishable_key = _get_optional_str(env, "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")
 
@@ -262,7 +271,12 @@ def load_config(env: Optional[Mapping[str, str]] = None) -> AppConfig:
             "Use 'sqlite' or 'supabase'."
         )
 
-    if db_mode == "supabase":
+    # With no mode and no cloud settings at all, the installation is simply not
+    # set up yet: app.py refuses to start with setup help, while maintainer
+    # tools that never serve the app (train.py, migrate.py) keep working.
+    if db_mode == "supabase" and (
+        explicit_mode or supabase_url or supabase_publishable_key
+    ):
         # Deliberately a hard error, not a fallback to sqlite: silently
         # degrading to the legacy local database when cloud mode was
         # requested would violate Stage 5A.2's requirement that cloud mode
@@ -356,3 +370,30 @@ def reset_config_cache() -> None:
     calls out.
     """
     _cached_config.cache_clear()
+
+
+def main() -> int:
+    """``python config.py``: check the settings without starting AlgoGuard (6D.1).
+
+    Exit codes: 0 ready, 2 invalid settings, 3 cloud settings missing. The setup and
+    start scripts use them; the output never includes the publishable key.
+    """
+    try:
+        cfg = load_config()
+    except ConfigError as error:
+        print(f"Settings problem: {error}")
+        return 2
+    if cfg.db_mode == "sqlite":
+        print(f"Legacy local mode (ALGOGUARD_DB_MODE=sqlite): http://{cfg.host}:{cfg.port}")
+        return 0
+    if not cfg.cloud_configured:
+        print("Cloud settings missing: enter NEXT_PUBLIC_SUPABASE_URL and "
+              f"NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in {ENV_FILE}.")
+        return 3
+    print(f"Settings OK. Cloud project: {cfg.supabase_url}. "
+          f"AlgoGuard will open at http://{cfg.host}:{cfg.port}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

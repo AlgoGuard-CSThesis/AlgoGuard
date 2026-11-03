@@ -134,7 +134,8 @@ def test_dashboard_warns_when_the_cached_model_is_corrupt(cloud):
         login(browser, *ANALYST[:2])
         page = browser.get("/").get_data(as_text=True)
         assert "Unavailable here" in page
-        assert "The cached model is corrupt" in page
+        assert "The model copy saved on this computer is corrupt" in page
+        assert "delete the folder" in page
         assert 'status-pill active">Deployed' not in page
     finally:
         restarted.close()

@@ -35,7 +35,11 @@ def lock_identifier():
 
 def verify_runtime():
     if platform.python_version() != PYTHON_VERSION:
-        raise ModelDeliveryError("Install the locked Python model runtime.")
+        raise ModelDeliveryError(
+            f"Models need Python {PYTHON_VERSION}; this installation runs Python "
+            f"{platform.python_version()}. Install Python {PYTHON_VERSION} and run "
+            "SETUP_ALGOGUARD.cmd again."
+        )
     try:
         matches = all(
             importlib.metadata.version(name) == version
@@ -44,7 +48,10 @@ def verify_runtime():
     except importlib.metadata.PackageNotFoundError:
         matches = False
     if not matches:
-        raise ModelDeliveryError("Install requirements-model.lock before loading models.")
+        raise ModelDeliveryError(
+            "This installation's Python packages differ from the model's "
+            "(requirements-model.lock). Run SETUP_ALGOGUARD.cmd again."
+        )
 
 
 def compatibility_metadata():
@@ -71,10 +78,16 @@ def verify_artifact_contract(artifact):
 
     expected = {"python": PYTHON_VERSION, "dependencies": locked_dependencies()}
     if artifact.get("training_runtime") != expected:
-        raise ModelDeliveryError("Retrain this artifact with the locked model runtime.")
+        raise ModelDeliveryError(
+            "This model was trained with a different model runtime. The maintainer must "
+            "retrain it with requirements-model.lock."
+        )
     columns = artifact.get("feature_columns", [])
     if len(columns) != len(FLOW_FEATURE_COLUMNS) or set(columns) != set(FLOW_FEATURE_COLUMNS):
-        raise ModelDeliveryError("Retrain using the supported flow feature schema.")
+        raise ModelDeliveryError(
+            "This model does not use the supported flow features. The maintainer must "
+            "retrain it on the 16 flow features."
+        )
 
 
 def verify_manifest(manifest):
@@ -105,4 +118,7 @@ def verify_manifest(manifest):
             if type(manifest[key]) is not int or not 0 < manifest[key] < 2**63:
                 raise ValueError
     except (KeyError, ValueError, TypeError):
-        raise ModelDeliveryError("The published model is incompatible or invalid.") from None
+        raise ModelDeliveryError(
+            "The published model does not match this version of AlgoGuard. Ask your "
+            "administrator for the current AlgoGuard package."
+        ) from None

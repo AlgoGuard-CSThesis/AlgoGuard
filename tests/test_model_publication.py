@@ -41,5 +41,5 @@ def test_artifact_requires_producer_versions_and_exact_feature_schema():
     artifact["training_runtime"] = training_runtime()
     verify_artifact_contract(artifact)
     artifact["feature_columns"].append("dur")
-    with pytest.raises(ModelDeliveryError, match="schema"):
+    with pytest.raises(ModelDeliveryError, match="supported flow features"):
         verify_artifact_contract(artifact)

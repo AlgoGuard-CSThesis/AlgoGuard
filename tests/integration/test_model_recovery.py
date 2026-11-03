@@ -114,7 +114,7 @@ def test_a_missing_model_file_fails_safely_and_recovers_when_restored(
                                 json={"prefixes": [manifest["object_path"]]})
     assert removed.status_code == 200
     try:
-        with pytest.raises(ModelDeliveryError, match="unavailable. Contact maintenance"):
+        with pytest.raises(ModelDeliveryError, match="unavailable. Tell your administrator"):
             ModelCache(repo, tmp_path / "fresh").load_active()
         assert list((tmp_path / "fresh").glob("*")) == []  # nothing promoted or half-written
         # A capture that already pinned the model keeps it in memory and on disk.

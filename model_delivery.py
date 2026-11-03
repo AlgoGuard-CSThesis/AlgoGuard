@@ -21,6 +21,7 @@ from model_runtime import ModelDeliveryError, verify_artifact_contract, verify_m
 # A download that ended without promotion (the computer crashed or lost power) leaves a .part
 # file; one older than this is no longer being written and is removed (6C.3).
 STALE_PART_SECONDS = 600
+DOWNLOAD_FAILED = "Model download failed. Check the internet connection, then reload this page."
 
 
 @dataclass(frozen=True)
@@ -77,7 +78,8 @@ class ModelCache:
         page = self.repository.list_records("model_manifest", filters={"status": "active"})
         if len(page.rows) != 1:
             raise ModelDeliveryError(
-                "No active compatible model is available. Contact maintenance."
+                "No model is published for this project yet. Tell your administrator; the "
+                "maintainer publishes models."
             )
         manifest = dict(page.rows[0])
         verify_manifest(manifest)
@@ -99,7 +101,11 @@ class ModelCache:
             with destination.open("rb") as stream:
                 digest, size = _digest(stream)
                 if digest != manifest["object_sha256"] or size != manifest["object_bytes"]:
-                    raise ModelDeliveryError("The cached model is corrupt. Remove it and retry.")
+                    raise ModelDeliveryError(
+                        "The model copy saved on this computer is corrupt. Close AlgoGuard, "
+                        f"delete the folder {self.directory}, then start AlgoGuard again to "
+                        "download it afresh."
+                    )
                 stream.seek(0)
                 import joblib
 
@@ -111,7 +117,11 @@ class ModelCache:
         except ModelDeliveryError:
             raise
         except Exception:
-            raise ModelDeliveryError("The verified model could not be loaded.") from None
+            raise ModelDeliveryError(
+                "The verified model could not be loaded on this computer. Run "
+                "SETUP_ALGOGUARD.cmd again, then restart AlgoGuard; if this repeats, tell "
+                "your administrator."
+            ) from None
         self._remove_other_releases(keep={destination,
                                           reuse.cache_path if reuse is not None else None})
         return PinnedModel(artifact, MappingProxyType(manifest), destination)
@@ -148,18 +158,20 @@ class ModelCache:
             if error.category in ("authentication", "permission"):
                 raise  # The sign-in or membership needs attention, not the model.
             if error.retryable:
-                raise ModelDeliveryError("Model download failed. Reconnect and retry.") from None
+                raise ModelDeliveryError(DOWNLOAD_FAILED) from None
             # Storage answers 400 when the published object is missing (6C.3).
             raise ModelDeliveryError(
-                "The published model file is unavailable. Contact maintenance."
+                "The published model file is unavailable. Tell your administrator."
             ) from None
         if not isinstance(signed, dict) or not isinstance(signed.get("signedURL"), str):
-            raise ModelDeliveryError("Model download authorization failed.")
+            raise ModelDeliveryError("Model download authorization failed. Reload this page.")
         signed_path = signed["signedURL"]
         # Storage returns a relative URL. Refuse foreign origins and unexpected
         # object paths instead of forwarding signed credentials to another host.
         if not signed_path.startswith("/object/sign/models/" + path + "?"):
-            raise ModelDeliveryError("Model download authorization was invalid.")
+            raise ModelDeliveryError(
+                "Model download authorization was invalid. Tell your administrator."
+            )
         url = self.repository.base_url + "/storage/v1" + signed_path
         temporary = None
         try:
@@ -174,7 +186,8 @@ class ModelCache:
                         count += len(chunk)
                         if count > manifest["object_bytes"]:
                             raise ModelDeliveryError(
-                                "The model download exceeds its manifest size."
+                                "The model download exceeds its manifest size. Tell your "
+                                "administrator."
                             )
                         digest.update(chunk)
                         out.write(chunk)
@@ -182,12 +195,15 @@ class ModelCache:
                     count != manifest["object_bytes"]
                     or digest.hexdigest() != manifest["object_sha256"]
                 ):
-                    raise ModelDeliveryError("The model download failed integrity verification.")
+                    raise ModelDeliveryError(
+                        "The model download failed integrity verification. Reload this page to "
+                        "download it again; if this repeats, tell your administrator."
+                    )
                 out.flush()
                 os.fsync(out.fileno())
             os.replace(temporary, destination)
         except (OSError, urllib.error.URLError, RepositoryError):
-            raise ModelDeliveryError("Model download failed. Reconnect and retry.") from None
+            raise ModelDeliveryError(DOWNLOAD_FAILED) from None
         finally:
             if temporary is not None:
                 temporary.unlink(missing_ok=True)

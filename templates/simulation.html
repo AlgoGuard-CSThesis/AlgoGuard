@@ -19,7 +19,7 @@
 {% if not schema.available %}
 <section class="panel unavailable-panel">
     <i class="bi bi-cloud-slash"></i>
-    <h2>No active deployment</h2>
+    <h2>{{ 'Model not available' if config.CLOUD_MODE else 'No active deployment' }}</h2>
     <p>{{ schema.message }}</p>
     {% if config.CLOUD_MODE %}
     <p class="monitor-hint">The maintainer publishes verified models; analyst installations never train locally.</p>
