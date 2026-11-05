@@ -429,6 +429,10 @@ def main(argv=None):
                 set_write_gate(conn, args.source_id, enabled=args.command == "enable")
                 print("Node write gate updated; local application configuration is unchanged.")
         return 0
+    except TransferError as error:
+        # Controlled refusals carry no credentials or record contents.
+        print(f"Transfer refused: {error} Check the snapshot, node, and maintenance target.")
+        return 1
     except Exception:
         print("Transfer refused or rolled back. Check the snapshot, node, and maintenance target.")
         return 1

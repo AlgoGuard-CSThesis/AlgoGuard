@@ -26,10 +26,11 @@ from datetime import timedelta
 
 from cloud_connections import owned_opener
 from cloud_repository import _NoRedirect
+from model_runtime import ModelDeliveryError
 from publish_model import validate_api_url
+from redaction import redact_for_logging
 
 GRACE = timedelta(hours=24)
-KEEP_STATUSES = ("active", "published", "superseded")
 
 _CANDIDATES = """
     select o.name, o.created_at, coalesce((o.metadata->>'size')::bigint, 0),
@@ -120,6 +121,9 @@ def main(argv=None):
             print("kept (changed or refused) " + json.dumps(item))
         print(f"Removed {len(removed)} unreferenced model object(s); kept {len(skipped)}.")
         return 0 if not skipped else 1
+    except ModelDeliveryError as error:
+        print(f"Model object cleanup refused: {redact_for_logging(error)} Nothing was removed.")
+        return 1
     except Exception:
         print("Model object cleanup failed. Nothing further was removed.")
         return 1

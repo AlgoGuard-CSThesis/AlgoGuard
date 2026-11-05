@@ -360,9 +360,12 @@ def main(argv=None):
             from maintenance_connections import connect_database
 
             dsn = require_database_url()
-            objects = ModelObjects(
-                os.environ["SUPABASE_API_URL"], os.environ["SUPABASE_SECRET_KEY"]
-            )
+            api_url = os.environ.get("SUPABASE_API_URL", "")
+            secret_key = os.environ.get("SUPABASE_SECRET_KEY", "")
+            if not api_url or not secret_key:
+                parser.error("SUPABASE_API_URL and SUPABASE_SECRET_KEY are required "
+                             "(.env.maintainer).")
+            objects = ModelObjects(api_url, secret_key)
             with closing(
                 connect_database(dsn, sslmode=resolve_sslmode(dsn), connect_timeout=10)
             ) as conn:
@@ -379,6 +382,10 @@ def main(argv=None):
                 )
         print(json.dumps({"counts": result["counts"]}, indent=2))
         return 0
+    except TransferError as error:
+        # Controlled refusals carry no credentials or record contents.
+        print(f"Recovery refused: {error} Preserve the package and check the isolated target.")
+        return 1
     except Exception:
         print(
             "Recovery refused or rolled back. Preserve the package and check the isolated target."

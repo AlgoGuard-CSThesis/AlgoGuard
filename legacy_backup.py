@@ -249,7 +249,11 @@ def main(argv=None):
         )
         print("Unavailable artifacts:", sum(x["status"] != "copied" for x in result["artifacts"]))
         return 0
-    except (TransferError, OSError, sqlite3.Error):
+    except TransferError as error:
+        # Controlled refusals carry no credentials or record contents.
+        print(f"Backup/restore refused: {error} Source files have not been changed.")
+        return 1
+    except (OSError, sqlite3.Error):
         print("Backup/restore failed verification. Source files have not been changed.")
         return 1
 

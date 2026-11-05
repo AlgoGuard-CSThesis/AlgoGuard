@@ -16,6 +16,7 @@ from model_runtime import (
     compatibility_metadata,
     verify_artifact_contract,
 )
+from redaction import redact_for_logging
 
 
 def validate_api_url(api_url):
@@ -272,6 +273,10 @@ def main(argv=None):
             )
         )
         return 0
+    except ModelDeliveryError as error:
+        # Our own refusals (quality gate, runtime, upload step) name the reason and no secret.
+        print(f"Publication failed: {redact_for_logging(error)}")
+        return 1
     except Exception:
         print("Publication failed. Check configuration and retry the same publication identity.")
         return 1

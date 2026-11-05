@@ -34,6 +34,29 @@ def test_publisher_rejects_unsafe_project_urls(url):
         validate_api_url(url)
 
 
+def test_the_publisher_says_why_it_refused(monkeypatch, capsys):
+    """A refusal such as an unknown model names its reason, not one generic line (full review)."""
+    import cloud_migrate
+    import maintainer_env
+    import publish_model
+    from services import database_service
+
+    class Connection:
+        def close(self):
+            pass
+
+    monkeypatch.setattr(maintainer_env, "load_maintainer_env", lambda: False)
+    monkeypatch.setattr(maintainer_env, "require_database_url",
+                        lambda: "postgresql://postgres@127.0.0.1:54322/postgres")
+    monkeypatch.setattr(cloud_migrate, "connect", lambda dsn: Connection())
+    monkeypatch.setattr(database_service, "get_model_result", lambda model_id: None)
+    monkeypatch.setenv("SUPABASE_API_URL", "http://127.0.0.1:54321")
+    monkeypatch.setenv("SUPABASE_SECRET_KEY", "sb_secret_test")
+    assert publish_model.main(["--model-id", "999", "--publication-id",
+                               "00000000-0000-4000-8000-000000000001"]) == 1
+    assert "The evaluated local model does not exist." in capsys.readouterr().out
+
+
 def test_artifact_requires_producer_versions_and_exact_feature_schema():
     artifact: dict = {"feature_columns": list(FLOW_FEATURE_COLUMNS)}
     with pytest.raises(ModelDeliveryError, match="runtime"):
