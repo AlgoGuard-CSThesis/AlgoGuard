@@ -280,7 +280,6 @@ class FlowTracker:
         self._draining = {}
         self._recent = deque(maxlen=CONNECTION_WINDOW)
         self._last_sweep_ts = 0.0
-        self.packets_seen = 0
         self.flows_emitted = 0
 
     def _lookup(self, info):
@@ -294,7 +293,6 @@ class FlowTracker:
 
     def add_packet(self, info):
         """Feed one packet in; return the list of flows this packet finished."""
-        self.packets_seen += 1
         # Flows whose closing hold has passed end before this packet is counted.
         emitted = self._close_due(info.ts, info)
 

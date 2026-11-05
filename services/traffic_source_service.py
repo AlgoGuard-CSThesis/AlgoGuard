@@ -96,7 +96,6 @@ class TrafficSource:
 
     paced = True
     row_total = None
-    has_ground_truth = False
 
     def prepare(self):
         raise NotImplementedError
@@ -140,8 +139,6 @@ class CsvReplaySource(TrafficSource):
     private-range addresses, kept purely so stored replay flows stay readable;
     packet-based sources carry their real 5-tuple instead.
     """
-
-    has_ground_truth = True
 
     def __init__(self, path, order="sequential"):
         self._path = path

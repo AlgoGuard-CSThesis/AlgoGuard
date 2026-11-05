@@ -1,5 +1,2 @@
-models/*.pkl filter=lfs diff=lfs merge=lfs -text
-*.pkl filter=lfs diff=lfs merge=lfs -text
-*.npy filter=lfs diff=lfs merge=lfs -text
-legacy_simulation/*.pkl filter=lfs diff=lfs merge=lfs -text
+# Windows batch files need CRLF line endings to run reliably.
 *.cmd text eol=crlf

@@ -175,8 +175,8 @@ jwt_expiry = 3600
 # MINT one. To run the local stack that way:
 #     npx supabase gen signing-key --algorithm ES256 > supabase/signing_keys.json
 # Run the command above in cmd.exe to preserve UTF-8 output.
-# check_5b.cmd generates this ignored local key if missing before startup.
-# Manual startup also requires generating the key first. The cloud pilot is switched to ES256 in
+# Generate this ignored local key before the first start: docs/MAINTAINER_GUIDE.md,
+# section 9, gives both commands. The cloud pilot is switched to ES256 in
 # the dashboard instead (Auth -> JWT keys). token_verification.py
 # refuses HS256 either way, so a stack still on the legacy shared secret
 # fails closed rather than quietly downgrading.

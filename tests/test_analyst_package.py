@@ -13,7 +13,7 @@ from scripts import build_analyst_package as package
 MAINTAINER_ONLY = (
     "train.py", "migrate.py", "publish_model.py", "cloud_migrate.py", "bootstrap_admin.py",
     "cloud_recovery.py", "cleanup_model_objects.py", "legacy_backup.py", "legacy_import.py",
-    "maintainer_env.py", "check_db_connection.py", "measure_latency.py",
+    "maintainer_env.py", "check_db_connection.py", "reset_password.py",
     ".env.maintainer.example", "requirements-maintainer.txt",
     "services/training_service.py", "services/evaluation_service.py",
 )

@@ -34,7 +34,6 @@ MODEL_IDS: OrderedDict[str, str] = OrderedDict(
 )
 
 INDIVIDUAL_MODEL_IDS: tuple[str, ...] = tuple(list(MODEL_IDS.keys())[:5])
-MODEL_NAMES: tuple[str, ...] = tuple(MODEL_IDS.values())
 STACKING_MODEL_ID = "stacking"
 STACKING_MODEL_NAME = MODEL_IDS[STACKING_MODEL_ID]
 

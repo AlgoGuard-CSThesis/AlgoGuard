@@ -1,4 +1,4 @@
-"""Installation identity and explicit membership selection; not wired into Flask yet."""
+"""This installation's identity (its node ID), created once and kept in the state folder."""
 
 import os
 import tempfile
@@ -28,20 +28,3 @@ def local_node_id(path: Path) -> UUID:
         finally:
             os.unlink(temporary)
     return UUID(path.read_text(encoding="ascii").strip())
-
-
-def select_node(local_id: UUID, memberships: list[dict], requested: UUID | None = None) -> UUID:
-    """The local installation is the default; another node needs an explicit choice.
-
-    Membership data is a convenience for the UI, not an authorization boundary.
-    PostgreSQL checks the current membership again for every operation.
-    """
-    selected = requested or local_id
-    if not any(
-        item.get("status") == "approved"
-        and item.get("node_status") == "approved"
-        and item.get("node_id") == str(selected)
-        for item in memberships
-    ):
-        raise PermissionError("This node needs an approved membership.")
-    return selected

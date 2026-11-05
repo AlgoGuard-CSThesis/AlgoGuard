@@ -1,9 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor
-from uuid import uuid4
 
 import pytest
 
-from node_enrollment import local_node_id, select_node
+from node_enrollment import local_node_id
 
 
 def test_parallel_startups_share_one_persistent_identity(tmp_path):
@@ -25,16 +24,3 @@ def test_independent_installations_keep_distinct_stable_identities(tmp_path):
     assert first != second
     assert local_node_id(tmp_path / "installation-a") == first
     assert local_node_id(tmp_path / "installation-b") == second
-
-
-def test_local_default_and_explicit_approved_alternative():
-    local, other = uuid4(), uuid4()
-    memberships = [
-        dict(node_id=str(node), status="approved", node_status="approved")
-        for node in (local, other)
-    ]
-    assert select_node(local, memberships) == local
-    assert select_node(local, memberships, other) == other
-    memberships[0]["status"] = "revoked"
-    with pytest.raises(PermissionError):
-        select_node(local, memberships)
