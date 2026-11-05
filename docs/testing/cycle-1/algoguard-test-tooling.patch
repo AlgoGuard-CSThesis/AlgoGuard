@@ -8,9 +8,6 @@ Restores the test tooling for test cycle 1 (Master Test Plan v0.1):
 run_test_suites.py (UNT-01, ENV-02, INT-01, SEC-01), evaluate_model.py
 (SYS-01), RUN_TESTS.cmd and START_APP.cmd. Product code is unchanged
 from 940e082.
-
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_012ZybPdBzKWBM2MYfdJS1k8
 ---
  scripts/RUN_TESTS.cmd      |  30 ++++
  scripts/START_APP.cmd      |   8 +
