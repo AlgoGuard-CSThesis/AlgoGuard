@@ -66,6 +66,36 @@ computer. AlgoGuard is therefore released as a limited research pilot. The READM
 - Rotate the pilot database password (Iteration 5 finding 15).
 - Check that the pilot project is active before a session (Supabase Free plan pauses idle projects).
 - PC B: `git pull` before its next session.
+- Turn on leaked-password protection on the pilot if its plan offers it (Supabase's security
+  advisor reports it off).
+
+## Full repository review after the close
+
+From 2026-11-04 to 2026-11-05 every folder and all 743 tracked files were reviewed, with automatic
+scans for secrets, personal data, broken links and unused code, and Supabase's advisors on the
+hosted pilot (read only). The public repository holds no real key, token, password, captured
+traffic or network address of real traffic. The advisors' other notices are intended behaviour or
+informational: each privileged function they list checks permission itself.
+
+| Finding | Outcome |
+|---|---|
+| An analyst approved on two computers saw review buttons on the other computer's alerts; the review always failed | Other computers' alerts are **View only**, matching "changes stay local" (6B.1) |
+| The app has no way to change or reset a password, although the analyst guide said administrators reset them | `reset_password.py` replaces a forgotten password and ends the account's running sign-ins; the guides now say there is no such page. **Still open:** analysts cannot choose their own password |
+| The maintainer guide omitted the local stack's first-time steps (signing key, `.env.supabase.local`) | Added to its section 9 |
+| The maintainer settings template marked `SUPABASE_API_URL` optional, but publishing, cleanup and recovery need it | Marked required; recovery now names a missing setting |
+| Maintainer tools printed one generic line whatever the reason for a refusal | They print the reason when it is one of their own controlled refusals |
+| The evaluation in `scripts/RUN_TESTS.cmd` still used run 8 | Uses run 10 |
+| Stage-only helpers, the cycle 1 working prompt, unused code and old Git LFS rules | Removed; maintainer guide section 10 lists the helpers the Iteration 5 records still name |
+
+Kept on purpose: `scripts/START_APP.cmd`, the two unused JavaScript packages in `package.json`, and
+every folder in `saved_models/`, because the training records still reference them and a
+training-records restore refuses missing files. Pyright and Ruff still target Python 3.10: at 3.14
+Pyright reports 14 pandas typing errors in the tests, which remain to be fixed.
+
+Verification: offline suite 679 passed; browser polling tests 11 passed; integration lane 101 passed
+with the 2 opt-in release checks skipped, and those 2 then passed on the fix commits (clean
+installation build `0.6.0+50b4527`, 70 files; browser walk 65 page views, 33 pages and states, no
+problems, nothing wider than the screen). `ruff check .` passed; pyright 0 errors.
 
 ## Next
 
