@@ -48,7 +48,7 @@
                     <td>{{ attack_score(alert.attack_probability, alert.attack_score_band, alert.severity_level) }}</td>
                     <td><span class="status-badge review-{{ (alert.alert_status or 'unknown')|lower }}">{{ alert.alert_status }}</span></td>
                     <td>
-                        {% if config.CLOUD_MODE and not alert.writable %}<span class="text-muted-soft" title="Reviewed on a computer this account is a member of">View only</span>{% else %}
+                        {% if config.CLOUD_MODE and not alert.writable %}<span class="text-muted-soft" title="Review this alert on the computer that recorded it">View only</span>{% else %}
                         <form class="inline-form" method="post" action="{{ url_for('update_alert', alert_id=alert.alert_id) }}">
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
                             {% if config.CLOUD_MODE %}<input type="hidden" name="offset" value="{{ offset }}"><input type="hidden" name="filter" value="{{ alert_status }}"><input type="hidden" name="node" value="{{ scope.value }}"><input type="hidden" name="date_from" value="{{ dates.date_from }}"><input type="hidden" name="date_to" value="{{ dates.date_to }}">{% endif %}

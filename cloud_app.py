@@ -514,13 +514,6 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                       "warning")
         return choice
 
-    def writable_nodes(repo, profile_id):
-        """Nodes this account may act on: this installation plus its approved memberships."""
-        rows = repo.list_records(
-            "node_membership", page_size=100, all_visible_nodes=True,
-            filters={"profile_id": profile_id, "status": "approved"}).rows
-        return {str(services.node_id)} | {row["node_id"] for row in rows}
-
     def profile_names(repo, profile_ids):
         wanted = sorted({int(value) for value in profile_ids if value is not None})[:100]
         names = {value: f"Profile #{value}" for value in wanted}
@@ -821,21 +814,18 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         between = _date_bounds(dates)
         repo = g.repo
         scope = node_scope(repo)
-        profile_id = g.identity.profile_id
-        results = _parallel({
-            "page": lambda: repo.list_records(
-                "alert_detail", offset=offset, page_size=PAGE_SIZE, descending=True,
-                filters={"alert_status": alert_status} if alert_status else None,
-                between=between, **scope["query"]),
-            "writable": lambda: writable_nodes(repo, profile_id),
-        })
-        _raise_first(results, ("page", "writable"))
-        page = results["page"]
+        page = repo.list_records(
+            "alert_detail", offset=offset, page_size=PAGE_SIZE, descending=True,
+            filters={"alert_status": alert_status} if alert_status else None,
+            between=between, **scope["query"])
+        local = str(services.node_id)
+        # Changes stay local (6B.1): a review goes to this installation's own alerts only, so
+        # another computer's alerts are view only here, even for a member of that computer.
         alerts = [
             {**row, "computer": scope["names"].get(row["node_id"]),
              "received_at": _utc_text(row.get("created_at")),
              "upload_delay": _upload_delay(row.get("detected_at"), row.get("created_at")),
-             "writable": row["node_id"] in results["writable"]}
+             "writable": row["node_id"] == local}
             for row in page.rows
         ]
         return render_template(

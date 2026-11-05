@@ -57,6 +57,20 @@ def test_administrators_choose_one_or_all_computers(cloud):
     assert "alert on PC B" in one and "alert on this computer" not in one
 
 
+def test_a_member_of_another_computer_sees_its_alerts_view_only(cloud):
+    """Reviews go to this installation's alerts only; a review button for another computer's
+    alert always failed with "unavailable on this installation" (full review, 2026-11-04)."""
+    other = second_node(cloud)
+    cloud.fake.approve(cloud.analyst["profile_id"], other)
+    seed_alert(cloud.fake, cloud.node, cloud.analyst["profile_id"], "alert on this computer")
+    remote = seed_alert(cloud.fake, other, cloud.other["profile_id"], "alert on PC B")
+    page = signed_in(cloud.app, ANALYST).get("/alerts?node=all").get_data(as_text=True)
+    assert "alert on this computer" in page and "alert on PC B" in page
+    assert page.count("View only") == 1
+    assert f"/alerts/{remote['alert_id']}/status" not in page
+    assert len(re.findall(r'/alerts/\d+/status', page)) == 1
+
+
 def test_analysts_see_only_their_computers_even_with_a_hand_edited_url(cloud):
     other = second_node(cloud)
     seed_alert(cloud.fake, other, cloud.other["profile_id"], "alert on PC B")
