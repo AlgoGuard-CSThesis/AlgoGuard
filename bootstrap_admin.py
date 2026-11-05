@@ -320,7 +320,8 @@ def main(argv: list[str] | None = None) -> int:
         print()
         print("Generated password (shown once, not stored anywhere):")
         print(f"    {outcome.password}")
-        print("Save it now. Change it after first sign-in if you prefer your own.")
+        print("Save it now. AlgoGuard has no page for changing it; reset_password.py sets a "
+              "new one.")
     return 0
 
 
