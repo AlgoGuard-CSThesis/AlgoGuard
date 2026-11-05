@@ -118,6 +118,8 @@ The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
    "Run as administrator".
 4. Open http://127.0.0.1:5000 and sign in with the e-mail address and
    password your administrator created. Every start needs an online sign-in.
+   There is no page for changing a password: if you forget yours, ask your
+   administrator, and the maintainer sets a new one.
 5. The first time, copy the installation ID from the Dashboard and send it to
    your administrator, who approves it on the Nodes page.
 

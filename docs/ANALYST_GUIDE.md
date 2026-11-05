@@ -174,7 +174,8 @@ Alerts recorded before scores existed show **Not scored** with their old severit
 ## 8. Other pages
 
 - **Alerts**: every attack verdict that was stored, with its score and addresses. Mark alerts
-  Acknowledged or Resolved, or reopen them; every change is logged.
+  Acknowledged or Resolved, or reopen them; every change is logged. Alerts from another computer
+  are **View only**: review them on the computer that recorded them.
 - **Reports**: select alerts on the Alerts page (up to 250) to create a report; open it later
   on the Reports page.
 - **Logs**: what AlgoGuard and its users did, newest first, with filters.
@@ -202,7 +203,7 @@ Administrators also see:
 | `Settings problem: ...` | The message names the setting. Common causes: the URL is not `https://`, the key is not a `sb_publishable_` key, or `ALGOGUARD_HOST` is not `127.0.0.1`. |
 | `AlgoGuard needs Python 3.14.6` or `Models need Python 3.14.6` | Install Python 3.14.6, delete the `venv` folder, and run `SETUP_ALGOGUARD.cmd` again. |
 | `This installation's Python packages differ from the model's` | Run `SETUP_ALGOGUARD.cmd` again. |
-| Sign-in says the e-mail or password was not accepted | Check them, then check that Windows' clock is right: in an administrator Command Prompt run `w32tm /resync`. A clock more than 10 seconds off makes every sign-in fail. Forgotten passwords are reset by your administrator. |
+| Sign-in says the e-mail or password was not accepted | Check them, then check that Windows' clock is right: in an administrator Command Prompt run `w32tm /resync`. A clock more than 10 seconds off makes every sign-in fail. AlgoGuard has no page for changing or resetting a password: if you forgot yours, ask your administrator, and the maintainer sets a new one for you. |
 | `The cloud is unavailable.` | Check the internet connection. Records wait as Pending and upload later. |
 | `Your account or this installation needs administrator approval.` | Give your administrator the installation ID from the Dashboard (section 4). If you were approved before, your access may have been revoked. |
 | **Model not available**: `No model is published for this project yet.` | Tell your administrator; the maintainer publishes models. |

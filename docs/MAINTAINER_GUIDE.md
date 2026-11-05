@@ -53,7 +53,8 @@ been moved to the cloud yet (section 8) and for the training records in section 
 
 ## 3. Setting up a cloud project (once)
 
-1. Create the Supabase project and fill in `.env.maintainer`.
+1. Create the Supabase project and fill in `.env.maintainer`. `venv\Scripts\python.exe
+   check_db_connection.py` confirms that the database connection works before anything else.
 2. Apply the database schema and confirm nothing is pending:
 
    ```bat
@@ -73,7 +74,7 @@ been moved to the cloud yet (section 8) and for the training records in section 
    ```
 
 4. In the Supabase dashboard, under **Authentication**, turn off public sign-ups and keep the
-   e-mail provider on.
+   e-mail provider on. If your plan offers it, also turn on leaked-password protection.
 5. Create the first Administrator. The generated password is printed once:
 
    ```bat
@@ -84,6 +85,19 @@ been moved to the cloud yet (section 8) and for the training records in section 
    Manual Prediction shows the active model.
 
 After that, administrators create every other account on the **Accounts** page.
+
+**Forgotten passwords.** The app has no page for changing or resetting a password, and Supabase's
+e-mailed recovery links have nowhere to land in it, so a forgotten password is replaced here. The
+new password is generated and printed once (`--password-stdin` reads one instead; it must meet the
+Accounts page rule). Give it to the user privately:
+
+```bat
+venv\Scripts\python.exe reset_password.py --email <user e-mail>
+```
+
+A reset also ends the account's running sign-ins: they can no longer renew, so each stops when its
+current access token expires (one hour at most with Supabase's default) and the user signs in
+again. To lock someone out at once, deactivate the account on the Accounts page.
 
 ## 4. Database changes
 
@@ -198,10 +212,21 @@ node --test tests\monitor_poll.test.cjs
 
 The offline suite uses a fake cloud service and temporary paths and never touches `database/`,
 `saved_models/` or `.algoguard/`. The **integration lane** runs against the local Supabase stack
-in Docker:
+in Docker. The first time on a computer, make the stack's token-signing key before starting it
+(in Command Prompt, which keeps the output UTF-8; the second line stores the key as the list the
+stack reads). Both key files are ignored by git and never leave the computer:
+
+```bat
+npx supabase gen signing-key --algorithm ES256 > supabase\signing_keys.json
+venv\Scripts\python.exe -c "import json,pathlib; p=pathlib.Path('supabase/signing_keys.json'); k=json.loads(p.read_text(encoding='utf-8-sig')); p.write_text(json.dumps(k if isinstance(k,list) else [k]),encoding='utf-8')"
+```
+
+Then start the stack and save its local addresses and keys where the tests read them (repeat the
+second line whenever the stack is recreated):
 
 ```bat
 npx supabase start
+npx supabase status -o env > .env.supabase.local
 set RUN_WINDOWS_CAPTURE_TESTS=1
 venv\Scripts\python.exe -m pytest -m integration -q
 ```
@@ -241,3 +266,8 @@ suite and disposable installations: `ALGOGUARD_STATE_DIR`, `ALGOGUARD_DATABASE_P
 list. Each stage's changes, evidence and limits are in `docs/migration/`: 05a–05f for the move
 to the cloud, 06a (evidence and attack scores), 06b (administrator visibility and retention),
 06c (recovery and hardening) and 06d (release). Test cycle records are in `docs/testing/`.
+
+The Iteration 5 records name a few stage-only helpers that were removed after Iteration 6:
+`README_STAGE_5A.md`, `check_5b.cmd`, `check_5d.cmd`, `scripts/prepare-local-5a.ps1` and
+`measure_latency.py`. Their one lasting step, the local signing key, is in section 9; the files
+themselves remain in git history (`git show e5fce19:check_5d.cmd`, for example).

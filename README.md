@@ -88,7 +88,7 @@ AlgoGuard/
 |-- config.py                  settings (.env), checked with `python config.py`
 |-- SETUP_ALGOGUARD.cmd        analyst setup: packages and .env
 |-- START_ALGOGUARD.cmd        analyst start
-|-- train.py, publish_model.py, cloud_migrate.py, bootstrap_admin.py,
+|-- train.py, publish_model.py, cloud_migrate.py, bootstrap_admin.py, reset_password.py,
 |   cleanup_model_objects.py, legacy_backup.py, legacy_import.py   maintainer tools
 |-- services/                  flow tracking, capture, scoring, legacy local services
 |-- templates/, static/        pages and styles (Bootstrap vendored; works offline)
@@ -123,7 +123,7 @@ Use the Python version recorded in `requirements-model.lock` (3.14.6): published
 
 Only the project URL and publishable key belong in an analyst `.env`; a secret or service key, a non-HTTPS remote URL, or a non-loopback `ALGOGUARD_HOST` is refused at startup. Maintainer credentials live in `.env.maintainer` and are read only by maintainer tools.
 
-- **Sign-in is online, every start.** Log in with the e-mail and password an Administrator created. Tokens live in process memory and are renewed in the background; the browser cookie is a random session ID. A cached model never permits offline sign-in.
+- **Sign-in is online, every start.** Log in with the e-mail and password an Administrator created. Tokens live in process memory and are renewed in the background; the browser cookie is a random session ID. A cached model never permits offline sign-in. The app has no page for changing a password; the maintainer replaces a forgotten one with `reset_password.py`.
 - **Installation approval.** The first sign-in enrolls this installation (node). An Administrator approves it on the Nodes page; until then monitoring and uploads are refused with an explanation.
 - **Models come from the maintainer.** The verified active model is downloaded into the local cache and pinned for each capture. Analysts never train.
 - **Local state** lives in `.algoguard/` (`ALGOGUARD_STATE_DIR`): the installation ID (`node-id`), the owner-restricted upload queue, and the model cache.
