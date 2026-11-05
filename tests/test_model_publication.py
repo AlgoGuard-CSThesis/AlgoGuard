@@ -52,8 +52,9 @@ def test_the_publisher_says_why_it_refused(monkeypatch, capsys):
     monkeypatch.setattr(database_service, "get_model_result", lambda model_id: None)
     monkeypatch.setenv("SUPABASE_API_URL", "http://127.0.0.1:54321")
     monkeypatch.setenv("SUPABASE_SECRET_KEY", "sb_secret_test")
+    # --yes: without the maintainer-only database driver (as in CI) every target counts as remote.
     assert publish_model.main(["--model-id", "999", "--publication-id",
-                               "00000000-0000-4000-8000-000000000001"]) == 1
+                               "00000000-0000-4000-8000-000000000001", "--yes"]) == 1
     assert "The evaluated local model does not exist." in capsys.readouterr().out
 
 
