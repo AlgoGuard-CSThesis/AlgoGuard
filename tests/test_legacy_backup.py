@@ -79,6 +79,18 @@ def test_backup_integrity_refuses_damaged_inputs(tmp_path, monkeypatch, damage):
         verify_backup(folder)
 
 
+def test_the_command_line_says_why_it_refused(tmp_path, monkeypatch, capsys):
+    """A controlled refusal names its reason instead of one generic line (full review)."""
+    from legacy_backup import main
+
+    database = make_legacy(tmp_path / "source", monkeypatch)
+    folder = tmp_path / "backup"
+    folder.mkdir()
+    assert main(["backup", str(database), str(folder), "--source-id", str(uuid4()),
+                 "--installation-root", str(database.parent)]) == 1
+    assert "Choose a new backup directory" in capsys.readouterr().out
+
+
 def test_missing_artifacts_are_inventoried_but_restore_is_not_claimed(tmp_path, monkeypatch):
     database = make_legacy(tmp_path / "source", monkeypatch)
     (database.parent / "model.joblib").unlink()

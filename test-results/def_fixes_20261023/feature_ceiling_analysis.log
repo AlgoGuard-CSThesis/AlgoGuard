@@ -1,0 +1,23 @@
+﻿train rows 66393, hold-out rows 15939 (6174 attack, 9765 normal)
+
+1. Cycle 1 model B (Stacking Ensemble, 15 features)
+model B stacking                                           ROC-AUC 0.9713  recall@FPR<=8% 0.879  best F1 0.880
+
+2. Feature families (HistGradientBoosting)
+15 per-flow features                                       ROC-AUC 0.9729  recall@FPR<=8% 0.883  best F1 0.880
+15 + derived ratios                                        ROC-AUC 0.9756  recall@FPR<=8% 0.892  best F1 0.890
+15 + per-flow TCP/HTTP fields                              ROC-AUC 0.9736  recall@FPR<=8% 0.886  best F1 0.884
+15 + all connection counts                                 ROC-AUC 0.9943  recall@FPR<=8% 0.982  best F1 0.956
+all UNSW features                                          ROC-AUC 0.9942  recall@FPR<=8% 0.980  best F1 0.956
+
+3. Connection counts one at a time, then schema v2
+15 + ct_srv_src                                            ROC-AUC 0.9792  recall@FPR<=8% 0.913  best F1 0.899
+15 + ct_state_ttl                                          ROC-AUC 0.9729  recall@FPR<=8% 0.887  best F1 0.881
+15 + ct_dst_ltm                                            ROC-AUC 0.9746  recall@FPR<=8% 0.888  best F1 0.884
+15 + ct_src_dport_ltm                                      ROC-AUC 0.9731  recall@FPR<=8% 0.885  best F1 0.882
+15 + ct_dst_sport_ltm                                      ROC-AUC 0.9734  recall@FPR<=8% 0.886  best F1 0.884
+15 + ct_dst_src_ltm                                        ROC-AUC 0.9869  recall@FPR<=8% 0.948  best F1 0.925
+15 + ct_src_ltm                                            ROC-AUC 0.9752  recall@FPR<=8% 0.894  best F1 0.885
+15 + ct_srv_dst                                            ROC-AUC 0.9792  recall@FPR<=8% 0.912  best F1 0.899
+15 + is_sm_ips_ports                                       ROC-AUC 0.9729  recall@FPR<=8% 0.883  best F1 0.880
+schema v2: 15 + ct_dst_src_ltm, ct_dst_ltm, ct_srv_dst     ROC-AUC 0.9932  recall@FPR<=8% 0.978  best F1 0.951

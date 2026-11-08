@@ -1,0 +1,2124 @@
+{
+  "started": "2026-10-24 00:10:12",
+  "stopped": "2026-10-24 00:12:03",
+  "seconds": 90,
+  "flows": 202,
+  "end_reasons": {
+    "rst": 86,
+    "idle_timeout": 106,
+    "fin": 10
+  },
+  "lag_teardown_ms (fin/rst, excludes timeouts)": {
+    "n": 96,
+    "p50": 111.7,
+    "p95": 601.6,
+    "max": 754.4
+  },
+  "model_latency_ms": {
+    "p50": 33.9,
+    "p95": 86.9
+  },
+  "attack_share": 0.8168,
+  "screen": {
+    "statFlows": "202",
+    "statAttacks": "165",
+    "statNormals": "37",
+    "statAlerts": "165",
+    "statLatency": "Average latency 48.196 ms",
+    "statDeployment": "#2 (pinned for this capture)",
+    "statPersisted": "165",
+    "statSynced": "165",
+    "statPending": "0",
+    "statDropped": "0",
+    "statUpload": "active",
+    "statLag": "8258.7 ms avg",
+    "statCapture": "4,454 (1,026 own traffic)",
+    "monitorMessage": ""
+  },
+  "final": {
+    "attack_ratio": 81.68,
+    "authorization_ends_at": 1792775226,
+    "avg_detection_lag_ms": 8258.718,
+    "avg_latency_ms": 48.196,
+    "capped": false,
+    "capture": {
+      "active_flows": 25,
+      "dropped": 0,
+      "excluded": 1026,
+      "excluded_cloud": 1026,
+      "flows": 202,
+      "packets": 4454
+    },
+    "capture_id": 46,
+    "cloud": true,
+    "dataset": "algoguard_big.csv",
+    "dataset_label": "Live capture - Wi-Fi",
+    "deployment": {
+      "deployment_id": 2,
+      "manifest_id": 2,
+      "model_id": 2,
+      "model_name": "Stacking Ensemble",
+      "object_sha256": "1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29",
+      "run_id": 2
+    },
+    "error_message": null,
+    "order": "sequential",
+    "persist": "attacks",
+    "row_total": 0,
+    "session_id": "8d0f033a-0862-45e3-b6cc-ef52d18ce3d0",
+    "source_name": "Wi-Fi",
+    "source_type": "live",
+    "speed": "normal",
+    "started_at": "2026-10-23 16:10:12",
+    "state": "stopped",
+    "stopped_at": "2026-10-23T16:11:42.569+00:00",
+    "storage_stopped": false,
+    "synchronization": {
+      "dropped": 0,
+      "in_memory": 0,
+      "pending": 0,
+      "rejected": 0,
+      "reserved": 165,
+      "storage_stopped": false,
+      "synced": 165
+    },
+    "totals": {
+      "alerts": 165,
+      "attacks": 165,
+      "flows": 202,
+      "labelled": 0,
+      "mismatches": 0,
+      "normals": 37,
+      "persisted": 165,
+      "queued": 165
+    },
+    "upload": {
+      "last_success_age_seconds": 0.4,
+      "reason": null,
+      "retry_in_seconds": null,
+      "state": "active"
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "prediction": "Attack",
+      "confidence": 99.76,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 754.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 2,
+      "prediction": "Attack",
+      "confidence": 95.6,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 712,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 3,
+      "prediction": "Attack",
+      "confidence": 99.95,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 661.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 4,
+      "prediction": "Normal",
+      "confidence": 60.08,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 639.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 5,
+      "prediction": "Attack",
+      "confidence": 99.56,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 601.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 6,
+      "prediction": "Attack",
+      "confidence": 93.75,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 598.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 7,
+      "prediction": "Attack",
+      "confidence": 99.89,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 407.1,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 8,
+      "prediction": "Attack",
+      "confidence": 99.96,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 259.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 9,
+      "prediction": "Attack",
+      "confidence": 99.6,
+      "latency_ms": 20.338,
+      "detection_lag_ms": 82.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 10,
+      "prediction": "Attack",
+      "confidence": 94.69,
+      "latency_ms": 21.36,
+      "detection_lag_ms": 24.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 11,
+      "prediction": "Attack",
+      "confidence": 58.51,
+      "latency_ms": 74.219,
+      "detection_lag_ms": 93.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 12,
+      "prediction": "Attack",
+      "confidence": 51.8,
+      "latency_ms": 31.247,
+      "detection_lag_ms": 123.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 13,
+      "prediction": "Normal",
+      "confidence": 58.14,
+      "latency_ms": 31.247,
+      "detection_lag_ms": 111.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 14,
+      "prediction": "Normal",
+      "confidence": 57.52,
+      "latency_ms": 31.247,
+      "detection_lag_ms": 104.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 15,
+      "prediction": "Attack",
+      "confidence": 95.46,
+      "latency_ms": 31.247,
+      "detection_lag_ms": 96,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 16,
+      "prediction": "Attack",
+      "confidence": 78.04,
+      "latency_ms": 31.247,
+      "detection_lag_ms": 51.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 17,
+      "prediction": "Normal",
+      "confidence": 56.87,
+      "latency_ms": 24.137,
+      "detection_lag_ms": 26.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 18,
+      "prediction": "Attack",
+      "confidence": 94.89,
+      "latency_ms": 21.007,
+      "detection_lag_ms": 22.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 19,
+      "prediction": "Attack",
+      "confidence": 59.66,
+      "latency_ms": 46.121,
+      "detection_lag_ms": 117,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 20,
+      "prediction": "Normal",
+      "confidence": 64.47,
+      "latency_ms": 46.121,
+      "detection_lag_ms": 117.3,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 21,
+      "prediction": "Attack",
+      "confidence": 79.01,
+      "latency_ms": 37.156,
+      "detection_lag_ms": 147.3,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 22,
+      "prediction": "Attack",
+      "confidence": 94.06,
+      "latency_ms": 37.156,
+      "detection_lag_ms": 15925.1,
+      "end_reason": "idle_timeout",
+      "service": "dns",
+      "persistence": "synced"
+    },
+    {
+      "seq": 23,
+      "prediction": "Attack",
+      "confidence": 95.53,
+      "latency_ms": 37.156,
+      "detection_lag_ms": 15440.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 24,
+      "prediction": "Normal",
+      "confidence": 65.84,
+      "latency_ms": 37.156,
+      "detection_lag_ms": 133.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 25,
+      "prediction": "Normal",
+      "confidence": 59.1,
+      "latency_ms": 37.156,
+      "detection_lag_ms": 127.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 26,
+      "prediction": "Attack",
+      "confidence": 99.93,
+      "latency_ms": 33.958,
+      "detection_lag_ms": 215.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 27,
+      "prediction": "Attack",
+      "confidence": 99.97,
+      "latency_ms": 20.332,
+      "detection_lag_ms": 22,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 28,
+      "prediction": "Attack",
+      "confidence": 95.84,
+      "latency_ms": 40.925,
+      "detection_lag_ms": 44.3,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 29,
+      "prediction": "Attack",
+      "confidence": 99.77,
+      "latency_ms": 29.588,
+      "detection_lag_ms": 15540.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 30,
+      "prediction": "Attack",
+      "confidence": 81.07,
+      "latency_ms": 29.588,
+      "detection_lag_ms": 15043.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 31,
+      "prediction": "Attack",
+      "confidence": 98.84,
+      "latency_ms": 84.252,
+      "detection_lag_ms": 142.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 32,
+      "prediction": "Attack",
+      "confidence": 99.75,
+      "latency_ms": 38.623,
+      "detection_lag_ms": 15557.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 33,
+      "prediction": "Normal",
+      "confidence": 60.86,
+      "latency_ms": 38.623,
+      "detection_lag_ms": 15243.4,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 34,
+      "prediction": "Attack",
+      "confidence": 91.94,
+      "latency_ms": 28.591,
+      "detection_lag_ms": 15655.8,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 35,
+      "prediction": "Attack",
+      "confidence": 98.43,
+      "latency_ms": 28.591,
+      "detection_lag_ms": 15836.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 36,
+      "prediction": "Attack",
+      "confidence": 97.95,
+      "latency_ms": 28.591,
+      "detection_lag_ms": 15808.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 37,
+      "prediction": "Attack",
+      "confidence": 86.78,
+      "latency_ms": 28.591,
+      "detection_lag_ms": 15808.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 38,
+      "prediction": "Attack",
+      "confidence": 97.95,
+      "latency_ms": 28.591,
+      "detection_lag_ms": 15415.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 39,
+      "prediction": "Attack",
+      "confidence": 97.95,
+      "latency_ms": 24.216,
+      "detection_lag_ms": 15043.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 40,
+      "prediction": "Attack",
+      "confidence": 69.39,
+      "latency_ms": 40.774,
+      "detection_lag_ms": 50.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 41,
+      "prediction": "Attack",
+      "confidence": 57.12,
+      "latency_ms": 61.84,
+      "detection_lag_ms": 115.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 42,
+      "prediction": "Attack",
+      "confidence": 97.29,
+      "latency_ms": 45.798,
+      "detection_lag_ms": 15370.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 43,
+      "prediction": "Attack",
+      "confidence": 95.9,
+      "latency_ms": 45.798,
+      "detection_lag_ms": 15624.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 44,
+      "prediction": "Normal",
+      "confidence": 56.29,
+      "latency_ms": 19.986,
+      "detection_lag_ms": 23.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 45,
+      "prediction": "Attack",
+      "confidence": 96.12,
+      "latency_ms": 21.755,
+      "detection_lag_ms": 15625.8,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 46,
+      "prediction": "Attack",
+      "confidence": 98.49,
+      "latency_ms": 46.234,
+      "detection_lag_ms": 15729.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 47,
+      "prediction": "Attack",
+      "confidence": 99.8,
+      "latency_ms": 79.748,
+      "detection_lag_ms": 84.7,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 48,
+      "prediction": "Attack",
+      "confidence": 93.74,
+      "latency_ms": 19.163,
+      "detection_lag_ms": 15774.1,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 49,
+      "prediction": "Attack",
+      "confidence": 81.21,
+      "latency_ms": 19.163,
+      "detection_lag_ms": 15238.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 50,
+      "prediction": "Attack",
+      "confidence": 81.12,
+      "latency_ms": 28.801,
+      "detection_lag_ms": 15218.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 51,
+      "prediction": "Attack",
+      "confidence": 80,
+      "latency_ms": 28.801,
+      "detection_lag_ms": 15101.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 52,
+      "prediction": "Attack",
+      "confidence": 62.24,
+      "latency_ms": 27.694,
+      "detection_lag_ms": 15620.3,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 53,
+      "prediction": "Attack",
+      "confidence": 98.52,
+      "latency_ms": 27.694,
+      "detection_lag_ms": 15527.3,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 54,
+      "prediction": "Attack",
+      "confidence": 99.11,
+      "latency_ms": 31.065,
+      "detection_lag_ms": 36.3,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 55,
+      "prediction": "Attack",
+      "confidence": 56.52,
+      "latency_ms": 67.115,
+      "detection_lag_ms": 93.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 56,
+      "prediction": "Normal",
+      "confidence": 62.49,
+      "latency_ms": 29.622,
+      "detection_lag_ms": 110.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 57,
+      "prediction": "Attack",
+      "confidence": 94.42,
+      "latency_ms": 29.622,
+      "detection_lag_ms": 44.3,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 58,
+      "prediction": "Attack",
+      "confidence": 62.24,
+      "latency_ms": 26.657,
+      "detection_lag_ms": 15635,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 59,
+      "prediction": "Normal",
+      "confidence": 83.76,
+      "latency_ms": 26.657,
+      "detection_lag_ms": 15620.4,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 60,
+      "prediction": "Attack",
+      "confidence": 89.51,
+      "latency_ms": 26.657,
+      "detection_lag_ms": 15346,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 61,
+      "prediction": "Attack",
+      "confidence": 89.11,
+      "latency_ms": 26.657,
+      "detection_lag_ms": 15304.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 62,
+      "prediction": "Normal",
+      "confidence": 80.63,
+      "latency_ms": 34.803,
+      "detection_lag_ms": 15980.7,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 63,
+      "prediction": "Attack",
+      "confidence": 88.92,
+      "latency_ms": 34.803,
+      "detection_lag_ms": 16003.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 64,
+      "prediction": "Attack",
+      "confidence": 98.43,
+      "latency_ms": 34.803,
+      "detection_lag_ms": 15885.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 65,
+      "prediction": "Attack",
+      "confidence": 99.78,
+      "latency_ms": 49.282,
+      "detection_lag_ms": 15667.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 66,
+      "prediction": "Attack",
+      "confidence": 76.89,
+      "latency_ms": 49.282,
+      "detection_lag_ms": 15791.9,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 67,
+      "prediction": "Attack",
+      "confidence": 99.8,
+      "latency_ms": 49.282,
+      "detection_lag_ms": 15151,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 68,
+      "prediction": "Attack",
+      "confidence": 98.28,
+      "latency_ms": 22.765,
+      "detection_lag_ms": 15995.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 69,
+      "prediction": "Attack",
+      "confidence": 98.69,
+      "latency_ms": 22.765,
+      "detection_lag_ms": 15854.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 70,
+      "prediction": "Attack",
+      "confidence": 66.15,
+      "latency_ms": 22.765,
+      "detection_lag_ms": 15429.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 71,
+      "prediction": "Attack",
+      "confidence": 95.74,
+      "latency_ms": 116.262,
+      "detection_lag_ms": 15822.4,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 72,
+      "prediction": "Attack",
+      "confidence": 99.73,
+      "latency_ms": 30.897,
+      "detection_lag_ms": 15438,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 73,
+      "prediction": "Attack",
+      "confidence": 70.19,
+      "latency_ms": 31.728,
+      "detection_lag_ms": 15664.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 74,
+      "prediction": "Attack",
+      "confidence": 82.4,
+      "latency_ms": 31.728,
+      "detection_lag_ms": 15048.5,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 75,
+      "prediction": "Normal",
+      "confidence": 65.21,
+      "latency_ms": 54.141,
+      "detection_lag_ms": 185.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 76,
+      "prediction": "Attack",
+      "confidence": 57.03,
+      "latency_ms": 54.141,
+      "detection_lag_ms": 184.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 77,
+      "prediction": "Attack",
+      "confidence": 65.1,
+      "latency_ms": 30.896,
+      "detection_lag_ms": 226,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 78,
+      "prediction": "Attack",
+      "confidence": 94.08,
+      "latency_ms": 30.896,
+      "detection_lag_ms": 15200,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 79,
+      "prediction": "Normal",
+      "confidence": 62.86,
+      "latency_ms": 30.896,
+      "detection_lag_ms": 171.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 80,
+      "prediction": "Attack",
+      "confidence": 81.47,
+      "latency_ms": 30.896,
+      "detection_lag_ms": 165.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 81,
+      "prediction": "Attack",
+      "confidence": 87.56,
+      "latency_ms": 30.896,
+      "detection_lag_ms": 133.8,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 82,
+      "prediction": "Attack",
+      "confidence": 99.07,
+      "latency_ms": 33,
+      "detection_lag_ms": 15578.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 83,
+      "prediction": "Attack",
+      "confidence": 99.94,
+      "latency_ms": 40.907,
+      "detection_lag_ms": 69,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 84,
+      "prediction": "Normal",
+      "confidence": 68.85,
+      "latency_ms": 60.409,
+      "detection_lag_ms": 65.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 85,
+      "prediction": "Normal",
+      "confidence": 50.12,
+      "latency_ms": 36.728,
+      "detection_lag_ms": 149.1,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 86,
+      "prediction": "Normal",
+      "confidence": 63.26,
+      "latency_ms": 36.728,
+      "detection_lag_ms": 139.1,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 87,
+      "prediction": "Normal",
+      "confidence": 59.62,
+      "latency_ms": 36.728,
+      "detection_lag_ms": 116.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 88,
+      "prediction": "Attack",
+      "confidence": 95.04,
+      "latency_ms": 36.728,
+      "detection_lag_ms": 63,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 89,
+      "prediction": "Normal",
+      "confidence": 64.18,
+      "latency_ms": 28.514,
+      "detection_lag_ms": 74.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 90,
+      "prediction": "Attack",
+      "confidence": 87.98,
+      "latency_ms": 34.274,
+      "detection_lag_ms": 71.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 91,
+      "prediction": "Attack",
+      "confidence": 96.04,
+      "latency_ms": 30.068,
+      "detection_lag_ms": 15186.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 92,
+      "prediction": "Attack",
+      "confidence": 99.58,
+      "latency_ms": 30.068,
+      "detection_lag_ms": 15053.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 93,
+      "prediction": "Attack",
+      "confidence": 99.97,
+      "latency_ms": 29.508,
+      "detection_lag_ms": 60,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 94,
+      "prediction": "Attack",
+      "confidence": 92.83,
+      "latency_ms": 27.812,
+      "detection_lag_ms": 31.5,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 95,
+      "prediction": "Attack",
+      "confidence": 97.95,
+      "latency_ms": 41.342,
+      "detection_lag_ms": 15797.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 96,
+      "prediction": "Attack",
+      "confidence": 64.36,
+      "latency_ms": 47.341,
+      "detection_lag_ms": 15635.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 97,
+      "prediction": "Attack",
+      "confidence": 66.15,
+      "latency_ms": 29.139,
+      "detection_lag_ms": 15644.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 98,
+      "prediction": "Attack",
+      "confidence": 64.38,
+      "latency_ms": 29.139,
+      "detection_lag_ms": 15525.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 99,
+      "prediction": "Attack",
+      "confidence": 97.93,
+      "latency_ms": 45.221,
+      "detection_lag_ms": 15632.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 100,
+      "prediction": "Attack",
+      "confidence": 86.78,
+      "latency_ms": 45.221,
+      "detection_lag_ms": 15421.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 101,
+      "prediction": "Attack",
+      "confidence": 50.91,
+      "latency_ms": 21.459,
+      "detection_lag_ms": 15220,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 102,
+      "prediction": "Attack",
+      "confidence": 88.65,
+      "latency_ms": 21.459,
+      "detection_lag_ms": 15879.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 103,
+      "prediction": "Attack",
+      "confidence": 98.96,
+      "latency_ms": 97.297,
+      "detection_lag_ms": 99.9,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 104,
+      "prediction": "Attack",
+      "confidence": 86.66,
+      "latency_ms": 24.683,
+      "detection_lag_ms": 93.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 105,
+      "prediction": "Attack",
+      "confidence": 99.94,
+      "latency_ms": 39.576,
+      "detection_lag_ms": 43.4,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 106,
+      "prediction": "Attack",
+      "confidence": 56.2,
+      "latency_ms": 41.028,
+      "detection_lag_ms": 87.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 107,
+      "prediction": "Attack",
+      "confidence": 91.84,
+      "latency_ms": 64.041,
+      "detection_lag_ms": 16060.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 108,
+      "prediction": "Attack",
+      "confidence": 97.3,
+      "latency_ms": 64.041,
+      "detection_lag_ms": 15588.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 109,
+      "prediction": "Attack",
+      "confidence": 90.85,
+      "latency_ms": 27.296,
+      "detection_lag_ms": 15849.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 110,
+      "prediction": "Normal",
+      "confidence": 65.92,
+      "latency_ms": 64.764,
+      "detection_lag_ms": 67.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 111,
+      "prediction": "Attack",
+      "confidence": 87.98,
+      "latency_ms": 31.211,
+      "detection_lag_ms": 60.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 112,
+      "prediction": "Attack",
+      "confidence": 99.17,
+      "latency_ms": 24.612,
+      "detection_lag_ms": 26.8,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 113,
+      "prediction": "Attack",
+      "confidence": 82.28,
+      "latency_ms": 24.846,
+      "detection_lag_ms": 15033.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 114,
+      "prediction": "Attack",
+      "confidence": 88.14,
+      "latency_ms": 31.174,
+      "detection_lag_ms": 15505.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 115,
+      "prediction": "Attack",
+      "confidence": 87.52,
+      "latency_ms": 31.174,
+      "detection_lag_ms": 15445.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 116,
+      "prediction": "Attack",
+      "confidence": 99.64,
+      "latency_ms": 31.174,
+      "detection_lag_ms": 15049.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 117,
+      "prediction": "Attack",
+      "confidence": 99.58,
+      "latency_ms": 28.132,
+      "detection_lag_ms": 15928.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 118,
+      "prediction": "Attack",
+      "confidence": 94.82,
+      "latency_ms": 26.247,
+      "detection_lag_ms": 67.9,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 119,
+      "prediction": "Attack",
+      "confidence": 88.04,
+      "latency_ms": 20.899,
+      "detection_lag_ms": 15752,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 120,
+      "prediction": "Attack",
+      "confidence": 88.14,
+      "latency_ms": 20.899,
+      "detection_lag_ms": 15747.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 121,
+      "prediction": "Attack",
+      "confidence": 85.39,
+      "latency_ms": 36.679,
+      "detection_lag_ms": 15136.1,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 122,
+      "prediction": "Attack",
+      "confidence": 83.62,
+      "latency_ms": 39.921,
+      "detection_lag_ms": 15437.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 123,
+      "prediction": "Attack",
+      "confidence": 84.6,
+      "latency_ms": 39.921,
+      "detection_lag_ms": 15437.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 124,
+      "prediction": "Attack",
+      "confidence": 83.62,
+      "latency_ms": 29.527,
+      "detection_lag_ms": 16036.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 125,
+      "prediction": "Attack",
+      "confidence": 98.39,
+      "latency_ms": 29.527,
+      "detection_lag_ms": 15703.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 126,
+      "prediction": "Attack",
+      "confidence": 68.17,
+      "latency_ms": 29.527,
+      "detection_lag_ms": 15052.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 127,
+      "prediction": "Attack",
+      "confidence": 89.36,
+      "latency_ms": 29.527,
+      "detection_lag_ms": 15034.2,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 128,
+      "prediction": "Attack",
+      "confidence": 99.83,
+      "latency_ms": 43.34,
+      "detection_lag_ms": 15714.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 129,
+      "prediction": "Normal",
+      "confidence": 51.4,
+      "latency_ms": 38.535,
+      "detection_lag_ms": 42,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 130,
+      "prediction": "Attack",
+      "confidence": 84.77,
+      "latency_ms": 32.231,
+      "detection_lag_ms": 154.5,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 131,
+      "prediction": "Attack",
+      "confidence": 90.53,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15445.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 132,
+      "prediction": "Attack",
+      "confidence": 91.75,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15665.3,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 133,
+      "prediction": "Attack",
+      "confidence": 82.59,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15476.3,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 134,
+      "prediction": "Attack",
+      "confidence": 50.87,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15989,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 135,
+      "prediction": "Attack",
+      "confidence": 96.99,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15476.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 136,
+      "prediction": "Attack",
+      "confidence": 98.06,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15460.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 137,
+      "prediction": "Attack",
+      "confidence": 64.36,
+      "latency_ms": 44.301,
+      "detection_lag_ms": 15793,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 138,
+      "prediction": "Attack",
+      "confidence": 52.7,
+      "latency_ms": 57.09,
+      "detection_lag_ms": 62.8,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 139,
+      "prediction": "Attack",
+      "confidence": 94.36,
+      "latency_ms": 57.09,
+      "detection_lag_ms": 62.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 140,
+      "prediction": "Attack",
+      "confidence": 92.28,
+      "latency_ms": 43.394,
+      "detection_lag_ms": 76.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 141,
+      "prediction": "Normal",
+      "confidence": 65.92,
+      "latency_ms": 23.128,
+      "detection_lag_ms": 25.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 142,
+      "prediction": "Attack",
+      "confidence": 87.98,
+      "latency_ms": 37.527,
+      "detection_lag_ms": 39.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 143,
+      "prediction": "Attack",
+      "confidence": 98,
+      "latency_ms": 386.182,
+      "detection_lag_ms": 15561.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 144,
+      "prediction": "Attack",
+      "confidence": 64.36,
+      "latency_ms": 386.182,
+      "detection_lag_ms": 16090.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 145,
+      "prediction": "Attack",
+      "confidence": 99.67,
+      "latency_ms": 386.182,
+      "detection_lag_ms": 15864.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 146,
+      "prediction": "Attack",
+      "confidence": 64.36,
+      "latency_ms": 386.182,
+      "detection_lag_ms": 15969.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 147,
+      "prediction": "Attack",
+      "confidence": 99.63,
+      "latency_ms": 386.182,
+      "detection_lag_ms": 15747.6,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 148,
+      "prediction": "Attack",
+      "confidence": 99.96,
+      "latency_ms": 27.905,
+      "detection_lag_ms": 280.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 149,
+      "prediction": "Attack",
+      "confidence": 99.71,
+      "latency_ms": 27.905,
+      "detection_lag_ms": 197.7,
+      "end_reason": "fin",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 150,
+      "prediction": "Attack",
+      "confidence": 86.66,
+      "latency_ms": 27.905,
+      "detection_lag_ms": 170.8,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 151,
+      "prediction": "Attack",
+      "confidence": 85.03,
+      "latency_ms": 27.905,
+      "detection_lag_ms": 170,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 152,
+      "prediction": "Attack",
+      "confidence": 97.95,
+      "latency_ms": 22.527,
+      "detection_lag_ms": 15420.8,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 153,
+      "prediction": "Attack",
+      "confidence": 99.02,
+      "latency_ms": 86.891,
+      "detection_lag_ms": 15916.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 154,
+      "prediction": "Attack",
+      "confidence": 62.24,
+      "latency_ms": 86.891,
+      "detection_lag_ms": 15982,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 155,
+      "prediction": "Attack",
+      "confidence": 98.52,
+      "latency_ms": 86.891,
+      "detection_lag_ms": 15920.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 156,
+      "prediction": "Attack",
+      "confidence": 98.12,
+      "latency_ms": 35.549,
+      "detection_lag_ms": 15636.3,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 157,
+      "prediction": "Attack",
+      "confidence": 92.48,
+      "latency_ms": 35.549,
+      "detection_lag_ms": 15528.1,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 158,
+      "prediction": "Attack",
+      "confidence": 71.92,
+      "latency_ms": 35.549,
+      "detection_lag_ms": 15474.6,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 159,
+      "prediction": "Attack",
+      "confidence": 96.46,
+      "latency_ms": 35.549,
+      "detection_lag_ms": 15076.2,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 160,
+      "prediction": "Attack",
+      "confidence": 66.74,
+      "latency_ms": 35.549,
+      "detection_lag_ms": 15103,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 161,
+      "prediction": "Normal",
+      "confidence": 83.76,
+      "latency_ms": 25.519,
+      "detection_lag_ms": 15952.8,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 162,
+      "prediction": "Normal",
+      "confidence": 83.76,
+      "latency_ms": 25.519,
+      "detection_lag_ms": 15936.9,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 163,
+      "prediction": "Attack",
+      "confidence": 93.41,
+      "latency_ms": 25.519,
+      "detection_lag_ms": 15284,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 164,
+      "prediction": "Normal",
+      "confidence": 80.63,
+      "latency_ms": 25.519,
+      "detection_lag_ms": 15264.9,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 165,
+      "prediction": "Attack",
+      "confidence": 68.35,
+      "latency_ms": 21.438,
+      "detection_lag_ms": 15787.1,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 166,
+      "prediction": "Attack",
+      "confidence": 92.78,
+      "latency_ms": 76.505,
+      "detection_lag_ms": 16014.3,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 167,
+      "prediction": "Attack",
+      "confidence": 50.87,
+      "latency_ms": 76.505,
+      "detection_lag_ms": 16071.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 168,
+      "prediction": "Attack",
+      "confidence": 80.18,
+      "latency_ms": 45.439,
+      "detection_lag_ms": 128.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 169,
+      "prediction": "Normal",
+      "confidence": 60.82,
+      "latency_ms": 45.439,
+      "detection_lag_ms": 115.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 170,
+      "prediction": "Normal",
+      "confidence": 58.18,
+      "latency_ms": 45.439,
+      "detection_lag_ms": 77.1,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 171,
+      "prediction": "Attack",
+      "confidence": 99.7,
+      "latency_ms": 32.096,
+      "detection_lag_ms": 37.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 172,
+      "prediction": "Attack",
+      "confidence": 99.87,
+      "latency_ms": 110.778,
+      "detection_lag_ms": 16055.3,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 173,
+      "prediction": "Attack",
+      "confidence": 85.39,
+      "latency_ms": 37.062,
+      "detection_lag_ms": 15252,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 174,
+      "prediction": "Attack",
+      "confidence": 65.96,
+      "latency_ms": 44.555,
+      "detection_lag_ms": 84.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 175,
+      "prediction": "Normal",
+      "confidence": 57.52,
+      "latency_ms": 36.576,
+      "detection_lag_ms": 139.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 176,
+      "prediction": "Normal",
+      "confidence": 66.29,
+      "latency_ms": 36.576,
+      "detection_lag_ms": 133.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 177,
+      "prediction": "Attack",
+      "confidence": 86.51,
+      "latency_ms": 36.576,
+      "detection_lag_ms": 102.3,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 178,
+      "prediction": "Attack",
+      "confidence": 68.23,
+      "latency_ms": 36.576,
+      "detection_lag_ms": 92.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 179,
+      "prediction": "Attack",
+      "confidence": 98.02,
+      "latency_ms": 36.576,
+      "detection_lag_ms": 43.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 180,
+      "prediction": "Normal",
+      "confidence": 62.36,
+      "latency_ms": 23.455,
+      "detection_lag_ms": 25.2,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 181,
+      "prediction": "Attack",
+      "confidence": 86.84,
+      "latency_ms": 36.883,
+      "detection_lag_ms": 39,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 182,
+      "prediction": "Attack",
+      "confidence": 98.79,
+      "latency_ms": 32.573,
+      "detection_lag_ms": 34.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 183,
+      "prediction": "Attack",
+      "confidence": 95.39,
+      "latency_ms": 28.879,
+      "detection_lag_ms": 15752.5,
+      "end_reason": "idle_timeout",
+      "service": "-",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 184,
+      "prediction": "Attack",
+      "confidence": 91.19,
+      "latency_ms": 132.724,
+      "detection_lag_ms": 15641.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 185,
+      "prediction": "Attack",
+      "confidence": 65.17,
+      "latency_ms": 33.929,
+      "detection_lag_ms": 443.3,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 186,
+      "prediction": "Normal",
+      "confidence": 57.52,
+      "latency_ms": 33.929,
+      "detection_lag_ms": 441.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 187,
+      "prediction": "Normal",
+      "confidence": 61.06,
+      "latency_ms": 33.929,
+      "detection_lag_ms": 432.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 188,
+      "prediction": "Normal",
+      "confidence": 50.97,
+      "latency_ms": 33.929,
+      "detection_lag_ms": 431.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 189,
+      "prediction": "Attack",
+      "confidence": 95.41,
+      "latency_ms": 33.929,
+      "detection_lag_ms": 352.5,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 190,
+      "prediction": "Normal",
+      "confidence": 61.39,
+      "latency_ms": 33.929,
+      "detection_lag_ms": 265.8,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 191,
+      "prediction": "Attack",
+      "confidence": 98.39,
+      "latency_ms": 35.421,
+      "detection_lag_ms": 15803.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 192,
+      "prediction": "Attack",
+      "confidence": 71.84,
+      "latency_ms": 35.421,
+      "detection_lag_ms": 15877.4,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 193,
+      "prediction": "Attack",
+      "confidence": 80.48,
+      "latency_ms": 29.518,
+      "detection_lag_ms": 15258.7,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 194,
+      "prediction": "Attack",
+      "confidence": 56.55,
+      "latency_ms": 302.391,
+      "detection_lag_ms": 307.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "synced"
+    },
+    {
+      "seq": 195,
+      "prediction": "Normal",
+      "confidence": 60.82,
+      "latency_ms": 60.355,
+      "detection_lag_ms": 417.8,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 196,
+      "prediction": "Normal",
+      "confidence": 60.47,
+      "latency_ms": 60.355,
+      "detection_lag_ms": 417,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 197,
+      "prediction": "Normal",
+      "confidence": 71.45,
+      "latency_ms": 60.355,
+      "detection_lag_ms": 389.4,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "session_only"
+    },
+    {
+      "seq": 198,
+      "prediction": "Attack",
+      "confidence": 80.21,
+      "latency_ms": 60.355,
+      "detection_lag_ms": 351.9,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 199,
+      "prediction": "Attack",
+      "confidence": 99.35,
+      "latency_ms": 60.355,
+      "detection_lag_ms": 325.6,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 200,
+      "prediction": "Attack",
+      "confidence": 96,
+      "latency_ms": 60.355,
+      "detection_lag_ms": 322.7,
+      "end_reason": "rst",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 201,
+      "prediction": "Attack",
+      "confidence": 66.15,
+      "latency_ms": 22.494,
+      "detection_lag_ms": 15889.9,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    },
+    {
+      "seq": 202,
+      "prediction": "Attack",
+      "confidence": 95.89,
+      "latency_ms": 42.09,
+      "detection_lag_ms": 15054.5,
+      "end_reason": "idle_timeout",
+      "service": "ssl",
+      "persistence": "durable_pending"
+    }
+  ]
+}

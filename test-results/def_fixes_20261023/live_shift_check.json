@@ -1,0 +1,117 @@
+{
+  "started": "2026-10-23 10:53:31",
+  "flows": 95,
+  "end_reasons": {
+    "idle_timeout": 49,
+    "rst": 41,
+    "fin": 5
+  },
+  "attack_share_by_model": {
+    "cycle 1 model A (run 3, 15 features)": 0.7368,
+    "cycle 1 model B (15 features, UNSW file)": 0.8211,
+    "new model (run 7, 18 features)": 0.9684,
+    "new model with connection counts set to 1": 0.9895
+  },
+  "feature_values": {
+    "sttl": {
+      "live_top_values": {
+        "128": 73,
+        "55": 12,
+        "255": 4,
+        "56": 2
+      },
+      "unsw_normal_top_values": {
+        "254": 11644,
+        "31": 11572,
+        "62": 2985,
+        "0": 940
+      },
+      "unsw_attack_top_values": {
+        "254": 34770,
+        "62": 4327,
+        "0": 47,
+        "255": 14
+      }
+    },
+    "dttl": {
+      "live_top_values": {
+        "55": 34,
+        "0": 14,
+        "128": 13,
+        "86": 7
+      },
+      "unsw_normal_top_values": {
+        "29": 11553,
+        "252": 9901,
+        "0": 5724,
+        "30": 29
+      },
+      "unsw_attack_top_values": {
+        "0": 28275,
+        "252": 10696,
+        "60": 184,
+        "253": 3
+      }
+    },
+    "ct_dst_src_ltm": {
+      "live_top_values": {
+        "1": 44,
+        "2": 24,
+        "3": 14,
+        "4": 8
+      },
+      "unsw_normal_top_values": {
+        "1": 9255,
+        "2": 5106,
+        "3": 3786,
+        "4": 2595
+      },
+      "unsw_attack_top_values": {
+        "1": 10666,
+        "4": 4076,
+        "2": 3477,
+        "3": 2979
+      }
+    },
+    "ct_dst_ltm": {
+      "live_top_values": {
+        "1": 36,
+        "2": 22,
+        "3": 13,
+        "4": 9
+      },
+      "unsw_normal_top_values": {
+        "1": 9415,
+        "2": 6150,
+        "3": 3752,
+        "4": 2164
+      },
+      "unsw_attack_top_values": {
+        "1": 10744,
+        "2": 5678,
+        "4": 3784,
+        "3": 3610
+      }
+    },
+    "ct_srv_dst": {
+      "live_top_values": {
+        "1": 36,
+        "2": 22,
+        "3": 13,
+        "4": 9
+      },
+      "unsw_normal_top_values": {
+        "2": 4467,
+        "3": 4270,
+        "1": 3707,
+        "4": 3144
+      },
+      "unsw_attack_top_values": {
+        "1": 8603,
+        "7": 2568,
+        "2": 2207,
+        "5": 1841
+      }
+    }
+  }
+}

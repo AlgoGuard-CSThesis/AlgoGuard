@@ -10,7 +10,7 @@ from urllib.parse import urlsplit
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from config import get_config
+from config import ConfigError, get_config
 from services.alert_policy import ALERT_STATUSES
 from services.database_service import (
     create_admin,
@@ -41,10 +41,34 @@ from services.simulation_service import (
     run_simulation,
 )
 
+SETUP_HELP = (
+    "This installation is not set up yet. Run SETUP_ALGOGUARD.cmd, or copy .env.example to "
+    ".env, then enter the project URL and publishable key your administrator gave you as "
+    "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY "
+    "(docs/ANALYST_GUIDE.md). An older installation that still keeps its records in the "
+    "local database can set ALGOGUARD_DB_MODE=sqlite until it is moved to the cloud "
+    "(docs/migration/05e-cutover.md)."
+)
+
+
+def _startup_config():
+    """The configuration to serve with; cloud mode without its settings is refused."""
+    cfg = get_config()
+    if cfg.db_mode == "supabase" and not cfg.cloud_configured:
+        raise ConfigError(SETUP_HELP)
+    return cfg
+
+
 app = Flask(__name__)
 # Flask's cookie settings are fixed for this app instance. Services read the
 # current config at use time so test path overrides do not need module reloads.
-_cfg = get_config()
+try:
+    _cfg = _startup_config()
+except ConfigError as _error:
+    if __name__ == "__main__":
+        # A setup problem is a message for the person starting the app, not a traceback.
+        raise SystemExit(f"AlgoGuard cannot start.\n{_error}") from None
+    raise
 app.config["SECRET_KEY"] = _cfg.secret_key or secrets.token_hex(32)
 app.config["SECRET_KEY_EPHEMERAL"] = _cfg.secret_key_ephemeral
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -226,6 +250,7 @@ def _execute_prediction(payload, log_module):
             latency_ms=result["latency_ms"],
             create_alert=is_attack,
             alert_description=f"Attack predicted by {result['deployed_model_name']}.",
+            attack_probability=result["attack_probability"],
         )
 
         if is_attack:
@@ -662,19 +687,24 @@ def system_logs():
 
 
 if _cfg.db_mode == "supabase":
-    # Stage 5D cloud pilot. The SQLite routes above stay importable for tests
-    # and tooling but are not served, and the legacy business database is never
-    # opened or created: one run never mixes local and cloud business records.
+    # The analyst application (default since Stage 6D.1). The SQLite routes
+    # above stay importable for tests and tooling but are not served, and the
+    # legacy business database is never opened or created: one run never mixes
+    # local and cloud business records.
     from cloud_app import create_cloud_app
 
     legacy_app = app
     app = create_cloud_app(_cfg)
 else:
+    # Legacy local mode, only with an explicit ALGOGUARD_DB_MODE=sqlite.
     ensure_runtime_folders()
     initialize_database()
 
 
 if __name__ == "__main__":
+    if _cfg.db_mode == "sqlite":
+        print("Legacy local mode (ALGOGUARD_DB_MODE=sqlite): records stay in "
+              f"{_cfg.database_path} on this computer and are not uploaded.")
     # Safe local defaults: the debugger stays off and the server listens only on
     # this machine, because AlgoGuard now handles captured network traffic.
     # Set FLASK_DEBUG=1 while developing, and ALGOGUARD_HOST=0.0.0.0 only on a

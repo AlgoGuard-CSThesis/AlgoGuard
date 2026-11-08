@@ -1,0 +1,8 @@
+{
+  "rows": 15939,
+  "verdicts_differing": 0,
+  "max_probability_difference": 0.0,
+  "run_8_sha256": "1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29",
+  "retrain_sha256": "c3a15fc91902de74b002131d9394881978df634d3457ebb68574b590ce79058a",
+  "retrain_folder": "run_9"
+}

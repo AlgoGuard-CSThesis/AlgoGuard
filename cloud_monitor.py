@@ -25,14 +25,12 @@ from contextlib import ExitStack
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
-import numpy as np
-import pandas as pd
-
 from cloud_repository import RepositoryError
 from cloud_sync import audit
 from model_runtime import ModelDeliveryError
 from services import live_monitor_service as legacy
-from services.alert_policy import severity_for_confidence
+from services.alert_policy import attack_score_fields, severity_for_confidence
+from services.inference_worker import LiveScorer
 from services.traffic_source_service import (
     LiveCaptureSource,
     TrafficSourceCancelled,
@@ -44,6 +42,9 @@ LiveMonitorError = legacy.LiveMonitorError
 FINAL_PERSISTENCE = {"synced", "rejected", "dropped", "session_only"}
 DRAIN_SECONDS = 5
 TRACKED_UPDATES = 50
+# A database without attack-score columns is asked again after this long.
+SCORE_SUPPORT_RECHECK_SECONDS = 300.0
+_SCORE_SUPPORT = {}  # project URL -> (supported, monotonic time of the check)
 
 
 def _utc_iso():
@@ -62,7 +63,27 @@ def _port(value):
     return port if 0 <= port <= 65535 else None
 
 
-def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=None):
+def attack_scores_supported(repo):
+    """Whether uploads may carry attack scores (Stage 6A.3), cached per cloud project.
+
+    The hosted database refuses score fields permanently until its migration is applied, so a
+    client that cannot confirm support leaves them out; the event stays valid, only unscored.
+    A confirmed database is not asked again; an unconfirmed one is asked again after a while.
+    """
+    known = _SCORE_SUPPORT.get(repo.base_url)
+    now = time.monotonic()
+    if known and (known[0] or now - known[1] < SCORE_SUPPORT_RECHECK_SECONDS):
+        return known[0]
+    try:
+        supported = repo.attack_scores_supported()
+    except RepositoryError:
+        return False
+    _SCORE_SUPPORT[repo.base_url] = (supported, now)
+    return supported
+
+
+def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=None,
+               include_scores=True):
     """One immutable store_flow_batch event; its UUID is fixed before any upload."""
     endpoints = endpoints or {}
     event_time = _utc_iso()
@@ -89,6 +110,9 @@ def flow_event(deployment, result, flow_data, source_tag, capture_id, endpoints=
             "model_name": deployment.get("model_name") or "Stacking Ensemble",
         },
     }
+    if include_scores and result.get("attack_probability") is not None:
+        body["prediction"].update({key: result[key] for key in (
+            "attack_probability", "attack_score_band", "score_band_policy")})
     if result["prediction"] == "Attack":
         body["alert"] = {
             "severity_level": severity_for_confidence(result["confidence"]),
@@ -315,6 +339,14 @@ class CloudMonitor:
         )
         return public
 
+    def capture_state(self):
+        """The capture's state for node health (6B.2): idle when no session is active."""
+        with self.lock:
+            state = self.session["state"] if self.session else "idle"
+        if state == "error":
+            return "error"
+        return state if state in legacy.ACTIVE_STATES else "idle"
+
     def status(self, identity, since_seq=0, session_id=None):
         try:
             since_seq = int(since_seq or 0)
@@ -431,7 +463,8 @@ class CloudMonitor:
             raise LiveMonitorError({
                 "authentication": "Online login is required before monitoring can start.",
                 "permission": "This installation needs an administrator-approved membership "
-                              "before it can monitor.",
+                              "before it can monitor. Give your administrator the installation "
+                              "ID shown on the Dashboard.",
                 "transient": "The cloud is unreachable. Monitoring needs an online, "
                              "authorized start; pending records stay on this computer.",
             }.get(error.category, "The cloud response could not be verified.")) from None
@@ -448,6 +481,7 @@ class CloudMonitor:
         if stop_event.is_set():
             return "stopped"
         deployment = deployment_summary(repo, pinned)
+        include_scores = attack_scores_supported(repo)
         artifact = pinned.artifact
         feature_columns = list(artifact.get("feature_columns") or [])
         numeric_columns = set(artifact.get("numeric_columns") or [])
@@ -473,20 +507,37 @@ class CloudMonitor:
                     "The traffic source is missing features the deployed model requires: "
                     + ", ".join(missing) + "."
                 )
-            if source_type != "csv":
+            if source_type == "pcap":
                 source.prepare()
+            elif source_type == "live":
+                available, reason = live_capture_available()
+                if not available:
+                    raise TrafficSourceError(reason)
         except TrafficSourceCancelled:
             return "stopped"
         except (LiveMonitorError, TrafficSourceError) as error:
             self._fail(session, str(error))
             return "error"
 
+        legacy.prefer_low_latency()
+        warmup = legacy._build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
         try:
-            warmup = legacy._build_flow_row(dict(defaults), feature_columns, numeric_columns,
-                                            defaults)
-            pipeline.predict(pd.DataFrame([warmup], columns=feature_columns))
+            legacy.classify_rows(pipeline, [warmup], feature_columns)
         except Exception:
             pass
+        # Live capture scores in a separate process so the capture threads are never kept
+        # waiting behind a prediction (DEF-17); replays score here.
+        scorer = None
+        if source_type == "live":
+            scorer = LiveScorer(
+                pipeline, feature_columns,
+                lambda model, rows, columns: legacy.score_rows(model, rows, columns))
+            cleanup.callback(scorer.close)
+            if scorer.fallback_reason is None:
+                try:
+                    scorer.score([warmup])
+                except Exception:
+                    pass
         if stop_event.is_set():
             return "stopped"
 
@@ -519,8 +570,17 @@ class CloudMonitor:
             f"#{deployment['deployment_id']}.",
             deployment["model_name"],
         )
+        if source_type == "live":
+            # Capture starts only now that the loop is ready to read packets. Flows that ended
+            # while the model warmed up and the capture was registered in the cloud used to wait
+            # in the queue and got their verdicts late (DEF-17).
+            try:
+                source.prepare()
+            except TrafficSourceError as error:
+                raise LiveMonitorError(str(error)) from None
         return self._loop(session, stop_event, pause_event, repo.context, source, pipeline,
-                          feature_columns, numeric_columns, defaults, deployment, source_tag)
+                          feature_columns, numeric_columns, defaults, deployment, source_tag,
+                          include_scores=include_scores, scorer=scorer)
 
     def _check_authorization(self, session):
         identity = session["identity"]
@@ -528,9 +588,16 @@ class CloudMonitor:
             raise _AuthorizationEnded(
                 "Your sign-in ended. Capture stopped locally; log in online to continue.")
         if time.time() >= identity.expires_at:
-            # Refresh did not happen before expiry (the upload worker refreshes
-            # ahead of time while online), so the sign-in ends here as well: the
+            # Refresh did not happen before expiry (the upload worker refreshes ahead of time
+            # while online, but a computer may have slept past it). A refresh token that still
+            # works renews the sign-in here (6C.1); otherwise the sign-in ends, because the
             # operating table requires an online login before anything resumes.
+            try:
+                self.auth.repository(identity)
+            except RepositoryError:
+                pass
+            if identity.active and time.time() < identity.expires_at:
+                return
             identity.clear()
             raise _AuthorizationEnded(
                 "Your sign-in expired and could not be refreshed. Capture stopped locally; "
@@ -541,11 +608,14 @@ class CloudMonitor:
                 "records stay on this computer and can be exported.")
 
     def _loop(self, session, stop_event, pause_event, context, source, pipeline, feature_columns,
-              numeric_columns, defaults, deployment, source_tag):
+              numeric_columns, defaults, deployment, source_tag, include_scores=True,
+              scorer=None):
         source_type = session["source_type"]
         final_state = "completed"
         row_index = -1
         last_refresh = 0.0
+        paced_interval = legacy.SPEED_CHOICES[session["speed"]]
+        pacing = source.paced and paced_interval > 0
         try:
             while True:
                 if stop_event.is_set():
@@ -568,40 +638,46 @@ class CloudMonitor:
                         with self.lock:
                             session["capture"] = snapshot
                     continue
-                row_index += 1
-                record = event_data["record"]
-                actual = event_data["actual"]
-                flow_row = legacy._build_flow_row(record, feature_columns, numeric_columns,
-                                                  defaults)
-                frame = pd.DataFrame([flow_row], columns=feature_columns)
-                started = time.perf_counter()
-                predicted = int(pipeline.predict(frame)[0])
-                probabilities = np.asarray(pipeline.predict_proba(frame))[0]
-                classes = list(pipeline.classes_)
-                confidence = (
-                    float(probabilities[classes.index(predicted)]) if predicted in classes else 0.0
-                )
-                latency_ms = (time.perf_counter() - started) * 1000
-                prediction = "Attack" if predicted == 1 else "Normal"
-                lag_ms = None
-                if source_type == "live" and event_data.get("flow_last_ts"):
-                    lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
-                result = {
-                    "prediction": prediction,
-                    "confidence": round(confidence * 100, 2),
-                    "latency_ms": round(latency_ms, 3),
-                }
-                event = flow_event(deployment, result, flow_row, source_tag,
-                                   session["capture_id"], event_data)
-                if stop_event.is_set():
-                    return "stopped"  # Never add work after the capture closed.
-                if legacy._should_persist(session["persist"], prediction):
-                    outcome = self.outbox.submit(context, session["session_id"], event)
+                batch, source_ended = legacy.collect_batch(source, event_data, pacing)
+                flow_rows = [
+                    legacy._build_flow_row(item["record"], feature_columns, numeric_columns,
+                                           defaults)
+                    for item in batch
+                ]
+                if scorer is not None:
+                    verdicts, latency_ms = scorer.score(flow_rows)
                 else:
-                    outcome = {"event_uuid": event["event_uuid"], "persistence": "session_only"}
-                self._record(session, event, event_data, record, row_index, result, actual,
-                             lag_ms, outcome, source)
-                if source.paced and stop_event.wait(legacy.SPEED_CHOICES[session["speed"]]):
+                    verdicts, latency_ms = legacy.score_rows(pipeline, flow_rows,
+                                                             feature_columns)
+                for event_data, flow_row, (predicted, confidence, attack_score) in zip(
+                        batch, flow_rows, verdicts):
+                    row_index += 1
+                    record = event_data["record"]
+                    actual = event_data["actual"]
+                    prediction = "Attack" if predicted == 1 else "Normal"
+                    lag_ms = None
+                    if source_type == "live" and event_data.get("flow_last_ts"):
+                        lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
+                    result = {
+                        "prediction": prediction,
+                        "confidence": round(confidence * 100, 2),
+                        "latency_ms": round(latency_ms, 3),
+                        **attack_score_fields(attack_score),
+                    }
+                    event = flow_event(deployment, result, flow_row, source_tag,
+                                       session["capture_id"], event_data, include_scores)
+                    if stop_event.is_set():
+                        return "stopped"  # Never add work after the capture closed.
+                    if legacy._should_persist(session["persist"], prediction):
+                        outcome = self.outbox.submit(context, session["session_id"], event)
+                    else:
+                        outcome = {"event_uuid": event["event_uuid"],
+                                   "persistence": "session_only"}
+                    self._record(session, event, event_data, record, row_index, result, actual,
+                                 lag_ms, outcome, source)
+                if source_ended:
+                    break
+                if pacing and stop_event.wait(paced_interval):
                     return "stopped"
         except _AuthorizationEnded as ended:
             with self.lock:
@@ -647,6 +723,8 @@ class CloudMonitor:
                 "row_index": row_index,
                 "prediction": result["prediction"],
                 "confidence": result["confidence"],
+                "attack_probability": result.get("attack_probability"),
+                "attack_score_band": result.get("attack_score_band"),
                 "latency_ms": result["latency_ms"],
                 "detection_lag_ms": round(lag_ms, 1) if lag_ms is not None else None,
                 "actual": actual,

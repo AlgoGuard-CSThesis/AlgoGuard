@@ -263,7 +263,7 @@ def test_failed_quality_gate_and_activation_keep_previous_model(
         legacy.pop("training_runtime")
         legacy_path = path.with_name("legacy.joblib")
         joblib.dump(legacy, legacy_path)
-        with pytest.raises(ModelDeliveryError, match="Retrain"):
+        with pytest.raises(ModelDeliveryError, match="must retrain"):
             stage_publication(conn, uuid4(), model, legacy_path)
     finally:
         conn.close()

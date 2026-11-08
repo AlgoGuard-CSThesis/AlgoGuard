@@ -6,6 +6,16 @@ run continuous detection, what values to put in the Prediction page, what data
 to use when retraining, and what happens if the system detects an anomaly.
 
 
+Update for the release (Iteration 6, Stage 6D): AlgoGuard now runs in cloud
+mode by default. Each analyst signs in online, an administrator approves each
+computer, detections are uploaded to a shared cloud project, and models are
+published by the maintainer. Installation, sign-in, approval, where records
+are kept, and troubleshooting are explained in docs/ANALYST_GUIDE.md; the
+maintainer's tasks in docs/MAINTAINER_GUIDE.md. The explanations of pages,
+flow fields, test values and presentation notes below still apply. Parts that
+mention SQLite, the local "admin" account or running train.py describe the
+legacy local mode and the maintainer's training records.
+
 CONTENTS
 --------
 
@@ -25,7 +35,7 @@ PART A - USING ALGOGUARD
     13. QUICK CHECKLIST BEFORE DEMO
     14. FUTURE IMPROVEMENTS
 
-PART B - REBUILDING THE MODEL (OPTIONAL)
+PART B - REBUILDING THE MODEL (MAINTAINER ONLY)
     15. HOW TO RETRAIN THE MODEL
     16. WHAT CSV DATA TO USE FOR RETRAINING
     17. IMPORTANT CSV RULES
@@ -79,8 +89,10 @@ It has two detection modes:
    Type one network traffic example by hand and let the active deployed
    Stacking model classify it as Normal or Attack.
 
-Retraining is done offline with train.py. The website has no upload or
-training page: the finished product runs the model, it does not build it.
+Retraining is done offline by the maintainer with train.py, and the model is
+then published to the cloud project, from where every analyst computer
+downloads and verifies it. The website has no upload or training page: the
+finished product runs the model, it does not build it.
 
 Important:
 Live capture reads real packets from the selected network card, groups them
@@ -95,84 +107,51 @@ authorized to monitor.
 2. HOW TO RUN ALGOGUARD
 -----------------------
 
-Open a PowerShell terminal in the project folder (the folder that contains
-app.py and requirements.txt).
+The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
 
-First time only (fresh clone from GitHub):
+1. Install Python 3.14.6 (and Npcap for live capture).
+2. Double-click SETUP_ALGOGUARD.cmd. It installs the packages and opens the
+   settings file .env: enter the project URL and publishable key your
+   administrator gave you, save, and close Notepad.
+3. Double-click START_ALGOGUARD.cmd and keep its window open. If the Live
+   Monitor lists live capture as unavailable, start it again with right-click,
+   "Run as administrator".
+4. Open http://127.0.0.1:5000 and sign in with the e-mail address and
+   password your administrator created. Every start needs an online sign-in.
+   There is no page for changing a password: if you forget yours, ask your
+   administrator, and the maintainer sets a new one.
+5. The first time, copy the installation ID from the Dashboard and send it to
+   your administrator, who approves it on the Nodes page.
 
-    py -m venv venv
-    .\venv\Scripts\Activate.ps1
-    python -m pip install -r requirements.txt
-    python train.py datasets\algoguard_big.csv --deploy
+The pages need no internet for their styling, but sign-in, model download and
+uploads do. AlgoGuard never trains a model on an analyst computer.
 
-The last command is required once: the trained model is not stored in Git, so
-a fresh clone has no deployed model until you train one (about 20-60 seconds).
-It also creates the database and prints the one-time admin password described
-below. If PowerShell refuses to run Activate.ps1, run
-"Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass" first, or call
-.\venv\Scripts\python.exe directly instead of python.
+Legacy local mode (maintenance only):
+An installation that has not been moved to the cloud yet runs with
+ALGOGUARD_DB_MODE=sqlite in .env. It keeps everything in the local SQLite
+database and needs a model trained on that computer first:
 
-Every time after that:
+    venv\Scripts\python.exe train.py datasets\algoguard_big.csv --deploy
+    venv\Scripts\python.exe app.py
 
-    .\venv\Scripts\Activate.ps1
-    python app.py
+The first command creates the database and prints a one-time random password
+for the "admin" account; store it immediately. ALGOGUARD_ADMIN_USERNAME and
+ALGOGUARD_ADMIN_PASSWORD choose those credentials before the first run.
 
-if python is not on path, run with the existing virtual environment
-.\venv\Scripts\python.exe app.py
-
-Then open:
-
-http://localhost:5000
-
-The website needs no internet connection: all styling is bundled with the
-project.
-
-First local login on a new database:
-
-Username:
-admin
-
-Password:
-Read the one-time random password printed in the terminal by whichever
-command created the database first (train.py, migrate.py, or app.py).
-
-Important:
-The default admin is created only when the local SQLite database is first
-created. Store the generated password immediately because it is not shown again.
-You can choose the first admin username/password using ALGOGUARD_ADMIN_USERNAME
-and ALGOGUARD_ADMIN_PASSWORD environment variables before the first run. These
-settings do not change an account already stored in the database.
-
-After logging in with an Administrator account, open the Admins page to create
-more admin accounts. Each new admin is stored in SQLite with a hashed password.
-New passwords need 12 to 128 characters with upper- and lower-case letters, a
-digit, and a symbol. After 5 failed sign-ins for one account (or 20 from one
-computer) within 15 minutes, sign-in is paused for the rest of that window.
-
-If port 5000 is busy (PowerShell):
-
-$env:ALGOGUARD_PORT = "5001"
-python app.py
-
-Then open:
-
-http://localhost:5001
+If port 5000 is busy, set ALGOGUARD_PORT=5001 in .env and open
+http://127.0.0.1:5001.
 
 
 3. WEBSITE PAGES
 ----------------
 
 Login
-    Opens the protected admin entry page. You must sign in before using the
-    Dashboard, Live Monitor, or Predict pages.
-
-Admins
-    Allows an Administrator account to create and review multiple admin
-    accounts.
+    Sign in with your e-mail address and password before using any page.
 
 Dashboard
-    Shows the AlgoGuard overview: the deployed model and its metrics, how many
-    flows have been analyzed, the attack/normal split, and recent alerts.
+    The overview: the deployed model and its metrics, how many flows have been
+    analyzed, the attack/normal split, recent alerts, and this computer's
+    installation ID, approval and upload status.
 
 Live Monitor
     Streams traffic through the deployed model and shows each classification
@@ -183,10 +162,29 @@ Predict
     Attack.
 
 Alerts
-    Lists every flow that was classified as an attack.
+    Lists every stored flow that was classified as an attack. Select alerts
+    here to create a report.
 
 Logs
     The filterable audit trail of every action the system took.
+
+Reports
+    Reports created from selected alerts.
+
+Nodes
+    Your installations and their approval. Administrators approve, revoke and
+    restore access here.
+
+Administrators also see:
+
+Accounts
+    Create Analyst and Administrator accounts, change roles, deactivate.
+
+Computers
+    What each installation last reported, and which ones have gone quiet.
+
+Retention
+    Preview and run audited clean-ups of old records.
 
 
 4. LIVE MONITOR: WATCHING DETECTION HAPPEN
@@ -224,8 +222,9 @@ Sample dataset / Capture file / Network interface
 
 Replay speed
     Slow is one flow every 2 seconds, Normal is one flow per second, and Fast
-    is roughly three flows per second. Slower speeds are easier to narrate
-    during a demonstration.
+    is roughly three flows per second. Maximum adds no delay: flows are
+    classified as fast as the model allows, several at a time, which suits a
+    large sample. Slower speeds are easier to narrate during a demonstration.
 
 Flow order
     Sequential replays the file top to bottom. Randomised shuffles it first,
@@ -265,26 +264,29 @@ model is loaded and warmed up. This is normal.
 
 Go to:
 
-http://localhost:5000/simulation
+http://127.0.0.1:5000/simulation
 
 The page builds its form from the deployed model itself, so the fields always
-match what that model was trained on. The current model asks for 15 fields:
+match what that model was trained on. The current model asks for 16 fields:
 
-Dur         Flow duration in seconds.
-Proto       Protocol, such as tcp, udp, or gre.
-Service     Application service, such as http, dns, ftp-data, or - for none.
-State       Connection state, such as FIN, INT, CON, or REQ.
-Spkts       Packets sent by the source.
-Dpkts       Packets sent by the destination.
-Sbytes      Bytes sent by the source.
-Dbytes      Bytes sent by the destination.
-Rate        Packets per second.
-Sttl        Source time-to-live.
-Dttl        Destination time-to-live.
-Sload       Source bits per second.
-Dload       Destination bits per second.
-Sinpkt      Average gap between source packets, in milliseconds.
-Dinpkt      Average gap between destination packets, in milliseconds.
+Dur             Flow duration in seconds.
+Proto           Protocol, such as tcp, udp, or gre.
+Service         Application service, such as http, dns, ftp-data, or - for none.
+State           Connection state, such as FIN, INT, CON, or REQ.
+Spkts           Packets sent by the source.
+Dpkts           Packets sent by the destination.
+Sbytes          Bytes sent by the source.
+Dbytes          Bytes sent by the destination.
+Rate            Packets per second.
+Sload           Source bits per second.
+Dload           Destination bits per second.
+Sinpkt          Average gap between source packets, in milliseconds.
+Dinpkt          Average gap between destination packets, in milliseconds.
+Ct_dst_src_ltm  Of the last 100 connections, how many had this source and
+                destination (1 or more).
+Ct_dst_ltm      Of the last 100 connections, how many went to this destination.
+Ct_srv_dst      Of the last 100 connections, how many used this service to this
+                destination.
 
 Every field is required. The page opens pre-filled with a valid example, so you
 can simply change one or two values and press Run Prediction to experiment.
@@ -296,28 +298,30 @@ automatically. You never have to edit the form.
 6. PREDICT NORMAL TEST
 ----------------------
 
-These values are a real flow from the bundled dataset that the deployed model
-classifies as Normal with about 99.9% confidence:
+These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
+line 1005, the header being line 1) that the deployed model classifies as Normal
+with about 99.5% confidence:
 
-Dur:        1.665064
-Proto:      tcp
-Service:    ftp-data
-State:      FIN
-Spkts:      14
-Dpkts:      6
-Sbytes:     8928
-Dbytes:     320
-Rate:       11.410973
-Sttl:       31
-Dttl:       29
-Sload:      39835.10547
-Dload:      1282.833618
-Sinpkt:     128.081847
-Dinpkt:     332.462
+Dur:            0.004384
+Proto:          tcp
+Service:        ftp-data
+State:          FIN
+Spkts:          8
+Dpkts:          12
+Sbytes:         424
+Dbytes:         8824
+Rate:           4333.94175
+Sload:          677007.3125
+Dload:          14760949.0
+Sinpkt:         0.577714
+Dinpkt:         0.350091
+Ct_dst_src_ltm: 4
+Ct_dst_ltm:     5
+Ct_srv_dst:     3
 
 Why this looks normal:
-A complete FIN connection, traffic flowing in both directions, a low packet
-rate, and ordinary TTL values.
+A complete FIN connection with traffic in both directions: a small request and
+a larger file transfer back, to a destination seen only a few times recently.
 
 Important:
 The verdict comes from the model, not from a hardcoded rule. If you retrain on
@@ -327,27 +331,29 @@ different data, the same values may be judged differently.
 7. PREDICT ANOMALY TEST
 -----------------------
 
-These values are a real flow from the bundled dataset that the deployed model
-classifies as Attack with about 99.9% confidence:
+These values are a real flow from the bundled dataset (datasets/algoguard_big.csv,
+line 4150, the header being line 1) that the deployed model classifies as Attack
+with about 99.95% confidence (attack score Very high):
 
-Dur:        0.000003
-Proto:      gre
-Service:    -
-State:      INT
-Spkts:      2
-Dpkts:      0
-Sbytes:     200
-Dbytes:     0
-Rate:       333333.3215
-Sttl:       254
-Dttl:       0
-Sload:      266666656.0
-Dload:      0.0
-Sinpkt:     0.003
-Dinpkt:     0.0
+Dur:            0.000003
+Proto:          unas
+Service:        -
+State:          INT
+Spkts:          2
+Dpkts:          0
+Sbytes:         200
+Dbytes:         0
+Rate:           333333.3215
+Sload:          266666656.0
+Dload:          0.0
+Sinpkt:         0.003
+Dinpkt:         0.0
+Ct_dst_src_ltm: 1
+Ct_dst_ltm:     2
+Ct_srv_dst:     1
 
 Why this looks suspicious:
-The destination never replies (0 packets, 0 bytes, TTL 0), the flow lasts three
+The destination never replies (0 packets, 0 bytes), the flow lasts three
 microseconds, and the packet rate and source load are enormous. That is the
 shape of scanning or flooding traffic rather than a real conversation.
 
@@ -360,14 +366,16 @@ If the Predict page or the Live Monitor classifies a flow as Attack:
 1. The result card shows Attack.
 2. The confidence percentage is displayed.
 3. The entered flow values are shown.
-4. The traffic flow is saved in the network_traffic table.
-5. The model result is saved in the prediction table.
-6. An alert record is created in the alert table.
+4. If the flow is stored, its traffic record, the prediction and an alert
+   are saved on this computer and uploaded to the cloud. The alert gets its
+   ID once the upload is acknowledged (the record shows Synced).
 
-Alert History lets admins review saved Attack prediction alerts directly in
-the web interface. Each alert shows the source and destination of its flow
-("Manual entry" for hand-typed predictions) and a severity taken from the
-model's confidence: High at 90% or more, Medium from 75%, Low below 75%.
+Alert History lets analysts and administrators review stored Attack alerts
+directly in the web interface. Each alert shows the source and destination
+of its flow ("Manual entry" for hand-typed predictions) and its attack
+score: Low below 50%, Medium from 50%, High from 70%, Very high from 90%.
+The score is the model's probability, not a measure of harm. Alerts stored
+before scores existed show "Not scored" with their old severity.
 
 Every alert starts Open. Press Acknowledge when you start looking into it and
 Resolve when it is handled; Reopen puts it back. The dashboard's Open Alerts
@@ -382,7 +390,8 @@ If the Predict page or the Live Monitor classifies a flow as Normal:
 1. The result card shows Normal.
 2. The confidence percentage is displayed.
 3. The entered flow values are shown.
-4. The traffic flow and prediction are saved in SQLite.
+4. If the flow is stored, its traffic record and prediction are saved on
+   this computer and uploaded to the cloud.
 
 This means the active Stacking model thinks the flow is closer to normal traffic
 than attack traffic.
@@ -491,7 +500,8 @@ down live detection.
 If asked whether it monitors real traffic:
 
 Yes. In live mode it captures packets from the network card, groups them into
-bidirectional flows, computes the same 15 features the model was trained on,
+bidirectional flows, computes the same 16 features the model was trained on
+(13 describe the flow; 3 count recent connections to the same destination),
 and classifies each flow the moment it ends. The same pipeline also replays
 recorded .pcap files and the labelled UNSW-NB15 samples; the labelled replay
 is what lets the Live Monitor show whether each prediction was correct, which
@@ -501,9 +511,10 @@ If asked what happens when an anomaly is detected:
 
 The verdict and confidence appear immediately in the feed, the attack counter
 and timeline chart update, and the traffic record, prediction record, and an
-alert (High, Medium, or Low severity depending on the model's confidence) are
-written to SQLite. The alert appears on the Alerts page as Open until someone
-acknowledges or resolves it, and the whole sequence is recorded in the audit log.
+alert with its attack score are saved on the computer and uploaded to the
+shared cloud project. The alert appears on the Alerts page as Open until
+someone acknowledges or resolves it, and the whole sequence is recorded in the
+audit log.
 
 
 13. QUICK CHECKLIST BEFORE DEMO
@@ -511,14 +522,14 @@ acknowledges or resolves it, and the whole sequence is recorded in the audit log
 
 Before presenting:
 
-1. Open a terminal in the project root (as Administrator if you plan to show
-   live capture, and make sure Npcap is installed).
-2. Activate venv.
-3. Install requirements.
-4. Confirm a model is deployed (the Dashboard shows the Deployed Model card).
-   If not, run: python train.py datasets\algoguard_big.csv --deploy
-5. Run python app.py.
-6. Open http://localhost:5000.
+1. Check the internet connection and that Windows' clock is right.
+2. Start START_ALGOGUARD.cmd (make sure Npcap is installed if you plan to show
+   live capture).
+3. Open http://127.0.0.1:5000 and sign in.
+4. Confirm the Dashboard shows the Deployed Model card and "Node approved".
+   If not, ask your administrator (see docs/ANALYST_GUIDE.md).
+5. Choose "Save attacks" or "Save every flow" if the demo should show
+   records arriving in the cloud (Pending, then Synced).
 7. Show the Dashboard: deployed model, metrics, flows analyzed, alerts.
 8. Open Live Monitor, start a Sample replay session at Normal speed, and
    narrate the feed as attacks appear; point out the Actual column.
@@ -545,12 +556,14 @@ Possible future features:
 
 
 ==============================================================================
-PART B - REBUILDING THE MODEL (OPTIONAL)
+PART B - REBUILDING THE MODEL (MAINTAINER ONLY)
 ==============================================================================
 
-You only need this part if you want to train AlgoGuard on new data. Training
-happens outside the website, in a terminal, with train.py. Nothing here is
-required to run or demonstrate the detector.
+You only need this part if you maintain AlgoGuard and want to train it on new
+data. Training happens outside the website, in a terminal, with train.py, on
+the maintainer's computer; publishing the result to the cloud project is
+described in docs/MAINTAINER_GUIDE.md. Analyst computers never train. Nothing
+here is required to run or demonstrate the detector.
 
 
 
@@ -970,7 +983,9 @@ These generated files are ignored by Git so the repository stays clean, and
 so are any .pcap recordings you place in captures/. This is why a fresh clone
 must run train.py --deploy once before the website has a model.
 
-The SQLite database stores:
+This SQLite database is the maintainer's training store (and the whole
+record of a legacy local installation). In cloud mode, analysts' records are
+in the cloud project instead. The SQLite database stores:
 
 admin
     Multiple admin login accounts with hashed passwords.
@@ -1189,11 +1204,13 @@ Offline, with train.py:
 - model comparison and ranking
 - a quality gate before any model is deployed
 
-Online, in the website:
+Online, in the website on each analyst computer:
 - continuous flow-by-flow anomaly detection in the Live Monitor
 - single-flow prediction on the Predict page
-- automatic alerting on detected attacks
-- dashboard, alert history, and a full audit trail
+- automatic alerting on detected attacks, with attack scores
+- dashboard, alert history, reports, and a full audit trail
+- records saved locally first and uploaded to a shared cloud project, where
+  administrators manage accounts, approve computers and review them all
 
 The separation is the point: the website runs a model that was proven good
 before it was ever deployed.

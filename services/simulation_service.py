@@ -3,6 +3,7 @@ import time
 import numpy as np
 import pandas as pd
 
+from services.alert_policy import attack_probability, attack_score_fields
 from services.deployment_service import DeploymentError, load_active_artifact
 
 
@@ -28,6 +29,19 @@ FEATURE_GUIDE = {
     "dload": ("Destination load", "Destination bits per second."),
     "sinpkt": ("Source packet gap", "Mean time between source packets, in milliseconds."),
     "dinpkt": ("Destination packet gap", "Mean time between destination packets, in milliseconds."),
+    "ct_dst_src_ltm": (
+        "Same host pair",
+        "Of the last 100 connections, how many had this source and destination (1 or more).",
+    ),
+    "ct_dst_ltm": (
+        "Same destination",
+        "Of the last 100 connections, how many went to this destination (1 or more).",
+    ),
+    "ct_srv_dst": (
+        "Same service and destination",
+        "Of the last 100 connections, how many used this service to this destination "
+        "(1 or more).",
+    ),
 }
 
 
@@ -141,6 +155,9 @@ def run_simulation(payload):
     return {
         "prediction": result["prediction"],
         "confidence": result["confidence"],
+        "attack_probability": result["attack_probability"],
+        "attack_score_band": result["attack_score_band"],
+        "score_band_policy": result["score_band_policy"],
         "deployed_model_name": deployment["model_name"],
         "deployment_id": deployment["deployment_id"],
         "model_id": deployment["model_id"],
@@ -166,6 +183,7 @@ def predict_with_artifact(artifact, payload):
         if predicted_value not in classes:
             raise ValueError("Predicted class is not present in the probability output.")
         confidence = float(probabilities[classes.index(predicted_value)])
+        score = attack_score_fields(attack_probability(probabilities, classes))
     except Exception as error:
         raise SimulationServiceError(f"Prediction failed: {error}") from error
     latency_ms = (time.perf_counter() - start) * 1000
@@ -173,6 +191,7 @@ def predict_with_artifact(artifact, payload):
     return {
         "prediction": "Attack" if predicted_value == 1 else "Normal",
         "confidence": round(confidence * 100, 2),
+        **score,
         "latency_ms": round(latency_ms, 3),
         "flow_data": flow_data,
     }

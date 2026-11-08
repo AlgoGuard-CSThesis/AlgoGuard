@@ -1,0 +1,3 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m ruff check .
+
+All checks passed!

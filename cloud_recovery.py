@@ -31,6 +31,7 @@ RECOVERY_TABLES = (
     "public.node",
     "public.user_role",
     "public.node_membership",
+    "public.node_health",
     "public.training_run",
     "public.detection_model",
     "public.model_deployment",
@@ -46,14 +47,29 @@ RECOVERY_TABLES = (
     "private.legacy_source",
     "private.legacy_record",
     "private.administration_request",
+    "private.retention_run",
 )
+# Tables a recovery target creates for itself; every other application table is in the package
+# (checked against the live schema by the integration lane, 6C.3).
+RECOVERY_EXCLUDED = {
+    "private.algoguard_migration": "the recovery target applies the same migrations itself",
+    "public.deployment_activation_lock": "a singleton row created with the target's schema",
+}
+# Format 1 packages predate Stage 6B's node health reports and cleanup audit; they still verify
+# and restore, without those two tables.
+FORMAT = 2
+PACKAGE_TABLES = {
+    1: tuple(table for table in RECOVERY_TABLES
+             if table not in ("public.node_health", "private.retention_run")),
+    2: RECOVERY_TABLES,
+}
 
 
-def _rows(cursor):
+def _rows(cursor, tables=RECOVERY_TABLES):
     from psycopg2 import sql
 
     result = {}
-    for table in RECOVERY_TABLES:
+    for table in tables:
         cursor.execute(
             sql.SQL("select row_to_json(t) from {} t order by to_jsonb(t)::text").format(
                 sql.Identifier(*table.split("."))
@@ -167,7 +183,7 @@ def export_cloud(connection, output: Path, objects, *, legacy_bundles=(), outbox
         if path.is_file()
     }
     summary = {
-        "format": 1,
+        "format": FORMAT,
         "files": files,
         "artifacts": artifact_records,
         "outboxes": pending,
@@ -181,7 +197,8 @@ def export_cloud(connection, output: Path, objects, *, legacy_bundles=(), outbox
 def verify_recovery(directory):
     try:
         summary = json.loads((directory / "recovery.json").read_text(encoding="utf-8"))
-        if summary["format"] != 1:
+        tables = PACKAGE_TABLES.get(summary["format"])
+        if tables is None:
             raise TransferError("Unsupported recovery format.")
         required = {"records.json", *summary["outboxes"]}
         required.update(a["file"] for a in summary["artifacts"] if a["status"] == "copied")
@@ -191,7 +208,7 @@ def verify_recovery(directory):
             if digest(checked_file(directory, relative)) != sha:
                 raise TransferError("Recovery file hash mismatch.")
         rows = json.loads(checked_file(directory, "records.json").read_text(encoding="utf-8"))
-        if set(rows) != set(RECOVERY_TABLES):
+        if set(rows) != set(tables):
             raise TransferError("Recovery table inventory is incomplete.")
         if {table: len(records) for table, records in rows.items()} != summary["counts"]:
             raise TransferError("Recovery row counts disagree with the manifest.")
@@ -239,6 +256,7 @@ def restore_cloud(connection, directory, objects):
     from psycopg2.extras import Json
 
     summary, rows = verify_recovery(directory)
+    tables = PACKAGE_TABLES[summary["format"]]
     with connection, connection.cursor() as cursor:
         cursor.execute("set local lock_timeout='10s'")
         cursor.execute("set local time zone 'UTC'")
@@ -247,7 +265,9 @@ def restore_cloud(connection, directory, objects):
                 sql.SQL("lock table {} in exclusive mode").format(sql.Identifier(*table.split(".")))
             )
         existing = _rows(cursor)
-        if existing == rows:
+        if {table: existing[table] for table in tables} == rows and not any(
+            existing[table] for table in RECOVERY_TABLES if table not in tables
+        ):
             replayed = True
         elif any(existing.values()):
             raise TransferError(
@@ -263,7 +283,7 @@ def restore_cloud(connection, directory, objects):
         if replayed:
             return {"replayed": True, "counts": summary["counts"]}
         replacements = []
-        for table in RECOVERY_TABLES:
+        for table in tables:
             for value in rows[table]:
                 record = dict(value)
                 if table == "public.model_deployment":
@@ -281,10 +301,10 @@ def restore_cloud(connection, directory, objects):
                 "where deployment_id=%s",
                 (previous, deployment_id),
             )
-        if _rows(cursor) != rows:
+        if _rows(cursor, tables) != rows:
             raise TransferError("Restored data differs from the recovery snapshot.")
         # Explicit keys do not advance sequences. Never rewind a sequence, even on a retry.
-        for table in RECOVERY_TABLES:
+        for table in tables:
             schema, name = table.split(".")
             cursor.execute(
                 "select column_name from information_schema.columns "
@@ -340,9 +360,12 @@ def main(argv=None):
             from maintenance_connections import connect_database
 
             dsn = require_database_url()
-            objects = ModelObjects(
-                os.environ["SUPABASE_API_URL"], os.environ["SUPABASE_SECRET_KEY"]
-            )
+            api_url = os.environ.get("SUPABASE_API_URL", "")
+            secret_key = os.environ.get("SUPABASE_SECRET_KEY", "")
+            if not api_url or not secret_key:
+                parser.error("SUPABASE_API_URL and SUPABASE_SECRET_KEY are required "
+                             "(.env.maintainer).")
+            objects = ModelObjects(api_url, secret_key)
             with closing(
                 connect_database(dsn, sslmode=resolve_sslmode(dsn), connect_timeout=10)
             ) as conn:
@@ -359,6 +382,10 @@ def main(argv=None):
                 )
         print(json.dumps({"counts": result["counts"]}, indent=2))
         return 0
+    except TransferError as error:
+        # Controlled refusals carry no credentials or record contents.
+        print(f"Recovery refused: {error} Preserve the package and check the isolated target.")
+        return 1
     except Exception:
         print(
             "Recovery refused or rolled back. Preserve the package and check the isolated target."

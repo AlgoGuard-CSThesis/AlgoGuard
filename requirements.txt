@@ -1,15 +1,25 @@
 -r requirements-model.lock
-Flask>=3.0.0
-pandas>=2.0.0
-numpy>=1.24.0
-scikit-learn>=1.3.0
-joblib>=1.3.0
-psutil>=5.9.0
-scapy>=2.5.0
-python-dotenv
-# Stage 5B.2: verifying Supabase access tokens against the project's
-# published JWKS. The [crypto] extra pulls in `cryptography`, which is
-# what actually checks an ES256/RS256 signature. An analyst install
-# needs this to VERIFY a token; it still holds no key that could mint
-# one. Used by token_verification.py; wired into the app in 5D.
-PyJWT[crypto]>=2.8.0
+# Analyst runtime, pinned exactly (Stage 6D.1; pilot finding 10: with `>=`, a fresh
+# install drifted from an existing one). These are the versions every check of the
+# release ran with. Change them together, then repeat the checks and the clean install.
+# scikit-learn needs narwhals, which requirements-model.lock does not list; it is pinned
+# here because changing the model lock would change every published model's runtime lock.
+narwhals==2.23.0
+Flask==3.1.3
+Werkzeug==3.1.8
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+itsdangerous==2.2.0
+click==8.4.2
+blinker==1.9.0
+colorama==0.4.6
+psutil==7.2.2
+scapy==2.8.0
+python-dotenv==1.2.4
+# Verifying Supabase access tokens against the project's published JWKS (Stage 5B.2).
+# The [crypto] extra pulls in `cryptography`, which checks the ES256/RS256 signature.
+# An analyst install needs it to VERIFY a token; it holds no key that could mint one.
+PyJWT[crypto]==2.15.1
+cryptography==50.0.1
+cffi==2.1.1
+pycparser==3.0

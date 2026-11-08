@@ -14,10 +14,17 @@ from uuid import UUID
 
 import pytest
 
+import cloud_monitor
 import cloud_outbox
 from cloud_app import build_services, create_cloud_app
+from cloud_monitor import flow_event
 from cloud_repository import RepositoryError
 from services import database_service
+from services.alert_policy import (
+    ATTACK_SCORE_BAND_POLICY,
+    attack_score_band,
+    attack_score_fields,
+)
 from tests.cloud_support import (
     ADMIN,
     ANALYST,
@@ -30,11 +37,13 @@ from tests.cloud_support import (
     signed_in,
     wait_for,
 )
+from tests.fake_supabase import _score_matches_policy
 
 MANUAL_FLOW = {
     "dur": "5.5", "proto": "tcp", "service": "-", "state": "INT", "spkts": "2", "dpkts": "0",
-    "sbytes": "900000", "dbytes": "0", "rate": "900", "sttl": "254", "dttl": "0",
+    "sbytes": "900000", "dbytes": "0", "rate": "900",
     "sload": "1000000", "dload": "0", "sinpkt": "0.01", "dinpkt": "0",
+    "ct_dst_src_ltm": "1", "ct_dst_ltm": "1", "ct_srv_dst": "1",
 }
 
 
@@ -125,7 +134,8 @@ def test_dashboard_warns_when_the_cached_model_is_corrupt(cloud):
         login(browser, *ANALYST[:2])
         page = browser.get("/").get_data(as_text=True)
         assert "Unavailable here" in page
-        assert "The cached model is corrupt" in page
+        assert "The model copy saved on this computer is corrupt" in page
+        assert "delete the folder" in page
         assert 'status-pill active">Deployed' not in page
     finally:
         restarted.close()
@@ -300,6 +310,90 @@ def test_manual_prediction_reports_queued_state_until_acknowledged(cloud):
               if row["event_uuid"] == result["event_uuid"]]
     assert len(stored) == 1 and stored[0]["payload"]["capture_id"] is None
     assert client.get("/api/events/00000000-0000-4000-8000-000000000000").status_code == 404
+
+
+def test_malformed_json_is_refused_before_anything_is_queued_or_started(cloud):
+    """6D.4: the cloud console's counterpart of test_invalid_json_bodies_are_rejected..."""
+    client = signed_in(cloud.app)
+    cloud.services.sync.close()
+    identity = next(iter(cloud.app.session_interface.sessions.values())).identity
+    before = cloud.services.outbox.counts(identity)
+    for endpoint in ("/predict", "/monitor/start"):
+        for body, content_type in (("{broken json", "application/json"),
+                                   ("[]", "application/json"), ("[1]", "application/json"),
+                                   ("false", "application/json"), ("null", "application/json"),
+                                   ('"flow"', "application/json"), ("", "application/json"),
+                                   ("{}", "text/plain")):
+            response = client.post(endpoint, data=body, content_type=content_type,
+                                   headers={"X-CSRF-Token": client.csrf})
+            assert response.status_code == 400, (endpoint, body)
+            assert "valid JSON object" in response.get_json()["message"]
+    assert cloud.services.outbox.counts(identity) == before
+    assert cloud.services.monitor.session is None
+
+
+def test_an_unknown_address_gets_the_consoles_own_not_found_page(cloud):
+    client = signed_in(cloud.app)
+    page = client.get("/no-such-page")
+    assert page.status_code == 404
+    text = page.get_data(as_text=True)
+    assert "Page not found" in text and "Return to dashboard" in text
+    assert client.get("/no-such-page", headers={"Authorization": "Bearer x"}).status_code in (
+        401, 404)
+
+
+def test_manual_prediction_uploads_its_attack_score_and_band(cloud):
+    client = signed_in(cloud.app)
+    result = post_json(client, "/predict", MANUAL_FLOW).get_json()
+    assert 0.0 <= result["attack_probability"] <= 1.0
+    assert result["attack_score_band"] == attack_score_band(result["attack_probability"])
+    assert result["score_band_policy"] == ATTACK_SCORE_BAND_POLICY
+    synced = wait_for(lambda: (lambda data: data if data.get("synced") else None)(
+        client.get(f"/api/events/{result['event_uuid']}").get_json()))
+    stored = next(row for row in cloud.fake.rows("prediction")
+                  if str(row["prediction_id"]) == str(synced["prediction_id"]))
+    assert {key: stored[key] for key in ("attack_probability", "attack_score_band",
+                                         "score_band_policy")} == {
+        key: result[key] for key in ("attack_probability", "attack_score_band",
+                                     "score_band_policy")}
+
+
+def test_an_unmigrated_cloud_database_gets_unscored_uploads_not_rejections(cloud, monkeypatch):
+    """Until the hosted migration is applied, scores stay local instead of failing uploads."""
+    cloud_monitor._SCORE_SUPPORT.clear()
+    cloud.fake.attack_scores = False
+    client = signed_in(cloud.app)
+
+    def upload():
+        result = post_json(client, "/predict", MANUAL_FLOW).get_json()
+        synced = wait_for(lambda: (lambda data: data if data.get("synced") else None)(
+            client.get(f"/api/events/{result['event_uuid']}").get_json()))
+        return result, next(row for row in cloud.fake.rows("prediction")
+                            if str(row["prediction_id"]) == str(synced["prediction_id"]))
+
+    result, stored = upload()
+    assert result["attack_score_band"] is not None  # the analyst still sees the score
+    assert stored.get("attack_probability") is None
+    # Once the database has the columns, the next check finds them.
+    cloud.fake.attack_scores = True
+    monkeypatch.setattr(cloud_monitor, "SCORE_SUPPORT_RECHECK_SECONDS", 0.0)
+    result, stored = upload()
+    assert stored["attack_probability"] == result["attack_probability"]
+
+
+def test_an_unscored_event_keeps_the_older_shape_and_a_mismatched_band_is_refused(cloud):
+    deployment = {"model_id": 1, "deployment_id": 1, "model_name": "Stacking Ensemble"}
+    result = {"prediction": "Attack", "confidence": 97.0, "latency_ms": 1.0}
+    older = flow_event(deployment, result, {"dur": 1.0}, "simulation", None)
+    assert set(older["prediction"]) == {"predicted_label", "confidence_score", "latency_ms",
+                                        "model_name"}
+    assert _score_matches_policy(older["prediction"])
+    scored = flow_event(deployment, {**result, **attack_score_fields(0.97)}, {"dur": 1.0},
+                        "simulation", None)
+    assert scored["prediction"]["attack_score_band"] == "Very high"
+    assert _score_matches_policy(scored["prediction"])
+    assert not _score_matches_policy({**scored["prediction"], "attack_score_band": "Low"})
+    assert not _score_matches_policy({**scored["prediction"], "score_band_policy": "v0"})
 
 
 def test_csv_capture_pins_deployment_and_uploads_through_the_outbox(cloud):

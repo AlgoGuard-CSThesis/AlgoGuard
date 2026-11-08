@@ -1,0 +1,66 @@
+﻿{'time': '2026-10-24 00:26:26', 'elapsed_s': 300, 'flows': '758', 'persisted': '300 (capped)', 'pending': '0', 'latency': 'Average latency 38.023 ms', 'message': ''}
+{'time': '2026-10-24 00:31:26', 'elapsed_s': 600, 'flows': '1,512', 'persisted': '300 (capped)', 'pending': '0', 'latency': 'Average latency 37.048 ms', 'message': ''}
+{'time': '2026-10-24 00:36:26', 'elapsed_s': 900, 'flows': '2,270', 'persisted': '300 (capped)', 'pending': '0', 'latency': 'Average latency 36.141 ms', 'message': ''}
+{'time': '2026-10-24 00:41:27', 'elapsed_s': 1200, 'flows': '3,033', 'persisted': '300 (capped)', 'pending': '0', 'latency': 'Average latency 35.381 ms', 'message': ''}
+{'time': '2026-10-24 00:46:26', 'elapsed_s': 1500, 'flows': '3,793', 'persisted': '300 (capped)', 'pending': '0', 'latency': 'Average latency 34.868 ms', 'message': ''}
+{'time': '2026-10-24 00:51:26', 'elapsed_s': 1800, 'flows': '4,554', 'persisted': '300 (capped)', 'pending': '0', 'latency': 'Average latency 34.530 ms', 'message': ''}
+{
+  "started": "2026-10-24 00:21:22",
+  "stopped": "2026-10-24 00:51:33",
+  "readings": [
+    {
+      "time": "2026-10-24 00:26:26",
+      "elapsed_s": 300,
+      "flows": "758",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 38.023 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:31:26",
+      "elapsed_s": 600,
+      "flows": "1,512",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 37.048 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:36:26",
+      "elapsed_s": 900,
+      "flows": "2,270",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 36.141 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:41:27",
+      "elapsed_s": 1200,
+      "flows": "3,033",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 35.381 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:46:26",
+      "elapsed_s": 1500,
+      "flows": "3,793",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 34.868 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:51:26",
+      "elapsed_s": 1800,
+      "flows": "4,554",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 34.530 ms",
+      "message": ""
+    }
+  ]
+}

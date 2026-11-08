@@ -1,0 +1,78 @@
+$ node --test tests/monitor_poll.test.cjs
+
+TAP version 13
+# Subtest: a session restart clears old rows and resumes from the new event cursor
+ok 1 - a session restart clears old rows and resumes from the new event cursor
+  ---
+  duration_ms: 4.0284
+  type: 'test'
+  ...
+# Subtest: a new session with no events resets the cursor immediately
+ok 2 - a new session with no events resets the cursor immediately
+  ---
+  duration_ms: 0.7216
+  type: 'test'
+  ...
+# Subtest: a stopped session keeps polling so another tab can start a new session
+ok 3 - a stopped session keeps polling so another tab can start a new session
+  ---
+  duration_ms: 0.6773
+  type: 'test'
+  ...
+# Subtest: a delayed status response cannot undo a successful control action
+ok 4 - a delayed status response cannot undo a successful control action
+  ---
+  duration_ms: 0.8345
+  type: 'test'
+  ...
+# Subtest: a rejected control action preserves the current feed
+ok 5 - a rejected control action preserves the current feed
+  ---
+  duration_ms: 3.9914
+  type: 'test'
+  ...
+# Subtest: polling recovers automatically from a temporary network failure
+ok 6 - polling recovers automatically from a temporary network failure
+  ---
+  duration_ms: 1.0954
+  type: 'test'
+  ...
+# Subtest: polling recovers automatically from a temporary server failure
+ok 7 - polling recovers automatically from a temporary server failure
+  ---
+  duration_ms: 0.6341
+  type: 'test'
+  ...
+# Subtest: an expired login stops polling and keeps the login message visible
+ok 8 - an expired login stops polling and keeps the login message visible
+  ---
+  duration_ms: 0.6513
+  type: 'test'
+  ...
+# Subtest: a stalled status request times out and allows the next scheduled poll
+ok 9 - a stalled status request times out and allows the next scheduled poll
+  ---
+  duration_ms: 1.4625
+  type: 'test'
+  ...
+# Subtest: a stalled control request releases the controls and checks status without repeating POST
+ok 10 - a stalled control request releases the controls and checks status without repeating POST
+  ---
+  duration_ms: 1.7796
+  type: 'test'
+  ...
+# Subtest: cloud mode updates the saved state of rows already in the feed
+ok 11 - cloud mode updates the saved state of rows already in the feed
+  ---
+  duration_ms: 0.8751
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 97.9474

@@ -33,13 +33,20 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import cast
 from urllib.parse import urlsplit
-from uuid import UUID, uuid4
+from uuid import UUID, uuid4, uuid5
 
 from flask import Flask, flash, g, jsonify, redirect, render_template, request, url_for
 from flask import session as flask_session
 
+from app_version import app_version
 from cloud_auth import CloudAuth, MemorySession, MemorySessionInterface
-from cloud_monitor import CloudMonitor, LiveMonitorError, deployment_summary, flow_event
+from cloud_monitor import (
+    CloudMonitor,
+    LiveMonitorError,
+    attack_scores_supported,
+    deployment_summary,
+    flow_event,
+)
 from cloud_outbox import Outbox, restrict_owner
 from cloud_repository import RepositoryError
 from cloud_sync import SyncWorker, audit
@@ -72,7 +79,8 @@ JSON_ENDPOINTS = {
 MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
 ERROR_MESSAGES = {
     "authentication": "Online login is required.",
-    "permission": "Your account or this installation needs administrator approval.",
+    "permission": "Your account or this installation needs administrator approval. Give your "
+                  "administrator the installation ID shown on the Dashboard.",
     "transient": "The cloud is unavailable. Pending records stay on this computer.",
     "conflict": "This request conflicts with an existing record.",
     "validation": "Check the submitted values.",
@@ -95,6 +103,14 @@ PERSISTENCE_LABELS = {
 }
 PAGE_SIZE = 50
 LOG_PAGE_SIZE = 25
+# A node whose last report the server received longer ago than this is shown as stale (6B.2).
+STALE_AFTER_SECONDS = 180
+# Retention (6B.3): initial targets, batch bounds, and the hosted plan's database size.
+OPERATIONAL_DAYS = 30
+REPORT_DAYS = 90
+RETENTION_BATCH = 500
+RETENTION_MAX_BATCHES = 20
+DATABASE_LIMIT_BYTES = 500 * 1024 * 1024
 MAX_OFFSET = 1_000_000
 
 OwnerContext = namedtuple("OwnerContext", "user_id profile_id node_id")
@@ -124,7 +140,23 @@ def build_services(cfg):
     sync = SyncWorker(auth, outbox)
     models = ActiveModelStore(state_dir / "models")
     monitor = CloudMonitor(auth, outbox, sync, models)
+    sync.health = lambda context: node_health_report(context, outbox, models, monitor)
     return CloudServices(node_id, auth, outbox, sync, models, monitor)
+
+
+def node_health_report(context, outbox, models, monitor):
+    """What an installation reports about itself (6B.2); no capture can be controlled remotely."""
+    counts = outbox.counts(context)
+    pinned = models.current
+    deployment = pinned.manifest.get("deployment_id") if pinned is not None else None
+    return {
+        "app_version": app_version(),
+        "deployment_id": int(deployment) if deployment else None,
+        "capture_status": monitor.capture_state(),
+        "pending_events": int(counts["pending"]) + int(counts["in_memory"] or 0),
+        "dropped_events": int(counts["dropped"] or 0),
+        "rejected_events": int(counts["rejected"]),
+    }
 
 
 def _safe_next_url(next_url):
@@ -144,6 +176,15 @@ def _safe_next_url(next_url):
     ):
         return url_for("dashboard")
     return next_url
+
+
+def _parse_time(value):
+    """A timezone-aware datetime for a timestamptz string, else None."""
+    try:
+        stamp = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        return None
+    return stamp if stamp.tzinfo is not None else stamp.replace(tzinfo=timezone.utc)
 
 
 def _utc_text(value):
@@ -186,6 +227,54 @@ def _parallel(tasks):
         except Exception as error:  # Returned for the caller to classify.
             results[name] = error
     return results
+
+
+def _upload_delay(event_text, received):
+    """Seconds between an event's own (UTC text) time and the server's receipt, else None."""
+    try:
+        event = datetime.strptime(str(event_text)[:19], "%Y-%m-%d %H:%M:%S")
+    except (TypeError, ValueError):
+        return None
+    stamp = _parse_time(received)
+    if stamp is None:
+        return None
+    return (stamp - event.replace(tzinfo=timezone.utc)).total_seconds()
+
+
+def _date_bounds(values):
+    """Inclusive UTC text bounds from YYYY-MM-DD form values; invalid dates are cleared."""
+    bounds = []
+    for key, suffix in (("date_from", "00:00:00"), ("date_to", "23:59:59")):
+        value = values.get(key, "")
+        try:
+            bounds.append(f"{datetime.strptime(value, '%Y-%m-%d'):%Y-%m-%d} {suffix}"
+                          if value else None)
+        except ValueError:
+            flash("Dates must use the YYYY-MM-DD format.", "warning")
+            values[key] = ""
+            bounds.append(None)
+    return tuple(bounds) if any(bounds) else None
+
+
+def _list_view(values):
+    """The computer and date choice of a list page, kept when an action returns to it."""
+    kept = {}
+    node = (values.get("node") or "").strip()
+    if node == "all":
+        kept["node"] = node
+    elif node:
+        try:
+            kept["node"] = str(UUID(node))
+        except ValueError:
+            pass
+    for key in ("date_from", "date_to"):
+        value = (values.get(key) or "").strip()
+        try:
+            datetime.strptime(value, "%Y-%m-%d")
+        except ValueError:
+            continue
+        kept[key] = value
+    return kept
 
 
 def _raise_first(results, names):
@@ -322,7 +411,21 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
     def repository_error(error):
         message = ERROR_MESSAGES.get(error.category, "The cloud response could not be verified.")
         status = ERROR_STATUS.get(error.category, 503)
-        if error.category == "authentication" and not g.get("bearer"):
+        renewal = (renew_sign_in() if error.category == "authentication" and not g.get("bearer")
+                   else None)
+        if renewal == "renewed":
+            # The cloud refused a token that has not expired here (a revoked signing key, for
+            # example) and the refresh token still works: the page or poll repeats (6C.1).
+            if wants_json():
+                return json_error("Your sign-in was renewed. Retrying.", 503)
+            if request.method == "GET":
+                return redirect(request.full_path if request.query_string else request.path)
+            flash("Your sign-in was renewed. Repeat the last action.", "warning")
+            return redirect(url_for("dashboard"))
+        if renewal == "transient":
+            # Renewal must wait for the cloud; the sign-in stays in place.
+            message, status = ERROR_MESSAGES["transient"], 503
+        elif error.category == "authentication" and not g.get("bearer"):
             session.identity = None
             if not wants_json():
                 flash("Your sign-in ended. Log in online to continue.", "warning")
@@ -343,6 +446,16 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             detail="Models are published by the maintainer; this installation never trains.",
         ), 503
 
+    @app.errorhandler(404)
+    def not_found(_error):
+        """An unknown address gets the console's own page, not the framework's (6D.4)."""
+        if wants_json():
+            return json_error("Not found.", 404)
+        return render_template(
+            "cloud_message.html", title="Page not found", icon="bi-signpost-split",
+            message="There is no AlgoGuard page at this address.", detail=None,
+        ), 404
+
     @app.errorhandler(LiveMonitorError)
     def monitor_error(error):
         return json_error(str(error), 409)
@@ -353,6 +466,21 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
 
     # -- helpers ---------------------------------------------------------------
 
+    def renew_sign_in():
+        """Renew a browser sign-in whose current token the cloud refused (6C.1).
+
+        Returns ``renewed``, ``transient`` (try again when the cloud answers), or None when the
+        sign-in has ended.
+        """
+        identity, repo = g.get("identity"), g.get("repo")
+        if identity is None or repo is None or not identity.active:
+            return None
+        try:
+            services.auth.repository(identity, refused=repo.context.access_token)
+        except RepositoryError as error:
+            return "transient" if error.retryable and identity.active else None
+        return "renewed" if identity.active else None
+
     def end_identity(identity, action="logout"):
         """Stop the old capture, clear its tokens; its pending records stay its own."""
         services.monitor.stop_for_logout(identity)
@@ -360,6 +488,31 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
               f"{identity.username} signed out of this installation.")
         services.sync.unregister(identity)
         services.auth.logout(identity)
+
+    def node_scope(repo):
+        """Which nodes a list shows (6B.1): ``?node=`` empty for this installation (the default),
+        ``all`` for every node the account can see, or one of those nodes. Row security still
+        decides what any choice returns, so a hand-edited URL shows nothing extra."""
+        nodes = repo.list_records("node", page_size=100, all_visible_nodes=True).rows
+        names = {row["node_id"]: row["display_name"] for row in nodes}
+        local = str(services.node_id)
+        wanted = request.args.get("node", "").strip()
+        choice = {"value": "", "query": {}, "names": names,
+                  "options": sorted(((node, name) for node, name in names.items() if node != local),
+                                    key=lambda item: item[1].lower())}
+        if wanted == "all":
+            choice.update(value="all", query={"all_visible_nodes": True})
+        elif wanted and wanted != local:
+            try:
+                node = str(UUID(wanted))
+            except ValueError:
+                node = None
+            if node in names:
+                choice.update(value=node, query={"node_id": UUID(node)})
+            else:
+                flash("That computer is not visible to this account; showing this computer.",
+                      "warning")
+        return choice
 
     def profile_names(repo, profile_ids):
         wanted = sorted({int(value) for value in profile_ids if value is not None})[:100]
@@ -380,8 +533,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         """Display metadata for the active release without downloading its bytes."""
         rows = repo.list_records("model_manifest", filters={"status": "active"}).rows
         if len(rows) != 1:
-            raise ModelDeliveryError("No active compatible model is published. "
-                                     "Contact maintenance.")
+            raise ModelDeliveryError("No model is published for this project yet. Tell your "
+                                     "administrator; the maintainer publishes models.")
         manifest = dict(rows[0])
         verify_manifest(manifest)
         found = _parallel({
@@ -414,7 +567,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
 
     def manual_prediction(pinned, deployment, payload):
         outcome = predict_with_artifact(pinned.artifact, payload)
-        event = flow_event(deployment, outcome, outcome["flow_data"], "simulation", None)
+        event = flow_event(deployment, outcome, outcome["flow_data"], "simulation", None,
+                           include_scores=attack_scores_supported(g.repo))
         submitted = services.outbox.submit(g.repo.context, "manual", event, capped=False)
         persistence = submitted["persistence"]
         if persistence == "in_memory":
@@ -423,6 +577,9 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         return {
             "prediction": outcome["prediction"],
             "confidence": outcome["confidence"],
+            "attack_probability": outcome["attack_probability"],
+            "attack_score_band": outcome["attack_score_band"],
+            "score_band_policy": outcome["score_band_policy"],
             "latency_ms": outcome["latency_ms"],
             "deployed_model_name": deployment["model_name"],
             "deployment_id": deployment["deployment_id"],
@@ -491,7 +648,8 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         session.clear()
         session_interface.forget(session)
         response = redirect(url_for("login", logged_out="1"))
-        response.delete_cookie(app.config["SESSION_COOKIE_NAME"], path="/")
+        response.delete_cookie(app.config["SESSION_COOKIE_NAME"], path="/", httponly=True,
+                               samesite="Lax", secure=app.config["SESSION_COOKIE_SECURE"])
         return response
 
     # -- pages -----------------------------------------------------------------
@@ -652,14 +810,29 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
     def alert_history():
         offset = _offset()
         alert_status = request.args.get("alert_status", "").strip()[:40]
-        page = g.repo.list_records(
+        dates = {key: request.args.get(key, "").strip() for key in ("date_from", "date_to")}
+        between = _date_bounds(dates)
+        repo = g.repo
+        scope = node_scope(repo)
+        page = repo.list_records(
             "alert_detail", offset=offset, page_size=PAGE_SIZE, descending=True,
             filters={"alert_status": alert_status} if alert_status else None,
-        )
+            between=between, **scope["query"])
+        local = str(services.node_id)
+        # Changes stay local (6B.1): a review goes to this installation's own alerts only, so
+        # another computer's alerts are view only here, even for a member of that computer.
+        alerts = [
+            {**row, "computer": scope["names"].get(row["node_id"]),
+             "received_at": _utc_text(row.get("created_at")),
+             "upload_delay": _upload_delay(row.get("detected_at"), row.get("created_at")),
+             "writable": row["node_id"] == local}
+            for row in page.rows
+        ]
         return render_template(
-            "alerts.html", alerts=page.rows, next_offset=page.next_offset, offset=offset,
+            "alerts.html", alerts=alerts, next_offset=page.next_offset, offset=offset,
             page_size=PAGE_SIZE, alert_status=alert_status, report_request_id=str(uuid4()),
-            node_id=str(services.node_id), alert_statuses=ALERT_STATUSES,
+            node_id=str(services.node_id), alert_statuses=ALERT_STATUSES, scope=scope,
+            dates=dates,
         )
 
     @app.post("/alerts/<int:alert_id>/status")
@@ -671,6 +844,7 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             "alert_history",
             offset=min(max(0, request.form.get("offset", 0, type=int)), MAX_OFFSET),
             alert_status=status_filter if status_filter in ALERT_STATUSES else None,
+            **_list_view(request.form),
         )
         if alert_status not in ALERT_STATUSES:
             flash("Choose Open, Acknowledged, or Resolved.", "danger")
@@ -718,11 +892,13 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                 bounds.append(None)
         search = filters["search"][:100] or None
         repo = g.repo
+        scope = node_scope(repo)
         results = _parallel({
             "page": lambda: repo.list_records(
                 "system_log", page_size=LOG_PAGE_SIZE,
                 offset=(page_number - 1) * LOG_PAGE_SIZE, filters=equal or None,
                 descending=True, between=tuple(bounds) if any(bounds) else None, search=search,
+                **scope["query"],
             ),
             "options": repo.log_filter_options,
         })
@@ -735,7 +911,11 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
         page = results["page"]
         names = profile_names(g.repo, [row.get("profile_id") for row in page.rows])
         items = [
-            {**row, "admin_username": names.get(row.get("profile_id"))} for row in page.rows
+            {**row, "admin_username": names.get(row.get("profile_id")),
+             "computer": scope["names"].get(row.get("node_id")),
+             "received_at": _utc_text(row.get("created_at")),
+             "upload_delay": _upload_delay(row.get("timestamp"), row.get("created_at"))}
+            for row in page.rows
         ]
         return render_template(
             "logs.html",
@@ -743,6 +923,7 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                   "has_next": page.next_offset is not None},
             filters=filters,
             filter_options=options,
+            scope=scope,
         )
 
     @app.route("/reports", methods=["GET", "POST"])
@@ -774,10 +955,13 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
                   else "Report saved together with its alert evidence.", "success")
             return redirect(url_for("report_detail", report_id=report_id))
         offset = _offset()
-        page = g.repo.list_records("report", offset=offset, page_size=PAGE_SIZE, descending=True)
+        scope = node_scope(g.repo)
+        page = g.repo.list_records("report", offset=offset, page_size=PAGE_SIZE, descending=True,
+                                   **scope["query"])
         return render_template(
             "reports.html", reports=page.rows, next_offset=page.next_offset, offset=offset,
             usernames=profile_names(g.repo, [row.get("owner_profile_id") for row in page.rows]),
+            scope=scope,
         )
 
     def report_evidence(report_id):
@@ -893,6 +1077,87 @@ def create_cloud_app(cfg, *, services=None, start_workers=True):
             administrator=administrator,
             pending=[row for row in memberships if row["status"] == "pending"],
             memberships=memberships,
+        )
+
+    @app.get("/computers")
+    def computers():
+        """Node health for administrators: what each installation last reported, and when."""
+        if "administrator" not in services.auth.current_roles(g.identity):
+            flash("Only Administrator accounts can view computer health.", "danger")
+            return redirect(url_for("dashboard"))
+        repo = g.repo
+        results = _parallel({
+            "nodes": lambda: repo.list_records("node", page_size=100,
+                                               all_visible_nodes=True).rows,
+            "health": lambda: repo.list_records("node_health", page_size=100,
+                                                all_visible_nodes=True).rows,
+        })
+        _raise_first(results, ("nodes",))
+        health = results["health"]
+        if isinstance(health, Exception):
+            if isinstance(health, RepositoryError) and health.category == "authentication":
+                raise health
+            health = []  # a database without the 6B.2 migration has no health reports yet
+        reports = {row["node_id"]: row for row in health}
+        now = datetime.now(timezone.utc)
+        rows = []
+        for node in results["nodes"]:
+            report = reports.get(node["node_id"])
+            received = _parse_time(report["received_at"]) if report else None
+            age = (now - received).total_seconds() if received else None
+            rows.append({**node, "report": report, "age_seconds": age,
+                         "stale": age is None or age > STALE_AFTER_SECONDS,
+                         "this_node": node["node_id"] == str(services.node_id)})
+        rows.sort(key=lambda row: (row["status"] != "approved", row["display_name"].lower()))
+        return render_template("computers.html", computers=rows,
+                               stale_after_minutes=STALE_AFTER_SECONDS // 60)
+
+    @app.route("/retention", methods=["GET", "POST"])
+    def retention():
+        """Audited cleanup for administrators: preview first, then bounded batches (6B.3)."""
+        if "administrator" not in services.auth.current_roles(g.identity):
+            flash("Only Administrator accounts can manage data retention.", "danger")
+            return redirect(url_for("dashboard"))
+        repo = g.repo
+        if request.method == "POST":
+            request_id = _form_uuid()
+            removed, batches, more = {}, 0, True
+            # Batch ids derive from the form's id, so a repeated submit replays, never repeats.
+            while more and batches < RETENTION_MAX_BATCHES:
+                result = repo.retention_apply(uuid5(request_id, str(batches)), RETENTION_BATCH,
+                                              OPERATIONAL_DAYS, REPORT_DAYS)
+                batches += 1
+                more = bool(result.get("more"))
+                for key, value in (result.get("removed") or {}).items():
+                    removed[key] = removed.get(key, 0) + int(value)
+            flash(f"Removed {removed.get('flows', 0):,} flows ({removed.get('alerts', 0):,} "
+                  f"alerts), {removed.get('logs', 0):,} log entries, "
+                  f"{removed.get('reports', 0):,} reports and "
+                  f"{removed.get('closed_sessions', 0):,} closed capture sessions in {batches} "
+                  f"batch{'' if batches == 1 else 'es'}"
+                  + (". More remain: run the cleanup again." if more else "."),
+                  "warning" if more else "success")
+            return redirect(url_for("retention"))
+        results = _parallel({
+            "preview": lambda: repo.retention_preview(OPERATIONAL_DAYS, REPORT_DAYS),
+            "history": lambda: repo.list_records(
+                "system_log", page_size=10, descending=True, all_visible_nodes=True,
+                filters={"module": "Retention"}).rows,
+            "nodes": lambda: repo.list_records("node", page_size=100,
+                                               all_visible_nodes=True).rows,
+        })
+        _raise_first(results, ("preview",))
+        preview = results["preview"]
+        history = [] if isinstance(results["history"], Exception) else results["history"]
+        names = ({} if isinstance(results["nodes"], Exception)
+                 else {row["node_id"]: row["display_name"] for row in results["nodes"]})
+        database = int(preview["capacity"]["database_bytes"])
+        return render_template(
+            "retention.html", preview=preview, history=history, node_names=names,
+            operational_days=OPERATIONAL_DAYS, report_days=REPORT_DAYS,
+            database_share=database / DATABASE_LIMIT_BYTES,
+            database_limit_mb=DATABASE_LIMIT_BYTES // (1024 * 1024),
+            request_id=str(uuid4()), batch=RETENTION_BATCH, max_batches=RETENTION_MAX_BATCHES,
         )
 
     @app.route("/admins", methods=["GET", "POST"])

@@ -435,46 +435,46 @@ L1–L6 in the record are carried into Iteration 6.
 
 ### 6A.1 Validate packet-feature fidelity and capture latency
 
-- [ ] Select reference flows and predeclare tolerances for all fifteen features,
+- [x] Select reference flows and predeclare tolerances for all fifteen features,
   covering direction, units, protocol/service/state, and flow closure.
-- [ ] Compare matched packet-derived/reference features, recording exclusions,
+- [x] Compare matched packet-derived/reference features, recording exclusions,
   unsupported cases, tool versions, and dataset provenance.
-- [ ] Measure lag including idle/long-flow closure under declared loads; separate
+- [x] Measure lag including idle/long-flow closure under declared loads; separate
   inference time from end-to-end detection and synchronization delay.
-- [ ] Supported inputs pass tolerances. Missing representative evidence leaves
+- [x] Supported inputs pass tolerances. Missing representative evidence leaves
   a research release gate unmet rather than a claimed success.
 
 ### 6A.2 Evaluate generalization and probability calibration
 
-- [ ] Define training, calibration/selection, and untouched final evaluation sets;
+- [x] Define training, calibration/selection, and untouched final evaluation sets;
   verify nested CSV overlap cannot enter an independent accuracy claim.
-- [ ] Report false positives, recall, F1, ROC-AUC, reliability curves, and Brier
+- [x] Report false positives, recall, F1, ROC-AUC, reliability curves, and Brier
   score with sample sizes and representative-data limitations.
-- [ ] Any calibrator avoids final-test leakage and produces a newly gated
+- [x] Any calibrator avoids final-test leakage and produces a newly gated
   artifact. Assessment does not automatically require adding a calibrator.
-- [ ] Keep the six candidates, individual-model ranking, and Stacking-only
+- [x] Keep the six candidates, individual-model ranking, and Stacking-only
   deployment policy. Document any proposed quality-gate change separately.
 
 ### 6A.3 Store attack probability and versioned score bands
 
-- [ ] Manual and monitor paths extract class 1 probability by class value into
+- [x] Manual and monitor paths extract class 1 probability by class value into
   nullable `attack_probability` in [0, 1]; predicted-class confidence stays separate.
-- [ ] One function maps Low below 0.50, Medium from 0.50, High from 0.70, and
+- [x] One function maps Low below 0.50, Medium from 0.50, High from 0.70, and
   Very high from 0.90, storing `attack_score_band` and band-policy version.
-- [ ] Add columns through numbered SQL migrations; preserve old
+- [x] Add columns through numbered SQL migrations; preserve old
   `severity_level` values as legacy labels without inventing historical scores.
-- [ ] Boundary, null, range, class-order, and confident-Normal tests pass.
+- [x] Boundary, null, range, class-order, and confident-Normal tests pass.
   Changed configurable thresholds require a new recorded policy version.
 
 ### 6A.4 Present scores consistently and document evidence
 
-- [ ] Feed and alerts use shared stored/result bands and accessible labels/colors;
+- [x] Feed and alerts use shared stored/result bands and accessible labels/colors;
   session-only feed rows need no database round trip to obtain a band.
-- [ ] Explain attack score rather than impact/severity; old unknown scores render
+- [x] Explain attack score rather than impact/severity; old unknown scores render
   neutrally and no band is named Critical.
-- [ ] README/research notes explain calibration limits, training/replay overlap,
+- [x] README/research notes explain calibration limits, training/replay overlap,
   supported feature fidelity, and latency context.
-- [ ] Relevant suites/browser checks pass; write
+- [x] Relevant suites/browser checks pass; write
   `docs/migration/06a-evidence.md` before the stage commit.
 
 ---
@@ -486,36 +486,36 @@ inspectable, and safe for related records.
 
 ### 6B.1 Add cross-node alerts, logs, and reports
 
-- [ ] Administrators select one/all nodes; rows identify origin and distinguish
+- [x] Administrators select one/all nodes; rows identify origin and distinguish
   event time from delayed synchronization.
-- [ ] Analysts see only assigned data and default to their local node; direct
+- [x] Analysts see only assigned data and default to their local node; direct
   API access obeys the same restrictions as visible controls.
-- [ ] Node/time/status filters, joins, indexes, and pagination stay responsive
+- [x] Node/time/status filters, joins, indexes, and pagination stay responsive
   at the realistic row counts measured in 5F.
 
 ### 6B.2 Show node health without remote capture controls
 
-- [ ] List last-seen, app/model versions, capture status, and reported pending,
+- [x] List last-seen, app/model versions, capture status, and reported pending,
   dropped, or rejected synchronization counts.
-- [ ] Heartbeats need a valid user and membership; last-seen uses server receipt
+- [x] Heartbeats need a valid user and membership; last-seen uses server receipt
   time. Stale receipt means stale status regardless of the last reported health.
-- [ ] Offline startup does not register anonymously. Logout stops authenticated
+- [x] Offline startup does not register anonymously. Logout stops authenticated
   heartbeats; stale nodes remain visible.
-- [ ] No remote start/stop or unattended device-credential path is introduced.
+- [x] No remote start/stop or unattended device-credential path is introduced.
 
 ### 6B.3 Implement audited retention and capacity reporting
 
-- [ ] Initial targets: 30 days for operational flows/predictions/alerts/logs/closed
+- [x] Initial targets: 30 days for operational flows/predictions/alerts/logs/closed
   sessions, 90 days for reports; report-linked evidence survives with retained
   reports. Event/server timestamps have explicit retention roles.
-- [ ] Keep training/deployment manifests, active/in-use model files, and at least
+- [x] Keep training/deployment manifests, active/in-use model files, and at least
   one verified rollback artifact.
-- [ ] Local pending events expire after seven days within the 100 MiB total
+- [x] Local pending events expire after seven days within the 100 MiB total
   limit; expiration/rejection is visible, never silently counted as synced.
-- [ ] Cleanup has a dry-run preview, bounded batches, audited authorization, and
+- [x] Cleanup has a dry-run preview, bounded batches, audited authorization, and
   relationship-safe ordering. Preserve active sessions; quarantine invalid
   client times and expose report holds/capacity pressure.
-- [ ] Rehearse cleanup/restore on fixtures before enabling maintenance scheduling;
+- [x] Rehearse cleanup/restore on fixtures before enabling maintenance scheduling;
   write `docs/migration/06b-operations.md` before the stage commit.
 
 ---
@@ -526,44 +526,44 @@ inspectable, and safe for related records.
 
 ### 6C.1 Exercise authentication and authorization lifecycle failures
 
-- [ ] Test expiry during polling/upload, concurrent refresh, logout with pending
+- [x] Test expiry during polling/upload, concurrent refresh, logout with pending
   events, account switch, revoked membership, demotion, and key rotation.
-- [ ] Valid refresh allows UI reattachment; unauthorized uploads stop. Pending
+- [x] Valid refresh allows UI reattachment; unauthorized uploads stop. Pending
   events never replay under another user's token or privileged fallback.
-- [ ] Offline cold restart requires online login before capture. Secrets are
+- [x] Offline cold restart requires online login before capture. Secrets are
   absent from cookies, logs, URLs, and error screens.
 
 ### 6C.2 Exercise durable-write and capture-stop recovery
 
-- [ ] Inject failure before commit, after commit before acknowledgement, malformed
+- [x] Inject failure before commit, after commit before acknowledgement, malformed
   events, partial batches, and duplicate UUIDs with changed content.
-- [ ] Kill/restart with pending events: server results remain unique and local
+- [x] Kill/restart with pending events: server results remain unique and local
   capture/sync state reconciles, including late final metadata.
-- [ ] Disk full, stalled network, full queues, and denied writes respect capacity
+- [x] Disk full, stalled network, full queues, and denied writes respect capacity
   and stop deadlines; UI distinguishes dropped/pending/rejected/synced.
-- [ ] Audit/error reporting stays bounded during prolonged failure and cannot
+- [x] Audit/error reporting stays bounded during prolonged failure and cannot
   recursively fill its own spool or crash capture.
 
 ### 6C.3 Exercise model updates and backup restoration
 
-- [ ] Test interrupted cache promotion, corruption, version mismatch, missing
+- [x] Test interrupted cache promotion, corruption, version mismatch, missing
   objects, expired URLs, and manifest/object permission attacks.
-- [ ] Concurrent activation preserves one active deployment; running captures
+- [x] Concurrent activation preserves one active deployment; running captures
   retain their pinned model and new sessions resolve the current manifest.
-- [ ] Restore cloud metadata/private artifacts consistently; orphan cleanup only
+- [x] Restore cloud metadata/private artifacts consistently; orphan cleanup only
   deletes proven unreferenced uploads.
-- [ ] Repeat post-cutover recovery with both nodes and pending outboxes, recording
+- [x] Repeat post-cutover recovery with both nodes and pending outboxes, recording
   any unsupported reverse conversion.
 
 ### 6C.4 Run sustained load and targeted traffic checks
 
-- [ ] Use declared 5F budgets and 6A evidence under sustained capture, sync,
+- [x] Use declared 5F budgets and 6A evidence under sustained capture, sync,
   successive sessions, and network disruption.
-- [ ] Check app-owned connections after reconnect/DNS changes while unrelated
+- [x] Check app-owned connections after reconnect/DNS changes while unrelated
   HTTPS to the same provider remains captured.
-- [ ] Confirm storage, cleanup, sync delay, and memory remain bounded; changes
+- [x] Confirm storage, cleanup, sync delay, and memory remain bounded; changes
   to defaults update examples and acceptance checks.
-- [ ] Write `docs/migration/06c-recovery.md` with evidence/limits before the
+- [x] Write `docs/migration/06c-recovery.md` with evidence/limits before the
   manual stage commit.
 
 ---
@@ -575,50 +575,50 @@ or privileged cloud credentials, with accurate research limitations.
 
 ### 6D.1 Consolidate analyst and maintainer entry points
 
-- [ ] Analyst distribution starts in cloud mode; remove the temporary legacy
+- [x] Analyst distribution starts in cloud mode; remove the temporary legacy
   business-database path from normal analyst startup.
-- [ ] Keep legacy import/recovery tooling for maintenance. The SQLite outbox
+- [x] Keep legacy import/recovery tooling for maintenance. The SQLite outbox
   remains explicitly separate from the old business store.
-- [ ] Training stays a complete maintainer tool; analyst pages offer actionable
+- [x] Training stays a complete maintainer tool; analyst pages offer actionable
   administrator help for missing models or enrollment.
-- [ ] Packaging excludes privileged settings, historical databases, test accounts,
+- [x] Packaging excludes privileged settings, historical databases, test accounts,
   credentials, and artifacts not intended for analyst distribution.
 
 ### 6D.2 Rewrite installation and operating documentation
 
-- [ ] README/user manual cover Windows, Npcap/capture privileges, dependencies,
+- [x] README/user manual cover Windows, Npcap/capture privileges, dependencies,
   `.env`, online email/password login, enrollment, and monitoring.
-- [ ] Explain session-only, durable pending, and synced records; offline limits,
+- [x] Explain session-only, durable pending, and synced records; offline limits,
   expiry, node health, and score interpretation.
-- [ ] Troubleshooting covers connectivity, membership, missing models, hash/version
+- [x] Troubleshooting covers connectivity, membership, missing models, hash/version
   failures, queue/disk limits, rejected writes, and retention.
-- [ ] Maintainer docs cover migrations, bootstrap, publishing, import, backup,
+- [x] Maintainer docs cover migrations, bootstrap, publishing, import, backup,
   cutover, recovery, and separate credentials. Keep useful environment overrides
   for tests/automation.
 
 ### 6D.3 Verify installation from a clean Windows machine
 
-- [ ] Follow the analyst guide with no database/cache and no training command;
+- [x] Follow the analyst guide with no database/cache and no training command;
   configure, enroll, log in, and monitor.
-- [ ] Editing configuration, node ID, or direct requests cannot obtain another
+- [x] Editing configuration, node ID, or direct requests cannot obtain another
   node's data or create privileged accounts.
-- [ ] Verify restart/login, cache reuse, every source, interrupted connectivity,
+- [x] Verify restart/login, cache reuse, every source, interrupted connectivity,
   score labels, and absence of privileged keys in installed files.
-- [ ] Record hardware/versions/setup problems, repair guide or package, and
+- [x] Record hardware/versions/setup problems, repair guide or package, and
   repeat affected checks.
 
 ### 6D.4 Complete final QA and the Iteration 6 record
 
-- [ ] Run relevant lint, Python, Node, migration, Auth/API/RLS/Storage tests,
+- [x] Run relevant lint, Python, Node, migration, Auth/API/RLS/Storage tests,
   and UI walks at 1366 px and 390 px across every page/source.
-- [ ] Recheck malformed JSON, CSRF, role/node isolation, outages, artifacts,
+- [x] Recheck malformed JSON, CSRF, role/node isolation, outages, artifacts,
   concurrent publication, recovery, and clean-install acceptance.
-- [ ] Negative tests return their specified errors; no unexplained failed
+- [x] Negative tests return their specified errors; no unexplained failed
   requests, console errors, or server tracebacks remain.
-- [ ] Attach feature fidelity, independent evaluation, calibration assessment,
+- [x] Attach feature fidelity, independent evaluation, calibration assessment,
   performance, and recovery evidence. Unmet research gates limit release to the
   documented pilot scope.
-- [ ] Write `docs/migration/06d-release.md` and an Iteration 6 summary linking its
+- [x] Write `docs/migration/06d-release.md` and an Iteration 6 summary linking its
   four stage records before the manual stage commit.
 
 ---

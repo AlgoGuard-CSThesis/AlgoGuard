@@ -79,3 +79,21 @@ def test_live_schema_note_names_missing_and_extra_columns():
     assert "missing service, state" in note
     assert "extra custom_score" in note
     assert "Live Monitor packet capture and cloud publishing will refuse it" in note
+
+
+def test_deploy_run_needs_no_csv_and_rejects_one(capsys):
+    with pytest.raises(SystemExit):
+        train.main(["data.csv", "--deploy-run", "1"])
+    with pytest.raises(SystemExit):
+        train.main([])  # neither a CSV nor --deploy-run
+
+
+def test_deploy_run_deploys_an_already_trained_run(trained_bundle, monkeypatch):
+    """An evaluated run is deployed as it is, without training it again (DEF-19)."""
+    deployed = []
+    monkeypatch.setattr(train, "_deploy_stacking",
+                        lambda run_id, admin_id: deployed.append(run_id) or True)
+    monkeypatch.setattr(train, "create_training_run",
+                        lambda *args: pytest.fail("--deploy-run must not train"))
+    assert train.main(["--deploy-run", str(trained_bundle["run_id"])]) == 0
+    assert deployed == [trained_bundle["run_id"]]

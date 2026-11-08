@@ -1,0 +1,71 @@
+{
+  "feature_schema": "unsw-nb15-flow-window-v2",
+  "features": [
+    "dur",
+    "proto",
+    "service",
+    "state",
+    "spkts",
+    "dpkts",
+    "sbytes",
+    "dbytes",
+    "rate",
+    "sload",
+    "dload",
+    "sinpkt",
+    "dinpkt",
+    "ct_dst_src_ltm",
+    "ct_dst_ltm",
+    "ct_srv_dst"
+  ],
+  "source": "research\\dataset\\raw\\UNSW_NB15_training-set.csv",
+  "source_sha256": "734fe6642edf758f7c94d7d9149426b49d202fe8e7bf0bef47392489c3c0a559",
+  "source_rows": 82332,
+  "seed": 42,
+  "holdout_ids": "research\\dataset\\holdout_ids.csv",
+  "holdout_ids_sha256": "0af17f6146c9218846973ad2e9d259766ab1f19a1e35eaceb26abc2225c8f7c5",
+  "holdout_rows": 15939,
+  "holdout_attack": 6174,
+  "holdout_normal": 9765,
+  "holdout_attack_cat": {
+    "Normal": 9765,
+    "Exploits": 2800,
+    "Fuzzers": 1520,
+    "DoS": 647,
+    "Reconnaissance": 567,
+    "Generic": 252,
+    "Analysis": 131,
+    "Backdoor": 130,
+    "Shellcode": 113,
+    "Worms": 14
+  },
+  "holdout_sha256": "b76c8788eb64b1653a1b32ffff72f989a29b35671f8524939c9666fa3879ce79",
+  "training_rows": 66393,
+  "training_attack": 39158,
+  "training_normal": 27235,
+  "training_sha256": "9ac546dc49cd75e2576d13dc9ff5dd335495dca0c0c8371fefe05032ddee2bf0",
+  "samples": {
+    "algoguard_big.csv": {
+      "rows": 5000,
+      "attack": 3403,
+      "normal": 1597,
+      "sha256": "fb9e96c1e8bea9014dd197bc6af1fb1588149bbcd0b11edd08c944fd8ad8d45b"
+    },
+    "algoguard_bigger.csv": {
+      "rows": 10000,
+      "attack": 6806,
+      "normal": 3194,
+      "sha256": "ed250cf9a4ac213edc669efb8f6cd7a20061235459bad82e19f054c3700b4347"
+    },
+    "algoguard_biggest.csv": {
+      "rows": 20000,
+      "attack": 13612,
+      "normal": 6388,
+      "sha256": "5c20496fce7d7bed93f609b5c650a4c0a9d0b645b93859d590c548307c3f9359"
+    }
+  },
+  "data_files": [
+    "research\\dataset\\processed\\flow_window_v2\\holdout_eval.csv",
+    "research\\dataset\\processed\\flow_window_v2\\training.csv"
+  ]
+}

@@ -1,6 +1,6 @@
 import pytest
 
-from cloud_recovery import RECOVERY_TABLES, ModelObjects, verify_recovery
+from cloud_recovery import FORMAT, PACKAGE_TABLES, RECOVERY_TABLES, ModelObjects, verify_recovery
 from legacy_backup import TransferError, digest, write_json
 
 
@@ -10,7 +10,7 @@ def test_recovery_rejects_damaged_packages(tmp_path, damage):
     records = tmp_path / "records.json"
     write_json(records, rows)
     summary = {
-        "format": 1,
+        "format": FORMAT,
         "files": {"records.json": digest(records)},
         "counts": {table: 0 for table in RECOVERY_TABLES},
         "artifacts": [],
@@ -26,6 +26,22 @@ def test_recovery_rejects_damaged_packages(tmp_path, damage):
         summary["files"] = {}
     else:
         summary["files"]["../outside"] = "0" * 64
+    write_json(tmp_path / "recovery.json", summary)
+    with pytest.raises(TransferError):
+        verify_recovery(tmp_path)
+
+
+def test_a_package_from_before_stage_6b_still_verifies(tmp_path):
+    """Format 1 packages carry no node health or cleanup audit; they stay restorable (6C.3)."""
+    rows = {table: [] for table in PACKAGE_TABLES[1]}
+    assert "public.node_health" not in rows and "private.retention_run" not in rows
+    records = tmp_path / "records.json"
+    write_json(records, rows)
+    summary = {"format": 1, "files": {"records.json": digest(records)},
+               "counts": {table: 0 for table in rows}, "artifacts": [], "outboxes": []}
+    write_json(tmp_path / "recovery.json", summary)
+    assert verify_recovery(tmp_path)[1] == rows
+    summary["format"] = FORMAT  # the current format must carry every table
     write_json(tmp_path / "recovery.json", summary)
     with pytest.raises(TransferError):
         verify_recovery(tmp_path)
@@ -64,7 +80,7 @@ def test_recovery_requires_artifacts_matching_protected_manifests(tmp_path, dama
     if damage == "changed":
         model.write_bytes(b"different bytes")
     summary = {
-        "format": 1,
+        "format": FORMAT,
         "files": {"records.json": digest(records), "model.joblib": digest(model)},
         "counts": {table: len(values) for table, values in rows.items()},
         "outboxes": [],

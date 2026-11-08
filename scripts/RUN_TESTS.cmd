@@ -1,5 +1,5 @@
 @echo off
-rem AlgoGuard test cycle 1 - runs the automated checks on this PC and saves results to test-results\
+rem AlgoGuard test cycles - runs the automated checks on this PC and saves results to test-results\
 rem Double-click to run. Right-click > "Run as administrator" to include the Npcap capture tests.
 cd /d "%~dp0\.."
 title AlgoGuard automated tests
@@ -22,8 +22,11 @@ echo === Automated test suites ===
 python scripts\run_test_suites.py %FLAGS%
 
 echo.
-echo === Detection evaluation of the cloud-deployed model (training run 3) ===
-python scripts\evaluate_model.py --model saved_models\run_3\stacking.joblib --compare-dir saved_models\run_3
+echo === Detection evaluation of the deployed model (training run 10: run 8's rows plus local benign flows) ===
+if not exist research\dataset\processed\flow_window_v2\holdout_eval.csv (
+  python scripts\build_flow_datasets.py --evidence test-results\flow_datasets
+)
+python scripts\evaluate_model.py --model saved_models\run_10\stacking.joblib --compare-dir saved_models\run_10 --data research\dataset\processed\flow_window_v2\holdout_eval.csv --train-csv research\dataset\processed\def19\training_local.csv
 
 echo.
 echo Finished. Results are in the test-results folder. You can close this window.

@@ -1,0 +1,615 @@
+﻿checks	Set up job	﻿2026-10-23T16:21:44.1214115Z Current runner version: '2.338.0'
+checks	Set up job	2026-10-23T16:21:44.1259361Z ##[group]Runner Image Provisioner
+checks	Set up job	2026-10-23T16:21:44.1260155Z Hosted Compute Agent
+checks	Set up job	2026-10-23T16:21:44.1260687Z Version: 20261021.618
+checks	Set up job	2026-10-23T16:21:44.1261241Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+checks	Set up job	2026-10-23T16:21:44.1261908Z Build Date: 2026-10-21T00:45:21Z
+checks	Set up job	2026-10-23T16:21:44.1262524Z Worker ID: {a760f46c-6b7a-44d6-9622-a0af28c6bf8f}
+checks	Set up job	2026-10-23T16:21:44.1263223Z Region: westus
+checks	Set up job	2026-10-23T16:21:44.1263717Z Cloud: Azure
+checks	Set up job	2026-10-23T16:21:44.1264201Z ##[endgroup]
+checks	Set up job	2026-10-23T16:21:44.1265475Z ##[group]Operating System
+checks	Set up job	2026-10-23T16:21:44.1266085Z Microsoft Windows Server 2025
+checks	Set up job	2026-10-23T16:21:44.1266623Z 10.0.26100
+checks	Set up job	2026-10-23T16:21:44.1267102Z Datacenter
+checks	Set up job	2026-10-23T16:21:44.1267564Z ##[endgroup]
+checks	Set up job	2026-10-23T16:21:44.1268040Z ##[group]Runner Image
+checks	Set up job	2026-10-23T16:21:44.1268604Z Image: windows-2025-vs2026
+checks	Set up job	2026-10-23T16:21:44.1269133Z Version: 20261021.278.1
+checks	Set up job	2026-10-23T16:21:44.1270214Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261021.278/images/windows/Windows2025-VS2026-Readme.md
+checks	Set up job	2026-10-23T16:21:44.1272038Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261021.278
+checks	Set up job	2026-10-23T16:21:44.1273015Z ##[endgroup]
+checks	Set up job	2026-10-23T16:21:44.1274003Z ##[group]GITHUB_TOKEN Permissions
+checks	Set up job	2026-10-23T16:21:44.1276277Z Contents: read
+checks	Set up job	2026-10-23T16:21:44.1276819Z Metadata: read
+checks	Set up job	2026-10-23T16:21:44.1277354Z ##[endgroup]
+checks	Set up job	2026-10-23T16:21:44.1279287Z Secret source: Actions
+checks	Set up job	2026-10-23T16:21:44.1280162Z Cache mode: write
+checks	Set up job	2026-10-23T16:21:44.1280806Z Prepare workflow directory
+checks	Set up job	2026-10-23T16:21:44.1636003Z Prepare all required actions
+checks	Set up job	2026-10-23T16:21:44.1695029Z Getting action download info
+checks	Set up job	2026-10-23T16:21:44.5215546Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+checks	Set up job	2026-10-23T16:21:44.6456429Z Download action repository 'actions/setup-python@v5' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+checks	Set up job	2026-10-23T16:21:44.7894537Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+checks	Set up job	2026-10-23T16:21:45.1847197Z Complete job name: checks
+checks	Run actions/checkout@v4	﻿2026-10-23T16:21:45.3384015Z ##[group]Run actions/checkout@v4
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3385501Z with:
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3386318Z   repository: AlgoGuard-CSThesis/AlgoGuard
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3395560Z   token: ***
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3396303Z   ssh-strict: true
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3397020Z   ssh-user: git
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3397759Z   persist-credentials: true
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3398564Z   clean: true
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3399300Z   sparse-checkout-cone-mode: true
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3400412Z   fetch-depth: 1
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3401179Z   fetch-tags: false
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3401911Z   show-progress: true
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3402655Z   lfs: false
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3403347Z   submodules: false
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3404113Z   set-safe-directory: true
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3404971Z   allow-unsafe-pr-checkout: false
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.3406196Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.4871967Z Syncing repository: AlgoGuard-CSThesis/AlgoGuard
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.4875897Z ##[group]Getting Git version info
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.4878625Z Working directory is 'D:\a\AlgoGuard\AlgoGuard'
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.5853528Z [command]"C:\Program Files\Git\bin\git.exe" version
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.8980174Z git version 2.56.0.windows.2
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9028568Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9047181Z Temporarily overriding HOME='D:\a\_temp\ecc640b3-068f-4a73-ac56-94354ecf7157' before making global git config changes
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9057962Z Adding repository directory to the temporary git global config as a safe directory
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9058934Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\AlgoGuard\AlgoGuard
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9690202Z Deleting the contents of 'D:\a\AlgoGuard\AlgoGuard'
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9696366Z ##[group]Initializing the repository
+checks	Run actions/checkout@v4	2026-10-23T16:21:45.9705309Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\AlgoGuard\AlgoGuard
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.0566941Z Initialized empty Git repository in D:/a/AlgoGuard/AlgoGuard/.git/
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.0610620Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/AlgoGuard-CSThesis/AlgoGuard
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.1331384Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.1340971Z ##[group]Disabling automatic garbage collection
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.1341744Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.1708109Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.1719639Z ##[group]Setting up auth
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.1720472Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+checks	Run actions/checkout@v4	2026-10-23T16:21:46.2103476Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+checks	Run actions/checkout@v4	2026-10-23T16:21:47.5957974Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+checks	Run actions/checkout@v4	2026-10-23T16:21:47.6332505Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+checks	Run actions/checkout@v4	2026-10-23T16:21:48.1613924Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+checks	Run actions/checkout@v4	2026-10-23T16:21:48.1984611Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+checks	Run actions/checkout@v4	2026-10-23T16:21:48.7782467Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+checks	Run actions/checkout@v4	2026-10-23T16:21:48.8179860Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:48.8180455Z ##[group]Fetching the repository
+checks	Run actions/checkout@v4	2026-10-23T16:21:48.8198999Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +c775d135fa3d57efb34712ff5a38d96a2c2c8fa2:refs/remotes/origin/main
+checks	Run actions/checkout@v4	2026-10-23T16:21:50.9936129Z From https://github.com/AlgoGuard-CSThesis/AlgoGuard
+checks	Run actions/checkout@v4	2026-10-23T16:21:50.9937573Z  * [new ref]         c775d135fa3d57efb34712ff5a38d96a2c2c8fa2 -> origin/main
+checks	Run actions/checkout@v4	2026-10-23T16:21:50.9975420Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:50.9976044Z ##[group]Determining the checkout info
+checks	Run actions/checkout@v4	2026-10-23T16:21:50.9978329Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:50.9993761Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.0637376Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.1039777Z ##[group]Checking out the ref
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.1049230Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B main refs/remotes/origin/main
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.5334342Z Switched to a new branch 'main'
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.5355809Z branch 'main' set up to track 'origin/main'.
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.5426569Z ##[endgroup]
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.5880847Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+checks	Run actions/checkout@v4	2026-10-23T16:21:51.6210486Z c775d135fa3d57efb34712ff5a38d96a2c2c8fa2
+checks	Run actions/setup-python@v5	﻿2026-10-23T16:21:51.6738719Z ##[group]Run actions/setup-python@v5
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6739095Z with:
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6739289Z   python-version: 3.14.6
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6739535Z   check-latest: false
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6742286Z   token: ***
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6742485Z   update-environment: true
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6742711Z   allow-prereleases: false
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6742959Z   freethreaded: false
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.6743182Z ##[endgroup]
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.8306760Z ##[group]Installed versions
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.8321138Z Version 3.14.6 was not found in the local cache
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.8496468Z (node:7396) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	Run actions/setup-python@v5	2026-10-23T16:21:51.8498221Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	Run actions/setup-python@v5	2026-10-23T16:21:52.6937903Z Version 3.14.6 is available for downloading
+checks	Run actions/setup-python@v5	2026-10-23T16:21:52.6938579Z Download from "https://github.com/actions/python-versions/releases/download/3.14.6-27283001424/python-3.14.6-win32-x64.zip"
+checks	Run actions/setup-python@v5	2026-10-23T16:21:53.1093849Z Extract downloaded archive
+checks	Run actions/setup-python@v5	2026-10-23T16:21:53.2507836Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\python-3.14.6-win32-x64.zip', 'D:\a\_temp\80174762-1324-4f9d-a7ff-f9a3e0f47d1c', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\python-3.14.6-win32-x64.zip' -DestinationPath 'D:\a\_temp\80174762-1324-4f9d-a7ff-f9a3e0f47d1c' -Force } else { throw $_ } } ;"
+checks	Run actions/setup-python@v5	2026-10-23T16:21:53.7201513Z Execute installation script
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.4275655Z Check if Python hostedtoolcache folder exist...
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.4278217Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.4396514Z Check if current Python version is installed...
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.4398026Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.4573810Z Python3.14 (x64) was found in C:\hostedtoolcache\windows\Python...
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.4574415Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.5041611Z Deleting C:\hostedtoolcache\windows\Python\3.14.9\x64...
+checks	Run actions/setup-python@v5	2026-10-23T16:21:56.5042261Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.2781232Z VERBOSE: Performing the operation "Remove File" on target "C:\hostedtoolcache\windows\Python\3.14.9\x64.complete".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.2782252Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.2790870Z Remove registry entries for Python 3.14(x64)...
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.2792833Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6315301Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6316535Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\0596E956BDAF14044B7CB
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6317447Z D0C86C43F7D".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6317632Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6343953Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6345199Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\2235AED0F09B22A448DD2
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6346380Z E74F179F516".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6347333Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6370331Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6373262Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\359690CADF388A34A8C2A
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6374247Z E9B6D40ED08".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6374554Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6397872Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6400073Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\3A14D3200FE99B348854E
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6401091Z 9EC8C09D79E".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6401270Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6423147Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6428195Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\5EED89CF09F8E4841ACE6
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6429151Z DCE089C8F22".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6429331Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6442199Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6443532Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\6326C6E61AA447147B247
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6444369Z B2094F9772A".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6444483Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6464981Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6465988Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\953ECFCFCC998CA41B684
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6466931Z 5A607EA9763".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6467638Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6492113Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6493934Z HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Installer\UserData\S-1-5-18\Products\F357D70FD707B6247AAFD
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6495147Z AEF917119EB".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6495290Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6607668Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6609339Z HKEY_CLASSES_ROOT\Installer\Products\0596E956BDAF14044B7CBD0C86C43F7D".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6609930Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6800245Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6801190Z HKEY_CLASSES_ROOT\Installer\Products\2235AED0F09B22A448DD2E74F179F516".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6801662Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6884314Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6884992Z HKEY_CLASSES_ROOT\Installer\Products\359690CADF388A34A8C2AE9B6D40ED08".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6886146Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6940063Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6940560Z HKEY_CLASSES_ROOT\Installer\Products\3A14D3200FE99B348854E9EC8C09D79E".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.6942017Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7108869Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7110513Z HKEY_CLASSES_ROOT\Installer\Products\5EED89CF09F8E4841ACE6DCE089C8F22".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7110855Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7144686Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7145178Z HKEY_CLASSES_ROOT\Installer\Products\6326C6E61AA447147B247B2094F9772A".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7146522Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7402296Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7403723Z HKEY_CLASSES_ROOT\Installer\Products\953ECFCFCC998CA41B6845A607EA9763".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7404789Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7919653Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7920967Z HKEY_CLASSES_ROOT\Installer\Products\F357D70FD707B6247AAFDAEF917119EB".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.7921502Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8063623Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8065114Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\Miniconda3 py314_26.9.3-0 (Python 3.14.8 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8066044Z 64-bit)".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8066465Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8117614Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8119578Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{023D41A3-9EF0-43B9-8845-9ECEC8907DE9}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8120695Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8190612Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8191281Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{0DEA5322-B90F-4A22-84DD-E2471F975F61}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8191977Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8650103Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8651938Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{659E6950-FADB-4041-B4C7-DBC0684CF3D7}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8653955Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8688277Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8689368Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{6E6C6236-4AA1-4174-B742-B702499F77A2}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8690180Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8821972Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8823368Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{AC096953-83FD-43A8-8A2C-EAB9D604DE80}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8824170Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8978348Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8979787Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{F07D753F-707D-426B-A7FA-ADFE191791BE}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.8981581Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9024316Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9025436Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{FC98DEE5-8F90-484E-A1EC-D6EC80C9F822}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9026528Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9042299Z VERBOSE: Performing the operation "Remove Key" on target "Item: 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9042985Z HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Uninstall\{FCFCE359-99CC-4AC8-B186-546A70AE7936}".
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9044188Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9459628Z Create Python 3.14.6 folder in C:\hostedtoolcache\windows\Python
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9461564Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9502447Z Copy Python binaries to C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9504335Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9662532Z Install Python 3.14.6 in C:\hostedtoolcache\windows\Python...
+checks	Run actions/setup-python@v5	2026-10-23T16:22:05.9664426Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4354271Z Create python3 symlink
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4354920Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4665445Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4667380Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4706209Z Directory: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4706749Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4706759Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4718937Z Mode                 LastWriteTime         Length Name
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4724326Z ----                 -------------         ------ ----
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4736461Z -a---l        10/23/2026   4:22 PM              0 python3.exe
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4744065Z Install and upgrade Pip
+checks	Run actions/setup-python@v5	2026-10-23T16:22:42.4746355Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.6482260Z Collecting pip
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.6842825Z Downloading pip-26.2.2-py3-none-any.whl.metadata (4.6 kB)
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.7114509Z Downloading pip-26.2.2-py3-none-any.whl (1.8 MB)
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.7659992Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.7661120Z ----------------------------------------
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.7661732Z 1.8/1.8 MB 46.9 MB/s
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.7662873Z 0:00:00
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.7664441Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.8000648Z Installing collected packages: pip
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.8002836Z Attempting uninstall: pip
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.8034296Z Found existing installation: pip 26.1.2
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.8815845Z Uninstalling pip-26.1.2:
+checks	Run actions/setup-python@v5	2026-10-23T16:22:43.9021614Z Successfully uninstalled pip-26.1.2
+checks	Run actions/setup-python@v5	2026-10-23T16:22:45.9722502Z Successfully installed pip-26.2.2
+checks	Run actions/setup-python@v5	2026-10-23T16:22:46.0261133Z Create complete file
+checks	Run actions/setup-python@v5	2026-10-23T16:22:46.0261559Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:46.0276478Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:46.0276619Z 
+checks	Run actions/setup-python@v5	2026-10-23T16:22:46.0925028Z Successfully set up CPython (3.14.6)
+checks	Run actions/setup-python@v5	2026-10-23T16:22:46.0926139Z ##[endgroup]
+checks	Run actions/setup-node@v4	﻿2026-10-23T16:22:46.1250393Z ##[group]Run actions/setup-node@v4
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1250744Z with:
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1250926Z   node-version: 22
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1251112Z   cache: npm
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1251293Z   always-auth: false
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1251489Z   check-latest: false
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1254224Z   token: ***
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1254399Z env:
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1254668Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1255125Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1255586Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1255980Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1256368Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.1256683Z ##[endgroup]
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.3078262Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.4\x64
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.3085464Z (node:8836) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.3087112Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	Run actions/setup-node@v4	2026-10-23T16:22:46.3089839Z ##[group]Environment details
+checks	Run actions/setup-node@v4	2026-10-23T16:23:05.1127140Z node: v22.23.4
+checks	Run actions/setup-node@v4	2026-10-23T16:23:05.1127544Z npm: 10.9.9
+checks	Run actions/setup-node@v4	2026-10-23T16:23:05.1128771Z yarn: 1.22.22
+checks	Run actions/setup-node@v4	2026-10-23T16:23:05.1129286Z ##[endgroup]
+checks	Run actions/setup-node@v4	2026-10-23T16:23:05.1962707Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.4\x64\npm.cmd config get cache"
+checks	Run actions/setup-node@v4	2026-10-23T16:23:06.4741463Z C:\npm\cache
+checks	Run actions/setup-node@v4	2026-10-23T16:23:06.9145844Z Cache hit for: node-cache-Windows-x64-npm-768698a862c9e0a8361a99337dc01cc70bf4508d204def6d346afd121a1917a4
+checks	Run actions/setup-node@v4	2026-10-23T16:23:06.9266280Z (node:8836) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+checks	Run actions/setup-node@v4	2026-10-23T16:23:08.1960507Z Received 46137344 of 64981801 (71.0%), 43.9 MBs/sec
+checks	Run actions/setup-node@v4	2026-10-23T16:23:08.3282558Z Received 64981801 of 64981801 (100.0%), 54.4 MBs/sec
+checks	Run actions/setup-node@v4	2026-10-23T16:23:08.3285820Z Cache Size: ~62 MB (64981801 B)
+checks	Run actions/setup-node@v4	2026-10-23T16:23:08.3373962Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/d05fc8cb-6e08-49ad-a47e-8e9b1310898b/cache.tzst -P -C D:/a/AlgoGuard/AlgoGuard --force-local --use-compress-program "zstd -d"
+checks	Run actions/setup-node@v4	2026-10-23T16:23:08.6566391Z Cache restored successfully
+checks	Run actions/setup-node@v4	2026-10-23T16:23:08.6625788Z Cache restored from key: node-cache-Windows-x64-npm-768698a862c9e0a8361a99337dc01cc70bf4508d204def6d346afd121a1917a4
+checks	Install Python dependencies	﻿2026-10-23T16:23:08.6944100Z ##[group]Run python -m venv venv
+checks	Install Python dependencies	2026-10-23T16:23:08.6944521Z ^[[36;1mpython -m venv venv^[[0m
+checks	Install Python dependencies	2026-10-23T16:23:08.6944868Z ^[[36;1m.\venv\Scripts\python.exe -m pip install --upgrade pip^[[0m
+checks	Install Python dependencies	2026-10-23T16:23:08.6945733Z ^[[36;1m.\venv\Scripts\python.exe -m pip install -r requirements-dev.txt^[[0m
+checks	Install Python dependencies	2026-10-23T16:23:08.7081570Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	Install Python dependencies	2026-10-23T16:23:08.7081970Z env:
+checks	Install Python dependencies	2026-10-23T16:23:08.7082271Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Python dependencies	2026-10-23T16:23:08.7082787Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Install Python dependencies	2026-10-23T16:23:08.7083298Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Python dependencies	2026-10-23T16:23:08.7083769Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Python dependencies	2026-10-23T16:23:08.7084508Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Python dependencies	2026-10-23T16:23:08.7084894Z ##[endgroup]
+checks	Install Python dependencies	2026-10-23T16:23:13.8188316Z Requirement already satisfied: pip in .\venv\Lib\site-packages (26.1.2)
+checks	Install Python dependencies	2026-10-23T16:23:13.9300623Z Collecting pip
+checks	Install Python dependencies	2026-10-23T16:23:13.9326830Z   Using cached pip-26.2.2-py3-none-any.whl.metadata (4.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:13.9440191Z Using cached pip-26.2.2-py3-none-any.whl (1.8 MB)
+checks	Install Python dependencies	2026-10-23T16:23:13.9790378Z Installing collected packages: pip
+checks	Install Python dependencies	2026-10-23T16:23:13.9792188Z   Attempting uninstall: pip
+checks	Install Python dependencies	2026-10-23T16:23:13.9823869Z     Found existing installation: pip 26.1.2
+checks	Install Python dependencies	2026-10-23T16:23:14.0523448Z     Uninstalling pip-26.1.2:
+checks	Install Python dependencies	2026-10-23T16:23:14.0710058Z       Successfully uninstalled pip-26.1.2
+checks	Install Python dependencies	2026-10-23T16:23:15.5121492Z Successfully installed pip-26.2.2
+checks	Install Python dependencies	2026-10-23T16:23:16.8922441Z Collecting numpy==2.5.1 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 3))
+checks	Install Python dependencies	2026-10-23T16:23:16.9242105Z   Downloading numpy-2.5.1-cp314-cp314-win_amd64.whl.metadata (6.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.1226103Z Collecting scipy==1.18.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 4))
+checks	Install Python dependencies	2026-10-23T16:23:17.1948465Z   Downloading scipy-1.18.0-cp314-cp314-win_amd64.whl.metadata (61 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.3619747Z Collecting pandas==3.0.3 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 5))
+checks	Install Python dependencies	2026-10-23T16:23:17.3684302Z   Downloading pandas-3.0.3-cp314-cp314-win_amd64.whl.metadata (19 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.5175629Z Collecting scikit-learn==1.9.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 6))
+checks	Install Python dependencies	2026-10-23T16:23:17.5942497Z   Downloading scikit_learn-1.9.0-cp314-cp314-win_amd64.whl.metadata (11 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.6424974Z Collecting joblib==1.5.3 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 7))
+checks	Install Python dependencies	2026-10-23T16:23:17.6473712Z   Downloading joblib-1.5.3-py3-none-any.whl.metadata (5.5 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.6860579Z Collecting threadpoolctl==3.6.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 8))
+checks	Install Python dependencies	2026-10-23T16:23:17.6896607Z   Downloading threadpoolctl-3.6.0-py3-none-any.whl.metadata (13 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.7266979Z Collecting python-dateutil==2.9.0.post0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 9))
+checks	Install Python dependencies	2026-10-23T16:23:17.7305807Z   Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.7672860Z Collecting tzdata==2026.2 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 10))
+checks	Install Python dependencies	2026-10-23T16:23:17.7709135Z   Downloading tzdata-2026.2-py2.py3-none-any.whl.metadata (1.4 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.8067356Z Collecting six==1.17.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 11))
+checks	Install Python dependencies	2026-10-23T16:23:17.8103373Z   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.8523613Z Collecting Flask>=3.0.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:17.8572680Z   Downloading flask-3.1.3-py3-none-any.whl.metadata (3.2 kB)
+checks	Install Python dependencies	2026-10-23T16:23:17.9607619Z Collecting psutil>=5.9.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 7))
+checks	Install Python dependencies	2026-10-23T16:23:17.9665546Z   Downloading psutil-7.2.2-cp37-abi3-win_amd64.whl.metadata (22 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.0112331Z Collecting scapy>=2.5.0 (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 8))
+checks	Install Python dependencies	2026-10-23T16:23:18.0150569Z   Downloading scapy-2.8.0-py3-none-any.whl.metadata (5.8 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.0555507Z Collecting python-dotenv (from -r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 9))
+checks	Install Python dependencies	2026-10-23T16:23:18.0598669Z   Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.1030209Z Collecting PyJWT>=2.8.0 (from PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	Install Python dependencies	2026-10-23T16:23:18.1067172Z   Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.1816827Z Collecting pytest>=8.0.0 (from -r requirements-dev.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:18.1858255Z   Downloading pytest-9.1.1-py3-none-any.whl.metadata (7.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.5763538Z Collecting ruff>=0.5.0 (from -r requirements-dev.txt (line 3))
+checks	Install Python dependencies	2026-10-23T16:23:18.5808299Z   Downloading ruff-0.17.2-py3-none-win_amd64.whl.metadata (21 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.6578470Z Collecting narwhals>=2.0.1 (from scikit-learn==1.9.0->-r D:\a\AlgoGuard\AlgoGuard\requirements-model.lock (line 6))
+checks	Install Python dependencies	2026-10-23T16:23:18.6622953Z   Downloading narwhals-2.27.1-py3-none-any.whl.metadata (15 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.7287388Z Collecting blinker>=1.9.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:18.7329475Z   Downloading blinker-1.9.0-py3-none-any.whl.metadata (1.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.7793145Z Collecting click>=8.1.3 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:18.7833030Z   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.8212309Z Collecting itsdangerous>=2.2.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:18.8253512Z   Downloading itsdangerous-2.2.0-py3-none-any.whl.metadata (1.9 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.8734251Z Collecting jinja2>=3.1.2 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:18.8780016Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+checks	Install Python dependencies	2026-10-23T16:23:18.9682058Z Collecting markupsafe>=2.1.1 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:18.9730255Z   Downloading markupsafe-3.0.4-cp314-cp314-win_amd64.whl.metadata (2.8 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.0249213Z Collecting werkzeug>=3.1.0 (from Flask>=3.0.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:19.0288387Z   Downloading werkzeug-3.1.9-py3-none-any.whl.metadata (4.1 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.0707796Z Collecting colorama>=0.4 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:19.0753196Z   Downloading colorama-0.4.6-py2.py3-none-any.whl.metadata (17 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.1224396Z Collecting iniconfig>=1.0.1 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:19.1264192Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.1728258Z Collecting packaging>=22 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:19.1771822Z   Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.2140670Z Collecting pluggy<2,>=1.5 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:19.2183972Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.2704024Z Collecting pygments>=2.7.2 (from pytest>=8.0.0->-r requirements-dev.txt (line 2))
+checks	Install Python dependencies	2026-10-23T16:23:19.2774117Z   Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.5379260Z Collecting cryptography>=3.4.0 (from PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	Install Python dependencies	2026-10-23T16:23:19.5445967Z   Downloading cryptography-50.0.2-cp311-abi3-win_amd64.whl.metadata (4.4 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.6830501Z Collecting cffi>=2.0.0 (from cryptography>=3.4.0->PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	Install Python dependencies	2026-10-23T16:23:19.6887589Z   Downloading cffi-2.1.1-cp314-cp314-win_amd64.whl.metadata (2.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.7328648Z Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]>=2.8.0->-r D:\a\AlgoGuard\AlgoGuard\requirements.txt (line 15))
+checks	Install Python dependencies	2026-10-23T16:23:19.7369592Z   Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+checks	Install Python dependencies	2026-10-23T16:23:19.7721566Z Downloading numpy-2.5.1-cp314-cp314-win_amd64.whl (12.6 MB)
+checks	Install Python dependencies	2026-10-23T16:23:19.9498629Z    ---------------------------------------- 12.6/12.6 MB 70.7 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:19.9560044Z Downloading scipy-1.18.0-cp314-cp314-win_amd64.whl (37.3 MB)
+checks	Install Python dependencies	2026-10-23T16:23:20.6467942Z    ---------------------------------------- 37.3/37.3 MB 53.9 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:20.6564320Z Downloading pandas-3.0.3-cp314-cp314-win_amd64.whl (9.9 MB)
+checks	Install Python dependencies	2026-10-23T16:23:20.7765146Z    ---------------------------------------- 9.9/9.9 MB 82.3 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:20.7826974Z Downloading scikit_learn-1.9.0-cp314-cp314-win_amd64.whl (8.3 MB)
+checks	Install Python dependencies	2026-10-23T16:23:20.9038663Z    ---------------------------------------- 8.3/8.3 MB 68.5 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:20.9091763Z Downloading joblib-1.5.3-py3-none-any.whl (309 kB)
+checks	Install Python dependencies	2026-10-23T16:23:20.9306141Z Downloading threadpoolctl-3.6.0-py3-none-any.whl (18 kB)
+checks	Install Python dependencies	2026-10-23T16:23:20.9500643Z Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+checks	Install Python dependencies	2026-10-23T16:23:20.9693008Z Downloading tzdata-2026.2-py2.py3-none-any.whl (349 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.0048257Z Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.0214375Z Downloading flask-3.1.3-py3-none-any.whl (103 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.0406811Z Downloading psutil-7.2.2-cp37-abi3-win_amd64.whl (137 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.0675249Z Downloading scapy-2.8.0-py3-none-any.whl (2.8 MB)
+checks	Install Python dependencies	2026-10-23T16:23:21.1261007Z    ---------------------------------------- 2.8/2.8 MB 45.0 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:21.1299838Z Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.1495597Z Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.1681368Z Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.5614948Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.5798362Z Downloading ruff-0.17.2-py3-none-win_amd64.whl (10.3 MB)
+checks	Install Python dependencies	2026-10-23T16:23:21.6735767Z    ---------------------------------------- 10.3/10.3 MB 110.5 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:21.6796924Z Downloading blinker-1.9.0-py3-none-any.whl (8.5 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.7071336Z Downloading click-8.5.0-py3-none-any.whl (125 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.7240866Z Downloading colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.7403926Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.7694332Z Downloading itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.7863184Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.8069526Z Downloading markupsafe-3.0.4-cp314-cp314-win_amd64.whl (14 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.8254025Z Downloading narwhals-2.27.1-py3-none-any.whl (483 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.8479401Z Downloading packaging-26.3-py3-none-any.whl (129 kB)
+checks	Install Python dependencies	2026-10-23T16:23:21.8720272Z Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+checks	Install Python dependencies	2026-10-23T16:23:21.8996869Z    ---------------------------------------- 1.3/1.3 MB 40.2 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:21.9052488Z Downloading cryptography-50.0.2-cp311-abi3-win_amd64.whl (3.8 MB)
+checks	Install Python dependencies	2026-10-23T16:23:22.4248034Z    ---------------------------------------- 3.8/3.8 MB 6.9 MB/s  0:00:00
+checks	Install Python dependencies	2026-10-23T16:23:22.4315261Z Downloading cffi-2.1.1-cp314-cp314-win_amd64.whl (187 kB)
+checks	Install Python dependencies	2026-10-23T16:23:22.4510502Z Downloading werkzeug-3.1.9-py3-none-any.whl (228 kB)
+checks	Install Python dependencies	2026-10-23T16:23:22.4709129Z Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+checks	Install Python dependencies	2026-10-23T16:23:22.8434806Z Installing collected packages: tzdata, threadpoolctl, six, scapy, ruff, python-dotenv, PyJWT, pygments, pycparser, psutil, pluggy, packaging, numpy, narwhals, markupsafe, joblib, itsdangerous, iniconfig, colorama, click, blinker, werkzeug, scipy, python-dateutil, pytest, jinja2, cffi, scikit-learn, pandas, Flask, cryptography
+checks	Install Python dependencies	2026-10-23T16:23:46.4933882Z 
+checks	Install Python dependencies	2026-10-23T16:23:46.4972374Z Successfully installed Flask-3.1.3 PyJWT-2.15.1 blinker-1.9.0 cffi-2.1.1 click-8.5.0 colorama-0.4.6 cryptography-50.0.2 iniconfig-2.3.1 itsdangerous-2.2.0 jinja2-3.1.6 joblib-1.5.3 markupsafe-3.0.4 narwhals-2.27.1 numpy-2.5.1 packaging-26.3 pandas-3.0.3 pluggy-1.7.0 psutil-7.2.2 pycparser-3.12 pygments-2.21.0 pytest-9.1.1 python-dateutil-2.9.0.post0 python-dotenv-1.2.4 ruff-0.17.2 scapy-2.8.0 scikit-learn-1.9.0 scipy-1.18.0 six-1.17.0 threadpoolctl-3.6.0 tzdata-2026.2 werkzeug-3.1.9
+checks	Install Node dependencies	﻿2026-10-23T16:23:46.7805283Z ##[group]Run npm ci
+checks	Install Node dependencies	2026-10-23T16:23:46.7805603Z ^[[36;1mnpm ci^[[0m
+checks	Install Node dependencies	2026-10-23T16:23:46.7877213Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	Install Node dependencies	2026-10-23T16:23:46.7877606Z env:
+checks	Install Node dependencies	2026-10-23T16:23:46.7877882Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Node dependencies	2026-10-23T16:23:46.7878353Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Install Node dependencies	2026-10-23T16:23:46.7878820Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Node dependencies	2026-10-23T16:23:46.7879235Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Node dependencies	2026-10-23T16:23:46.7879670Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Install Node dependencies	2026-10-23T16:23:46.7880004Z ##[endgroup]
+checks	Install Node dependencies	2026-10-23T16:24:02.7510938Z 
+checks	Install Node dependencies	2026-10-23T16:24:02.7511657Z added 20 packages, and audited 21 packages in 15s
+checks	Install Node dependencies	2026-10-23T16:24:02.7512208Z 
+checks	Install Node dependencies	2026-10-23T16:24:02.7512509Z 5 packages are looking for funding
+checks	Install Node dependencies	2026-10-23T16:24:02.7512958Z   run `npm fund` for details
+checks	Install Node dependencies	2026-10-23T16:24:02.7523960Z 
+checks	Install Node dependencies	2026-10-23T16:24:02.7524533Z found 0 vulnerabilities
+checks	Lint	﻿2026-10-23T16:24:10.5655103Z ##[group]Run .\venv\Scripts\python.exe -m ruff check .
+checks	Lint	2026-10-23T16:24:10.5655578Z ^[[36;1m.\venv\Scripts\python.exe -m ruff check .^[[0m
+checks	Lint	2026-10-23T16:24:10.5726869Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	Lint	2026-10-23T16:24:10.5727230Z env:
+checks	Lint	2026-10-23T16:24:10.5727488Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Lint	2026-10-23T16:24:10.5727938Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Lint	2026-10-23T16:24:10.5728379Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Lint	2026-10-23T16:24:10.5728765Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Lint	2026-10-23T16:24:10.5729154Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Lint	2026-10-23T16:24:10.5729463Z ##[endgroup]
+checks	Lint	2026-10-23T16:24:10.9775842Z All checks passed!
+checks	Type check	﻿2026-10-23T16:24:11.1178793Z ##[group]Run npm run typecheck
+checks	Type check	2026-10-23T16:24:11.1179172Z ^[[36;1mnpm run typecheck^[[0m
+checks	Type check	2026-10-23T16:24:11.1267422Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	Type check	2026-10-23T16:24:11.1267789Z env:
+checks	Type check	2026-10-23T16:24:11.1268061Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Type check	2026-10-23T16:24:11.1268507Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Type check	2026-10-23T16:24:11.1268953Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Type check	2026-10-23T16:24:11.1269357Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Type check	2026-10-23T16:24:11.1269749Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Type check	2026-10-23T16:24:11.1270062Z ##[endgroup]
+checks	Type check	2026-10-23T16:24:11.9140510Z 
+checks	Type check	2026-10-23T16:24:11.9141315Z > typecheck
+checks	Type check	2026-10-23T16:24:11.9141778Z > pyright
+checks	Type check	2026-10-23T16:24:11.9142046Z 
+checks	Type check	2026-10-23T16:24:25.4001129Z d:\a\AlgoGuard\AlgoGuard\bootstrap_admin.py
+checks	Type check	2026-10-23T16:24:25.4008155Z   d:\a\AlgoGuard\AlgoGuard\bootstrap_admin.py:134:12 - warning: Import "requests" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4009190Z d:\a\AlgoGuard\AlgoGuard\check_db_connection.py
+checks	Type check	2026-10-23T16:24:25.4010439Z   d:\a\AlgoGuard\AlgoGuard\check_db_connection.py:26:16 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4011418Z d:\a\AlgoGuard\AlgoGuard\cloud_migrate.py
+checks	Type check	2026-10-23T16:24:25.4012090Z   d:\a\AlgoGuard\AlgoGuard\cloud_migrate.py:278:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4013608Z d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py
+checks	Type check	2026-10-23T16:24:25.4015299Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:53:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4017200Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:53:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4019168Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:238:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4021006Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:238:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4023073Z   d:\a\AlgoGuard\AlgoGuard\cloud_recovery.py:239:10 - warning: Import "psycopg2.extras" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4024696Z d:\a\AlgoGuard\AlgoGuard\legacy_import.py
+checks	Type check	2026-10-23T16:24:25.4025944Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:45:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4027828Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:45:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4029617Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:95:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4031814Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:95:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4033699Z   d:\a\AlgoGuard\AlgoGuard\legacy_import.py:96:10 - warning: Import "psycopg2.extras" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4034892Z d:\a\AlgoGuard\AlgoGuard\maintainer_env.py
+checks	Type check	2026-10-23T16:24:25.4036067Z   d:\a\AlgoGuard\AlgoGuard\maintainer_env.py:97:14 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4037916Z   d:\a\AlgoGuard\AlgoGuard\maintainer_env.py:98:14 - warning: Import "psycopg2.extensions" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4039176Z d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py
+checks	Type check	2026-10-23T16:24:25.4040365Z   d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py:188:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4045975Z   d:\a\AlgoGuard\AlgoGuard\maintenance_connections.py:189:10 - warning: Import "psycopg2.extensions" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4047220Z d:\a\AlgoGuard\AlgoGuard\measure_latency.py
+checks	Type check	2026-10-23T16:24:25.4048332Z   d:\a\AlgoGuard\AlgoGuard\measure_latency.py:29:16 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4049396Z d:\a\AlgoGuard\AlgoGuard\publish_model.py
+checks	Type check	2026-10-23T16:24:25.4050878Z   d:\a\AlgoGuard\AlgoGuard\publish_model.py:145:12 - warning: Import "requests" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4052087Z d:\a\AlgoGuard\AlgoGuard\tests\integration\cloud_fixtures.py
+checks	Type check	2026-10-23T16:24:25.4053394Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\cloud_fixtures.py:11:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4054744Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_cloud_app_stack.py
+checks	Type check	2026-10-23T16:24:25.4056111Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_cloud_app_stack.py:34:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4057473Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py
+checks	Type check	2026-10-23T16:24:25.4058843Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:35:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4060783Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:35:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4062732Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:257:10 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4064699Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_legacy_transfer.py:257:26 - warning: Import "psycopg2.sql" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4066114Z d:\a\AlgoGuard\AlgoGuard\tests\integration\test_model_publication.py
+checks	Type check	2026-10-23T16:24:25.4067528Z   d:\a\AlgoGuard\AlgoGuard\tests\integration\test_model_publication.py:76:12 - warning: Import "psycopg2" could not be resolved from source (reportMissingModuleSource)
+checks	Type check	2026-10-23T16:24:25.4068739Z 0 errors, 26 warnings, 0 informations
+checks	Unit tests	﻿2026-10-23T16:24:25.5254303Z ##[group]Run .\venv\Scripts\python.exe -m pytest -q
+checks	Unit tests	2026-10-23T16:24:25.5254782Z ^[[36;1m.\venv\Scripts\python.exe -m pytest -q^[[0m
+checks	Unit tests	2026-10-23T16:24:25.5324957Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	Unit tests	2026-10-23T16:24:25.5325313Z env:
+checks	Unit tests	2026-10-23T16:24:25.5325577Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Unit tests	2026-10-23T16:24:25.5326026Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Unit tests	2026-10-23T16:24:25.5326495Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Unit tests	2026-10-23T16:24:25.5326895Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Unit tests	2026-10-23T16:24:25.5327312Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Unit tests	2026-10-23T16:24:25.5327630Z ##[endgroup]
+checks	Unit tests	2026-10-23T16:25:13.3817396Z ........................................................................ [ 12%]
+checks	Unit tests	2026-10-23T16:26:19.1485978Z ........................................................................ [ 24%]
+checks	Unit tests	2026-10-23T16:26:24.2034110Z ........................................................................ [ 37%]
+checks	Unit tests	2026-10-23T16:26:50.8058333Z .............................................ssssssssssssssss........... [ 49%]
+checks	Unit tests	2026-10-23T16:26:56.6608829Z ........................................................................ [ 62%]
+checks	Unit tests	2026-10-23T16:26:56.7593410Z ........................................................................ [ 74%]
+checks	Unit tests	2026-10-23T16:27:10.1812565Z ........................................................................ [ 87%]
+checks	Unit tests	2026-10-23T16:27:52.3046031Z ........................................................................ [ 99%]
+checks	Unit tests	2026-10-23T16:27:52.7301221Z .                                                                        [100%]
+checks	Unit tests	2026-10-23T16:27:52.7302177Z 561 passed, 21 skipped, 34 deselected in 205.81s (0:03:25)
+checks	Browser polling tests	﻿2026-10-23T16:27:53.3317265Z ##[group]Run node --test tests/monitor_poll.test.cjs
+checks	Browser polling tests	2026-10-23T16:27:53.3317794Z ^[[36;1mnode --test tests/monitor_poll.test.cjs^[[0m
+checks	Browser polling tests	2026-10-23T16:27:53.3396404Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+checks	Browser polling tests	2026-10-23T16:27:53.3396856Z env:
+checks	Browser polling tests	2026-10-23T16:27:53.3397230Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Browser polling tests	2026-10-23T16:27:53.3397718Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.14.6\x64/lib/pkgconfig
+checks	Browser polling tests	2026-10-23T16:27:53.3398229Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Browser polling tests	2026-10-23T16:27:53.3398722Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Browser polling tests	2026-10-23T16:27:53.3399264Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.14.6\x64
+checks	Browser polling tests	2026-10-23T16:27:53.3399683Z ##[endgroup]
+checks	Browser polling tests	2026-10-23T16:27:53.6843501Z TAP version 13
+checks	Browser polling tests	2026-10-23T16:27:53.7498001Z # Subtest: a session restart clears old rows and resumes from the new event cursor
+checks	Browser polling tests	2026-10-23T16:27:53.7506499Z ok 1 - a session restart clears old rows and resumes from the new event cursor
+checks	Browser polling tests	2026-10-23T16:27:53.7509396Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7509897Z   duration_ms: 4.7316
+checks	Browser polling tests	2026-10-23T16:27:53.7510417Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7510873Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7514032Z # Subtest: a new session with no events resets the cursor immediately
+checks	Browser polling tests	2026-10-23T16:27:53.7517236Z ok 2 - a new session with no events resets the cursor immediately
+checks	Browser polling tests	2026-10-23T16:27:53.7518126Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7518872Z   duration_ms: 1.1386
+checks	Browser polling tests	2026-10-23T16:27:53.7519412Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7519826Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7521476Z # Subtest: a stopped session keeps polling so another tab can start a new session
+checks	Browser polling tests	2026-10-23T16:27:53.7525668Z ok 3 - a stopped session keeps polling so another tab can start a new session
+checks	Browser polling tests	2026-10-23T16:27:53.7526414Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7526814Z   duration_ms: 1.1665
+checks	Browser polling tests	2026-10-23T16:27:53.7527339Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7527775Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7528847Z # Subtest: a delayed status response cannot undo a successful control action
+checks	Browser polling tests	2026-10-23T16:27:53.7531548Z ok 4 - a delayed status response cannot undo a successful control action
+checks	Browser polling tests	2026-10-23T16:27:53.7532359Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7532785Z   duration_ms: 1.326
+checks	Browser polling tests	2026-10-23T16:27:53.7533097Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7533368Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7616161Z # Subtest: a rejected control action preserves the current feed
+checks	Browser polling tests	2026-10-23T16:27:53.7617837Z ok 5 - a rejected control action preserves the current feed
+checks	Browser polling tests	2026-10-23T16:27:53.7618888Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7619517Z   duration_ms: 7.6509
+checks	Browser polling tests	2026-10-23T16:27:53.7620132Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7620813Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7621726Z # Subtest: polling recovers automatically from a temporary network failure
+checks	Browser polling tests	2026-10-23T16:27:53.7623047Z ok 6 - polling recovers automatically from a temporary network failure
+checks	Browser polling tests	2026-10-23T16:27:53.7624002Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7624584Z   duration_ms: 1.8027
+checks	Browser polling tests	2026-10-23T16:27:53.7625254Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7625774Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7626533Z # Subtest: polling recovers automatically from a temporary server failure
+checks	Browser polling tests	2026-10-23T16:27:53.7627622Z ok 7 - polling recovers automatically from a temporary server failure
+checks	Browser polling tests	2026-10-23T16:27:53.7628340Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7628785Z   duration_ms: 1.8917
+checks	Browser polling tests	2026-10-23T16:27:53.7629261Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7629642Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7630400Z # Subtest: an expired login stops polling and keeps the login message visible
+checks	Browser polling tests	2026-10-23T16:27:53.7631570Z ok 8 - an expired login stops polling and keeps the login message visible
+checks	Browser polling tests	2026-10-23T16:27:53.7632297Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7633895Z   duration_ms: 1.2123
+checks	Browser polling tests	2026-10-23T16:27:53.7634769Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7635219Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7648481Z # Subtest: a stalled status request times out and allows the next scheduled poll
+checks	Browser polling tests	2026-10-23T16:27:53.7654188Z ok 9 - a stalled status request times out and allows the next scheduled poll
+checks	Browser polling tests	2026-10-23T16:27:53.7654973Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7658784Z   duration_ms: 5.8579
+checks	Browser polling tests	2026-10-23T16:27:53.7659205Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7659646Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7684057Z # Subtest: a stalled control request releases the controls and checks status without repeating POST
+checks	Browser polling tests	2026-10-23T16:27:53.7686878Z ok 10 - a stalled control request releases the controls and checks status without repeating POST
+checks	Browser polling tests	2026-10-23T16:27:53.7688424Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7688834Z   duration_ms: 3.9201
+checks	Browser polling tests	2026-10-23T16:27:53.7689300Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7689928Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7692438Z # Subtest: cloud mode updates the saved state of rows already in the feed
+checks	Browser polling tests	2026-10-23T16:27:53.7695492Z ok 11 - cloud mode updates the saved state of rows already in the feed
+checks	Browser polling tests	2026-10-23T16:27:53.7696369Z   ---
+checks	Browser polling tests	2026-10-23T16:27:53.7696791Z   duration_ms: 1.3925
+checks	Browser polling tests	2026-10-23T16:27:53.7697405Z   type: 'test'
+checks	Browser polling tests	2026-10-23T16:27:53.7697756Z   ...
+checks	Browser polling tests	2026-10-23T16:27:53.7847517Z 1..11
+checks	Browser polling tests	2026-10-23T16:27:53.7848045Z # tests 11
+checks	Browser polling tests	2026-10-23T16:27:53.7848907Z # suites 0
+checks	Browser polling tests	2026-10-23T16:27:53.7850620Z # pass 11
+checks	Browser polling tests	2026-10-23T16:27:53.7851337Z # fail 0
+checks	Browser polling tests	2026-10-23T16:27:53.7852619Z # cancelled 0
+checks	Browser polling tests	2026-10-23T16:27:53.7853988Z # skipped 0
+checks	Browser polling tests	2026-10-23T16:27:53.7855091Z # todo 0
+checks	Browser polling tests	2026-10-23T16:27:53.7856196Z # duration_ms 119.0941
+checks	Post Run actions/setup-node@v4	﻿2026-10-23T16:27:53.9369355Z Post job cleanup.
+checks	Post Run actions/setup-node@v4	2026-10-23T16:27:54.0853098Z (node:5036) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	Post Run actions/setup-node@v4	2026-10-23T16:27:54.0854775Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	Post Run actions/setup-node@v4	2026-10-23T16:27:54.0859125Z Cache hit occurred on the primary key node-cache-Windows-x64-npm-768698a862c9e0a8361a99337dc01cc70bf4508d204def6d346afd121a1917a4, not saving cache.
+checks	Post Run actions/setup-python@v5	﻿2026-10-23T16:27:54.1146239Z Post job cleanup.
+checks	Post Run actions/setup-python@v5	2026-10-23T16:27:54.2646761Z (node:8436) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+checks	Post Run actions/setup-python@v5	2026-10-23T16:27:54.2647922Z (Use `node --trace-deprecation ...` to show where the warning was created)
+checks	Post Run actions/checkout@v4	﻿2026-10-23T16:27:54.2970133Z Post job cleanup.
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.4940108Z [command]"C:\Program Files\Git\bin\git.exe" version
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.5299735Z git version 2.56.0.windows.2
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.5368430Z Temporarily overriding HOME='D:\a\_temp\c8f13025-ec7a-4592-9491-ea9d3596b8cc' before making global git config changes
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.5370047Z Adding repository directory to the temporary git global config as a safe directory
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.5380717Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\AlgoGuard\AlgoGuard
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.5764837Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:54.6139336Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:55.1705562Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:55.2046344Z http.https://github.com/.extraheader
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:55.2090930Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:55.2452875Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:55.7901915Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+checks	Post Run actions/checkout@v4	2026-10-23T16:27:55.8396079Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+checks	Complete job	﻿2026-10-23T16:27:56.3939835Z Cleaning up orphan processes
+checks	Complete job	2026-10-23T16:27:56.4607938Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4, actions/setup-python@v5. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

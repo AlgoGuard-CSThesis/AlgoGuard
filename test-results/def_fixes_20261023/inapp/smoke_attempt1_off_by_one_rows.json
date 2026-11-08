@@ -1,0 +1,90 @@
+{
+  "tc01_normal_row_1004": {
+    "verdict": "ATTACK",
+    "confidence": "99.46%",
+    "panel": "PREDICTION |  | Detection Result | Stacking Ensemble | ATTACK | 99.46% | Model confidence | Model | Stacking Ensemble | Deployment | #2 | Latency | 2400.907 ms | Event | cdc9e069-8811-4251-9141-cfe03d8d9705 | Saved | Saved on this computer - pending upload | Prediction | Assigned after upload | Alert | Created when the record uploads |  | Records are committed in the cloud only after upload. Queued records stay on this computer if the connection drops."
+  },
+  "tc02_attack_row_4149": {
+    "verdict": "NORMAL",
+    "confidence": "96.46%",
+    "panel": "PREDICTION |  | Detection Result | Stacking Ensemble | NORMAL | 96.46% | Model confidence | Model | Stacking Ensemble | Deployment | #2 | Latency | 275.803 ms | Event | 534ec4da-159d-4a9e-9a52-54e6b3f2f07f | Saved | Saved on this computer - pending upload | Prediction | Assigned after upload | Alert | Not created |  | Records are committed in the cloud only after upload. Queued records stay on this computer if the connection drops."
+  },
+  "replay": {
+    "started": "2026-10-23 15:40:56",
+    "stopped": "2026-10-23 15:43:05",
+    "events_seen": 198,
+    "screen": {
+      "statFlows": "199",
+      "statAttacks": "143",
+      "statNormals": "56",
+      "statAlerts": "143",
+      "statLatency": "Average latency 220.923 ms",
+      "statDeployment": "#2 (pinned for this capture)",
+      "statPersisted": "143",
+      "statSynced": "143",
+      "statPending": "0",
+      "statDropped": "0",
+      "statUpload": "active",
+      "statLag": "N/A",
+      "statCapture": "0",
+      "monitorMessage": ""
+    },
+    "final": {
+      "attack_ratio": 71.86,
+      "authorization_ends_at": 1792744686,
+      "avg_detection_lag_ms": 0,
+      "avg_latency_ms": 220.923,
+      "capped": false,
+      "capture": null,
+      "capture_id": 42,
+      "cloud": true,
+      "dataset": "algoguard_big.csv",
+      "dataset_label": "Sample traffic - 5,000 flows",
+      "deployment": {
+        "deployment_id": 2,
+        "manifest_id": 2,
+        "model_id": 2,
+        "model_name": "Stacking Ensemble",
+        "object_sha256": "1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29",
+        "run_id": 2
+      },
+      "error_message": null,
+      "order": "sequential",
+      "persist": "attacks",
+      "row_total": 5000,
+      "session_id": "54a7719d-abe9-4ece-a50c-ea04e9629123",
+      "source_name": null,
+      "source_type": "csv",
+      "speed": "fast",
+      "started_at": "2026-10-23 07:40:56",
+      "state": "stopped",
+      "stopped_at": "2026-10-23T07:42:56.879+00:00",
+      "storage_stopped": false,
+      "synchronization": {
+        "dropped": 0,
+        "in_memory": 0,
+        "pending": 0,
+        "rejected": 0,
+        "reserved": 143,
+        "storage_stopped": false,
+        "synced": 143
+      },
+      "totals": {
+        "alerts": 143,
+        "attacks": 143,
+        "flows": 199,
+        "labelled": 199,
+        "mismatches": 1,
+        "normals": 56,
+        "persisted": 143,
+        "queued": 143
+      },
+      "upload": {
+        "last_success_age_seconds": 1.3,
+        "reason": null,
+        "retry_in_seconds": null,
+        "state": "active"
+      }
+    }
+  }
+}

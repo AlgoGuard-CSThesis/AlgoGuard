@@ -1,0 +1,14 @@
+{
+  "applied": "2026-10-24 00:22",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "DEF-11",
+      "action": "edit title/body from defects.md"
+    },
+    {
+      "card": "DEF-11",
+      "action": "status Review -> Done"
+    }
+  ]
+}

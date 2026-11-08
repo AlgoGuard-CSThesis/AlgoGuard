@@ -1,0 +1,32 @@
+﻿{
+  "clock_offset_s_database_minus_pc": -0.01,
+  "round_trip_s": 0.102,
+  "captures": {
+    "50": {
+      "events": 208,
+      "unique_events": 208,
+      "upload_delay_s": {
+        "p50": 0.804709,
+        "p95": 1.42760665,
+        "max": 1.582824
+      },
+      "first_event_time_utc": "2026-10-23T21:07:40.022000+00:00",
+      "last_event_time_utc": "2026-10-23T21:09:38.968000+00:00",
+      "received_span_s": 119.014,
+      "acknowledged_events_per_s": 1.75
+    },
+    "51": {
+      "events": 180,
+      "unique_events": 180,
+      "upload_delay_s": {
+        "p50": 0.909703,
+        "p95": 1.549645,
+        "max": 1.642938
+      },
+      "first_event_time_utc": "2026-10-23T21:10:00.030000+00:00",
+      "last_event_time_utc": "2026-10-23T21:11:28.375000+00:00",
+      "received_span_s": 87.61,
+      "acknowledged_events_per_s": 2.05
+    }
+  }
+}

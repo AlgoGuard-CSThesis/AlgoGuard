@@ -1,0 +1,45 @@
+﻿{
+  "clock_offset_s_database_minus_pc": 0.081,
+  "round_trip_s": 0.094,
+  "captures": {
+    "42": {
+      "events": 143,
+      "unique_events": 143,
+      "upload_delay_s": {
+        "p50": 1.300254,
+        "p95": 1.9603433,
+        "max": 2.367033
+      },
+      "first_event_time_utc": "2026-10-23T07:40:58.577000+00:00",
+      "last_event_time_utc": "2026-10-23T07:42:56.567000+00:00",
+      "received_span_s": 119.254,
+      "acknowledged_events_per_s": 1.2
+    },
+    "43": {
+      "events": 136,
+      "unique_events": 136,
+      "upload_delay_s": {
+        "p50": 1.1943025,
+        "p95": 1.8009705,
+        "max": 2.509642
+      },
+      "first_event_time_utc": "2026-10-23T07:44:15.506000+00:00",
+      "last_event_time_utc": "2026-10-23T07:46:12.310000+00:00",
+      "received_span_s": 116.436,
+      "acknowledged_events_per_s": 1.17
+    },
+    "44": {
+      "events": 153,
+      "unique_events": 153,
+      "upload_delay_s": {
+        "p50": 1.174311,
+        "p95": 1.865776,
+        "max": 2.122957
+      },
+      "first_event_time_utc": "2026-10-23T07:46:41.833000+00:00",
+      "last_event_time_utc": "2026-10-23T07:48:06.565000+00:00",
+      "received_span_s": 84.408,
+      "acknowledged_events_per_s": 1.81
+    }
+  }
+}

@@ -1,0 +1,6 @@
+﻿Publication of the retrained model (training run 8, local model 48, saved_models/run_8/stacking.joblib,
+SHA-256 1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29) to the hosted pilot.
+Command, run by the Lead Architect on PC A at about 2026-10-23 15:40 (auto mode does not let the test agent publish):
+  venv\Scripts\python.exe publish_model.py --model-id 48 --publication-id 747f994d-1b3e-44e3-b496-7ac384d2450e --yes
+Output (as reported):
+{"publication_id": "747f994d-1b3e-44e3-b496-7ac384d2450e", "manifest_id": 2, "deployment_id": 2, "status": "active"}

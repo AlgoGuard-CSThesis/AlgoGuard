@@ -77,6 +77,7 @@ RESOURCES = {
     "user_role": ("profile_id,role", False),
     "node": ("node_id", True),
     "node_membership": ("membership_id", True),
+    "node_health": ("node_id", True),
     "capture_session": ("capture_id", True),
     "network_traffic": ("traffic_id", True),
     "prediction": ("prediction_id", True),
@@ -222,11 +223,13 @@ class CloudRepository:
         descending=False,
         between: tuple[str | None, str | None] | None = None,
         search: str | None = None,
+        node_id: UUID | None = None,
     ) -> Page:
         """Offset pagination ordered by immutable keys; concurrent inserts may shift pages.
 
-        all_visible_nodes removes only the convenience node filter. RLS still
-        limits analysts to assigned nodes and permits Administrator observation.
+        all_visible_nodes removes only the convenience node filter, and `node_id` names another
+        node instead of this installation's. RLS still limits analysts to assigned nodes and
+        permits Administrator observation, whatever the filter says.
         ``between`` bounds the resource's canonical UTC text column inclusively;
         ``search`` is a case-insensitive substring over fixed text columns.
         """
@@ -236,13 +239,14 @@ class CloudRepository:
             or not 1 <= page_size <= 100
             or type(offset) is not int
             or not 0 <= offset <= 1_000_000
+            or (node_id is not None and not isinstance(node_id, UUID))
         ):
             raise RepositoryError("validation")
         key, scoped = RESOURCES[resource]
         order = ",".join(part + (".desc" if descending else ".asc") for part in key.split(","))
         params = {"select": "*", "order": order, "limit": page_size + 1, "offset": offset}
         if scoped and not all_visible_nodes:
-            params["node_id"] = "eq." + str(self.context.node_id)
+            params["node_id"] = "eq." + str(node_id or self.context.node_id)
         for name, value in (filters or {}).items():
             if name not in FILTERS:
                 raise RepositoryError("validation")
@@ -364,6 +368,38 @@ class CloudRepository:
         if result == []:
             raise RepositoryError("not_found")  # Hidden and absent records stay indistinguishable.
         return result
+
+    def attack_scores_supported(self) -> bool:
+        """Whether the database stores attack scores (the Stage 6A.3 migration is applied).
+
+        A database without the columns refuses the select. It would also refuse an upload that
+        carries scores, permanently, so the client leaves them out instead.
+        """
+        try:
+            self._request("GET", "/rest/v1/prediction",
+                          params={"select": "attack_probability", "limit": 0})
+        except RepositoryError as error:
+            if error.category == "validation":
+                return False
+            raise
+        return True
+
+    def report_node_health(self, health: dict):
+        """Report this installation's health; the server records its own receipt time (6B.2)."""
+        return self.rpc("report_node_health",
+                        {"p_node_id": str(self.context.node_id), "p_health": health})
+
+    def retention_preview(self, operational_days=30, report_days=90):
+        """What a cleanup would remove and keep now, and how full the database is (6B.3)."""
+        return self.rpc("retention_preview", {"p_operational_days": operational_days,
+                                              "p_report_days": report_days})
+
+    def retention_apply(self, request_id: UUID, batch_size=500, operational_days=30,
+                        report_days=90):
+        """Remove one bounded batch of expired records; a repeated request replays (6B.3)."""
+        return self.rpc("retention_apply", {
+            "p_request_id": str(request_id), "p_batch_size": batch_size,
+            "p_operational_days": operational_days, "p_report_days": report_days})
 
     def rpc(self, name: str, body: dict):
         if not isinstance(name, str) or not _RPC_NAME.fullmatch(name) or not isinstance(body, dict):

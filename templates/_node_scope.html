@@ -1,0 +1,19 @@
+{# Cross-node views (Stage 6B.1): which computers a list shows, and when its rows reached the cloud. #}
+{% macro node_select(scope) -%}
+<div><label class="form-label" for="node">Computer</label><select class="form-select" id="node" name="node">
+    <option value=""{% if not scope.value %} selected{% endif %}>This computer</option>
+    <option value="all"{% if scope.value == 'all' %} selected{% endif %}>All computers you can see</option>
+    {% for node, name in scope.options %}<option value="{{ node }}"{% if scope.value == node %} selected{% endif %}>{{ name }} ({{ node[:8] }})</option>{% endfor %}
+</select></div>
+{%- endmacro %}
+
+{% macro scope_label(scope) -%}
+{%- if scope.value == 'all' -%}all computers you can see
+{%- elif scope.value -%}{{ scope.names.get(scope.value, 'another computer') }}
+{%- else -%}this computer{%- endif -%}
+{%- endmacro %}
+
+{# The event's own time comes from the installation; the cloud's receipt time is the server's. #}
+{% macro received(row) -%}
+{%- if row.received_at -%}<small title="When the cloud received the record">Received {{ row.received_at }}{% if row.upload_delay is not none and row.upload_delay > 60 %} &middot; {{ (row.upload_delay / 60)|round|int }} min after the event{% endif %}</small>{%- endif -%}
+{%- endmacro %}

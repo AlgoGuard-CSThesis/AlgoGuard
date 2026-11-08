@@ -1,0 +1,148 @@
+{
+  "date": "2026-11-04 03:11",
+  "package": {
+    "build": "0.6.0+24b6eab",
+    "files": 70,
+    "zip_kib": 1332
+  },
+  "setup": {
+    "exit": 0,
+    "seconds": 153,
+    "settings_ok": true,
+    "npcap_note": false
+  },
+  "model": {
+    "manifest_id": 408,
+    "bytes": 11596540,
+    "real_model": true,
+    "download_seconds": 0.1
+  },
+  "first_start_seconds": 25.7,
+  "enrollment": {
+    "awaiting_before_approval": true,
+    "approved_without_restart": true
+  },
+  "manual_prediction": {
+    "prediction": "Normal",
+    "attack_score_band": "Low",
+    "synced": true,
+    "synced_seconds_after_approval": 28.7
+  },
+  "csv_replay": {
+    "state": "stopped",
+    "flows": 960,
+    "persisted": 300,
+    "synced": 300,
+    "dropped": 660,
+    "rejected": 0,
+    "cloud_events": 300,
+    "cloud_unique": 300,
+    "attack": 662,
+    "score_bands_seen": [
+      "High",
+      "Low",
+      "Very high"
+    ],
+    "seconds": 3.5
+  },
+  "pcap_replay": {
+    "state": "completed",
+    "flows": 11,
+    "persisted": 11,
+    "synced": 11,
+    "dropped": 0,
+    "rejected": 0,
+    "cloud_events": 11,
+    "cloud_unique": 11,
+    "attack": 2,
+    "score_bands_seen": [
+      "High",
+      "Low",
+      "Medium"
+    ],
+    "seconds": 1.2
+  },
+  "live_capture": {
+    "state": "stopped",
+    "flows": 4,
+    "persisted": 4,
+    "synced": 4,
+    "dropped": 0,
+    "rejected": 0,
+    "cloud_events": 4,
+    "cloud_unique": 4,
+    "attack": 2,
+    "score_bands_seen": [
+      "High",
+      "Low",
+      "Very high"
+    ],
+    "seconds": 40.9,
+    "packets": {
+      "active_flows": 1,
+      "dropped": 0,
+      "excluded": 0,
+      "excluded_cloud": 0,
+      "flows": 4,
+      "packets": 47
+    }
+  },
+  "restart_seconds": 3.0,
+  "restart": {
+    "login_required": true,
+    "cache_reused": true
+  },
+  "outage": {
+    "state": "stopped",
+    "flows": 113,
+    "persisted": 113,
+    "synced": 113,
+    "dropped": 0,
+    "rejected": 0,
+    "cloud_events": 113,
+    "cloud_unique": 113,
+    "attack": 79,
+    "score_bands_seen": [
+      "High",
+      "Low",
+      "Very high"
+    ],
+    "seconds": 47.1,
+    "pending_during_outage": 66,
+    "upload_state_during_outage": "retrying",
+    "synced_within_seconds_of_reconnect": 16.9
+  },
+  "direct_requests": {
+    "rows_of_other_installations_visible": {
+      "ingest_event": 0,
+      "capture_session": 0,
+      "alert": 0
+    },
+    "other_installation_event_by_id": 0,
+    "create_administrator_status": 403,
+    "self_promote_status": 403,
+    "self_approve_on_other_installation_status": 403
+  },
+  "node_id_edit": {
+    "awaiting_approval": true,
+    "monitor_refused": true
+  },
+  "secret_key_in_env": {
+    "config_exit": 2,
+    "app_exit": 1,
+    "traceback": false
+  },
+  "secrets_scan": {
+    "files_scanned": 124,
+    "found": []
+  },
+  "no_training_files": true,
+  "environment": {
+    "windows": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 186 Stepping 2, GenuineIntel",
+    "logical_cpus": 12,
+    "ram_gib": 15.7,
+    "python": "Python 3.14.6",
+    "npcap": "1.10.6"
+  }
+}

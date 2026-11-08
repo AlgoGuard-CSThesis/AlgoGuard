@@ -1,0 +1,11 @@
+category,rows,correct,measure,rate
+Fuzzers,1520,1200,recall (flagged as Attack),0.7895
+Shellcode,113,100,recall (flagged as Attack),0.885
+Generic,252,233,recall (flagged as Attack),0.9246
+Worms,14,13,recall (flagged as Attack),0.9286
+DoS,647,617,recall (flagged as Attack),0.9536
+Exploits,2800,2693,recall (flagged as Attack),0.9618
+Normal,9765,9505,specificity (labelled Normal),0.9734
+Reconnaissance,567,552,recall (flagged as Attack),0.9735
+Backdoor,130,129,recall (flagged as Attack),0.9923
+Analysis,131,131,recall (flagged as Attack),1.0

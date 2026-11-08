@@ -1,0 +1,52 @@
+{
+  "before_fixes": {
+    "label": "tracker at 7498b48 (before 6A.1 fixes)",
+    "capture": "capture_6a1.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 134,
+    "labelled_attack": 99,
+    "attack_share": 0.7388,
+    "attack_score_median": 0.7738,
+    "bands": {
+      "very_high": 49,
+      "high": 24,
+      "medium": 26,
+      "low": 35
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 130,
+        "attack": 96
+      },
+      "icmp": {
+        "flows": 4,
+        "attack": 3
+      }
+    }
+  },
+  "after_fixes": {
+    "label": "tracker after 6A.1 fixes",
+    "capture": "capture_6a1.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 126,
+    "labelled_attack": 92,
+    "attack_share": 0.7302,
+    "attack_score_median": 0.6933,
+    "bands": {
+      "very_high": 34,
+      "high": 28,
+      "medium": 30,
+      "low": 34
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 122,
+        "attack": 88
+      },
+      "icmp": {
+        "flows": 4,
+        "attack": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "capture": "capture_6a1.pcap",
+  "algoguard_flows": 134,
+  "argus_ipv4_flows": 108,
+  "matched": 108,
+  "unmatched_algoguard": 26,
+  "unmatched_algoguard_by_end_reason": {
+    "idle_timeout": 16,
+    "rst": 9,
+    "fin": 1
+  },
+  "unmatched_argus": 0,
+  "unmatched_argus_by_proto": {},
+  "features": {
+    "proto": {
+      "matched": 108,
+      "agree": 108,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "spkts": {
+      "matched": 108,
+      "agree": 15,
+      "share": 0.1389,
+      "supported": false,
+      "median_difference": 1.0,
+      "examples_of_disagreement": []
+    },
+    "dpkts": {
+      "matched": 108,
+      "agree": 88,
+      "share": 0.8148,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "sbytes": {
+      "matched": 108,
+      "agree": 13,
+      "share": 0.1204,
+      "supported": false,
+      "median_difference": -14.0,
+      "examples_of_disagreement": []
+    },
+    "dbytes": {
+      "matched": 108,
+      "agree": 75,
+      "share": 0.6944,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dur": {
+      "matched": 108,
+      "agree": 96,
+      "share": 0.8889,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "rate": {
+      "matched": 108,
+      "agree": 92,
+      "share": 0.8519,
+      "supported": false,
+      "median_difference": 0.0275,
+      "examples_of_disagreement": []
+    },
+    "sload": {
+      "matched": 108,
+      "agree": 20,
+      "share": 0.1852,
+      "supported": false,
+      "median_difference": 0.1321,
+      "examples_of_disagreement": []
+    },
+    "dload": {
+      "matched": 108,
+      "agree": 47,
+      "share": 0.4352,
+      "supported": false,
+      "median_difference": 0.0568,
+      "examples_of_disagreement": []
+    },
+    "sinpkt": {
+      "matched": 108,
+      "agree": 45,
+      "share": 0.4167,
+      "supported": false,
+      "median_difference": 0.0667,
+      "examples_of_disagreement": []
+    },
+    "dinpkt": {
+      "matched": 108,
+      "agree": 74,
+      "share": 0.6852,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "state": {
+      "matched": 108,
+      "agree": 15,
+      "share": 0.1389,
+      "supported": false,
+      "median_difference": null,
+      "examples_of_disagreement": [
+        "FIN vs RST",
+        "FIN vs RST",
+        "FIN vs RST",
+        "FIN vs RST",
+        "FIN vs RST",
+        "FIN vs RST",
+        "FIN vs RST",
+        "FIN vs RST"
+      ]
+    },
+    "service": {
+      "matched": 108,
+      "agree": 108,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "ct_dst_src_ltm": {
+      "matched": 108,
+      "agree": 88,
+      "share": 0.8148,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "ct_dst_ltm": {
+      "matched": 108,
+      "agree": 88,
+      "share": 0.8148,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "ct_srv_dst": {
+      "matched": 108,
+      "agree": 95,
+      "share": 0.8796,
+      "supported": false,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    }
+  },
+  "examples": [
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "FIN",
+        "spkts": 10,
+        "dpkts": 14,
+        "sbytes": 590,
+        "dbytes": 12543,
+        "dur": 0.160867,
+        "sinpkt": 17.874135
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 9.0,
+        "dpkts": 14.0,
+        "sbytes": 716.0,
+        "dbytes": 12739.0,
+        "dur": 0.160867,
+        "sinpkt": 20.108375
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "FIN",
+        "spkts": 8,
+        "dpkts": 10,
+        "sbytes": 496,
+        "dbytes": 27410,
+        "dur": 0.160861,
+        "sinpkt": 22.980145
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 7.0,
+        "dpkts": 10.0,
+        "sbytes": 594.0,
+        "dbytes": 27550.0,
+        "dur": 0.160861,
+        "sinpkt": 26.810166
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "FIN",
+        "spkts": 48,
+        "dpkts": 47,
+        "sbytes": 2099,
+        "dbytes": 131208,
+        "dur": 0.276428,
+        "sinpkt": 5.881446
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 47.0,
+        "dpkts": 48.0,
+        "sbytes": 2757.0,
+        "dbytes": 131920.0,
+        "dur": 0.315543,
+        "sinpkt": 6.009304
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "FIN",
+        "spkts": 31,
+        "dpkts": 33,
+        "sbytes": 1429,
+        "dbytes": 69446,
+        "dur": 0.312327,
+        "sinpkt": 10.410905
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 30.0,
+        "dpkts": 34.0,
+        "sbytes": 1849.0,
+        "dbytes": 69962.0,
+        "dur": 0.327122,
+        "sinpkt": 10.769896
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 9,
+        "dpkts": 9,
+        "sbytes": 539,
+        "dbytes": 7062,
+        "dur": 0.33676,
+        "sinpkt": 42.095006
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 8.0,
+        "dpkts": 10.0,
+        "sbytes": 651.0,
+        "dbytes": 7242.0,
+        "dur": 0.338499,
+        "sinpkt": 48.10857
+      }
+    }
+  ]
+}

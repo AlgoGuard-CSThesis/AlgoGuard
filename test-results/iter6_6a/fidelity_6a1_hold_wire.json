@@ -1,0 +1,278 @@
+{
+  "capture": "capture_6a1.pcap",
+  "reference": "argus_flows_wire.csv",
+  "algoguard_flows": 115,
+  "argus_ipv4_flows": 108,
+  "matched": 108,
+  "unmatched_algoguard": 7,
+  "unmatched_algoguard_by_end_reason": {
+    "idle_timeout": 5,
+    "rst": 1,
+    "fin": 1
+  },
+  "unmatched_argus": 0,
+  "unmatched_argus_by_proto": {},
+  "features": {
+    "proto": {
+      "matched": 108,
+      "agree": 108,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "spkts": {
+      "matched": 108,
+      "agree": 106,
+      "share": 0.9815,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dpkts": {
+      "matched": 108,
+      "agree": 105,
+      "share": 0.9722,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "sbytes": {
+      "matched": 108,
+      "agree": 106,
+      "share": 0.9815,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dbytes": {
+      "matched": 108,
+      "agree": 105,
+      "share": 0.9722,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dur": {
+      "matched": 108,
+      "agree": 105,
+      "share": 0.9722,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "rate": {
+      "matched": 108,
+      "agree": 105,
+      "share": 0.9722,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "sload": {
+      "matched": 108,
+      "agree": 0,
+      "share": 0.0,
+      "supported": false,
+      "median_difference": 0.0945,
+      "examples_of_disagreement": []
+    },
+    "dload": {
+      "matched": 108,
+      "agree": 102,
+      "share": 0.9444,
+      "supported": true,
+      "median_difference": 0.0128,
+      "examples_of_disagreement": []
+    },
+    "sinpkt": {
+      "matched": 108,
+      "agree": 102,
+      "share": 0.9444,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "dinpkt": {
+      "matched": 108,
+      "agree": 102,
+      "share": 0.9444,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "state": {
+      "matched": 108,
+      "agree": 106,
+      "share": 0.9815,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": [
+        "FIN vs RST",
+        "CON vs FIN"
+      ]
+    },
+    "service": {
+      "matched": 108,
+      "agree": 108,
+      "share": 1.0,
+      "supported": true,
+      "median_difference": null,
+      "examples_of_disagreement": []
+    },
+    "ct_dst_src_ltm": {
+      "matched": 108,
+      "agree": 99,
+      "share": 0.9167,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "ct_dst_ltm": {
+      "matched": 108,
+      "agree": 99,
+      "share": 0.9167,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    },
+    "ct_srv_dst": {
+      "matched": 108,
+      "agree": 106,
+      "share": 0.9815,
+      "supported": true,
+      "median_difference": 0.0,
+      "examples_of_disagreement": []
+    }
+  },
+  "diagnostic_flows_with_packet_over_mtu": 94,
+  "diagnostic_share_agreeing_without_such_flows": {
+    "proto": 1.0,
+    "spkts": 0.9286,
+    "dpkts": 0.9286,
+    "sbytes": 0.9286,
+    "dbytes": 0.9286,
+    "dur": 0.9286,
+    "rate": 0.9286,
+    "sload": 0.0,
+    "dload": 0.7143,
+    "sinpkt": 0.6429,
+    "dinpkt": 0.7143,
+    "state": 0.9286,
+    "service": 1.0,
+    "ct_dst_src_ltm": 0.7857,
+    "ct_dst_ltm": 0.7857,
+    "ct_srv_dst": 1.0
+  },
+  "diagnostic_load_share_agreeing_with_argus_bytes_at_ip_layer": {
+    "sload": 0.963,
+    "dload": 0.963
+  },
+  "examples": [
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 11,
+        "dpkts": 15,
+        "sbytes": 2208,
+        "dbytes": 12583,
+        "dur": 0.160867,
+        "sinpkt": 16.086721
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 11.0,
+        "dpkts": 15.0,
+        "sbytes": 2362.0,
+        "dbytes": 12793.0,
+        "dur": 0.160867,
+        "sinpkt": 16.0867
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 9,
+        "dpkts": 25,
+        "sbytes": 2116,
+        "dbytes": 28010,
+        "dur": 0.160861,
+        "sinpkt": 20.107627
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 9.0,
+        "dpkts": 25.0,
+        "sbytes": 2242.0,
+        "dbytes": 28360.0,
+        "dur": 0.160861,
+        "sinpkt": 20.107625
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 49,
+        "dpkts": 97,
+        "sbytes": 3722,
+        "dbytes": 133208,
+        "dur": 0.315543,
+        "sinpkt": 5.758916
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 49.0,
+        "dpkts": 97.0,
+        "sbytes": 4408.0,
+        "dbytes": 134566.0,
+        "dur": 0.315543,
+        "sinpkt": 5.758917
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 32,
+        "dpkts": 55,
+        "sbytes": 3046,
+        "dbytes": 70326,
+        "dur": 0.327122,
+        "sinpkt": 10.075069
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 32.0,
+        "dpkts": 55.0,
+        "sbytes": 3494.0,
+        "dbytes": 71096.0,
+        "dur": 0.327122,
+        "sinpkt": 10.075064
+      }
+    },
+    {
+      "ours": {
+        "proto": "tcp",
+        "state": "RST",
+        "spkts": 10,
+        "dpkts": 12,
+        "sbytes": 2162,
+        "dbytes": 7182,
+        "dur": 0.338499,
+        "sinpkt": 37.417783
+      },
+      "argus": {
+        "state": "RST",
+        "spkts": 10.0,
+        "dpkts": 12.0,
+        "sbytes": 2302.0,
+        "dbytes": 7350.0,
+        "dur": 0.338499,
+        "sinpkt": 37.417777
+      }
+    }
+  ]
+}

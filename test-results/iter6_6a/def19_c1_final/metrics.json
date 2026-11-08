@@ -1,0 +1,70 @@
+{
+  "context": {
+    "evaluated_at": "2026-10-26T23:14:37",
+    "git_commit": "34f29ee",
+    "python": "3.14.6",
+    "scikit_learn": "1.9.0",
+    "model_file": "saved_models\\run_10\\stacking.joblib",
+    "model_sha256": "6756c632efe99edcf50c27ed5daf87dcfd18573fdbb59492d5aad4c225e69604",
+    "model_name": "Stacking Ensemble",
+    "model_trained_at": "2026-10-26 15:04:30",
+    "data_file": "research\\dataset\\processed\\official_unsw\\UNSW_NB15_training-set.csv",
+    "data_sha256": "bec7dd5ec88dc2a0ccc7a07879d338395ed7421750f675fd0339e07dfe0648fa",
+    "training_csvs": [
+      "research\\dataset\\raw\\UNSW_NB15_training-set.csv",
+      "research\\dataset\\processed\\def19\\training_local.csv"
+    ],
+    "rows_loaded": 175341,
+    "rows_removed_seen_in_training": 66602
+  },
+  "metrics": {
+    "rows": 108739,
+    "attacks": 57836,
+    "normal": 50903,
+    "accuracy": 0.8615768031708955,
+    "precision": 0.9737984496124031,
+    "recall": 0.7602012587315858,
+    "f1": 0.8538442118346182,
+    "false_positive_rate": 0.023240280533563838,
+    "specificity": 0.9767597194664361,
+    "roc_auc": 0.9695342781270118,
+    "tp": 43967,
+    "fp": 1183,
+    "tn": 49720,
+    "fn": 13869,
+    "prediction_seconds_total": 80.13414799999737,
+    "prediction_ms_per_row": 0.7369402698203714
+  },
+  "targets": [
+    {
+      "metric": "accuracy",
+      "target": ">= 0.9",
+      "measured": 0.8616,
+      "result": "Not met"
+    },
+    {
+      "metric": "f1",
+      "target": ">= 0.9",
+      "measured": 0.8538,
+      "result": "Not met"
+    },
+    {
+      "metric": "recall",
+      "target": ">= 0.9",
+      "measured": 0.7602,
+      "result": "Not met"
+    },
+    {
+      "metric": "false_positive_rate",
+      "target": "<= 0.08",
+      "measured": 0.0232,
+      "result": "Met"
+    },
+    {
+      "metric": "roc_auc",
+      "target": ">= 0.95",
+      "measured": 0.9695,
+      "result": "Met"
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "final_rows_loaded": 175341,
+  "removed_as_seen": 66602,
+  "final_rows": 108739,
+  "attacks": 57836,
+  "normal": 50903,
+  "brier": 0.11699,
+  "ece": 0.1116,
+  "reliability": [
+    {
+      "bin": "0.0-0.1",
+      "rows": 57165,
+      "mean_attack_probability": 0.0142,
+      "observed_attack_rate": 0.1663
+    },
+    {
+      "bin": "0.1-0.2",
+      "rows": 2816,
+      "mean_attack_probability": 0.1428,
+      "observed_attack_rate": 0.6641
+    },
+    {
+      "bin": "0.2-0.3",
+      "rows": 1476,
+      "mean_attack_probability": 0.2471,
+      "observed_attack_rate": 0.7154
+    },
+    {
+      "bin": "0.3-0.4",
+      "rows": 1158,
+      "mean_attack_probability": 0.3479,
+      "observed_attack_rate": 0.6969
+    },
+    {
+      "bin": "0.4-0.5",
+      "rows": 966,
+      "mean_attack_probability": 0.4499,
+      "observed_attack_rate": 0.7257
+    },
+    {
+      "bin": "0.5-0.6",
+      "rows": 894,
+      "mean_attack_probability": 0.5501,
+      "observed_attack_rate": 0.7729
+    },
+    {
+      "bin": "0.6-0.7",
+      "rows": 1147,
+      "mean_attack_probability": 0.6513,
+      "observed_attack_rate": 0.7332
+    },
+    {
+      "bin": "0.7-0.8",
+      "rows": 1180,
+      "mean_attack_probability": 0.7518,
+      "observed_attack_rate": 0.811
+    },
+    {
+      "bin": "0.8-0.9",
+      "rows": 1926,
+      "mean_attack_probability": 0.8566,
+      "observed_attack_rate": 0.8884
+    },
+    {
+      "bin": "0.9-1.0",
+      "rows": 40011,
+      "mean_attack_probability": 0.9875,
+      "observed_attack_rate": 0.9921
+    }
+  ],
+  "bands": [
+    {
+      "band": "Low",
+      "rows": 63581,
+      "share": 0.5847,
+      "observed_attack_rate": 0.2193
+    },
+    {
+      "band": "Medium",
+      "rows": 2041,
+      "share": 0.0188,
+      "observed_attack_rate": 0.7506
+    },
+    {
+      "band": "High",
+      "rows": 3106,
+      "share": 0.0286,
+      "observed_attack_rate": 0.859
+    },
+    {
+      "band": "Very high",
+      "rows": 40011,
+      "share": 0.368,
+      "observed_attack_rate": 0.9921
+    }
+  ]
+}

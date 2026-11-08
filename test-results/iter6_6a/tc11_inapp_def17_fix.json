@@ -1,0 +1,80 @@
+{
+  "method": "Live interface capture in the real local app (throwaway instance on a copy of the local database, temporary account), Wi-Fi, Save attacks, traffic_gen.py for 90 s; lag read from /monitor/status.",
+  "build": "capture and scoring in separate processes (services/capture_worker.py, services/inference_worker.py)",
+  "runs": [
+    {
+      "check": "TC-11 / DEF-17 in-app re-check (throwaway app, copy of the local database)",
+      "started": "2026-10-26 23:57:21",
+      "seconds": 90,
+      "model_run": 10,
+      "flows": 168,
+      "end_reasons": {
+        "rst": 49,
+        "fin": 10,
+        "idle_timeout": 109
+      },
+      "capture": {
+        "active_flows": 20,
+        "dropped": 0,
+        "excluded": 0,
+        "excluded_cloud": 0,
+        "flows": 168,
+        "packets": 7592
+      },
+      "lag_teardown_ms (fin/rst)": {
+        "n": 59,
+        "p50": 89.1,
+        "p95": 113.7,
+        "max": 123.3,
+        "mean": 88.7
+      },
+      "tracking_lag_ms (flow end -> flow finished)": {
+        "p50": 55.7,
+        "p95": 77.4
+      },
+      "scoring_lag_ms (flow finished -> verdict)": {
+        "p50": 31.1,
+        "p95": 55.7
+      },
+      "avg_latency_ms": 31.267,
+      "attack_share": 0.0238
+    },
+    {
+      "check": "TC-11 / DEF-17 in-app re-check (throwaway app, copy of the local database)",
+      "started": "2026-10-26 23:59:19",
+      "seconds": 90,
+      "model_run": 10,
+      "flows": 193,
+      "end_reasons": {
+        "rst": 73,
+        "fin": 9,
+        "idle_timeout": 111
+      },
+      "capture": {
+        "active_flows": 20,
+        "dropped": 0,
+        "excluded": 0,
+        "excluded_cloud": 0,
+        "flows": 193,
+        "packets": 8277
+      },
+      "lag_teardown_ms (fin/rst)": {
+        "n": 82,
+        "p50": 91.8,
+        "p95": 129.2,
+        "max": 139.7,
+        "mean": 91.8
+      },
+      "tracking_lag_ms (flow end -> flow finished)": {
+        "p50": 57.8,
+        "p95": 74.9
+      },
+      "scoring_lag_ms (flow finished -> verdict)": {
+        "p50": 31.7,
+        "p95": 69.8
+      },
+      "avg_latency_ms": 31.173,
+      "attack_share": 0.0052
+    }
+  ]
+}

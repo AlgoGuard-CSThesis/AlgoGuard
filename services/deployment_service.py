@@ -185,7 +185,7 @@ def _deploy_model_unlocked(model_id, admin_id):
     temporary_path = f"{published_path}.tmp"
 
     try:
-        joblib.dump(artifact, temporary_path)
+        joblib.dump(artifact, temporary_path, compress=3)
         staged_artifact = joblib.load(temporary_path)
         _validate_stacking_artifact(staged_artifact)
     except DeploymentError:

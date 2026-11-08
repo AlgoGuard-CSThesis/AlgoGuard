@@ -157,7 +157,10 @@ def train_and_compare_models(
                 model_type,
             )
             try:
-                joblib.dump(artifact, model_path)
+                # Compressed: a Stacking Ensemble trained on the full UNSW-NB15 training file is
+                # about 100 MB raw (K-Nearest Neighbors keeps its training rows) but ~12 MB
+                # compressed, under the cloud storage limit for published models.
+                joblib.dump(artifact, model_path, compress=3)
             except Exception as error:
                 raise ValueError(f"Model serialization failed: {error}") from error
 

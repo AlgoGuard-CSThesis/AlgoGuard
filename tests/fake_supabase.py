@@ -21,7 +21,7 @@ import threading
 import time
 import urllib.parse
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -30,7 +30,7 @@ from jwt.algorithms import ECAlgorithm
 TABLES = (
     "profile", "user_role", "node", "node_membership", "capture_session", "network_traffic",
     "prediction", "alert", "report", "report_alert", "system_log", "ingest_event",
-    "model_manifest", "model_summary", "deployment_summary", "training_summary",
+    "model_manifest", "model_summary", "deployment_summary", "training_summary", "node_health",
 )
 KEYS = {
     "profile": "profile_id", "node_membership": "membership_id", "capture_session": "capture_id",
@@ -39,8 +39,24 @@ KEYS = {
 }
 NODE_SCOPED = {
     "capture_session", "network_traffic", "prediction", "alert", "report", "report_alert",
-    "system_log", "ingest_event", "alert_detail",
+    "system_log", "ingest_event", "alert_detail", "node_health",
 }
+SCORE_KEYS = ("attack_probability", "attack_score_band", "score_band_policy")
+PREDICTION_KEYS = {"predicted_label", "confidence_score", "latency_ms", "model_name",
+                   "input_payload", *SCORE_KEYS}
+
+
+def _score_matches_policy(prediction):
+    """The database's check: no score at all, or a v1 band that matches its probability."""
+    probability, band, policy = (prediction.get(key) for key in SCORE_KEYS)
+    if probability is None and band is None and policy is None:
+        return True
+    if (policy != "attack-score-bands-v1" or not isinstance(probability, (int, float))
+            or not 0 <= probability <= 1):
+        return False
+    expected = ("Very high" if probability >= 0.9 else "High" if probability >= 0.7
+                else "Medium" if probability >= 0.5 else "Low")
+    return band == expected
 
 
 class Refusal(Exception):
@@ -51,6 +67,15 @@ class Refusal(Exception):
 
 def _now_text():
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _parse_time(text):
+    moment = datetime.fromisoformat(str(text).replace("Z", "+00:00"))
+    return moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)
+
+
+def _before(text, cutoff):
+    return text is not None and _parse_time(text) < cutoff
 
 
 def _split_top(text):
@@ -114,16 +139,21 @@ class FakeSupabase:
     def __init__(self):
         self.signing_key = ec.generate_private_key(ec.SECP256R1())
         self.kid = "fake-es256"
+        # Earlier signing keys that still verify after a rotation, until they are revoked (6C.1).
+        self.previous_keys = {}
         self.lock = threading.RLock()
         self.tables = {name: [] for name in TABLES}
         self.counters = {name: itertools.count(1) for name in TABLES}
         self.users = {}
         self.refresh_tokens = {}
         self.admin_requests = {}
+        self.retention_runs = {}
         self.objects = {}
         self.signed = {}
         self.faults = []
         self.offline = False
+        # False imitates a database without the Stage 6A.3 migration.
+        self.attack_scores = True
         self.access_ttl = 3600
         self.calls = []
         self.logouts = []
@@ -255,10 +285,29 @@ class FakeSupabase:
         return jwt.encode(claims, self.signing_key, algorithm="ES256",
                           headers={"kid": self.kid})
 
+    def rotate_signing_key(self):
+        """New tokens use a new key; the old key keeps verifying until revoked, as in Supabase."""
+        with self.lock:
+            self.previous_keys[self.kid] = self.signing_key
+            self.signing_key = ec.generate_private_key(ec.SECP256R1())
+            self.kid = f"fake-es256-{len(self.previous_keys) + 1}"
+
+    def revoke_previous_keys(self):
+        """Tokens signed with an earlier key are refused from now on."""
+        with self.lock:
+            self.previous_keys.clear()
+
+    def _keys(self):
+        with self.lock:
+            return {**self.previous_keys, self.kid: self.signing_key}
+
     def _jwks(self):
-        jwk = json.loads(ECAlgorithm.to_jwk(self.signing_key.public_key()))
-        jwk.update(kid=self.kid, alg="ES256", use="sig")
-        return {"keys": [jwk]}
+        keys = []
+        for kid, key in self._keys().items():
+            jwk = json.loads(ECAlgorithm.to_jwk(key.public_key()))
+            jwk.update(kid=kid, alg="ES256", use="sig")
+            keys.append(jwk)
+        return {"keys": keys}
 
     def _subject(self, headers):
         if headers.get("apikey") != self.publishable_key:
@@ -270,7 +319,10 @@ class FakeSupabase:
         if token == self.publishable_key:
             return None
         try:
-            claims = jwt.decode(token, self.signing_key.public_key(), algorithms=["ES256"],
+            key = self._keys().get(jwt.get_unverified_header(token).get("kid"))
+            if key is None:
+                raise jwt.InvalidTokenError("unknown or revoked signing key")
+            claims = jwt.decode(token, key.public_key(), algorithms=["ES256"],
                                 audience="authenticated", issuer=f"{self.url}/auth/v1")
         except jwt.InvalidTokenError:
             raise Refusal(401, "invalid token") from None
@@ -323,7 +375,8 @@ class FakeSupabase:
                              "confidence_score": prediction["confidence_score"],
                              "model_name": prediction["model_name"],
                              "source_ip": traffic["source_ip"],
-                             "destination_ip": traffic["destination_ip"]})
+                             "destination_ip": traffic["destination_ip"],
+                             **{key: prediction.get(key) for key in SCORE_KEYS}})
         else:
             rows = list(self.tables[table])
         if table in NODE_SCOPED:
@@ -348,6 +401,9 @@ class FakeSupabase:
     # -- PostgREST reads -----------------------------------------------------
 
     def _select(self, table, query, profile):
+        if table == "prediction" and not self.attack_scores and any(
+                name == "select" and "attack_" in value for name, value in query):
+            raise Refusal(400, "column does not exist")
         rows = self._visible(table, profile)
         for name, value in query:
             if name in ("select", "order", "limit", "offset"):
@@ -384,6 +440,29 @@ class FakeSupabase:
         if body.get("p_profile_id") != profile["profile_id"] or not self._can_write(
                 profile, body.get(node_key)):
             raise Refusal(403, "access denied")
+
+    def _rpc_report_node_health(self, body, profile):
+        """Like the database: an approved member's report, stamped with the server's own time."""
+        node_id = body.get("p_node_id")
+        if not self._can_write(profile, node_id):
+            raise Refusal(403, "access denied")
+        health = body.get("p_health")
+        keys = {"app_version", "deployment_id", "capture_status", "pending_events",
+                "dropped_events", "rejected_events"}
+        states = ("idle", "starting", "running", "paused", "stopping", "error")
+        if (not isinstance(health, dict) or set(health) - keys
+                or health.get("capture_status") not in states):
+            raise Refusal(400, "invalid health report")
+        received = datetime.now(timezone.utc).isoformat()
+        row = {"node_id": node_id, "reported_by": profile["profile_id"], "received_at": received,
+               **health}
+        with self.lock:
+            self.tables["node_health"] = [r for r in self.tables["node_health"]
+                                          if r["node_id"] != node_id] + [row]
+            node = self._node(node_id)
+            if node is not None:
+                node["last_seen_at"] = received
+        return received
 
     def _rpc_current_node_access(self, body, profile):
         return self._can_write(profile, body["p_node_id"])
@@ -449,6 +528,11 @@ class FakeSupabase:
             if not isinstance(event, dict) or set(event) - allowed or event.get(
                     "prediction", {}).get("predicted_label") not in ("Normal", "Attack"):
                 raise Refusal(400, "invalid flow")
+            known = PREDICTION_KEYS if self.attack_scores else PREDICTION_KEYS - set(SCORE_KEYS)
+            if set(event["prediction"]) - known:
+                raise Refusal(400, "invalid flow")
+            if not _score_matches_policy(event["prediction"]):
+                raise Refusal(400, "invalid flow reference or value")
             if event.get("capture_id") is not None:
                 capture = next((row for row in self.tables["capture_session"]
                                 if row["capture_id"] == event["capture_id"]), None)
@@ -595,6 +679,159 @@ class FakeSupabase:
             "dataset_filename": None, "ip_address": None,
         })
         return {"log_id": str(row["log_id"]), "replayed": False}
+
+    # -- Retention (6B.3): server receipt times decide age, never the computer's clock ----------
+
+    def _retention_cutoffs(self, body, profile):
+        if not self._is_admin(profile):
+            raise Refusal(403, "access denied")
+        operational = body.get("p_operational_days", 30)
+        reports = body.get("p_report_days", 90)
+        if not (isinstance(operational, int) and isinstance(reports, int)
+                and 30 <= operational <= 3650 and 90 <= reports <= 3650):
+            raise Refusal(400, "invalid retention policy")
+        now = datetime.now(timezone.utc)
+        return now - timedelta(days=operational), now - timedelta(days=reports)
+
+    def _retention_flows(self, ops, reps):
+        """Old predictions whose alert no kept report cites."""
+        kept = {report["report_id"] for report in self.tables["report"]
+                if not _before(report["created_at"], reps)}
+        held = {link["alert_id"] for link in self.tables["report_alert"]
+                if link["report_id"] in kept}
+        alerts = {row["prediction_id"]: row["alert_id"] for row in self.tables["alert"]}
+        return sorted(row["prediction_id"] for row in self.tables["prediction"]
+                      if _before(row["created_at"], ops)
+                      and alerts.get(row["prediction_id"]) not in held)
+
+    def _retention_logs(self, ops, reps):
+        """Old standalone logs; cleanup audits last as long as reports."""
+        anchors = {row["audit_log_id"] for row in self.tables["ingest_event"]}
+        return sorted(row["log_id"] for row in self.tables["system_log"]
+                      if row.get("prediction_id") is None and row["log_id"] not in anchors
+                      and _before(row["created_at"],
+                                  reps if row.get("module") == "Retention" else ops))
+
+    def _retention_sessions(self, ops):
+        used = {row.get("capture_id") for row in self.tables["network_traffic"]}
+        return sorted(row["capture_id"] for row in self.tables["capture_session"]
+                      if _before(row.get("closed_at"), ops) and row["capture_id"] not in used)
+
+    def _rpc_retention_preview(self, body, profile):
+        ops, reps = self._retention_cutoffs(body, profile)
+        with self.lock:
+            flows = set(self._retention_flows(ops, reps))
+            kept = {report["report_id"] for report in self.tables["report"]
+                    if not _before(report["created_at"], reps)}
+            held = {link["alert_id"] for link in self.tables["report_alert"]
+                    if link["report_id"] in kept}
+            suspect = {}
+            for row in self.tables["ingest_event"]:
+                drift = (_parse_time(row["payload"]["event_time"])
+                         - _parse_time(row["created_at"])).total_seconds()
+                if drift > 300 or drift < -8 * 86400:
+                    suspect[row["node_id"]] = suspect.get(row["node_id"], 0) + 1
+            counted = ("network_traffic", "prediction", "alert", "report", "system_log",
+                       "ingest_event")
+            models = {}
+            for row in self.tables["model_manifest"]:
+                models[row["status"]] = models.get(row["status"], 0) + 1
+            return {
+                "operational_cutoff": ops.isoformat(), "report_cutoff": reps.isoformat(),
+                "expiring": {
+                    "reports": sum(report["report_id"] not in kept
+                                   for report in self.tables["report"]),
+                    "flows": len(flows),
+                    "alerts": sum(row["prediction_id"] in flows for row in self.tables["alert"]),
+                    "logs": len(self._retention_logs(ops, reps)),
+                    "closed_sessions": len(self._retention_sessions(ops)),
+                },
+                "kept": {
+                    "alerts_held_by_reports": sum(
+                        row["alert_id"] in held and _before(row["created_at"], ops)
+                        for row in self.tables["alert"]),
+                    "active_sessions": sum(row.get("closed_at") is None
+                                           for row in self.tables["capture_session"]),
+                },
+                "suspect_client_times": suspect,
+                "capacity": {
+                    "database_bytes": 12 * 1024 * 1024
+                    + 2048 * sum(len(self.tables[name]) for name in counted),
+                    "tables": {name: 2048 * len(self.tables[name]) for name in counted},
+                    "rows": {name: len(self.tables[name]) for name in counted},
+                    "oldest": {name: min((row["created_at"] for row in self.tables[name]),
+                                         default=None)
+                               for name in ("prediction", "system_log", "report")},
+                },
+                "models_kept": models,
+            }
+
+    def _rpc_retention_apply(self, body, profile):
+        ops, reps = self._retention_cutoffs(body, profile)
+        size = body.get("p_batch_size", 500)
+        if not body.get("p_request_id") or not isinstance(size, int) or not 1 <= size <= 5000:
+            raise Refusal(400, "invalid retention request")
+        identity = (profile["profile_id"], body.get("p_operational_days", 30),
+                    body.get("p_report_days", 90), size)
+        with self.lock:
+            previous = self.retention_runs.get(body["p_request_id"])
+            if previous is not None:
+                if previous[0] != identity:
+                    raise Refusal(409, "retention request conflict")
+                return {**previous[1], "replayed": True}
+            tables = self.tables
+
+            def remove(table, doomed):
+                before = len(tables[table])
+                tables[table] = [row for row in tables[table] if not doomed(row)]
+                return before - len(tables[table])
+
+            reports = {row["report_id"] for row in tables["report"]
+                       if _before(row["created_at"], reps)}
+            reports = set(sorted(reports)[:size])
+            links = remove("report_alert", lambda row: row["report_id"] in reports)
+            removed_reports = remove("report", lambda row: row["report_id"] in reports)
+            cited = {row["alert_id"] for row in tables["report_alert"]}
+            alert_of = {row["prediction_id"]: row["alert_id"] for row in tables["alert"]}
+            flows = set([key for key in self._retention_flows(ops, reps)
+                         if alert_of.get(key) not in cited][:size])
+            audits = {row["audit_log_id"] for row in tables["ingest_event"]
+                      if row["prediction_id"] in flows}
+            events = remove("ingest_event", lambda row: row["prediction_id"] in flows)
+            logs = remove("system_log", lambda row: row.get("prediction_id") in flows
+                          or row["log_id"] in audits)
+            alerts = remove("alert", lambda row: row["prediction_id"] in flows)
+            traffic = {row["traffic_id"] for row in tables["prediction"]
+                       if row["prediction_id"] in flows}
+            removed_flows = remove("prediction", lambda row: row["prediction_id"] in flows)
+            removed_traffic = remove("network_traffic", lambda row: row["traffic_id"] in traffic)
+            old_logs = set(self._retention_logs(ops, reps)[:size])
+            logs += remove("system_log", lambda row: row["log_id"] in old_logs)
+            sessions = set(self._retention_sessions(ops)[:size])
+            closed = remove("capture_session", lambda row: row["capture_id"] in sessions)
+            counts = {"reports": removed_reports, "report_links": links, "flows": removed_flows,
+                      "alerts": alerts, "events": events, "traffic": removed_traffic,
+                      "logs": logs, "closed_sessions": closed}
+            answer = {
+                "request_id": body["p_request_id"], "removed": counts,
+                "operational_cutoff": ops.isoformat(), "report_cutoff": reps.isoformat(),
+                "more": bool(any(_before(row["created_at"], reps) for row in tables["report"])
+                             or self._retention_flows(ops, reps)
+                             or self._retention_logs(ops, reps)
+                             or self._retention_sessions(ops)),
+            }
+            self.insert("system_log", {
+                "node_id": None, "profile_id": profile["profile_id"], "module": "Retention",
+                "action": "retention_batch", "status": "Success",
+                "message": f"Removed {removed_flows} flows ({alerts} alerts), {logs} log "
+                           f"entries, {removed_reports} reports and {closed} closed capture "
+                           f"sessions; policy {identity[1]}/{identity[2]} days.",
+                "model_name": None, "run_id": None, "prediction_id": None,
+                "timestamp": _now_text(), "event_uuid": None, "dataset_filename": None,
+                "ip_address": None,
+            })
+            self.retention_runs[body["p_request_id"]] = (identity, answer)
+            return answer
 
     # -- Edge Function -------------------------------------------------------
 

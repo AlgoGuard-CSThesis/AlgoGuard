@@ -1,0 +1,10 @@
+{
+  "applied": "2026-11-04 01:31",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "DEF-19",
+      "action": "edit body: model 60 now active on the hosted pilot (replaces 'keeps run 8 until model 60 is published'); status unchanged (Review)"
+    }
+  ]
+}

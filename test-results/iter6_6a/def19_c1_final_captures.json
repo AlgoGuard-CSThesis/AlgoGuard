@@ -1,0 +1,158 @@
+{
+  "final_browser: run 8": {
+    "label": "run 8",
+    "capture": "final_browser.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 502,
+    "labelled_attack": 147,
+    "attack_share": 0.2928,
+    "attack_score_median": 0.189,
+    "bands": {
+      "very_high": 46,
+      "high": 51,
+      "medium": 50,
+      "low": 355
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 381,
+        "attack": 87
+      },
+      "udp": {
+        "flows": 121,
+        "attack": 60
+      }
+    },
+    "attack_by_service": {
+      "-": {
+        "flows": 456,
+        "attack": 120
+      },
+      "http": {
+        "flows": 43,
+        "attack": 24
+      },
+      "dns": {
+        "flows": 3,
+        "attack": 3
+      }
+    }
+  },
+  "final_browser: C1 (run 10)": {
+    "label": "C1 (run 10)",
+    "capture": "final_browser.pcap",
+    "model": "saved_models/run_10/stacking.joblib",
+    "flows": 502,
+    "labelled_attack": 16,
+    "attack_share": 0.0319,
+    "attack_score_median": 0.0066,
+    "bands": {
+      "very_high": 5,
+      "high": 2,
+      "medium": 9,
+      "low": 486
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 381,
+        "attack": 11
+      },
+      "udp": {
+        "flows": 121,
+        "attack": 5
+      }
+    },
+    "attack_by_service": {
+      "-": {
+        "flows": 456,
+        "attack": 11
+      },
+      "http": {
+        "flows": 43,
+        "attack": 4
+      },
+      "dns": {
+        "flows": 3,
+        "attack": 1
+      }
+    }
+  },
+  "final_unseen: run 8": {
+    "label": "run 8",
+    "capture": "final_unseen.pcap",
+    "model": "saved_models/run_8/stacking.joblib",
+    "flows": 687,
+    "labelled_attack": 319,
+    "attack_share": 0.4643,
+    "attack_score_median": 0.406,
+    "bands": {
+      "very_high": 148,
+      "high": 106,
+      "medium": 65,
+      "low": 368
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 539,
+        "attack": 217
+      },
+      "udp": {
+        "flows": 148,
+        "attack": 102
+      }
+    },
+    "attack_by_service": {
+      "-": {
+        "flows": 679,
+        "attack": 312
+      },
+      "http": {
+        "flows": 5,
+        "attack": 4
+      },
+      "dns": {
+        "flows": 3,
+        "attack": 3
+      }
+    }
+  },
+  "final_unseen: C1 (run 10)": {
+    "label": "C1 (run 10)",
+    "capture": "final_unseen.pcap",
+    "model": "saved_models/run_10/stacking.joblib",
+    "flows": 687,
+    "labelled_attack": 45,
+    "attack_share": 0.0655,
+    "attack_score_median": 0.0092,
+    "bands": {
+      "very_high": 20,
+      "high": 12,
+      "medium": 13,
+      "low": 642
+    },
+    "attack_by_proto": {
+      "tcp": {
+        "flows": 539,
+        "attack": 39
+      },
+      "udp": {
+        "flows": 148,
+        "attack": 6
+      }
+    },
+    "attack_by_service": {
+      "-": {
+        "flows": 679,
+        "attack": 39
+      },
+      "http": {
+        "flows": 5,
+        "attack": 4
+      },
+      "dns": {
+        "flows": 3,
+        "attack": 2
+      }
+    }
+  }
+}

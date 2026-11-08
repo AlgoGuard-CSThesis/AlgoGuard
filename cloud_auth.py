@@ -33,6 +33,9 @@ from token_verification import (
 
 REFRESH_MARGIN_SECONDS = 60
 REFRESH_RETRY_SECONDS = 15
+# A token the cloud refused (for example after a signing-key revocation) is renewed at most this
+# often; refusing the renewed token too then ends the sign-in instead of looping (6C.1).
+REFUSED_RENEWAL_SECONDS = 30
 MAX_SESSIONS = 256
 ANONYMOUS_IDLE_SECONDS = 3600
 SIGNED_IN_IDLE_SECONDS = 12 * 3600
@@ -51,6 +54,7 @@ class CloudIdentity:
     active: bool = True
     lock: threading.RLock = field(default_factory=threading.RLock, repr=False)
     refresh_after: float = field(default=0.0, repr=False)
+    renewed_refused_at: float | None = field(default=None, repr=False)
 
     @property
     def is_administrator(self):
@@ -156,24 +160,36 @@ class CloudAuth:
         except (KeyError, TypeError):
             raise RepositoryError("protocol") from None
 
-    def repository(self, identity, *, refresh=True):
+    def repository(self, identity, *, refresh=True, refused=None):
         """A repository carrying this identity's current token, refreshing at most once.
 
         The identity lock serialises refresh for everything sharing the identity
         (page requests, monitor polling, and the upload worker), so a rotated
         refresh token is spent exactly once.
+
+        ``refused`` is an access token the cloud has just answered 401 to although it has not
+        expired here, as after a signing-key revocation (6C.1). If it is still this identity's
+        token, the sign-in is renewed once with its refresh token; if another caller renewed it
+        meanwhile, the new token is used. A transient failure leaves the sign-in in place.
         """
         with identity.lock:
             if not identity.active:
                 raise RepositoryError("authentication")
             now = time.time()
             expired = now >= identity.expires_at
+            renew = refused is not None and refused == identity.access_token
+            if renew and (
+                identity.renewed_refused_at is not None
+                and time.monotonic() - identity.renewed_refused_at < REFUSED_RENEWAL_SECONDS
+            ):
+                identity.clear()  # The renewed token was refused as well.
+                raise RepositoryError("authentication")
             due = (
                 identity.refresh_token
                 and now >= identity.expires_at - REFRESH_MARGIN_SECONDS
                 and time.monotonic() >= identity.refresh_after
             )
-            if expired or (refresh and due):
+            if expired or renew or (refresh and due):
                 if not refresh or not identity.refresh_token:
                     identity.clear()
                     raise RepositoryError("authentication")
@@ -196,7 +212,13 @@ class CloudAuth:
                     identity.expires_at = replacement.expires_at
                     identity.roles = replacement.roles
                     identity.profile_id = replacement.profile_id
+                    if renew:
+                        identity.renewed_refused_at = time.monotonic()
                 except RepositoryError as error:
+                    if error.retryable and renew and not expired:
+                        # The refused token is useless, but the sign-in may still be renewed
+                        # once the cloud answers again.
+                        raise RepositoryError("transient") from None
                     if error.retryable and time.time() < identity.expires_at:
                         # Refresh is unavailable but the current token still works.
                         # Back off so a stalled network cannot make every request

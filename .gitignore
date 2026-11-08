@@ -72,8 +72,10 @@ Thumbs.db
 
 node_modules/
 
-# Disposable Stage 5A Supabase working directory
-.local/supabase-5a/
 
 # Stage 5D cloud-mode local state: node identity, outbox spool, model cache.
 .algoguard/
+
+# Stage 6D.1 analyst packages (scripts/build_analyst_package.py) and their build stamp.
+dist/
+/BUILD

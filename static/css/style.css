@@ -98,6 +98,37 @@
     background: rgba(34, 211, 238, 0.08);
 }
 
+/* Attack-score bands (Stage 6A.3). Each badge also names its band in text. */
+.status-badge.score-very-high {
+    border-color: rgba(255, 92, 114, 0.6);
+    color: #ffd5db;
+    background: rgba(255, 92, 114, 0.28);
+}
+
+.status-badge.score-high {
+    border-color: rgba(255, 154, 92, 0.5);
+    color: #ffb27f;
+    background: rgba(255, 154, 92, 0.12);
+}
+
+.status-badge.score-medium {
+    border-color: rgba(242, 184, 75, 0.4);
+    color: var(--amber);
+    background: rgba(242, 184, 75, 0.1);
+}
+
+.status-badge.score-low {
+    border-color: rgba(34, 211, 238, 0.42);
+    color: var(--cyan);
+    background: rgba(34, 211, 238, 0.08);
+}
+
+.status-badge.score-none {
+    border-color: rgba(141, 164, 174, 0.35);
+    color: var(--muted);
+    background: rgba(141, 164, 174, 0.08);
+}
+
 .status-badge.review-resolved {
     border-color: rgba(55, 214, 122, 0.38);
     color: var(--green);
@@ -977,6 +1008,24 @@ code {
     vertical-align: middle;
 }
 
+/* A long badge in a panel heading (Retention's capacity warning) wraps instead of widening a
+   phone screen (6D.4). */
+.panel-heading {
+    flex-wrap: wrap;
+}
+
+.panel-heading > .status-badge,
+.panel-heading > .status-pill {
+    max-width: 100%;
+    white-space: normal;
+}
+
+/* Screen-reader labels inside a table are absolutely positioned. Without a positioned wrapper
+   they escape its horizontal scrolling and widen the whole page (Accounts, 6D.4). */
+.table-responsive {
+    position: relative;
+}
+
 .password-rules {
     color: var(--muted);
     font-size: 0.82rem;
@@ -1025,4 +1074,10 @@ code {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* Node health (6B.2): a stale computer's last report may no longer be true. */
+.health-stale td:not(:first-child):not(:nth-child(3)) {
+    color: var(--muted);
+    opacity: 0.7;
 }

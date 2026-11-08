@@ -184,13 +184,18 @@ def test_definer_helpers_have_narrow_owner_and_pinned_path(db):
         functions = cursor.fetchall()
         assert functions
         for schema, name, owner, config in functions:
-            assert owner == "algoguard_identity_owner", (schema, name, owner)
+            # The 6B.3 cleanup runs as its own role, which can delete but not manage identity.
+            expected = ("algoguard_retention_owner" if name.startswith("retention_")
+                        else "algoguard_identity_owner")
+            assert owner == expected, (schema, name, owner)
             assert 'search_path=""' in config or "search_path=" in config
         cursor.execute(
-            "select rolcanlogin,rolsuper,rolbypassrls from pg_roles "
-            "where rolname='algoguard_identity_owner'"
+            "select rolname,rolcanlogin,rolsuper,rolbypassrls from pg_roles "
+            "where rolname in ('algoguard_identity_owner','algoguard_retention_owner') "
+            "order by rolname"
         )
-        assert cursor.fetchone() == (False, False, False)
+        assert cursor.fetchall() == [("algoguard_identity_owner", False, False, False),
+                                     ("algoguard_retention_owner", False, False, False)]
 
 
 def test_service_can_resolve_only_explicitly_granted_administration_rpc(db):

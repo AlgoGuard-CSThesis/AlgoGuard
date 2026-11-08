@@ -1,0 +1,1115 @@
+{
+  "mode": "batched (fixed path)",
+  "model": "saved_models\\run_7\\stacking.joblib",
+  "feature_columns": 18,
+  "interface": "Intel(R) Wi-Fi 6 AX203",
+  "started": "2026-10-23 10:51:10",
+  "seconds": 90.0,
+  "capture_counters": {
+    "packets": 4422,
+    "dropped": 0,
+    "excluded": 0,
+    "excluded_cloud": 0,
+    "flows": 179,
+    "active_flows": 32
+  },
+  "flows": 179,
+  "end_reasons": {
+    "rst": 78,
+    "fin": 8,
+    "idle_timeout": 93
+  },
+  "lag_teardown_ms (fin/rst, excludes timeouts)": {
+    "n": 86,
+    "p50": 200.8,
+    "p95": 343.1,
+    "max": 352.6,
+    "mean": 197.7
+  },
+  "model_call_ms": {
+    "n": 89,
+    "p50": 71.5,
+    "p95": 136.1
+  },
+  "batch_size": {
+    "max": 8,
+    "mean": 2.01
+  },
+  "attack_share": 0.9441,
+  "flows_detail": [
+    {
+      "end_reason": "rst",
+      "lag_ms": 352.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 344.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 340.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 339.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 312.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 282.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 267.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 135.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 91.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 185.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 171.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 170.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 159.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 134.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 132.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 99.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 75.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 107.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 246.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 147.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16001.8,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16110.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15698.9,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15947.5,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15652.2,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15652.1,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15250.6,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15195.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15503.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15650.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15117.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15085.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16083.9,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15280.5,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15555.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15160.2,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 105.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 98.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 95.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15700.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15204.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15768.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15987.1,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15426.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15256.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15413.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15199.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15915.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15769.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15310.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 88.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15253.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15789.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15557.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15369.1,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 349.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 338.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 314.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 313.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 311.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 267.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 255.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 80.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15656.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 278.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 275.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 274.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 343.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15298.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 277.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 206.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15540.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15196.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 78.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16179.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16044.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15767.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15333.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15065.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 81.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15178.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15650.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16021.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15637.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 45.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15692.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 47.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15663.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15074.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15660.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15968.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15444.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15319.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15097.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 80.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15895.9,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15870.7,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15433.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15868.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15437.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15465.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 105.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15379.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15234.0,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 148.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 149.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 87.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15907.7,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15907.7,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15081.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15811.1,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15475.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15348.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15055.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15260.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 72.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 109.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 109.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15297.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15279.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15129.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15552.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15286.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 130.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 213.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 161.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 47.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15441.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 234.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 315.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 291.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 256.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 256.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 209.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 148.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15957.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 64.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 126.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16021.4,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15803.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15525.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15180.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 279.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 255.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 249.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 229.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 183.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 149.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15448.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15982.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15401.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15463.1,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15704.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 220.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 219.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 217.2,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 200.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 167.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 197.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 190.7,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 237.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 345.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 342.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 318.0,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 270.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 263.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 263.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 141.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15074.8,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "rst",
+      "lag_ms": 49.3,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15429.9,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 16104.5,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15753.5,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15467.1,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15367.4,
+      "prediction": "Normal",
+      "service": "-"
+    },
+    {
+      "end_reason": "fin",
+      "lag_ms": 70.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15438.4,
+      "prediction": "Attack",
+      "service": "ssl"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15109.9,
+      "prediction": "Attack",
+      "service": "-"
+    },
+    {
+      "end_reason": "idle_timeout",
+      "lag_ms": 15402.6,
+      "prediction": "Attack",
+      "service": "ssl"
+    }
+  ]
+}

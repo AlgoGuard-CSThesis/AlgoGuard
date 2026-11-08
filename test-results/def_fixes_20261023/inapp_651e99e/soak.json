@@ -1,0 +1,117 @@
+{
+  "started": "2026-10-24 00:21:22",
+  "stopped": "2026-10-24 00:51:33",
+  "readings": [
+    {
+      "time": "2026-10-24 00:26:26",
+      "elapsed_s": 300,
+      "flows": "758",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 38.023 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:31:26",
+      "elapsed_s": 600,
+      "flows": "1,512",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 37.048 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:36:26",
+      "elapsed_s": 900,
+      "flows": "2,270",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 36.141 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:41:27",
+      "elapsed_s": 1200,
+      "flows": "3,033",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 35.381 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:46:26",
+      "elapsed_s": 1500,
+      "flows": "3,793",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 34.868 ms",
+      "message": ""
+    },
+    {
+      "time": "2026-10-24 00:51:26",
+      "elapsed_s": 1800,
+      "flows": "4,554",
+      "persisted": "300 (capped)",
+      "pending": "0",
+      "latency": "Average latency 34.530 ms",
+      "message": ""
+    }
+  ],
+  "final": {
+    "attack_ratio": 67.65,
+    "authorization_ends_at": 1792775226,
+    "avg_detection_lag_ms": 0,
+    "avg_latency_ms": 34.53,
+    "capped": true,
+    "capture": null,
+    "capture_id": 49,
+    "cloud": true,
+    "dataset": "algoguard_biggest.csv",
+    "dataset_label": "Sample traffic - 20,000 flows",
+    "deployment": {
+      "deployment_id": 2,
+      "manifest_id": 2,
+      "model_id": 2,
+      "model_name": "Stacking Ensemble",
+      "object_sha256": "1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29",
+      "run_id": 2
+    },
+    "error_message": null,
+    "order": "sequential",
+    "persist": "attacks",
+    "row_total": 20000,
+    "session_id": "ca0bc2c0-12e9-410e-a57c-b459fa791b83",
+    "source_name": null,
+    "source_type": "csv",
+    "speed": "fast",
+    "started_at": "2026-10-23 16:21:22",
+    "state": "stopped",
+    "stopped_at": "2026-10-23T16:51:28.581+00:00",
+    "storage_stopped": false,
+    "synchronization": {
+      "dropped": 2784,
+      "in_memory": 0,
+      "pending": 0,
+      "rejected": 0,
+      "reserved": 300,
+      "storage_stopped": false,
+      "synced": 300
+    },
+    "totals": {
+      "alerts": 300,
+      "attacks": 3084,
+      "flows": 4559,
+      "labelled": 4559,
+      "mismatches": 47,
+      "normals": 1475,
+      "persisted": 300,
+      "queued": 300
+    },
+    "upload": {
+      "last_success_age_seconds": 0.5,
+      "reason": null,
+      "retry_in_seconds": null,
+      "state": "active"
+    }
+  }
+}

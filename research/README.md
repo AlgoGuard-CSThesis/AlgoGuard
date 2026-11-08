@@ -17,3 +17,10 @@ These files are archived research evidence. Some notebooks and result tables use
 earlier experimental model combinations and do not define the current runtime
 architecture. The active application implementation lives in `services/` and is
 verified by `tests/`.
+
+Stage 6A (Iteration 6) evidence about the deployed model lives outside this folder:
+`docs/migration/06a-evidence.md` summarises it, and `test-results/iter6_6a/` holds the predeclared
+protocols, scripts and results (feature fidelity against Argus, the untouched UNSW-NB15 evaluation,
+calibration and latency). The official UNSW-NB15 files used there are downloaded into
+`dataset/processed/` and stay out of git; note that `dataset/raw/UNSW_NB15_training-set.csv` is
+byte-identical to the official testing partition.

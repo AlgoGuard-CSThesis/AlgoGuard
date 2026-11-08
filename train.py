@@ -42,7 +42,7 @@ def live_schema_note(feature_columns):
     """Explain when a model cannot run on captured traffic (DEF-08), or return None.
 
     Local mode may train on other column sets for Manual Prediction and CSV replay; Live
-    Monitor packet capture and cloud publishing accept only the 15 flow features.
+    Monitor packet capture and cloud publishing accept only the 16 flow features.
     """
     missing = [column for column in FLOW_FEATURE_COLUMNS if column not in feature_columns]
     extra = [column for column in feature_columns if column not in FLOW_FEATURE_COLUMNS]
@@ -51,7 +51,7 @@ def live_schema_note(feature_columns):
     parts = ([f"missing {', '.join(missing)}"] if missing else []) + (
         [f"extra {', '.join(extra)}"] if extra else [])
     return (
-        f"these features are not the 15 live flow features ({'; '.join(parts)}). The model "
+        f"these features are not the 16 live flow features ({'; '.join(parts)}). The model "
         "works for Manual Prediction and CSV replay with the same columns, but Live Monitor "
         "packet capture and cloud publishing will refuse it."
     )
@@ -228,11 +228,20 @@ def build_parser():
             "the Stacking Ensemble for the web application to use."
         ),
     )
-    parser.add_argument("csv_path", help="Path to a labelled network traffic CSV.")
+    parser.add_argument("csv_path", nargs="?", help="Path to a labelled network traffic CSV.")
     parser.add_argument(
         "--deploy",
         action="store_true",
         help="Deploy the Stacking Ensemble if it passes the quality gate.",
+    )
+    parser.add_argument(
+        "--deploy-run",
+        type=int,
+        metavar="RUN_ID",
+        help=(
+            "Deploy the Stacking Ensemble of an already trained run, without training "
+            "again (for a run that was evaluated before deployment)."
+        ),
     )
     parser.add_argument(
         "--admin",
@@ -251,7 +260,19 @@ def build_parser():
 
 
 def main(argv=None):
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
+
+    if args.deploy_run is not None:
+        if args.csv_path or args.deploy:
+            parser.error("--deploy-run takes no CSV and no --deploy.")
+        initialize_database()
+        admin_id = _resolve_admin_id(args.admin)
+        if admin_id is None:
+            return 1
+        return 0 if _deploy_stacking(args.deploy_run, admin_id) else 1
+    if not args.csv_path:
+        parser.error("a CSV path is required unless --deploy-run is given.")
 
     csv_path = os.path.abspath(args.csv_path)
     if not os.path.isfile(csv_path):

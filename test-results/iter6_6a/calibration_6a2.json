@@ -1,0 +1,72 @@
+{
+  "model": "saved_models\\run_8\\stacking.joblib",
+  "calibration_set_rows": 15939,
+  "attacks": 6174,
+  "brier": 0.03716,
+  "ece": 0.0145,
+  "ece_limit": 0.05,
+  "reliability": [
+    {
+      "bin": "0.0-0.1",
+      "rows": 9242,
+      "mean_attack_probability": 0.0133,
+      "observed_attack_rate": 0.0234
+    },
+    {
+      "bin": "0.1-0.2",
+      "rows": 327,
+      "mean_attack_probability": 0.1436,
+      "observed_attack_rate": 0.3119
+    },
+    {
+      "bin": "0.2-0.3",
+      "rows": 197,
+      "mean_attack_probability": 0.247,
+      "observed_attack_rate": 0.3655
+    },
+    {
+      "bin": "0.3-0.4",
+      "rows": 134,
+      "mean_attack_probability": 0.3491,
+      "observed_attack_rate": 0.4104
+    },
+    {
+      "bin": "0.4-0.5",
+      "rows": 111,
+      "mean_attack_probability": 0.4523,
+      "observed_attack_rate": 0.5495
+    },
+    {
+      "bin": "0.5-0.6",
+      "rows": 104,
+      "mean_attack_probability": 0.548,
+      "observed_attack_rate": 0.5673
+    },
+    {
+      "bin": "0.6-0.7",
+      "rows": 138,
+      "mean_attack_probability": 0.6553,
+      "observed_attack_rate": 0.6232
+    },
+    {
+      "bin": "0.7-0.8",
+      "rows": 195,
+      "mean_attack_probability": 0.7526,
+      "observed_attack_rate": 0.8051
+    },
+    {
+      "bin": "0.8-0.9",
+      "rows": 327,
+      "mean_attack_probability": 0.8551,
+      "observed_attack_rate": 0.8349
+    },
+    {
+      "bin": "0.9-1.0",
+      "rows": 5164,
+      "mean_attack_probability": 0.9831,
+      "observed_attack_rate": 0.9863
+    }
+  ],
+  "adopted_calibrator": null,
+  "note": "ECE within the limit; no calibrator fitted (protocol rule 2)."
+}

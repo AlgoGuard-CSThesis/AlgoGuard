@@ -1,0 +1,58 @@
+﻿Loading evaluation data: research\dataset\processed\official_unsw\UNSW_NB15_training-set.csv
+  training rows from UNSW_NB15_training-set.csv: 82332
+Evaluation rows: 175341 loaded, 66602 removed as seen in training, 108739 kept
+Evaluating stacking.joblib (Stacking Ensemble) ...
+
+# Model evaluation — 2026-10-25T21:55:45
+
+- Commit: `8ca89bb` · Python 3.14.6 · scikit-learn 1.9.0
+- Model: `stacking.joblib` (Stacking Ensemble), trained 2026-10-23 03:19:00
+- Model SHA-256: `1fd819c1c08fbcdecbe8db3da590ef60abd770bceb1b811435d8bae570cf9f29`
+- Data: `UNSW_NB15_training-set.csv` — 175341 rows loaded, 66602 removed as seen in training, **108739 evaluated** (57836 attack, 50903 normal)
+
+## Results against the test plan targets (section 3.3)
+
+| Metric | Target | Measured | Result |
+|---|---|---|---|
+| accuracy | >= 0.9 | 0.8602 | Not met |
+| f1 | >= 0.9 | 0.8524 | Not met |
+| recall | >= 0.9 | 0.7589 | Not met |
+| false_positive_rate | <= 0.08 | 0.0248 | Met |
+| roc_auc | >= 0.95 | 0.9685 | Met |
+
+Precision 0.9720 · specificity 0.9752 · prediction 0.149 ms per row
+
+## Confusion matrix
+
+| | Predicted Normal | Predicted Attack |
+|---|---|---|
+| Actual Normal | 49639 | 1264 |
+| Actual Attack | 13942 | 43894 |
+
+## By attack category (SYS-03)
+
+| Category | Rows | Measure | Rate |
+|---|---|---|---|
+| Fuzzers | 14398 | recall (flagged as Attack) | 0.2192 |
+| Analysis | 1136 | recall (flagged as Attack) | 0.5326 |
+| Shellcode | 923 | recall (flagged as Attack) | 0.7898 |
+| Generic | 773 | recall (flagged as Attack) | 0.903 |
+| Reconnaissance | 6035 | recall (flagged as Attack) | 0.946 |
+| Worms | 123 | recall (flagged as Attack) | 0.9512 |
+| Exploits | 26454 | recall (flagged as Attack) | 0.9518 |
+| DoS | 7102 | recall (flagged as Attack) | 0.961 |
+| Normal | 50903 | specificity (labelled Normal) | 0.9752 |
+| Backdoor | 892 | recall (flagged as Attack) | 0.9821 |
+
+## Model comparison on the same rows (SYS-02)
+
+| Model | Accuracy | Recall | F1 | FPR | ROC-AUC | ms/row |
+|---|---|---|---|---|---|---|
+| Random Forest | 0.8618 | 0.7601 | 0.854 | 0.0227 | 0.9628 | 0.0096 |
+| Stacking Ensemble | 0.8602 | 0.7589 | 0.8524 | 0.0248 | 0.9685 | 0.1492 |
+| Gradient Boosting | 0.8515 | 0.7505 | 0.8431 | 0.0338 | 0.9653 | 0.0038 |
+| K-Nearest Neighbors | 0.8352 | 0.7254 | 0.824 | 0.0402 | 0.9018 | 0.089 |
+| AdaBoost | 0.8184 | 0.7224 | 0.8088 | 0.0725 | 0.9289 | 0.0311 |
+| Naive Bayes | 0.5844 | 0.2187 | 0.3589 | 0.0001 | 0.6325 | 0.0032 |
+
+Saved to test-results\iter6_6a\evaluation_final

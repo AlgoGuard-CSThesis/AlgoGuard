@@ -1,5 +1,6 @@
 """Tests for the Live Monitor's traffic sources, including PCAP replay."""
 
+import queue
 import sqlite3
 import threading
 import time
@@ -14,6 +15,7 @@ import config
 from services import live_monitor_service as monitor
 from services import traffic_source_service as traffic_sources
 from services.deployment_service import load_active_artifact
+from services.flow_tracker_service import PacketInfo
 from services.traffic_source_service import (
     CsvReplaySource,
     PcapReplaySource,
@@ -121,8 +123,7 @@ def test_pcap_source_aggregates_packets_into_flows(tmp_path):
     assert event["destination_port"] == 80
     assert event["record"]["state"] == "FIN"
     assert event["record"]["spkts"] >= 4
-    assert event["record"]["sttl"] == 62
-    assert event["record"]["dttl"] == 250
+    assert "sttl" not in event["record"]  # TTLs do not transfer from UNSW-NB15 to live traffic
 
 
 def test_pcap_source_rejects_captures_without_ip_flows(tmp_path):
@@ -318,6 +319,34 @@ def test_packet_monitor_rejects_incompatible_model_before_capture(
     close.assert_called_once()
 
 
+def test_live_capture_starts_only_when_the_monitor_is_ready(monkeypatch, deployed_stack):
+    """DEF-17: packets captured during start-up would wait in the queue for late verdicts."""
+    artifact, _ = load_active_artifact()
+    order = []
+    source = Mock(columns=artifact["feature_columns"], row_total=None, paced=False)
+    source.prepare.side_effect = lambda: order.append("start capture")
+    source.stats.return_value = {"packets": 0, "dropped": 0, "flows": 0}
+    source.next_event.side_effect = StopIteration
+    monkeypatch.setattr(monitor, "_make_source", lambda *args, **kwargs: source)
+    monkeypatch.setattr(monitor, "score_rows",
+                        lambda *args: order.append("warm up") or ([], 0.0))
+    scorer = Mock(fallback_reason=None)
+    scorer.score.return_value = ([], 0.0)
+    monkeypatch.setattr(monitor, "LiveScorer",
+                        lambda *args: order.append("inference process") or scorer)
+    monkeypatch.setattr(monitor, "insert_capture_session",
+                        lambda *args: order.append("capture record") or 7)
+    monkeypatch.setattr(monitor, "finalize_capture_session", lambda *args: None)
+    session = monitor._new_session("live", "test interface", None, "fast", "sequential",
+                                   "none", 1)
+
+    monitor._worker(session, threading.Event(), threading.Event())
+
+    assert order == ["warm up", "inference process", "capture record", "start capture"]
+    assert session["state"] == "completed"
+    scorer.close.assert_called_once()
+
+
 def test_packet_fixtures_do_not_resolve_network_addresses(monkeypatch, tmp_path):
     def reject_lookup(*args, **kwargs):
         raise AssertionError("Packet fixtures must not look up real network addresses")
@@ -439,6 +468,47 @@ def test_own_traffic_is_dropped_even_when_the_bpf_filter_did_not_apply():
     assert source.stats()["excluded"] == 1
 
 
+def test_live_source_backlog_reports_queued_packets_and_pending_flows():
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    assert source.backlog() is False
+
+    for flags in ("S", "R"):
+        packet = scapy_all.IP(src="192.0.2.1", dst="192.0.2.2") / scapy_all.TCP(
+            sport=40000, dport=80, flags=flags)
+        packet.time = 1000.0
+        source._on_packet(packet)
+    assert source.backlog() is True
+
+    assert source.next_event(timeout=0) is None  # SYN: the flow is still open
+    assert source.next_event(timeout=0) is None  # RST: held for packets still in flight
+    event = source.next_event(timeout=0)  # the hold has passed
+    assert event is not None and event["end_reason"] == "rst"
+    assert source.backlog() is False
+
+
+def test_replay_sources_report_a_backlog_until_exhausted(tmp_path, trained_bundle):
+    csv_path = tmp_path / "sample.csv"
+    trained_bundle["frame"].head(2).to_csv(csv_path, index=False)
+    csv_source = CsvReplaySource(str(csv_path))
+    csv_source.prepare()
+    assert csv_source.backlog() is True
+    csv_source.next_event()
+    csv_source.next_event()
+    assert csv_source.backlog() is False
+
+    pcap_source = PcapReplaySource(str(write_sample_pcap(tmp_path / "s.pcap", sessions=1)))
+    pcap_source.prepare()
+    flows = 0
+    while pcap_source.backlog():
+        try:
+            pcap_source.next_event(timeout=0)
+        except StopIteration:
+            break
+        flows += 1
+    assert flows == 2  # one HTTP session and one DNS exchange
+    assert pcap_source.backlog() is False
+
+
 def test_monitor_options_advertise_all_source_types():
     options = monitor.get_options()
     values = {item["value"] for item in options["sources"]}
@@ -447,13 +517,14 @@ def test_monitor_options_advertise_all_source_types():
     assert isinstance(options["captures"], list)
 
 
-@pytest.mark.parametrize("exception", [None, OSError("capture device disconnected")])
-def test_live_source_reports_a_capture_thread_that_exits_after_startup(exception):
+def test_live_source_reports_a_capture_process_that_stops_after_startup():
     source = traffic_sources.LiveCaptureSource("test interface")
-    source._sniffer = Mock(exception=exception)
-    source._sniffer.thread.is_alive.return_value = False
+    capture = Mock()
+    capture.receive.side_effect = traffic_sources.CaptureWorkerError("capture device disconnected")
+    source._capture = capture
+    source._track()
 
-    with pytest.raises(TrafficSourceError, match="capture.*stopped"):
+    with pytest.raises(TrafficSourceError, match="capture.*stopped.*disconnected"):
         source.next_event(timeout=0)
 
 
@@ -482,3 +553,73 @@ def test_ignored_packets_still_expire_idle_flows(monkeypatch, ignored_type):
     assert event["end_reason"] == "idle_timeout"
     assert event["destination_port"] == 53
     assert source.packets_captured == 1
+
+
+class FakeCapture:
+    """Stands in for the capture process: hands the tracking thread the frames a test queues."""
+
+    def __init__(self):
+        self.frames = queue.Queue()
+
+    def send(self, *infos):
+        self.frames.put(("packets", list(infos), None, 0))
+
+    def receive(self):
+        frame = self.frames.get(timeout=10)
+        if isinstance(frame, Exception):
+            raise frame
+        return frame
+
+    def close(self, wait=True):
+        self.frames.put(traffic_sources.CaptureWorkerError("closed"))
+
+
+def start_tracking(source):
+    """What prepare() does once the capture process runs, without a capture device."""
+    capture = FakeCapture()
+    source._capture = capture
+    source._worker = threading.Thread(target=source._track, daemon=True)
+    source._worker.start()
+    return capture
+
+
+def tcp_info(ts, flags):
+    return PacketInfo(ts=ts, src_ip="192.0.2.1", dst_ip="192.0.2.2", src_port=40001, dst_port=80,
+                      proto="tcp", length=40, ttl=64, tcp_flags=flags)
+
+
+def test_live_flows_finish_while_the_monitor_is_busy_classifying():
+    """DEF-17: a dedicated thread turns captured packets into flows; next_event is not needed."""
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    capture = start_tracking(source)
+    try:
+        capture.send(tcp_info(1000.0, "S"), tcp_info(1000.0, "R"))
+        deadline = time.time() + 5
+        while not source.backlog() and time.time() < deadline:
+            time.sleep(0.01)
+        assert source.backlog() is True  # finished before the monitor asked for it
+        event = source.next_event(timeout=0)
+        assert event is not None and event["end_reason"] == "rst"
+        assert source.packets_captured == 2
+        assert source.backlog() is False
+    finally:
+        source.close()
+    worker = source._worker
+    assert worker is not None
+    worker.join(timeout=5)
+    assert not worker.is_alive()
+
+
+def test_a_failing_flow_tracker_thread_is_reported(monkeypatch):
+    source = traffic_sources.LiveCaptureSource("test interface", exclude_ports={5000})
+    monkeypatch.setattr(source._tracker, "add_packet", Mock(side_effect=RuntimeError("bad packet")))
+    capture = start_tracking(source)
+    try:
+        capture.send(tcp_info(1000.0, "S"))
+        worker = source._worker
+        assert worker is not None
+        worker.join(timeout=5)
+        with pytest.raises(TrafficSourceError, match="Flow tracking stopped"):
+            source.next_event(timeout=0)
+    finally:
+        source.close()

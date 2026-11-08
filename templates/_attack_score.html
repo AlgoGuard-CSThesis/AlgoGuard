@@ -1,0 +1,14 @@
+{# Attack score (Stage 6A.3): the model's probability that a flow is an attack, in the bands of the
+   stored policy. The band is always written out, so color is never the only signal. Records
+   stored before scores existed show a neutral label and their legacy severity, never a score. #}
+{% macro attack_score(probability, band, legacy_severity=none) -%}
+{%- if band and probability is not none -%}
+<span class="status-badge score-{{ band|lower|replace(' ', '-') }}" title="Attack score: the model's estimated probability that this flow is an attack">{{ band }} &middot; {{ '%.1f'|format(probability * 100) }}%</span>
+{%- else -%}
+<span class="status-badge score-none" title="Recorded before attack scores were stored">Not scored</span>{% if legacy_severity %}<small>Legacy severity: {{ legacy_severity }}</small>{% endif %}
+{%- endif %}
+{%- endmacro %}
+
+{% macro attack_score_note() -%}
+Attack score is the model's estimated probability that a flow is an attack: Low below 50%, Medium from 50%, High from 70%, Very high from 90%. It does not measure impact, and it is not a calibrated probability: on traffic unlike the training data, live traffic included, it overstates attacks.
+{%- endmacro %}

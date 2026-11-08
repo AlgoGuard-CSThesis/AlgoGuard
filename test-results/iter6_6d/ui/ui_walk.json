@@ -1,0 +1,912 @@
+{
+  "pages_visited": 65,
+  "distinct_pages": [
+    [
+      "admin",
+      "account-created"
+    ],
+    [
+      "admin",
+      "accounts"
+    ],
+    [
+      "admin",
+      "alerts"
+    ],
+    [
+      "admin",
+      "computers"
+    ],
+    [
+      "admin",
+      "dashboard"
+    ],
+    [
+      "admin",
+      "logged-out"
+    ],
+    [
+      "admin",
+      "login-refused"
+    ],
+    [
+      "admin",
+      "logs"
+    ],
+    [
+      "admin",
+      "monitor"
+    ],
+    [
+      "admin",
+      "nodes"
+    ],
+    [
+      "admin",
+      "not-found"
+    ],
+    [
+      "admin",
+      "predict"
+    ],
+    [
+      "admin",
+      "report-detail"
+    ],
+    [
+      "admin",
+      "reports"
+    ],
+    [
+      "admin",
+      "retention-preview"
+    ],
+    [
+      "analyst",
+      "alerts"
+    ],
+    [
+      "analyst",
+      "dashboard"
+    ],
+    [
+      "analyst",
+      "logged-out"
+    ],
+    [
+      "analyst",
+      "login-refused"
+    ],
+    [
+      "analyst",
+      "logs"
+    ],
+    [
+      "analyst",
+      "monitor"
+    ],
+    [
+      "analyst",
+      "monitor-csv-ended"
+    ],
+    [
+      "analyst",
+      "monitor-csv-running"
+    ],
+    [
+      "analyst",
+      "monitor-live-ended"
+    ],
+    [
+      "analyst",
+      "monitor-live-running"
+    ],
+    [
+      "analyst",
+      "monitor-pcap-ended"
+    ],
+    [
+      "analyst",
+      "monitor-pcap-running"
+    ],
+    [
+      "analyst",
+      "nodes"
+    ],
+    [
+      "analyst",
+      "not-found"
+    ],
+    [
+      "analyst",
+      "predict"
+    ],
+    [
+      "analyst",
+      "predict-result"
+    ],
+    [
+      "analyst",
+      "report-created"
+    ],
+    [
+      "analyst",
+      "reports"
+    ]
+  ],
+  "problems": [],
+  "overflowing": [],
+  "sessions": [
+    {
+      "viewport": "desktop",
+      "source": "csv",
+      "feed_rows": 50,
+      "state": "completed",
+      "message": "The traffic source finished streaming.",
+      "seconds": 12.5,
+      "score_band_shown": true
+    },
+    {
+      "viewport": "desktop",
+      "source": "pcap",
+      "feed_rows": 11,
+      "state": "completed",
+      "message": "The traffic source finished streaming.",
+      "seconds": 12.2,
+      "score_band_shown": true
+    },
+    {
+      "viewport": "desktop",
+      "source": "live",
+      "feed_rows": 1,
+      "state": "stopped",
+      "message": "",
+      "seconds": 25.5,
+      "score_band_shown": false
+    },
+    {
+      "viewport": "phone",
+      "source": "csv",
+      "feed_rows": 50,
+      "state": "completed",
+      "message": "The traffic source finished streaming.",
+      "seconds": 12.2,
+      "score_band_shown": true
+    },
+    {
+      "viewport": "phone",
+      "source": "pcap",
+      "feed_rows": 11,
+      "state": "completed",
+      "message": "The traffic source finished streaming.",
+      "seconds": 12.1,
+      "score_band_shown": true
+    },
+    {
+      "viewport": "phone",
+      "source": "live",
+      "feed_rows": 1,
+      "state": "stopped",
+      "message": "",
+      "seconds": 25.5,
+      "score_band_shown": false
+    }
+  ],
+  "pages": [
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "login-refused",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-login-refused.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "dashboard",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/",
+      "title": "AlgoGuard Dashboard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-dashboard.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "predict",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/simulation",
+      "title": "Manual Prediction | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-predict.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "predict-result",
+      "status": null,
+      "url": "http://127.0.0.1:5078/simulation",
+      "title": "Manual Prediction | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-predict-result.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor-csv-running",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor-csv-running.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor-csv-ended",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor-csv-ended.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor-pcap-running",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor-pcap-running.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor-pcap-ended",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor-pcap-ended.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor-live-running",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor-live-running.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "monitor-live-ended",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-monitor-live-ended.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "alerts",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/alerts",
+      "title": "Alerts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-alerts.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "report-created",
+      "status": null,
+      "url": "http://127.0.0.1:5078/reports/6419",
+      "title": "Report #6419 | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-report-created.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "reports",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/reports",
+      "title": "Reports | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-reports.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "logs",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/logs",
+      "title": "System Logs | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-logs.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "nodes",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/nodes",
+      "title": "Nodes | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-nodes.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "not-found",
+      "status": 404,
+      "url": "http://127.0.0.1:5078/no-such-page",
+      "title": "Page not found | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-not-found.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "analyst",
+      "page": "logged-out",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login?logged_out=1",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-analyst-logged-out.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "login-refused",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-login-refused.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "dashboard",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/",
+      "title": "AlgoGuard Dashboard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-dashboard.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "accounts",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/admins",
+      "title": "Accounts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-accounts.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "account-created",
+      "status": null,
+      "url": "http://127.0.0.1:5078/admins",
+      "title": "Accounts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-account-created.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "nodes",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/nodes",
+      "title": "Nodes | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-nodes.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "computers",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/computers",
+      "title": "Computers | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-computers.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "retention-preview",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/retention",
+      "title": "Retention | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-retention-preview.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "alerts",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/alerts",
+      "title": "Alerts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-alerts.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "reports",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/reports",
+      "title": "Reports | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-reports.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "report-detail",
+      "status": null,
+      "url": "http://127.0.0.1:5078/reports/6419",
+      "title": "Report #6419 | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-report-detail.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "logs",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/logs",
+      "title": "System Logs | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-logs.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "monitor",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-monitor.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "predict",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/simulation",
+      "title": "Manual Prediction | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-predict.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "not-found",
+      "status": 404,
+      "url": "http://127.0.0.1:5078/no-such-page",
+      "title": "Page not found | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-not-found.jpg"
+    },
+    {
+      "viewport": "desktop",
+      "role": "admin",
+      "page": "logged-out",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login?logged_out=1",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "desktop-admin-logged-out.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "login-refused",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-login-refused.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "dashboard",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/",
+      "title": "AlgoGuard Dashboard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-dashboard.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "predict",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/simulation",
+      "title": "Manual Prediction | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-predict.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "predict-result",
+      "status": null,
+      "url": "http://127.0.0.1:5078/simulation",
+      "title": "Manual Prediction | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-predict-result.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor-csv-running",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor-csv-running.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor-csv-ended",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor-csv-ended.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor-pcap-running",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor-pcap-running.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor-pcap-ended",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor-pcap-ended.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor-live-running",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor-live-running.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "monitor-live-ended",
+      "status": null,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-monitor-live-ended.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "alerts",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/alerts",
+      "title": "Alerts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-alerts.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "report-created",
+      "status": null,
+      "url": "http://127.0.0.1:5078/reports/6420",
+      "title": "Report #6420 | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-report-created.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "reports",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/reports",
+      "title": "Reports | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-reports.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "logs",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/logs",
+      "title": "System Logs | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-logs.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "nodes",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/nodes",
+      "title": "Nodes | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-nodes.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "not-found",
+      "status": 404,
+      "url": "http://127.0.0.1:5078/no-such-page",
+      "title": "Page not found | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-not-found.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "analyst",
+      "page": "logged-out",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login?logged_out=1",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-analyst-logged-out.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "login-refused",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-login-refused.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "dashboard",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/",
+      "title": "AlgoGuard Dashboard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-dashboard.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "accounts",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/admins",
+      "title": "Accounts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-accounts.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "nodes",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/nodes",
+      "title": "Nodes | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-nodes.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "computers",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/computers",
+      "title": "Computers | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-computers.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "retention-preview",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/retention",
+      "title": "Retention | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-retention-preview.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "alerts",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/alerts",
+      "title": "Alerts | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-alerts.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "reports",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/reports",
+      "title": "Reports | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-reports.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "report-detail",
+      "status": null,
+      "url": "http://127.0.0.1:5078/reports/6420",
+      "title": "Report #6420 | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-report-detail.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "logs",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/logs",
+      "title": "System Logs | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-logs.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "monitor",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/monitor",
+      "title": "Live Monitor | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-monitor.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "predict",
+      "status": 200,
+      "url": "http://127.0.0.1:5078/simulation",
+      "title": "Manual Prediction | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-predict.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "not-found",
+      "status": 404,
+      "url": "http://127.0.0.1:5078/no-such-page",
+      "title": "Page not found | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-not-found.jpg"
+    },
+    {
+      "viewport": "phone",
+      "role": "admin",
+      "page": "logged-out",
+      "status": null,
+      "url": "http://127.0.0.1:5078/login?logged_out=1",
+      "title": "Login | AlgoGuard",
+      "overflow_px": 0,
+      "overflowing_elements": [],
+      "screenshot": "phone-admin-logged-out.jpg"
+    }
+  ]
+}

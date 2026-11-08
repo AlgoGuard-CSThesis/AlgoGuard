@@ -4,8 +4,8 @@ Stage 5A.2 requires privileged tools to load a separate credential source
 from the analyst application, and requires that maintainer credentials never
 enter analyst configuration.
 
-Before this module existed, `check_db_connection.py` and `measure_latency.py`
-both called a bare `load_dotenv()`, which loads the *analyst* `.env`. That
+Before this module existed, `check_db_connection.py` and the Stage 5A latency
+tool both called a bare `load_dotenv()`, which loads the *analyst* `.env`. That
 meant `DATABASE_URL` — a maintainer credential, documented as such in
 `.env.maintainer.example` — had to be written into the analyst file for those
 scripts to work, contradicting the split the stage delivers.

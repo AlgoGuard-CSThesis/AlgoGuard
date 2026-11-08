@@ -19,6 +19,7 @@ Three traffic sources feed the same classification loop (see
 
 import math
 import os
+import sys
 import threading
 import time
 from collections import deque
@@ -30,6 +31,7 @@ import numpy as np
 import pandas as pd
 
 from config import get_config
+from services.alert_policy import attack_score_fields
 from services.database_service import (
     finalize_capture_session,
     insert_capture_session,
@@ -38,6 +40,10 @@ from services.database_service import (
     utc_now,
 )
 from services.deployment_service import DeploymentError, load_active_artifact
+from services.inference_worker import LiveScorer
+
+# classify_rows stays importable from here for the cycle-1 lag harness and older callers.
+from services.scoring_service import classify_rows, score_rows  # noqa: F401
 from services.traffic_source_service import (
     CsvReplaySource,
     LiveCaptureSource,
@@ -62,7 +68,7 @@ DATASET_CHOICES = {
     "algoguard_bigger.csv": "Sample traffic - 10,000 flows",
     "algoguard_biggest.csv": "Sample traffic - 20,000 flows",
 }
-SPEED_CHOICES = {"slow": 2.0, "normal": 1.0, "fast": 0.35}
+SPEED_CHOICES = {"slow": 2.0, "normal": 1.0, "fast": 0.35, "max": 0.0}
 ORDER_CHOICES = {"sequential": "Sequential", "random": "Randomised"}
 PERSIST_CHOICES = {
     "none": "Session only",
@@ -79,6 +85,15 @@ DEFAULT_PERSIST = "attacks"
 FEED_MAXLEN = 250
 MAX_EVENTS_PER_POLL = 100
 MAX_PERSISTED_PER_SESSION = 300
+# Flows already waiting are classified together: the Stacking Ensemble takes about as long
+# for fifty rows as for one, so a burst no longer queues behind one model call per flow.
+MAX_BATCH = 64
+BATCH_WINDOW_SECONDS = 0.05
+# Python passes its interpreter lock between busy threads every 5 ms by default. A prediction
+# gives the lock up hundreds of times (each tree runs without it), and while capture, upload or
+# page threads are busy every hand-back can wait the full interval: one busy thread made a 70 ms
+# prediction take about a second (DEF-17). At 0.5 ms the same prediction takes about 0.2 s.
+SWITCH_INTERVAL_SECONDS = 0.0005
 ACTIVE_STATES = ("starting", "running", "paused", "stopping")
 TERMINAL_STATES = ("idle", "stopped", "completed", "error")
 
@@ -246,6 +261,34 @@ def _build_flow_row(record, feature_columns, numeric_columns, defaults):
     return row
 
 
+def prefer_low_latency():
+    """Shorten the interpreter's thread switch interval for monitoring (process-wide)."""
+    if sys.getswitchinterval() > SWITCH_INTERVAL_SECONDS:
+        sys.setswitchinterval(SWITCH_INTERVAL_SECONDS)
+
+
+def collect_batch(source, first_event, pacing):
+    """Return ``first_event`` plus the events already waiting, and whether the source ended.
+
+    A paced replay classifies one flow per step. Otherwise every flow that can be read without
+    waiting joins the batch, up to ``MAX_BATCH`` flows or ``BATCH_WINDOW_SECONDS`` of reading.
+    """
+    batch = [first_event]
+    if pacing:
+        return batch, False
+    deadline = time.perf_counter() + BATCH_WINDOW_SECONDS
+    while len(batch) < MAX_BATCH and time.perf_counter() < deadline and source.backlog():
+        try:
+            event = source.next_event(timeout=0)
+        except StopIteration:
+            return batch, True
+        except TrafficSourceCancelled:
+            break  # The stop event is set; the worker stops after this batch.
+        if event is not None:
+            batch.append(event)
+    return batch, False
+
+
 def _should_persist(mode, prediction):
     if mode == "none":
         return False
@@ -269,6 +312,7 @@ def _store_flow(deployment, flow_data, result, source_tag):
         deployment_id=deployment.get("deployment_id"),
         model_name=deployment.get("model_name"),
         latency_ms=result["latency_ms"],
+        attack_probability=result["attack_probability"],
         create_alert=is_attack,
         alert_description=(
             f"Attack detected by {deployment.get('model_name')} during live monitoring."
@@ -398,7 +442,7 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                     "features before starting packet monitoring."
                 )
             raise LiveMonitorError(message)
-        if source_type != "csv":
+        if source_type == "pcap":
             source.prepare()
     except TrafficSourceCancelled:
         if source is not None:
@@ -422,11 +466,31 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
     # The stack's first prediction pays a one-off warm-up cost. Spend it here,
     # while the page still shows "starting", so the feed opens at full speed and
     # the reported average latency reflects steady-state inference.
+    prefer_low_latency()
+    warmup_row = _build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
     try:
-        warmup_row = _build_flow_row(dict(defaults), feature_columns, numeric_columns, defaults)
-        pipeline.predict(pd.DataFrame([warmup_row], columns=feature_columns))
+        score_rows(pipeline, [warmup_row], feature_columns)
     except Exception:
         pass
+
+    # Live capture scores in a separate process so the capture threads are never kept waiting
+    # behind a prediction (DEF-17); replays have no capture threads and score here.
+    scorer = None
+    if source_type == "live":
+        scorer = LiveScorer(pipeline, feature_columns,
+                            lambda model, rows, columns: score_rows(model, rows, columns))
+        cleanup.callback(scorer.close)
+        if scorer.fallback_reason:
+            log_system_event(
+                admin_id, "Live Monitor", "inference_process_unavailable", "Warning",
+                message=(f"{scorer.fallback_reason} Flows are scored inside the monitor; "
+                         "verdicts may be slower under load."),
+            )
+        else:
+            try:
+                scorer.score([warmup_row])
+            except Exception:
+                pass
 
     if stop_event.is_set():
         cleanup.close()
@@ -463,9 +527,23 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
         model_name=deployment_summary["model_name"],
     )
 
+    if source_type == "live":
+        # Capture starts only now that the loop is ready to read packets, so flows ending during
+        # start-up do not wait in the queue for a late verdict (DEF-17).
+        try:
+            source.prepare()
+        except TrafficSourceError as error:
+            with _LOCK:
+                session["error_message"] = str(error)
+            log_system_event(admin_id, "Live Monitor", "monitor_failed", "Failed",
+                             message=str(error))
+            cleanup.close()
+            return "error"
+
     final_state = "completed"
     row_index = -1
     last_capture_refresh = 0.0
+    pacing = source.paced and paced_interval > 0
     try:
         while True:
             if stop_event.is_set():
@@ -495,111 +573,120 @@ def _run_worker(session, stop_event, pause_event, cleanup, resources):
                     with _LOCK:
                         session["capture"] = stats_snapshot
                 continue
-            row_index += 1
 
-            record = event_data["record"]
-            actual = event_data["actual"]
-            flow_row = _build_flow_row(record, feature_columns, numeric_columns, defaults)
-            input_frame = pd.DataFrame([flow_row], columns=feature_columns)
+            batch, source_ended = collect_batch(source, event_data, pacing)
+            flow_rows = [
+                _build_flow_row(item["record"], feature_columns, numeric_columns, defaults)
+                for item in batch
+            ]
+            if scorer is not None:
+                verdicts, latency_ms = scorer.score(flow_rows)
+            else:
+                verdicts, latency_ms = score_rows(pipeline, flow_rows, feature_columns)
+            for event_data, flow_row, (predicted_value, confidence, attack_score) in zip(
+                batch, flow_rows, verdicts
+            ):
+                row_index += 1
+                record = event_data["record"]
+                actual = event_data["actual"]
+                prediction = "Attack" if predicted_value == 1 else "Normal"
+                detection_lag_ms = tracking_lag_ms = None
+                if source_type == "live" and event_data.get("flow_last_ts"):
+                    detection_lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
+                    if event_data.get("finished_at"):
+                        tracking_lag_ms = max(
+                            (event_data["finished_at"] - event_data["flow_last_ts"]) * 1000, 0.0)
 
-            start = time.perf_counter()
-            predicted_value = int(pipeline.predict(input_frame)[0])
-            probabilities = np.asarray(pipeline.predict_proba(input_frame))[0]
-            classes = list(pipeline.classes_)
-            confidence = (
-                float(probabilities[classes.index(predicted_value)])
-                if predicted_value in classes
-                else 0.0
-            )
-            latency_ms = (time.perf_counter() - start) * 1000
+                flow_data = {column: _json_safe(value) for column, value in flow_row.items()}
+                flow_data["source_ip"] = event_data["source_ip"]
+                flow_data["destination_ip"] = event_data["destination_ip"]
+                flow_data["source_port"] = event_data["source_port"]
+                flow_data["destination_port"] = event_data["destination_port"]
+                flow_data["protocol"] = event_data["protocol"]
+                flow_data["timestamp"] = utc_now()
 
-            prediction = "Attack" if predicted_value == 1 else "Normal"
-            detection_lag_ms = None
-            if source_type == "live" and event_data.get("flow_last_ts"):
-                detection_lag_ms = max((time.time() - event_data["flow_last_ts"]) * 1000, 0.0)
+                result = {
+                    "prediction": prediction,
+                    "confidence": round(confidence * 100, 2),
+                    "latency_ms": round(latency_ms, 3),
+                    **attack_score_fields(attack_score),
+                }
 
-            flow_data = {column: _json_safe(value) for column, value in flow_row.items()}
-            flow_data["source_ip"] = event_data["source_ip"]
-            flow_data["destination_ip"] = event_data["destination_ip"]
-            flow_data["source_port"] = event_data["source_port"]
-            flow_data["destination_port"] = event_data["destination_port"]
-            flow_data["protocol"] = event_data["protocol"]
-            flow_data["timestamp"] = utc_now()
+                # Decide under the lock, write outside it, then record the outcome.
+                with _LOCK:
+                    persist_mode = session["persist"]
+                    deployment_target = session["deployment"] or {}
+                    at_cap = session["totals"]["persisted"] >= MAX_PERSISTED_PER_SESSION
 
-            result = {
-                "prediction": prediction,
-                "confidence": round(confidence * 100, 2),
-                "latency_ms": round(latency_ms, 3),
-            }
+                store = _should_persist(persist_mode, prediction)
+                hit_cap = store and at_cap
+                prediction_id = alert_id = None
+                if store and not at_cap:
+                    prediction_id, alert_id = _store_flow(
+                        deployment_target, flow_data, result, source_tag
+                    )
 
-            # Decide under the lock, write outside it, then record the outcome.
-            with _LOCK:
-                persist_mode = session["persist"]
-                deployment_target = session["deployment"] or {}
-                at_cap = session["totals"]["persisted"] >= MAX_PERSISTED_PER_SESSION
+                with _LOCK:
+                    if hit_cap:
+                        session["capped"] = True
+                    if prediction_id is not None:
+                        session["totals"]["persisted"] += 1
+                    if alert_id is not None:
+                        session["totals"]["alerts"] += 1
+                    totals = session["totals"]
+                    totals["flows"] += 1
+                    if prediction == "Attack":
+                        totals["attacks"] += 1
+                    else:
+                        totals["normals"] += 1
+                    if actual is not None:
+                        totals["labelled"] += 1
+                        if actual != prediction:
+                            totals["mismatches"] += 1
+                    session["latency_total_ms"] += latency_ms
+                    session["avg_latency_ms"] = session["latency_total_ms"] / totals["flows"]
+                    if detection_lag_ms is not None:
+                        session["lag_total_ms"] += detection_lag_ms
+                        session["avg_detection_lag_ms"] = session["lag_total_ms"] / totals["flows"]
+                    if source_type == "live":
+                        session["capture"] = source.stats()
+                    session["seq"] += 1
+                    _EVENTS.append(
+                        {
+                            "seq": session["seq"],
+                            "timestamp": flow_data["timestamp"],
+                            "row_index": row_index,
+                            "prediction": prediction,
+                            "confidence": result["confidence"],
+                            "attack_probability": result["attack_probability"],
+                            "attack_score_band": result["attack_score_band"],
+                            "latency_ms": result["latency_ms"],
+                            "detection_lag_ms": (
+                                round(detection_lag_ms, 1) if detection_lag_ms is not None else None
+                            ),
+                            "tracking_lag_ms": (
+                                round(tracking_lag_ms, 1) if tracking_lag_ms is not None else None
+                            ),
+                            "actual": actual,
+                            "match": None if actual is None else actual == prediction,
+                            "proto": str(record.get("proto", "")),
+                            "service": str(record.get("service", "")),
+                            "state": str(record.get("state", "")),
+                            "sbytes": _json_safe(record.get("sbytes")),
+                            "dbytes": _json_safe(record.get("dbytes")),
+                            "source_ip": event_data["source_ip"],
+                            "destination_ip": event_data["destination_ip"],
+                            "source_port": event_data["source_port"],
+                            "destination_port": event_data["destination_port"],
+                            "end_reason": event_data.get("end_reason"),
+                            "prediction_id": prediction_id,
+                            "alert_id": alert_id,
+                        }
+                    )
 
-            store = _should_persist(persist_mode, prediction)
-            hit_cap = store and at_cap
-            prediction_id = alert_id = None
-            if store and not at_cap:
-                prediction_id, alert_id = _store_flow(
-                    deployment_target, flow_data, result, source_tag
-                )
-
-            with _LOCK:
-                if hit_cap:
-                    session["capped"] = True
-                if prediction_id is not None:
-                    session["totals"]["persisted"] += 1
-                if alert_id is not None:
-                    session["totals"]["alerts"] += 1
-                totals = session["totals"]
-                totals["flows"] += 1
-                if prediction == "Attack":
-                    totals["attacks"] += 1
-                else:
-                    totals["normals"] += 1
-                if actual is not None:
-                    totals["labelled"] += 1
-                    if actual != prediction:
-                        totals["mismatches"] += 1
-                session["latency_total_ms"] += latency_ms
-                session["avg_latency_ms"] = session["latency_total_ms"] / totals["flows"]
-                if detection_lag_ms is not None:
-                    session["lag_total_ms"] += detection_lag_ms
-                    session["avg_detection_lag_ms"] = session["lag_total_ms"] / totals["flows"]
-                if source_type == "live":
-                    session["capture"] = source.stats()
-                session["seq"] += 1
-                _EVENTS.append(
-                    {
-                        "seq": session["seq"],
-                        "timestamp": flow_data["timestamp"],
-                        "row_index": row_index,
-                        "prediction": prediction,
-                        "confidence": result["confidence"],
-                        "latency_ms": result["latency_ms"],
-                        "detection_lag_ms": (
-                            round(detection_lag_ms, 1) if detection_lag_ms is not None else None
-                        ),
-                        "actual": actual,
-                        "match": None if actual is None else actual == prediction,
-                        "proto": str(record.get("proto", "")),
-                        "service": str(record.get("service", "")),
-                        "state": str(record.get("state", "")),
-                        "sbytes": _json_safe(record.get("sbytes")),
-                        "dbytes": _json_safe(record.get("dbytes")),
-                        "source_ip": event_data["source_ip"],
-                        "destination_ip": event_data["destination_ip"],
-                        "source_port": event_data["source_port"],
-                        "destination_port": event_data["destination_port"],
-                        "end_reason": event_data.get("end_reason"),
-                        "prediction_id": prediction_id,
-                        "alert_id": alert_id,
-                    }
-                )
-
-            if source.paced and stop_event.wait(paced_interval):
+            if source_ended:
+                break
+            if pacing and stop_event.wait(paced_interval):
                 final_state = "stopped"
                 break
     except Exception as error:
@@ -776,6 +863,7 @@ def get_options():
             {"value": "slow", "label": "Slow - 1 flow every 2s"},
             {"value": "normal", "label": "Normal - 1 flow per second"},
             {"value": "fast", "label": "Fast - about 3 flows per second"},
+            {"value": "max", "label": "Maximum - no delay between flows"},
         ],
         "orders": [{"value": value, "label": label} for value, label in ORDER_CHOICES.items()],
         "persistence": [

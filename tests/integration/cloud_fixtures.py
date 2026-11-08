@@ -106,6 +106,7 @@ def cloud(local_stack, local_http):
             )
             sql("delete from public.training_run where created_by=any(%s)", (ids,))
             sql("delete from private.administration_request where actor_profile_id=any(%s)", (ids,))
+            sql("delete from private.retention_run where actor_profile_id=any(%s)", (ids,))
             sql("delete from public.node_membership where profile_id=any(%s)", (ids,))
             sql("delete from public.node where display_name like %s", (prefix + "%",))
             sql("delete from public.user_role where profile_id=any(%s)", (ids,))

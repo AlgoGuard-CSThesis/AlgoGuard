@@ -1,0 +1,3 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m pip_audit -r requirements.txt
+
+No known vulnerabilities found
