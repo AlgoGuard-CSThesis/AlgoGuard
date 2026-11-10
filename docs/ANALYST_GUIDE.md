@@ -86,7 +86,7 @@ Open **Live Monitor**, choose a source and how much to save, and press **Start M
 |---|---|
 | **Sample replay (labelled flows)** | Replays one of the bundled UNSW-NB15 samples (5,000, 10,000 or 20,000 flows). Each row keeps its true label, so the feed shows whether each verdict was right. Good for demonstrations. |
 | **Recorded packets (PCAP)** | Replays a `.pcap`, `.pcapng` or `.cap` file that you put in the `captures` folder. Packets are grouped into flows exactly as in live capture. There is no true label, so **Actual** shows a dash. |
-| **Live interface capture** | Watches the network card you select, in real time. Needs Npcap (and, if Npcap was installed for administrators only, AlgoGuard started as administrator). A flow is classified when its connection closes, after 15 seconds of silence, or every 120 seconds for long connections, so the first rows appear a few seconds after Start. |
+| **Live interface capture** | Watches the network card you select, in real time. Needs Npcap (and, if Npcap was installed for administrators only, AlgoGuard started as administrator). A flow is classified when its connection closes, after 15 seconds of silence, or every 120 seconds for long connections, so the first rows appear a few seconds after Start. Only IPv4 TCP and UDP traffic is watched: IPv6 traffic and pings are not. |
 
 Replay speed and order apply to the two replay sources only. **Pause**, **Resume** and **Stop**
 control the session; reloading the page reconnects to a session that is still running. Only
