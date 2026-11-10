@@ -133,6 +133,12 @@ def _condition(item):
     return column, operator, _unquote(value)
 
 
+class _Server(http.server.ThreadingHTTPServer):
+    # The default backlog of 5 waiting connections made Windows reset connections when tests
+    # send many requests at once on a slow CI runner (DEF-20); the real Supabase has no such limit.
+    request_queue_size = 128
+
+
 class FakeSupabase:
     publishable_key = "sb_publishable_fake"
 
@@ -158,7 +164,7 @@ class FakeSupabase:
         self.calls = []
         self.logouts = []
         self.refresh_grants = 0
-        self.server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), self._handler())
+        self.server = _Server(("127.0.0.1", 0), self._handler())
         self.server.daemon_threads = True
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
 

@@ -210,7 +210,9 @@ def test_concurrent_bearer_requests_never_swap_identities(cloud):
     def predict(email):
         response = api.post("/predict", json=MANUAL_FLOW,
                             headers={"Authorization": "Bearer " + tokens[email]})
-        return email, response.get_json()["event_uuid"]
+        body = response.get_json()
+        assert response.status_code == 200 and "event_uuid" in body, body
+        return email, body["event_uuid"]
 
     with ThreadPoolExecutor(max_workers=8) as pool:
         results = list(pool.map(predict, [ANALYST[0], ADMIN[0]] * 10))
