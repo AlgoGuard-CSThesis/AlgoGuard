@@ -1,0 +1,145 @@
+﻿{
+  "holdout": {
+    "run_10": {
+      "rows": 15936,
+      "removed_as_seen": 3,
+      "accuracy": 0.9511,
+      "precision": 0.9559,
+      "recall": 0.9159,
+      "f1": 0.9355,
+      "false_positive_rate": 0.0267,
+      "roc_auc": 0.9889
+    },
+    "candidate": {
+      "rows": 15936,
+      "removed_as_seen": 3,
+      "accuracy": 0.9267,
+      "precision": 0.8654,
+      "recall": 0.9601,
+      "f1": 0.9103,
+      "false_positive_rate": 0.0944,
+      "roc_auc": 0.984
+    }
+  },
+  "benign": {
+    "run_10": {
+      "generator.pcap": {
+        "flows": 110,
+        "labelled_attack": 0,
+        "attack_share": 0.0,
+        "bands": {
+          "very_high": 0,
+          "high": 0,
+          "medium": 0,
+          "low": 110
+        }
+      },
+      "browser.pcap": {
+        "flows": 542,
+        "labelled_attack": 18,
+        "attack_share": 0.0332,
+        "bands": {
+          "very_high": 5,
+          "high": 7,
+          "medium": 6,
+          "low": 524
+        }
+      },
+      "final_browser.pcap": {
+        "flows": 502,
+        "labelled_attack": 16,
+        "attack_share": 0.0319,
+        "bands": {
+          "very_high": 5,
+          "high": 2,
+          "medium": 9,
+          "low": 486
+        }
+      },
+      "final_unseen.pcap": {
+        "flows": 687,
+        "labelled_attack": 45,
+        "attack_share": 0.0655,
+        "bands": {
+          "very_high": 20,
+          "high": 12,
+          "medium": 13,
+          "low": 642
+        }
+      }
+    },
+    "candidate": {
+      "generator.pcap": {
+        "flows": 110,
+        "labelled_attack": 1,
+        "attack_share": 0.0091,
+        "bands": {
+          "very_high": 0,
+          "high": 0,
+          "medium": 1,
+          "low": 109
+        }
+      },
+      "browser.pcap": {
+        "flows": 542,
+        "labelled_attack": 25,
+        "attack_share": 0.0461,
+        "bands": {
+          "very_high": 5,
+          "high": 13,
+          "medium": 7,
+          "low": 517
+        }
+      },
+      "final_browser.pcap": {
+        "flows": 502,
+        "labelled_attack": 20,
+        "attack_share": 0.0398,
+        "bands": {
+          "very_high": 4,
+          "high": 10,
+          "medium": 6,
+          "low": 482
+        }
+      },
+      "final_unseen.pcap": {
+        "flows": 687,
+        "labelled_attack": 74,
+        "attack_share": 0.1077,
+        "bands": {
+          "very_high": 16,
+          "high": 25,
+          "medium": 33,
+          "low": 613
+        }
+      }
+    }
+  },
+  "artifact": {
+    "bytes": 30129529,
+    "mib": 28.73,
+    "quality_gate": "Stacking passed every deployment quality requirement.",
+    "in_app_test_split": {
+      "accuracy": 94.09979,
+      "f1_score": 94.614881,
+      "recall": 94.362942,
+      "roc_auc": 98.892484,
+      "fpr": 6.220916
+    }
+  },
+  "rules": {
+    "1_holdout": {
+      "same_rows": true,
+      "f1_floor": 0.9255,
+      "recall_floor": 0.9059,
+      "passed": false
+    },
+    "2_benign": {
+      "passed": false
+    },
+    "3_artifact": {
+      "passed": true
+    }
+  },
+  "gate_passed": false
+}

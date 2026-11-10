@@ -1,0 +1,63 @@
+{
+  "model": "Random Forest (run 11 settings), grouped 5-fold CV on training rows only",
+  "rows": 144942,
+  "recall": 0.929,
+  "false_positive_rate": 0.0664,
+  "by_category": {
+    "Analysis": {
+      "rows": 1341,
+      "rate": 0.7651,
+      "measure": "recall"
+    },
+    "Backdoor": {
+      "rows": 1077,
+      "rate": 0.9963,
+      "measure": "recall"
+    },
+    "DoS": {
+      "rows": 8406,
+      "rate": 0.9864,
+      "measure": "recall"
+    },
+    "Exploits": {
+      "rows": 26833,
+      "rate": 0.9801,
+      "measure": "recall"
+    },
+    "Fuzzers": {
+      "rows": 14620,
+      "rate": 0.691,
+      "measure": "recall"
+    },
+    "Generic": {
+      "rows": 19159,
+      "rate": 0.9981,
+      "measure": "recall"
+    },
+    "Normal": {
+      "rows": 62866,
+      "rate": 0.9315,
+      "measure": "specificity"
+    },
+    "Normal (local capture)": {
+      "rows": 2460,
+      "rate": 0.9862,
+      "measure": "specificity"
+    },
+    "Reconnaissance": {
+      "rows": 7153,
+      "rate": 0.9909,
+      "measure": "recall"
+    },
+    "Shellcode": {
+      "rows": 910,
+      "rate": 0.9253,
+      "measure": "recall"
+    },
+    "Worms": {
+      "rows": 117,
+      "rate": 1.0,
+      "measure": "recall"
+    }
+  }
+}

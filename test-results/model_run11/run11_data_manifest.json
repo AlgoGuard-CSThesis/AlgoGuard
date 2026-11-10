@@ -1,0 +1,104 @@
+{
+  "protocol": "test-results/model_run11/protocol_run11.md",
+  "key": [
+    "dur",
+    "proto",
+    "service",
+    "state",
+    "spkts",
+    "dpkts",
+    "sbytes",
+    "dbytes",
+    "rate",
+    "sload",
+    "dload",
+    "sinpkt",
+    "dinpkt"
+  ],
+  "seed": 42,
+  "folds": 10,
+  "final_folds": [
+    0,
+    1,
+    2
+  ],
+  "sources": {
+    "used_by_earlier_models": {
+      "file": "research\\dataset\\raw\\UNSW_NB15_training-set.csv",
+      "rows": 82332,
+      "sha256": "734fe6642edf758f7c94d7d9149426b49d202fe8e7bf0bef47392489c3c0a559"
+    },
+    "official_training_partition": {
+      "file": "research\\dataset\\processed\\official_unsw\\UNSW_NB15_training-set.csv",
+      "rows": 175341,
+      "sha256": "bec7dd5ec88dc2a0ccc7a07879d338395ed7421750f675fd0339e07dfe0648fa"
+    },
+    "run10_training": {
+      "file": "research\\dataset\\processed\\def19\\training_local.csv",
+      "rows": 68853,
+      "sha256": "2486275c40166a62780be9e01e632f347048ba1c0ebc980e8f41af71d4e8c391"
+    }
+  },
+  "pool": {
+    "rows": 108699,
+    "key_groups": 87661,
+    "by_category": {
+      "Normal": 50902,
+      "Exploits": 26427,
+      "Fuzzers": 14397,
+      "DoS": 7093,
+      "Reconnaissance": 6035,
+      "Analysis": 1136,
+      "Shellcode": 923,
+      "Backdoor": 892,
+      "Generic": 771,
+      "Worms": 123
+    }
+  },
+  "final_test": {
+    "file": "research\\dataset\\processed\\run11\\final_test.csv",
+    "rows": 32610,
+    "attack": 17339,
+    "normal": 15271,
+    "by_category": {
+      "Normal": 15271,
+      "Exploits": 7926,
+      "Fuzzers": 4319,
+      "DoS": 2129,
+      "Reconnaissance": 1811,
+      "Analysis": 341,
+      "Shellcode": 278,
+      "Backdoor": 268,
+      "Generic": 231,
+      "Worms": 36
+    },
+    "sha256": "6f7b41880163e424eeb5a1e39a807091e46d7045c4476a127799f6f10645b7da"
+  },
+  "added_to_training": {
+    "rows": 76089,
+    "by_category": {
+      "Normal": 35631,
+      "Exploits": 18501,
+      "Fuzzers": 10078,
+      "DoS": 4964,
+      "Reconnaissance": 4224,
+      "Analysis": 795,
+      "Shellcode": 645,
+      "Backdoor": 624,
+      "Generic": 540,
+      "Worms": 87
+    }
+  },
+  "training": {
+    "file": "research\\dataset\\processed\\run11\\training.csv",
+    "rows": 144942,
+    "attack": 79616,
+    "normal": 65326,
+    "attack_share": 0.5493,
+    "sha256": "bba1d4ad7003d4b923e24bf24235d6def0f04464f271bb7eda340cad30140b0a"
+  },
+  "checks": {
+    "key_groups_on_both_sides": 0,
+    "final_rows_matching_a_training_row": 0
+  }
+}
