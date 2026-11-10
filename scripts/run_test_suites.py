@@ -73,9 +73,11 @@ def key_line(name: str, out: str) -> str:
     for key, pattern in KEY_LINES.items():
         if key in name:
             hits = [line for line in lines if re.search(pattern, line)]
+            if hits and key == "bandit":
+                # Severity comes first in Bandit's metrics; the confidence counts follow it.
+                return ("severity " + " / ".join(hits[:3]))[:200]
             if hits:
-                limit = 3 if key == "bandit" else 2
-                return " / ".join(hits[-limit:])[:200]
+                return " / ".join(hits[-2:])[:200]
     return (lines[-1] if lines else "(no output)")[:200]
 
 
