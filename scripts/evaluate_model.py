@@ -4,8 +4,9 @@ What it does, in order:
   1. Loads the model artifact (.joblib) that train.py produced.
   2. Loads an evaluation CSV with the model's features plus `label`
      (and optionally `attack_cat`).
-  3. Removes every evaluation row whose 15 per-flow features also appear in a training CSV,
-     whatever its connection counts, so the score is measured only on unseen traffic.
+  3. Removes every evaluation row whose per-flow features also appear in a training CSV,
+     whatever its connection counts, so the score is measured only on unseen traffic
+     (all 15 for UNSW-NB15 exports, the 13 without sttl and dttl for feature schema v2 files).
   4. Predicts the remaining rows and writes the metrics, the confusion matrix,
      recall per attack category, and a check against the test plan targets.
 
@@ -47,6 +48,8 @@ FEATURES = ["dur", "proto", "service", "state", "spkts", "dpkts", "sbytes", "dby
 # Feature schema v2 drops sttl and dttl and adds three connection counts
 # (services/flow_tracker_service.py); models of either schema can be evaluated.
 KNOWN_FEATURES = FEATURES + ["ct_dst_src_ltm", "ct_dst_ltm", "ct_srv_dst"]
+# Every training file has at least these per-flow features (schema v2 files lack sttl and dttl).
+REQUIRED_KEY_FEATURES = [c for c in FEATURES if c not in ("sttl", "dttl")]
 NORMAL_LABELS = {"0", "0.0", "normal", "benign", "legitimate", "clean"}
 COMPARE_KEYS = ("accuracy", "precision", "recall", "f1", "false_positive_rate", "roc_auc",
                 "prediction_ms_per_row")
@@ -83,10 +86,10 @@ def to_binary(labels: pd.Series) -> np.ndarray:
     return (~text.isin(NORMAL_LABELS)).to_numpy().astype(int)
 
 
-def row_keys(frame: pd.DataFrame) -> pd.Series:
-    """One hashable key per row of the 15 features, robust to float formatting."""
+def row_keys(frame: pd.DataFrame, columns: list[str] = FEATURES) -> pd.Series:
+    """One hashable key per row of the given features, robust to float formatting."""
     norm = pd.DataFrame(index=frame.index)
-    for col in FEATURES:
+    for col in columns:
         column = frame[col]
         if pd.api.types.is_numeric_dtype(column):
             norm[col] = column.astype(float).round(9)
@@ -95,6 +98,21 @@ def row_keys(frame: pd.DataFrame) -> pd.Series:
     # Python's hash is stable within one run, which is all the comparison needs.
     return pd.Series([hash(row) for row in norm.itertuples(index=False, name=None)],
                      index=frame.index)
+
+
+def seen_in_training(data: pd.DataFrame, training: pd.DataFrame, name: str) -> pd.Series:
+    """Mark the evaluation rows whose per-flow features also appear in one training file.
+
+    Rows are compared on every per-flow feature both files have: all 15 for UNSW-NB15 exports,
+    the 13 without sttl and dttl for feature schema v2 files. A training file without them is
+    refused, never skipped, so "unseen" always means unseen.
+    """
+    missing = [c for c in REQUIRED_KEY_FEATURES if c not in training.columns]
+    if missing:
+        raise SystemExit(f"Training CSV {name} lacks the per-flow features {missing}, so the rows "
+                         "it contains cannot be removed from the evaluation.")
+    columns = [c for c in FEATURES if c in training.columns and c in data.columns]
+    return row_keys(data, columns).isin(set(row_keys(training, columns)))
 
 
 def load_artifact(path: Path) -> dict[str, Any]:
@@ -261,13 +279,11 @@ def main() -> int:
     rows_loaded = len(data)
 
     # Remove anything the model could have seen during training.
-    train_keys: set[int] = set()
+    seen = pd.Series(False, index=data.index)
     for path in args.train_csv:
         frame = pd.read_csv(path, encoding="utf-8-sig")
-        if all(c in frame.columns for c in FEATURES):
-            train_keys.update(int(k) for k in row_keys(frame))
-            print(f"  training rows from {path.name}: {len(frame)}")
-    seen = row_keys(data).isin(train_keys)
+        seen |= seen_in_training(data, frame, path.name)
+        print(f"  training rows from {path.name}: {len(frame)}")
     data = data[~seen].reset_index(drop=True)
     print(f"Evaluation rows: {rows_loaded} loaded, {int(seen.sum())} removed as seen in "
           f"training, {len(data)} kept")
