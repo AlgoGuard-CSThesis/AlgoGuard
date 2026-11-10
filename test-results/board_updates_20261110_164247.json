@@ -1,0 +1,102 @@
+{
+  "applied": "2026-11-10 16:42",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "C2-DOC-01",
+      "action": "create draft card '[C2-DOC-01] Review the Test Policy and Test Strategy for cycle 2' in To Do; Owner Jan Leigh Augustine A. Munoz, Priority High, Phase M1, Test Type Planning"
+    },
+    {
+      "card": "C2-DOC-02",
+      "action": "create draft card '[C2-DOC-02] Write the Master Test Plan for cycle 2' in To Do; Owner Chate Mae N. Caluba, Priority Critical, Phase M1, Test Type Planning"
+    },
+    {
+      "card": "C2-DOC-03",
+      "action": "create draft card '[C2-DOC-03] Write the Test Design and Test Case Specifications (RTM)' in To Do; Owner Victor Alexander A. Ong, Priority High, Phase M2, Test Type Planning"
+    },
+    {
+      "card": "C2-DOC-04",
+      "action": "create draft card '[C2-DOC-04] Write the Test Procedure Specification' in To Do; Owner John Brian A. Tiopes, Priority Medium, Phase M2, Test Type Planning"
+    },
+    {
+      "card": "C2-DOC-05",
+      "action": "create draft card '[C2-DOC-05] Send the Test Status Reports' in To Do; Owner Brynt M. Timtiman, Priority Medium, Phase Ongoing, Test Type Reporting"
+    },
+    {
+      "card": "C2-DOC-06",
+      "action": "create draft card '[C2-DOC-06] Write the Test Completion Report' in To Do; Owner Chate Mae N. Caluba, Priority Critical, Phase M7, Test Type Reporting"
+    },
+    {
+      "card": "C2-LOG-01",
+      "action": "create draft card '[C2-LOG-01] Keep the Test Log and Defect Reports' in To Do; Owner Jan Leigh Augustine A. Munoz, Priority High, Phase Ongoing, Test Type Reporting"
+    },
+    {
+      "card": "C2-ENV-01",
+      "action": "create draft card '[C2-ENV-01] Prepare the test environment and test data' in To Do; Owner Arella Biacea B. Mirasol, Priority Critical, Phase M3, Test Type Environment"
+    },
+    {
+      "card": "C2-ENV-02",
+      "action": "create draft card '[C2-ENV-02] Confirm CI and coverage' in To Do; Owner Afel Anthonielle V. Quirao, Priority High, Phase M3, Test Type Environment"
+    },
+    {
+      "card": "C2-SMK-01",
+      "action": "create draft card '[C2-SMK-01] Smoke gate' in To Do; Owner John Brian A. Tiopes, Priority Critical, Phase M3, Test Type Smoke"
+    },
+    {
+      "card": "C2-UNT-01",
+      "action": "create draft card '[C2-UNT-01] Unit tests, lint and type check' in To Do; Owner Cel Hendrix N. San Miguel, Priority High, Phase M3, Test Type Unit"
+    },
+    {
+      "card": "C2-INT-01",
+      "action": "create draft card '[C2-INT-01] Integration: sync, recovery, retention and model delivery' in To Do; Owner Afel Anthonielle V. Quirao, Priority High, Phase M4, Test Type Integration"
+    },
+    {
+      "card": "C2-SYS-01",
+      "action": "create draft card '[C2-SYS-01] Detection quality and live false alarms' in To Do; Owner Victor Alexander A. Ong, Priority Critical, Phase M4, Test Type System"
+    },
+    {
+      "card": "C2-SYS-02",
+      "action": "create draft card '[C2-SYS-02] Traffic sources, attack scores and bad input' in To Do; Owner John Brian A. Tiopes, Priority High, Phase M4, Test Type System"
+    },
+    {
+      "card": "C2-SYS-03",
+      "action": "create draft card '[C2-SYS-03] Node isolation, administrator views and retention' in To Do; Owner Cel Hendrix N. San Miguel, Priority Critical, Phase M4, Test Type System"
+    },
+    {
+      "card": "C2-PRF-01",
+      "action": "create draft card '[C2-PRF-01] Performance and load' in To Do; Owner Afel Anthonielle V. Quirao, Priority Medium, Phase M4, Test Type Performance"
+    },
+    {
+      "card": "C2-SEC-01",
+      "action": "create draft card '[C2-SEC-01] Security' in To Do; Owner Arella Biacea B. Mirasol, Priority High, Phase M4, Test Type Security"
+    },
+    {
+      "card": "C2-USE-01",
+      "action": "create draft card '[C2-USE-01] Usability and accessibility' in To Do; Owner Brynt M. Timtiman, Priority Medium, Phase M4, Test Type Usability"
+    },
+    {
+      "card": "C2-REG-01",
+      "action": "create draft card '[C2-REG-01] Regression and fix verification' in To Do; Owner Cel Hendrix N. San Miguel, Priority High, Phase M5, Test Type Regression"
+    },
+    {
+      "card": "C2-UAT-01",
+      "action": "create draft card '[C2-UAT-01] User acceptance testing' in To Do; Owner Pauleen Joy O. Gomez, Priority Critical, Phase M6, Test Type UAT"
+    },
+    {
+      "card": "DEF-10",
+      "action": "edit body: add the cycle 2 re-test plan section; status unchanged"
+    },
+    {
+      "card": "DEF-17",
+      "action": "edit body: add the cycle 2 re-test plan section; status unchanged"
+    },
+    {
+      "card": "DEF-19",
+      "action": "edit body: add the cycle 2 re-test plan section; status unchanged"
+    },
+    {
+      "card": "DEF-17, DEF-19",
+      "action": "edit body: move the cycle 2 re-test plan section to the end of the card (after the Iteration 6 sections), so the card reads in date order"
+    }
+  ]
+}
