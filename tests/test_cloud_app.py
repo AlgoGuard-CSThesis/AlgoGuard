@@ -519,7 +519,10 @@ def test_expiry_without_refresh_stops_capture_and_requires_login(cloud):
     cloud.fake.offline = True  # refresh unavailable
     identity.expires_at = time.time() - 1
     wait_for(lambda: cloud.services.monitor.session["state"] == "stopped")
-    assert "expired" in cloud.services.monitor.session["error_message"]
+    # The monitor loop and the upload worker both notice the expiry; whichever ends the sign-in
+    # first decides between "expired and could not be refreshed" and "sign-in ended". Both stop
+    # the capture and ask for an online login, which is the behaviour under test (DEF-26).
+    assert "log in online" in cloud.services.monitor.session["error_message"].lower()
     cloud.fake.offline = False
     assert client.get("/").status_code == 302  # online login again
     assert not identity.active
