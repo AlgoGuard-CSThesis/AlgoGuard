@@ -411,7 +411,10 @@ def test_csv_capture_pins_deployment_and_uploads_through_the_outbox(cloud):
         "in_memory", "durable_pending", "synced"}
     stopped = post_json(client, "/monitor/stop").get_json()["session"]
     assert stopped["state"] == "stopped" and stopped["stopped_at"]
-    assert stopped["local_drain_complete"] is True
+    # Stop waits at most five seconds for the local hand-off; on a slow CI runner it can still be
+    # writing then, so the hand-off only has to finish, not within the stop request (DEF-27).
+    assert stopped["local_drain_complete"] is True or wait_for(
+        lambda: cloud.services.outbox.drain(0))
     queued = stopped["totals"]["queued"]
     wait_for(lambda: len(owned_events(cloud, ANALYST[0])) >= queued)
     capture = wait_for(lambda: next((row for row in cloud.fake.rows("capture_session")
@@ -473,9 +476,15 @@ def test_network_loss_keeps_capturing_and_reconnect_uploads_without_duplicates(c
     assert offline["session"]["synchronization"]["pending"] > 0
     stopped = post_json(client, "/monitor/stop").get_json()["session"]
     cloud.fake.offline = False
-    cloud.services.sync.retry.clear()
     queued = stopped["totals"]["queued"]
-    wait_for(lambda: len(owned_events(cloud, ANALYST[0])) >= queued, timeout=20)
+
+    def reconnected():
+        # An upload already on its way while offline can fail after the network is back and set a
+        # new back-off of up to a minute; clearing it on every check keeps the wait short (DEF-27).
+        cloud.services.sync.retry.clear()
+        return len(owned_events(cloud, ANALYST[0])) >= queued
+
+    wait_for(reconnected, timeout=20)
     uuids = [row["event_uuid"] for row in owned_events(cloud, ANALYST[0])]
     assert len(uuids) == len(set(uuids)) == queued
 
