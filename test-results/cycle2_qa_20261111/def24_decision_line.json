@@ -1,0 +1,997 @@
+{
+ "lines": [
+  0.01,
+  0.02,
+  0.03,
+  0.05,
+  0.1,
+  0.15,
+  0.2,
+  0.25,
+  0.3,
+  0.35,
+  0.4,
+  0.45,
+  0.5,
+  0.55,
+  0.6,
+  0.65,
+  0.7,
+  0.75,
+  0.8,
+  0.85,
+  0.9,
+  0.95
+ ],
+ "selection_rule": "hold-out recall >= 0.90, hold-out FPR <= 0.08, each benign capture <= 8% Attack",
+ "models": {
+  "run_10": {
+   "rows": [
+    {
+     "line": 0.01,
+     "holdout": {
+      "accuracy": 0.7821,
+      "recall": 0.9966,
+      "precision": 0.6406,
+      "f1": 0.7799,
+      "fpr": 0.3535
+     },
+     "benign_share": {
+      "generator.pcap": 0.1091,
+      "browser.pcap": 0.2638,
+      "final_browser.pcap": 0.3147,
+      "final_unseen.pcap": 0.4803
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8659,
+      "recall": 0.978,
+      "precision": 0.8096,
+      "f1": 0.8859,
+      "fpr": 0.2615,
+      "fuzzers_recall": 0.9277,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.02,
+     "holdout": {
+      "accuracy": 0.8773,
+      "recall": 0.9888,
+      "precision": 0.764,
+      "f1": 0.862,
+      "fpr": 0.1932
+     },
+     "benign_share": {
+      "generator.pcap": 0.0909,
+      "browser.pcap": 0.1661,
+      "final_browser.pcap": 0.2151,
+      "final_unseen.pcap": 0.3566
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8916,
+      "recall": 0.9244,
+      "precision": 0.8782,
+      "f1": 0.9007,
+      "fpr": 0.1457,
+      "fuzzers_recall": 0.7387,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.03,
+     "holdout": {
+      "accuracy": 0.9036,
+      "recall": 0.9856,
+      "precision": 0.8078,
+      "f1": 0.8879,
+      "fpr": 0.1483
+     },
+     "benign_share": {
+      "generator.pcap": 0.0636,
+      "browser.pcap": 0.131,
+      "final_browser.pcap": 0.1873,
+      "final_unseen.pcap": 0.3057
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8935,
+      "recall": 0.8994,
+      "precision": 0.9002,
+      "f1": 0.8998,
+      "fpr": 0.1133,
+      "fuzzers_recall": 0.6529,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.05,
+     "holdout": {
+      "accuracy": 0.9218,
+      "recall": 0.9747,
+      "precision": 0.8466,
+      "f1": 0.9062,
+      "fpr": 0.1116
+     },
+     "benign_share": {
+      "generator.pcap": 0.0364,
+      "browser.pcap": 0.1033,
+      "final_browser.pcap": 0.1514,
+      "final_unseen.pcap": 0.2489
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.891,
+      "recall": 0.8701,
+      "precision": 0.9207,
+      "f1": 0.8947,
+      "fpr": 0.0852,
+      "fuzzers_recall": 0.5532,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.1,
+     "holdout": {
+      "accuracy": 0.9387,
+      "recall": 0.9644,
+      "precision": 0.8872,
+      "f1": 0.9242,
+      "fpr": 0.0775
+     },
+     "benign_share": {
+      "generator.pcap": 0.0364,
+      "browser.pcap": 0.0756,
+      "final_browser.pcap": 0.1255,
+      "final_unseen.pcap": 0.1689
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8854,
+      "recall": 0.8366,
+      "precision": 0.9415,
+      "f1": 0.886,
+      "fpr": 0.0591,
+      "fuzzers_recall": 0.4423,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.15,
+     "holdout": {
+      "accuracy": 0.9442,
+      "recall": 0.9563,
+      "precision": 0.905,
+      "f1": 0.9299,
+      "fpr": 0.0635
+     },
+     "benign_share": {
+      "generator.pcap": 0.0364,
+      "browser.pcap": 0.072,
+      "final_browser.pcap": 0.1155,
+      "final_unseen.pcap": 0.1557
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8799,
+      "recall": 0.8178,
+      "precision": 0.9494,
+      "f1": 0.8787,
+      "fpr": 0.0496,
+      "fuzzers_recall": 0.3819,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.2,
+     "holdout": {
+      "accuracy": 0.9475,
+      "recall": 0.9498,
+      "precision": 0.9175,
+      "f1": 0.9334,
+      "fpr": 0.054
+     },
+     "benign_share": {
+      "generator.pcap": 0.0364,
+      "browser.pcap": 0.0627,
+      "final_browser.pcap": 0.0896,
+      "final_unseen.pcap": 0.1194
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8756,
+      "recall": 0.8043,
+      "precision": 0.9548,
+      "f1": 0.8731,
+      "fpr": 0.0433,
+      "fuzzers_recall": 0.3409,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.25,
+     "holdout": {
+      "accuracy": 0.9488,
+      "recall": 0.9439,
+      "precision": 0.9254,
+      "f1": 0.9346,
+      "fpr": 0.0481
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.059,
+      "final_browser.pcap": 0.0637,
+      "final_unseen.pcap": 0.099
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8726,
+      "recall": 0.7945,
+      "precision": 0.959,
+      "f1": 0.869,
+      "fpr": 0.0387,
+      "fuzzers_recall": 0.3117,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.3,
+     "holdout": {
+      "accuracy": 0.9502,
+      "recall": 0.9384,
+      "precision": 0.9335,
+      "f1": 0.9359,
+      "fpr": 0.0423
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0517,
+      "final_browser.pcap": 0.0538,
+      "final_unseen.pcap": 0.0844
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8697,
+      "recall": 0.7856,
+      "precision": 0.9626,
+      "f1": 0.8651,
+      "fpr": 0.0347,
+      "fuzzers_recall": 0.2879,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.35,
+     "holdout": {
+      "accuracy": 0.952,
+      "recall": 0.9341,
+      "precision": 0.9415,
+      "f1": 0.9378,
+      "fpr": 0.0367
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0461,
+      "final_browser.pcap": 0.0498,
+      "final_unseen.pcap": 0.0815
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8674,
+      "recall": 0.7782,
+      "precision": 0.9658,
+      "f1": 0.8619,
+      "fpr": 0.0313,
+      "fuzzers_recall": 0.2709,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.4,
+     "holdout": {
+      "accuracy": 0.9522,
+      "recall": 0.9279,
+      "precision": 0.9477,
+      "f1": 0.9377,
+      "fpr": 0.0324
+     },
+     "benign_share": {
+      "generator.pcap": 0.0182,
+      "browser.pcap": 0.0369,
+      "final_browser.pcap": 0.0458,
+      "final_unseen.pcap": 0.0728
+     },
+     "passes_selection": true,
+     "untouched_upper_bound": {
+      "accuracy": 0.8652,
+      "recall": 0.7715,
+      "precision": 0.9687,
+      "f1": 0.8589,
+      "fpr": 0.0283,
+      "fuzzers_recall": 0.2554,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.45,
+     "holdout": {
+      "accuracy": 0.9516,
+      "recall": 0.9201,
+      "precision": 0.9533,
+      "f1": 0.9364,
+      "fpr": 0.0285
+     },
+     "benign_share": {
+      "generator.pcap": 0.0182,
+      "browser.pcap": 0.0369,
+      "final_browser.pcap": 0.0398,
+      "final_unseen.pcap": 0.0684
+     },
+     "passes_selection": true,
+     "untouched_upper_bound": {
+      "accuracy": 0.8631,
+      "recall": 0.7653,
+      "precision": 0.9713,
+      "f1": 0.8561,
+      "fpr": 0.0257,
+      "fuzzers_recall": 0.2406,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.5,
+     "holdout": {
+      "accuracy": 0.9511,
+      "recall": 0.9159,
+      "precision": 0.9559,
+      "f1": 0.9355,
+      "fpr": 0.0267
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0332,
+      "final_browser.pcap": 0.0319,
+      "final_unseen.pcap": 0.0655
+     },
+     "passes_selection": true,
+     "untouched_upper_bound": {
+      "accuracy": 0.861,
+      "recall": 0.7592,
+      "precision": 0.9738,
+      "f1": 0.8532,
+      "fpr": 0.0232,
+      "fuzzers_recall": 0.2278,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.55,
+     "holdout": {
+      "accuracy": 0.9511,
+      "recall": 0.9122,
+      "precision": 0.9594,
+      "f1": 0.9352,
+      "fpr": 0.0244
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0314,
+      "final_browser.pcap": 0.0259,
+      "final_unseen.pcap": 0.0611
+     },
+     "passes_selection": true,
+     "untouched_upper_bound": {
+      "accuracy": 0.8581,
+      "recall": 0.7522,
+      "precision": 0.9754,
+      "f1": 0.8494,
+      "fpr": 0.0216,
+      "fuzzers_recall": 0.2127,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.6,
+     "holdout": {
+      "accuracy": 0.9511,
+      "recall": 0.9067,
+      "precision": 0.9648,
+      "f1": 0.9349,
+      "fpr": 0.0209
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0258,
+      "final_browser.pcap": 0.0239,
+      "final_unseen.pcap": 0.0539
+     },
+     "passes_selection": true,
+     "untouched_upper_bound": {
+      "accuracy": 0.8557,
+      "recall": 0.7457,
+      "precision": 0.9778,
+      "f1": 0.8461,
+      "fpr": 0.0192,
+      "fuzzers_recall": 0.2007,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.65,
+     "holdout": {
+      "accuracy": 0.9492,
+      "recall": 0.8991,
+      "precision": 0.9676,
+      "f1": 0.9321,
+      "fpr": 0.0191
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0258,
+      "final_browser.pcap": 0.0179,
+      "final_unseen.pcap": 0.0509
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8531,
+      "recall": 0.7382,
+      "precision": 0.9809,
+      "f1": 0.8424,
+      "fpr": 0.0163,
+      "fuzzers_recall": 0.1874,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.7,
+     "holdout": {
+      "accuracy": 0.9467,
+      "recall": 0.8905,
+      "precision": 0.9695,
+      "f1": 0.9283,
+      "fpr": 0.0177
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0221,
+      "final_browser.pcap": 0.0139,
+      "final_unseen.pcap": 0.0466
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8509,
+      "recall": 0.7318,
+      "precision": 0.9837,
+      "f1": 0.8393,
+      "fpr": 0.0138,
+      "fuzzers_recall": 0.1767,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.75,
+     "holdout": {
+      "accuracy": 0.9438,
+      "recall": 0.879,
+      "precision": 0.9733,
+      "f1": 0.9237,
+      "fpr": 0.0153
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0203,
+      "final_browser.pcap": 0.012,
+      "final_unseen.pcap": 0.0451
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8475,
+      "recall": 0.723,
+      "precision": 0.9868,
+      "f1": 0.8346,
+      "fpr": 0.011,
+      "fuzzers_recall": 0.1645,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.8,
+     "holdout": {
+      "accuracy": 0.9403,
+      "recall": 0.866,
+      "precision": 0.9773,
+      "f1": 0.9183,
+      "fpr": 0.0127
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0185,
+      "final_browser.pcap": 0.012,
+      "final_unseen.pcap": 0.0378
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8435,
+      "recall": 0.7137,
+      "precision": 0.989,
+      "f1": 0.8291,
+      "fpr": 0.009,
+      "fuzzers_recall": 0.1506,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.85,
+     "holdout": {
+      "accuracy": 0.9345,
+      "recall": 0.8466,
+      "precision": 0.9818,
+      "f1": 0.9092,
+      "fpr": 0.0099
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0111,
+      "final_browser.pcap": 0.01,
+      "final_unseen.pcap": 0.032
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8376,
+      "recall": 0.7006,
+      "precision": 0.9916,
+      "f1": 0.8211,
+      "fpr": 0.0068,
+      "fuzzers_recall": 0.1353,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.9,
+     "holdout": {
+      "accuracy": 0.9262,
+      "recall": 0.822,
+      "precision": 0.9851,
+      "f1": 0.8961,
+      "fpr": 0.0079
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0092,
+      "final_browser.pcap": 0.01,
+      "final_unseen.pcap": 0.0291
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8284,
+      "recall": 0.6821,
+      "precision": 0.9934,
+      "f1": 0.8088,
+      "fpr": 0.0052,
+      "fuzzers_recall": 0.116,
+      "all_targets_met": false
+     }
+    },
+    {
+     "line": 0.95,
+     "holdout": {
+      "accuracy": 0.9036,
+      "recall": 0.7583,
+      "precision": 0.9907,
+      "f1": 0.8591,
+      "fpr": 0.0045
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0037,
+      "final_browser.pcap": 0.004,
+      "final_unseen.pcap": 0.0175
+     },
+     "passes_selection": false,
+     "untouched_upper_bound": {
+      "accuracy": 0.8084,
+      "recall": 0.6428,
+      "precision": 0.9955,
+      "f1": 0.7812,
+      "fpr": 0.0033,
+      "fuzzers_recall": 0.0864,
+      "all_targets_met": false
+     }
+    }
+   ]
+  },
+  "run_12": {
+   "rows": [
+    {
+     "line": 0.01,
+     "holdout": {
+      "accuracy": 0.5909,
+      "recall": 1.0,
+      "precision": 0.4864,
+      "f1": 0.6544,
+      "fpr": 0.6677
+     },
+     "benign_share": {
+      "generator.pcap": 0.3273,
+      "browser.pcap": 0.5996,
+      "final_browser.pcap": 0.6474,
+      "final_unseen.pcap": 0.7482
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.02,
+     "holdout": {
+      "accuracy": 0.7339,
+      "recall": 1.0,
+      "precision": 0.5928,
+      "f1": 0.7443,
+      "fpr": 0.4344
+     },
+     "benign_share": {
+      "generator.pcap": 0.1182,
+      "browser.pcap": 0.2343,
+      "final_browser.pcap": 0.3028,
+      "final_unseen.pcap": 0.4629
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.03,
+     "holdout": {
+      "accuracy": 0.749,
+      "recall": 1.0,
+      "precision": 0.6068,
+      "f1": 0.7553,
+      "fpr": 0.4097
+     },
+     "benign_share": {
+      "generator.pcap": 0.1,
+      "browser.pcap": 0.1974,
+      "final_browser.pcap": 0.259,
+      "final_unseen.pcap": 0.4134
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.05,
+     "holdout": {
+      "accuracy": 0.7775,
+      "recall": 0.9985,
+      "precision": 0.6354,
+      "f1": 0.7766,
+      "fpr": 0.3623
+     },
+     "benign_share": {
+      "generator.pcap": 0.0818,
+      "browser.pcap": 0.1531,
+      "final_browser.pcap": 0.2112,
+      "final_unseen.pcap": 0.3581
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.1,
+     "holdout": {
+      "accuracy": 0.8301,
+      "recall": 0.9929,
+      "precision": 0.6971,
+      "f1": 0.8191,
+      "fpr": 0.2728
+     },
+     "benign_share": {
+      "generator.pcap": 0.0364,
+      "browser.pcap": 0.0996,
+      "final_browser.pcap": 0.1653,
+      "final_unseen.pcap": 0.278
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.15,
+     "holdout": {
+      "accuracy": 0.8588,
+      "recall": 0.9883,
+      "precision": 0.7369,
+      "f1": 0.8443,
+      "fpr": 0.2231
+     },
+     "benign_share": {
+      "generator.pcap": 0.0364,
+      "browser.pcap": 0.0793,
+      "final_browser.pcap": 0.1414,
+      "final_unseen.pcap": 0.2475
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.2,
+     "holdout": {
+      "accuracy": 0.8761,
+      "recall": 0.9825,
+      "precision": 0.7647,
+      "f1": 0.86,
+      "fpr": 0.1911
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0756,
+      "final_browser.pcap": 0.1215,
+      "final_unseen.pcap": 0.214
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.25,
+     "holdout": {
+      "accuracy": 0.8901,
+      "recall": 0.9791,
+      "precision": 0.7884,
+      "f1": 0.8735,
+      "fpr": 0.1661
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0701,
+      "final_browser.pcap": 0.1016,
+      "final_unseen.pcap": 0.1718
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.3,
+     "holdout": {
+      "accuracy": 0.901,
+      "recall": 0.976,
+      "precision": 0.8083,
+      "f1": 0.8843,
+      "fpr": 0.1464
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0646,
+      "final_browser.pcap": 0.0857,
+      "final_unseen.pcap": 0.1485
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.35,
+     "holdout": {
+      "accuracy": 0.9095,
+      "recall": 0.9721,
+      "precision": 0.8252,
+      "f1": 0.8927,
+      "fpr": 0.1302
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0627,
+      "final_browser.pcap": 0.0697,
+      "final_unseen.pcap": 0.1383
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.4,
+     "holdout": {
+      "accuracy": 0.9152,
+      "recall": 0.9689,
+      "precision": 0.8376,
+      "f1": 0.8985,
+      "fpr": 0.1188
+     },
+     "benign_share": {
+      "generator.pcap": 0.0273,
+      "browser.pcap": 0.0609,
+      "final_browser.pcap": 0.0538,
+      "final_unseen.pcap": 0.1266
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.45,
+     "holdout": {
+      "accuracy": 0.921,
+      "recall": 0.9652,
+      "precision": 0.8509,
+      "f1": 0.9044,
+      "fpr": 0.1069
+     },
+     "benign_share": {
+      "generator.pcap": 0.0182,
+      "browser.pcap": 0.0461,
+      "final_browser.pcap": 0.0478,
+      "final_unseen.pcap": 0.115
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.5,
+     "holdout": {
+      "accuracy": 0.9267,
+      "recall": 0.9601,
+      "precision": 0.8654,
+      "f1": 0.9103,
+      "fpr": 0.0944
+     },
+     "benign_share": {
+      "generator.pcap": 0.0091,
+      "browser.pcap": 0.0461,
+      "final_browser.pcap": 0.0398,
+      "final_unseen.pcap": 0.1077
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.55,
+     "holdout": {
+      "accuracy": 0.931,
+      "recall": 0.9553,
+      "precision": 0.8774,
+      "f1": 0.9147,
+      "fpr": 0.0844
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0406,
+      "final_browser.pcap": 0.0359,
+      "final_unseen.pcap": 0.0917
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.6,
+     "holdout": {
+      "accuracy": 0.9336,
+      "recall": 0.9465,
+      "precision": 0.8892,
+      "f1": 0.917,
+      "fpr": 0.0746
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0369,
+      "final_browser.pcap": 0.0339,
+      "final_unseen.pcap": 0.0815
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.65,
+     "holdout": {
+      "accuracy": 0.9344,
+      "recall": 0.9358,
+      "precision": 0.899,
+      "f1": 0.9171,
+      "fpr": 0.0665
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0332,
+      "final_browser.pcap": 0.0339,
+      "final_unseen.pcap": 0.064
+     },
+     "passes_selection": true
+    },
+    {
+     "line": 0.7,
+     "holdout": {
+      "accuracy": 0.9356,
+      "recall": 0.9277,
+      "precision": 0.9079,
+      "f1": 0.9177,
+      "fpr": 0.0595
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0332,
+      "final_browser.pcap": 0.0279,
+      "final_unseen.pcap": 0.0597
+     },
+     "passes_selection": true
+    },
+    {
+     "line": 0.75,
+     "holdout": {
+      "accuracy": 0.937,
+      "recall": 0.9162,
+      "precision": 0.9207,
+      "f1": 0.9185,
+      "fpr": 0.0499
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0221,
+      "final_browser.pcap": 0.0199,
+      "final_unseen.pcap": 0.0495
+     },
+     "passes_selection": true
+    },
+    {
+     "line": 0.8,
+     "holdout": {
+      "accuracy": 0.9344,
+      "recall": 0.8968,
+      "precision": 0.9312,
+      "f1": 0.9137,
+      "fpr": 0.0419
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0203,
+      "final_browser.pcap": 0.0179,
+      "final_unseen.pcap": 0.0422
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.85,
+     "holdout": {
+      "accuracy": 0.9306,
+      "recall": 0.8698,
+      "precision": 0.9467,
+      "f1": 0.9066,
+      "fpr": 0.0309
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0129,
+      "final_browser.pcap": 0.01,
+      "final_unseen.pcap": 0.0349
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.9,
+     "holdout": {
+      "accuracy": 0.9204,
+      "recall": 0.8252,
+      "precision": 0.9642,
+      "f1": 0.8893,
+      "fpr": 0.0194
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0092,
+      "final_browser.pcap": 0.008,
+      "final_unseen.pcap": 0.0233
+     },
+     "passes_selection": false
+    },
+    {
+     "line": 0.95,
+     "holdout": {
+      "accuracy": 0.8874,
+      "recall": 0.7217,
+      "precision": 0.9832,
+      "f1": 0.8324,
+      "fpr": 0.0078
+     },
+     "benign_share": {
+      "generator.pcap": 0.0,
+      "browser.pcap": 0.0055,
+      "final_browser.pcap": 0.004,
+      "final_unseen.pcap": 0.0073
+     },
+     "passes_selection": false
+    }
+   ]
+  }
+ },
+ "holdout_rows": 15936,
+ "capture_flows": {
+  "generator.pcap": 110,
+  "browser.pcap": 542,
+  "final_browser.pcap": 502,
+  "final_unseen.pcap": 687
+ },
+ "untouched_rows": 109074,
+ "model_60_missed_at_0_50": {
+  "missed_attacks": 13973,
+  "scored_below_0_10": 9480,
+  "scored_below_0_05": 7539,
+  "scored_below_0_02": 4385
+ }
+}
