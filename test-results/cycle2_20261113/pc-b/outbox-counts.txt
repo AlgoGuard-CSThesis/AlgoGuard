@@ -1,0 +1,9 @@
+Upload queue on PC B (C:\AlgoGuard-C2\AlgoGuard\.algoguard\outbox\outbox.sqlite3), read only, 2026-11-13 14:20:38 Asia/Manila.
+Counts only; no record contents.
+
+event: 302 rows; columns ['event_uuid', 'user_id', 'profile_id', 'node_id', 'session_id', 'deployment_id', 'created_at', 'payload', 'status', 'reason', 'receipt', 'payload_hash']
+    status=synced: 302
+reservation: 1 rows; columns ['session_id', 'accepted', 'created_at']
+lifecycle: 0 rows; columns ['summary_id', 'user_id', 'profile_id', 'node_id', 'created_at', 'payload', 'status', 'reason', 'kind']
+
+Queue times (Asia/Manila): TC-01 event 7fcd3018 created 13:39:44, synced; TC-02 event 9461bb11 created 13:41:45, synced; last replay event created 13:55:33.
