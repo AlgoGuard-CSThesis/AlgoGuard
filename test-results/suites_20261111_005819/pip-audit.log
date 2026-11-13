@@ -1,0 +1,6 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m pip_audit -r requirements.txt
+
+Name     Version ID              Fix Versions
+-------- ------- --------------- ------------
+werkzeug 3.1.8   PYSEC-2026-4312 3.1.9
+Found 1 known vulnerability in 1 package

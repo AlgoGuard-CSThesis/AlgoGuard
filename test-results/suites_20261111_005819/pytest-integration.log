@@ -1,0 +1,78 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m pytest -q -m integration
+
+.....................................ss..s.............................. [ 69%]
+.......s....................F.s                                          [100%]
+================================== FAILURES ===================================
+_____ test_sustained_sessions_and_an_outage_stay_within_the_pilot_budgets _____
+
+cloud = {'users': [{'id': 'def7f31d-fefc-4535-b935-2cf1c0893585', 'token': 'eyJhbGciOiJFUzI1NiIsImtpZCI6IjYzZDc4N2ZlLWEyMTAtND...unction cloud.<locals>.rpc at 0x0000020E9D0FB270>, 'admin': <function cloud.<locals>.admin at 0x0000020E9D0FB690>, ...}
+local_stack = {'api_url': 'http://127.0.0.1:54321', 'rest_url': 'http://127.0.0.1:54321/rest/v1', 'functions_url': 'http://127.0.0.1:54321/functions/v1', 'db_url': '<redacted> ...}
+local_http = <stack_support.LocalStackHttp object at 0x0000020E95722A50>
+published = {'manifest_id': 478, 'deployment_id': 872, 'model_id': 875, 'object_path': 'releases/79736e6b-b5e2-42bd-83df-5a0c5dc42154/4a65f5774c167c2df048ce9badfe6ff6d7601301af3452b2265b4abe98a9d6d8.joblib', ...}
+tmp_path = WindowsPath('C:/Users/sanmi/AppData/Local/Temp/pytest-of-sanmi/pytest-340/test_sustained_sessions_and_an0')
+
+    def test_sustained_sessions_and_an_outage_stay_within_the_pilot_budgets(
+            cloud, local_stack, local_http, published, tmp_path):
+        duration = float(os.environ.get("SUSTAINED_SECONDS", "90"))
+        outage = min(30.0, duration / 3)
+        analyst = make_account(cloud, local_stack, local_http, "sustained")
+        proxy = FaultProxy(local_stack["api_url"], latency=LATENCY)
+        state = tmp_path / "pc"
+        env = start_app(cloud, local_stack, state, [analyst])
+        route_through(env.services.auth, proxy)
+        process = psutil.Process()
+        samples, sampling, streaming = [], threading.Event(), threading.Event()
+        streamed = []
+    
+        def sample():
+            while not sampling.wait(2.0):
+                samples.append({"t": time.monotonic(), "rss": process.memory_info().rss,
+                                "spool": folder_bytes(state / "outbox"),
+                                "state": folder_bytes(state), "owned": REGISTRY.stats(),
+                                "threads": threading.active_count()})
+    
+        def stream(owner, deployment, features):
+            due = time.monotonic()
+            while not streaming.is_set():
+                event = flow_event(deployment, {"prediction": "Normal", "confidence": 97.0,
+                                                "latency_ms": 1.0}, dict(features), "live_monitor",
+                                   None)
+                if env.services.outbox.submit(owner, "steady", event,
+                                              capped=False)["persistence"] == "in_memory":
+                    streamed.append(event["event_uuid"])
+                due += 1 / STREAM_RATE
+                time.sleep(max(0.0, due - time.monotonic()))
+    
+        sampler = threading.Thread(target=sample, daemon=True)
+        report: dict[str, Any] = {
+            "latency_each_way_s": LATENCY, "duration_s": duration, "outage_s": outage,
+            "stream_events_per_s": STREAM_RATE, "session_seconds": SESSION_SECONDS}
+        try:
+            client = sign_in(env.app, analyst)
+            sampler.start()
+            # DEF-10: the same 300-event burst, one request at a time and then four at once.
+            one = burst(cloud, env, analyst, client, 1)
+            four = burst(cloud, env, analyst, client, 4)
+            report["def10"] = {"one_at_a_time": one, "four_at_once": four}
+            assert one["events"] == four["events"] == CAP
+>           assert four["p95_s"] < one["p95_s"] and four["p95_s"] <= ACK_P95_SECONDS
+E           assert (5.07 < 6.11 and 5.07 <= 5.0)
+
+tests\integration\test_sustained_load.py:171: AssertionError
+============================== warnings summary ===============================
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+tests/integration/test_model_recovery.py::test_a_running_capture_keeps_its_model_while_new_sessions_use_the_new_one
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle.py:207: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    array.shape = self.shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/integration/test_sustained_load.py::test_sustained_sessions_and_an_outage_stay_within_the_pilot_budgets
+1 failed, 97 passed, 5 skipped, 682 deselected, 8 warnings in 151.94s (0:02:31)

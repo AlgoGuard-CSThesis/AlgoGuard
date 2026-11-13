@@ -1,0 +1,97 @@
+{
+  "latency_each_way_s": 0.2,
+  "duration_s": 90.0,
+  "outage_s": 30.0,
+  "stream_events_per_s": 25.0,
+  "session_seconds": 10.0,
+  "def10": {
+    "one_at_a_time": {
+      "n": 300,
+      "p50_s": 2.06,
+      "p95_s": 4.31,
+      "max_s": 4.33,
+      "events": 300,
+      "produced_s": 0.11,
+      "drain_s": 4.42
+    },
+    "four_at_once": {
+      "n": 300,
+      "p50_s": 0.96,
+      "p95_s": 1.66,
+      "max_s": 1.66,
+      "events": 300,
+      "produced_s": 0.16,
+      "drain_s": 1.79
+    }
+  },
+  "phase_started": 1794331392.655642,
+  "outage_started": 1794331424.6680145,
+  "outage_ended": 1794331460.9476564,
+  "phase_ended": 1794331483.8087916,
+  "drained_after_phase_s": 2.0,
+  "after_reconnect_behind_backlog": {
+    "n": 233,
+    "p50_s": 5.85,
+    "p95_s": 8.15,
+    "max_s": 8.59
+  },
+  "captures": 6,
+  "streamed": 2279,
+  "events_acknowledged": 2393,
+  "stream_missing_on_server": 0,
+  "sustained_events_per_s": 26.3,
+  "ack_delay_online": {
+    "n": 844,
+    "p50_s": 1.34,
+    "p95_s": 2.5,
+    "max_s": 2.94
+  },
+  "ack_delay_all": {
+    "n": 2393,
+    "p50_s": 2.47,
+    "p95_s": 33.92,
+    "max_s": 38.65
+  },
+  "outage_backlog": {
+    "events": 1316,
+    "last_synced_s_after_reconnect": 8.6
+  },
+  "local": {
+    "synced": 2993,
+    "pending": 0,
+    "rejected": 0,
+    "lost_other_than_cap": 0
+  },
+  "server": {
+    "duplicate_events": 0,
+    "traffic_rows": 2993,
+    "prediction_rows": 2993,
+    "events": 2993
+  },
+  "memory_mib": {
+    "start": 240.9,
+    "peak": 305.6,
+    "first_third_mean": 253.8,
+    "last_third_mean": 290.3
+  },
+  "threads": {
+    "start": 7,
+    "end": 6,
+    "peak": 16
+  },
+  "storage_mib": {
+    "spool_peak": 3.62,
+    "spool_by_third": [
+      1.66,
+      2.64,
+      3.62
+    ],
+    "state_peak": 3.79
+  },
+  "owned_connections_end": {
+    "registered_total": 148,
+    "active": 1,
+    "retained": 147,
+    "evicted": 0
+  }
+}

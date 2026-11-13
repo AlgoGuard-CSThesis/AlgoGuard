@@ -1,0 +1,8 @@
+﻿commit 7fe5251 2026-11-12 01:10
+python.exe : No known vulnerabilities found
+At line:1 char:651
++ ... e5251.log"; & venv\Scripts\python.exe -m pip_audit -r requirements.tx ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (No known vulnerabilities found:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

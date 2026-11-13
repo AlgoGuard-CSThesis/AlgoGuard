@@ -1,0 +1,19 @@
+$ C:\Users\sanmi\AlgoGuard\venv\Scripts\python.exe -m pytest -q
+
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 31%]
+........................................................................ [ 42%]
+........................................................................ [ 52%]
+........................................................................ [ 63%]
+........................................................................ [ 73%]
+........................................................................ [ 84%]
+........................................................................ [ 95%]
+..................................                                       [100%]
+============================== warnings summary ===============================
+tests/test_cloud_app.py: 261 warnings
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\sklearn\utils\parallel.py:144: UserWarning: `sklearn.utils.parallel.delayed` should be used with `sklearn.utils.parallel.Parallel` to make it possible to propagate the scikit-learn configuration of the current thread to the joblib workers.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+682 passed, 103 deselected, 261 warnings in 452.58s (0:07:32)

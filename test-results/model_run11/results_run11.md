@@ -11,7 +11,7 @@ in a file in this folder.
 | 2026-11-10 18:20 | Training run #11 started; the five base models finished by 18:31; the process ended with the Claude Code session during the Stacking step, so no ensemble was saved (run #11 marked failed in the training database) | `train_console.log` |
 | 2026-11-10 | Pre-check, recorded only: grouped 5-fold Random Forest on the training rows, recall 0.929, false-positive rate 0.066, Fuzzers recall 0.691 | `precheck_run11.json` |
 | 2026-11-11 00:43–01:16 | The same command, data and seeds again as **training run #12**, the candidate; in-app check split (optimistic, see the QA report): Stacking accuracy 94.1%, F1 94.6%, ROC-AUC 0.989; `stacking.joblib` written 01:16:31 (the log's last line repeats the start time because `cmd` expanded `%TIME%` when it read the command) | `train_console_run12.log` |
-| 2026-11-11 01:30 | Gate on the selection data | `gate_run11.json`, `gate_holdout_*/` |
+| 2026-11-11 01:18–01:19 | Gate on the selection data | `gate_run11.json`, `gate_holdout_*/` |
 
 ## Gate — failed (2 of 3 rules)
 
