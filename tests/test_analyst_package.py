@@ -58,7 +58,8 @@ def test_the_package_holds_the_analyst_application_only(built):
                      "services/inference_worker.py", "templates/monitor.html",
                      "static/css/style.css", "datasets/algoguard_big.csv", ".env.example",
                      "SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd", "requirements.txt",
-                     "requirements-model.lock", "docs/ANALYST_GUIDE.md", "BUILD"):
+                     "requirements-model.lock", "docs/ANALYST_GUIDE.md",
+                     "docs/MODEL_TRAINING.md", "ALGOGUARD_USER_MANUAL.txt", "BUILD"):
         assert required in names, required
     assert not names & set(MAINTAINER_ONLY)
     assert not [name for name in names if name.startswith(

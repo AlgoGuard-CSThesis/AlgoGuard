@@ -25,10 +25,12 @@ addresses, ports, sizes and timing. **Capture only on networks you are allowed t
 ## 2. Install (once per computer)
 
 1. Unzip the AlgoGuard package to a folder you own, for example `C:\AlgoGuard`. Do not run it
-   from a USB stick or a network drive.
+   from a USB stick or a network drive. The zip holds one folder named `AlgoGuard`; the files
+   named below are inside it.
 2. Double-click **`SETUP_ALGOGUARD.cmd`**. It:
    - checks for Python 3.14.6 and tells you if it is missing;
-   - installs AlgoGuard's Python packages into the `venv` folder (a few minutes the first time);
+   - installs AlgoGuard's Python packages into the `venv` folder (2 to 10 minutes the first
+     time, depending on the connection);
    - creates the settings file `.env` and opens it in Notepad.
 3. In Notepad, fill in the two lines and save:
 
@@ -50,7 +52,8 @@ example after an update.
    AlgoGuard capture without administrator rights; if the Live Monitor lists live capture as
    unavailable, close the window and start it again with right-click, **Run as administrator**.
 2. Wait for `Running on http://127.0.0.1:5000`, then open that address in your browser.
-   AlgoGuard is only reachable from this computer.
+   AlgoGuard is only reachable from this computer. The first prediction or capture after each
+   start takes a few seconds longer while the model loads.
 3. Sign in with your e-mail address and password.
 
 Keep the window open while you work; closing it stops AlgoGuard. **Every start needs an online
@@ -103,7 +106,10 @@ A session stores at most **300 records**. After that, classification carries on 
 rows are shown as **Not stored**.
 
 **Manual Prediction** (the **Predict** page) classifies one flow you type in. The form opens
-with a valid example; change a value and press **Run Prediction**.
+with a valid example; change a value and press **Run Prediction**. The result shows the
+record's status at that moment, usually **Pending upload**, and does not refresh by itself; the
+Dashboard's upload counters and the Alerts page show when it is **Synced**, normally within
+seconds.
 
 ## 6. Where your records are
 
@@ -168,6 +174,10 @@ A confident Normal verdict has a **Low** attack score. Read scores with these li
   check, not as proof.
 - **Sample replay accuracy is not a measured accuracy.** The bundled samples come from the
   model's training data.
+- **Measured on data it had never seen**, the model caught 76% of attacks and wrongly flagged
+  2.3% of normal flows (108,700 UNSW-NB15 flows). Most misses are one attack type, Fuzzers.
+  How this was measured, and what "anomaly" and "Attack" mean here, is explained in
+  `docs/MODEL_TRAINING.md`.
 
 Alerts recorded before scores existed show **Not scored** with their old severity label.
 
@@ -213,6 +223,7 @@ Administrators also see:
 | `The published model file is unavailable.` or another model message ending "tell your administrator" | Tell your administrator; this is fixed in the cloud, not on your computer. |
 | Live capture is listed as unavailable | Install Npcap (the message says if it is missing), or start AlgoGuard with **Run as administrator**, then reload the Live Monitor. |
 | A live session shows no rows | Pick the network card that carries your traffic. Rows appear when flows end, not on their first packet. |
+| Live Monitor's **Upload status** is empty | Nothing has been stored since this start; it fills in after the first stored record. |
 | Upload status **Blocked** | Uploads were refused: this installation is not approved for you, or your access was revoked. Once the administrator approves or restores it, uploads resume by themselves within a minute; **Retry uploads** on the Dashboard resumes them at once. |
 | Rows shown as **Not stored** | Expected after 300 records in a session. Otherwise the Dashboard names the cause: a full queue (wait for uploads) or a disk problem (free disk space; saving resumes by itself). |
 | Records shown as **Rejected** | Use **Export pending records** and give the file to your administrator. |

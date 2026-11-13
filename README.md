@@ -7,7 +7,7 @@ https://github.com/users/pqauoz/projects/5/views/1
 Testing Kanban Board
 https://github.com/users/bry22191919-hash/projects/4/views/2
 
-AlgoGuard detects anomalies in network traffic. Analysts run it on their own Windows computers: it classifies each network flow as Normal or Attack with a deployed Stacking Ensemble, and stores detections in a shared cloud project (Supabase) where administrators manage accounts, approve computers and review every installation's records. Models are trained and published by a maintainer; analyst installations only download and verify them.
+AlgoGuard detects anomalies in network traffic: flows that look like the attacks in the labelled UNSW-NB15 data it was trained on, reported as Normal or Attack verdicts with an attack score ([docs/MODEL_TRAINING.md](docs/MODEL_TRAINING.md) explains what that does and does not cover). Analysts run it on their own Windows computers: it classifies each network flow as Normal or Attack with a deployed Stacking Ensemble, and stores detections in a shared cloud project (Supabase) where administrators manage accounts, approve computers and review every installation's records. Models are trained and published by a maintainer; analyst installations only download and verify them.
 
 The Live Monitor accepts three traffic sources through one pipeline: **live packet capture** from a network interface (packets are grouped into flows in real time and each flow is classified when it ends), **recorded packet captures** (`.pcap` files replayed through the same flow tracker), and **labelled CSV replay** of bundled UNSW-NB15 samples, which keeps ground-truth labels visible for demonstrations. Live capture needs the Npcap driver and administrator rights on Windows; without them both replay sources keep working. AlgoGuard observes and classifies traffic; it never blocks it, and it stores flow metadata only, never packet payloads. Capture live traffic only on networks you are authorized to monitor.
 
@@ -17,6 +17,7 @@ The Live Monitor accepts three traffic sources through one pipeline: **live pack
 |---|---|
 | An analyst installing or using AlgoGuard, or an administrator managing accounts and computers | [docs/ANALYST_GUIDE.md](docs/ANALYST_GUIDE.md) |
 | The maintainer: cloud project, migrations, first administrator, training and publishing models, analyst packages, backups, cutover, recovery, tests | [docs/MAINTAINER_GUIDE.md](docs/MAINTAINER_GUIDE.md) |
+| Reading how the models are trained, evaluated and chosen, and what the measured results mean | [docs/MODEL_TRAINING.md](docs/MODEL_TRAINING.md); the test plans, logs and completion reports are in [docs/testing/](docs/testing/) |
 | Reviewing how and why it was built | [AlgoGuard Iterations (plan).md](<AlgoGuard Iterations (plan).md>), [the backlog](<AlgoGuard Migration (backlog).md>) and the stage records in [docs/migration/](docs/migration/) |
 
 **Analyst quick start.** Install Python 3.14.6, unzip the analyst package (or clone this repository), run `SETUP_ALGOGUARD.cmd` and enter the project URL and publishable key from your administrator, then run `START_ALGOGUARD.cmd` (as administrator for live capture), open `http://127.0.0.1:5000` and sign in. An administrator approves the computer once on the Nodes page.

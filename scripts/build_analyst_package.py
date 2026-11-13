@@ -44,6 +44,8 @@ SUPPORT_FILES = (
     "requirements.txt",
     "requirements-model.lock",
     "docs/ANALYST_GUIDE.md",
+    "docs/MODEL_TRAINING.md",
+    "ALGOGUARD_USER_MANUAL.txt",
     "captures/.gitkeep",
 )
 SUPPORT_PATTERNS = ("templates/*", "static/*", "datasets/*.csv")

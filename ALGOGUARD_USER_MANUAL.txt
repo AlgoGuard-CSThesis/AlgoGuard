@@ -94,6 +94,20 @@ then published to the cloud project, from where every analyst computer
 downloads and verifies it. The website has no upload or training page: the
 finished product runs the model, it does not build it.
 
+Anomaly or attack?
+Both words appear in this guide and in the thesis title. AlgoGuard learns
+from UNSW-NB15, a labelled dataset in which every flow is marked Normal or one
+of nine attack types, so the model learns what attack traffic looks like
+compared with normal traffic. Its verdicts are therefore named Normal and
+Attack, with an attack score. "Anomaly" is the wider idea: a flow that does
+not look like normal traffic. In AlgoGuard an anomaly is reported as an
+Attack verdict, because the only examples of abnormal traffic the model was
+trained on are attacks. It is not an unsupervised detector that learns one
+network's own baseline, so a new kind of attack that resembles nothing in the
+dataset may pass as Normal. An Attack verdict means "this flow looks like the
+attacks in the training data", not "this is harmful". The full explanation,
+with the measured results, is in docs/MODEL_TRAINING.md.
+
 Important:
 Live capture reads real packets from the selected network card, groups them
 into flows, and classifies each flow when it ends. It needs the Npcap driver
@@ -110,8 +124,10 @@ authorized to monitor.
 The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
 
 1. Install Python 3.14.6 (and Npcap for live capture).
-2. Double-click SETUP_ALGOGUARD.cmd. It installs the packages and opens the
-   settings file .env: enter the project URL and publishable key your
+2. Unzip the package. It holds one folder named AlgoGuard; the two .cmd files
+   are inside it. Double-click SETUP_ALGOGUARD.cmd. It installs the packages
+   (2 to 10 minutes the first time, depending on the connection) and opens
+   the settings file .env: enter the project URL and publishable key your
    administrator gave you, save, and close Notepad.
 3. Double-click START_ALGOGUARD.cmd and keep its window open. If the Live
    Monitor lists live capture as unavailable, start it again with right-click,
@@ -121,7 +137,10 @@ The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
    There is no page for changing a password: if you forget yours, ask your
    administrator, and the maintainer sets a new one.
 5. The first time, copy the installation ID from the Dashboard and send it to
-   your administrator, who approves it on the Nodes page.
+   your administrator, who approves it on the Nodes page. Reload the
+   Dashboard afterwards: it shows "Node approved" without a restart.
+6. The first prediction or capture after each start takes a few seconds
+   longer while the model loads; later ones answer in well under a second.
 
 The pages need no internet for their styling, but sign-in, model download and
 uploads do. AlgoGuard never trains a model on an analyst computer.
@@ -368,7 +387,11 @@ If the Predict page or the Live Monitor classifies a flow as Attack:
 3. The entered flow values are shown.
 4. If the flow is stored, its traffic record, the prediction and an alert
    are saved on this computer and uploaded to the cloud. The alert gets its
-   ID once the upload is acknowledged (the record shows Synced).
+   ID once the upload is acknowledged (the record shows Synced). The result
+   card shows the record's status at the moment of the prediction, usually
+   "Pending upload"; it does not refresh by itself. The Dashboard's upload
+   counters and the Alerts page show when it is Synced, normally within
+   seconds.
 
 Alert History lets analysts and administrators review stored Attack alerts
 directly in the web interface. Each alert shows the source and destination
@@ -416,6 +439,18 @@ The model is 82.50% confident in the predicted class.
 Important:
 High confidence does not guarantee the prediction is correct. It only shows
 how confident the model is based on what it learned.
+
+How accurate is it, measured honestly?
+On 108,700 UNSW-NB15 flows the deployed model (training run 10, "model 60")
+had never seen, it caught 76.0% of attacks and wrongly flagged 2.3% of
+normal flows: accuracy 86.2%, F1 85.4%, ROC-AUC 0.970. The 90% targets for
+accuracy, F1 and recall were not met; most missed attacks are Fuzzers, a
+category it catches only 22.8% of the time on that data, while Exploits,
+DoS, Reconnaissance and Worms are caught above 93%. On the hold-out it was
+selected with, it scores 95.1% accuracy and 91.6% recall. On ordinary
+browsing from the PC it was trained with, 3 to 7% of normal flows were
+labelled Attack. The figures, and how they were measured, are in
+docs/MODEL_TRAINING.md and in the project's test records.
 
 
 11. WHAT EACH FLOW FIELD MEANS
@@ -516,6 +551,24 @@ shared cloud project. The alert appears on the Alerts page as Open until
 someone acknowledges or resolves it, and the whole sequence is recorded in the
 audit log.
 
+If asked whether it detects anomalies or attacks:
+
+Both, in this sense: the model learned from labelled attack and normal flows,
+so it reports a flow that looks like the known attacks as an Attack. That is
+AlgoGuard's definition of an anomaly. It does not learn a network's own
+baseline, so attacks unlike anything in the dataset can pass as Normal, and
+unusual but harmless traffic can be flagged. Say "supervised anomaly
+detection trained on attack data" and point to section 1 of
+docs/MODEL_TRAINING.md.
+
+If asked how accurate it is:
+
+Give the untouched-data figures from section 10 (76.0% of attacks caught,
+2.3% false alarms, accuracy 86.2%) and say which targets were not met and
+why (Fuzzers). An honest number with its reason is stronger than the
+replay's near-100% match rate, which only shows the model reproducing rows
+it was trained on.
+
 
 13. QUICK CHECKLIST BEFORE DEMO
 -------------------------------
@@ -553,6 +606,13 @@ Possible future features:
    (train.py already accepts such a file).
 4. Add retraining from reviewed prediction records.
 5. Add per-attack-category classification instead of binary Normal/Attack.
+6. Choose the decision line (now 50%) on validation data rather than using
+   the default, and measure the result once on untouched data (DEF-24).
+7. Train on the official UNSW-NB15 training partition under a rule that
+   keeps false alarms on live traffic within target (training run 12 raised
+   recall but failed that rule).
+8. A launcher window for people who are not comfortable with the two .cmd
+   files: setup, settings, start, stop and "open in browser" as buttons.
 
 
 ==============================================================================
@@ -564,6 +624,13 @@ data. Training happens outside the website, in a terminal, with train.py, on
 the maintainer's computer; publishing the result to the cloud project is
 described in docs/MAINTAINER_GUIDE.md. Analyst computers never train. Nothing
 here is required to run or demonstrate the detector.
+
+The deployed model uses the 16 flow features listed in section 5. The small
+CSV files below only show the file format: a model trained on them works for
+Manual Prediction and CSV replay with the same columns, but only a file with
+all 16 flow features gives a model that can be published and used on live
+traffic. How the real model was built, and with what data, is explained in
+docs/MODEL_TRAINING.md.
 
 
 
@@ -701,27 +768,32 @@ label is named "normal".
 
 You can create a file named sample_network_traffic.csv with this content:
 
-dur,rate,proto,state,spkts,dpkts,sbytes,dbytes,sttl,dttl,label
-0.10,12,tcp,CON,12,9,500,420,64,64,normal
-0.20,10,udp,CON,14,8,520,430,64,64,normal
-0.15,11,tcp,FIN,11,10,480,390,64,64,normal
-0.12,14,udp,CON,13,9,510,405,64,64,normal
-0.11,13,tcp,CON,12,8,505,415,64,64,normal
-0.18,9,udp,FIN,15,11,530,440,64,64,normal
-0.01,5000,tcp,REQ,1,1,2000,60,254,0,attack
-0.02,4500,tcp,INT,1,1,1900,55,254,0,attack
-0.01,4800,udp,REQ,1,1,2100,65,254,0,attack
-0.03,5200,tcp,INT,1,1,2200,70,254,0,attack
-0.02,4700,tcp,REQ,1,1,2050,58,254,0,attack
-0.01,5100,udp,INT,1,1,2150,68,254,0,attack
+dur,rate,proto,state,spkts,dpkts,sbytes,dbytes,label
+0.10,12,tcp,CON,12,9,500,420,normal
+0.20,10,udp,CON,14,8,520,430,normal
+0.15,11,tcp,FIN,11,10,480,390,normal
+0.12,14,udp,CON,13,9,510,405,normal
+0.11,13,tcp,CON,12,8,505,415,normal
+0.18,9,udp,FIN,15,11,530,440,normal
+0.01,5000,tcp,REQ,1,1,2000,60,attack
+0.02,4500,tcp,INT,1,1,1900,55,attack
+0.01,4800,udp,REQ,1,1,2100,65,attack
+0.03,5200,tcp,INT,1,1,2200,70,attack
+0.02,4700,tcp,REQ,1,1,2050,58,attack
+0.01,5100,udp,INT,1,1,2150,68,attack
 
 This sample has:
 
 - 6 normal rows
 - 6 attack rows
 - categorical columns: proto, state
-- numerical columns: dur, rate, spkts, dpkts, sbytes, dbytes, sttl, dttl
+- numerical columns: dur, rate, spkts, dpkts, sbytes, dbytes
 - target column: label
+
+Time-to-live columns (sttl, dttl) are deliberately left out. In UNSW-NB15
+they mostly identify the lab's own computers, and a Windows PC sends TTL 128,
+a value the dataset never contains, so a model that learns from them flags
+most real traffic as an attack. The deployed model does not use them.
 
 
 20. WHAT NORMAL DATA CAN LOOK LIKE
@@ -731,8 +803,8 @@ Normal traffic usually has values that look moderate and consistent.
 
 Example normal row:
 
-dur,rate,proto,state,spkts,dpkts,sbytes,dbytes,sttl,dttl,label
-0.10,12,tcp,CON,12,9,500,420,64,64,normal
+dur,rate,proto,state,spkts,dpkts,sbytes,dbytes,label
+0.10,12,tcp,CON,12,9,500,420,normal
 
 Meaning:
 
@@ -752,11 +824,8 @@ spkts and dpkts
     Source and destination packet counts.
 
 sbytes and dbytes
-    Source and destination byte counts.
-
-sttl and dttl
-    Time-to-live values. Normal traffic often uses reasonable TTL values such
-    as 64.
+    Source and destination byte counts. Traffic in both directions, in
+    proportion, is what a real conversation looks like.
 
 label
     normal
@@ -769,8 +838,8 @@ Anomaly or attack-like traffic often has unusual/extreme values.
 
 Example anomaly row:
 
-dur,rate,proto,state,spkts,dpkts,sbytes,dbytes,sttl,dttl,label
-0.01,5000,tcp,REQ,1,1,2000,60,254,0,attack
+dur,rate,proto,state,spkts,dpkts,sbytes,dbytes,label
+0.01,5000,tcp,REQ,1,1,2000,60,attack
 
 Why this can look suspicious:
 
@@ -779,12 +848,6 @@ rate = 5000
 
 state = REQ
     A request state that may indicate incomplete or suspicious communication.
-
-sttl = 254
-    High source TTL can appear in some attack patterns.
-
-dttl = 0
-    Destination TTL of 0 can look abnormal depending on the dataset.
 
 sbytes much larger than dbytes
     One-sided traffic can sometimes indicate suspicious behavior.

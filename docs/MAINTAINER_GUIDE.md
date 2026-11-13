@@ -128,7 +128,9 @@ venv\Scripts\python.exe scripts\evaluate_model.py --model saved_models\run_<id>\
 `train.py` trains and ranks the six candidates and, with `--deploy`, makes the Stacking
 Ensemble the local active model if it passes the quality gate. The README's "Retrain and Deploy"
 section describes the datasets, the quality gate and how the current model (training run 10) was
-built; `docs/migration/06a-evidence.md` records its evaluation. Training records live in the
+built; `docs/migration/06a-evidence.md` records its evaluation. `docs/MODEL_TRAINING.md`
+explains the whole method in one place (data, features, candidates, gate, measurement and the
+training-run history), for reports and the thesis. Training records live in the
 local SQLite file `database/algoguard.sqlite3`; keep a backup of it (section 7).
 
 **Publish** a trained model to the cloud. Pick a new publication ID once and write it down:
@@ -235,7 +237,9 @@ venv\Scripts\python.exe -m pytest -m integration -q
 stack. If the Edge Function tests fail with HTTP 503, run
 `docker start supabase_edge_runtime_AlgoGuard`. The Windows capture tests need Npcap and an
 administrator terminal. `SUSTAINED_SECONDS=900` runs the sustained-load test for 15 minutes
-instead of 90 seconds (`SUSTAINED_REPORT=<file>` saves its figures).
+instead of 90 seconds (`SUSTAINED_REPORT=<file>` saves its figures). Run the lane on an idle
+PC: the sustained-load test measures an upload-delay budget, so it skips itself with a message
+when more than half the CPU is already in use (DEF-25).
 
 Two release checks are opt-in because they take longer and need more than the lane:
 
