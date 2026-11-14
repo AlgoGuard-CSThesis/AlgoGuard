@@ -168,6 +168,7 @@ It packages the last commit (commit your changes first) into
 `dist\AlgoGuard-analyst-<version>.zip`, with a `BUILD` file naming the commit, which each
 installation reports on the Computers page. The contents are chosen from an allow list: the
 analyst app and every project module it imports, its pages and styles, the sample datasets,
+the launcher window (`ALGOGUARD.cmd`, `algoguard_launcher.pyw`, `launcher_core.py`),
 `SETUP_ALGOGUARD.cmd`, `START_ALGOGUARD.cmd`, `.env.example`, the requirements files and the
 analyst guide. Training, publishing, migration, import and recovery tools, tests, test records,
 research files, databases, models, captures and settings files cannot be included. The build

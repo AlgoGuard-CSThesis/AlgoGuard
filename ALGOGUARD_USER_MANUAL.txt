@@ -124,15 +124,15 @@ authorized to monitor.
 The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
 
 1. Install Python 3.14.6 (and Npcap for live capture).
-2. Unzip the package. It holds one folder named AlgoGuard; the two .cmd files
-   are inside it. Double-click SETUP_ALGOGUARD.cmd. It installs the packages
-   (2 to 10 minutes the first time, depending on the connection) and opens
-   the settings file .env: enter the project URL and publishable key your
-   administrator gave you, save, and close Notepad.
-3. Double-click START_ALGOGUARD.cmd and keep its window open. If the Live
-   Monitor lists live capture as unavailable, start it again with right-click,
-   "Run as administrator".
-4. Open http://127.0.0.1:5000 and sign in with the e-mail address and
+2. Unzip the package. It holds one folder named AlgoGuard. Double-click
+   ALGOGUARD.cmd inside it: the AlgoGuard window opens. Press Set up (2 to 10
+   minutes the first time, depending on the connection), then Settings, and
+   enter the project URL and publishable key your administrator gave you.
+3. Press Start. Your browser opens when AlgoGuard is ready; keep the AlgoGuard
+   window open. If the Live Monitor lists live capture as unavailable, press
+   Stop, then "Restart as administrator". (By hand: SETUP_ALGOGUARD.cmd and
+   START_ALGOGUARD.cmd do the same steps with Notepad and a console window.)
+4. Sign in at http://127.0.0.1:5000 with the e-mail address and
    password your administrator created. Every start needs an online sign-in.
    There is no page for changing a password: if you forget yours, ask your
    administrator, and the maintainer sets a new one.
@@ -576,9 +576,9 @@ it was trained on.
 Before presenting:
 
 1. Check the internet connection and that Windows' clock is right.
-2. Start START_ALGOGUARD.cmd (make sure Npcap is installed if you plan to show
-   live capture).
-3. Open http://127.0.0.1:5000 and sign in.
+2. Double-click ALGOGUARD.cmd and press Start (make sure Npcap is installed
+   if you plan to show live capture).
+3. Sign in at http://127.0.0.1:5000 in the browser that opens.
 4. Confirm the Dashboard shows the Deployed Model card and "Node approved".
    If not, ask your administrator (see docs/ANALYST_GUIDE.md).
 5. Choose "Save attacks" or "Save every flow" if the demo should show
@@ -611,8 +611,6 @@ Possible future features:
 7. Train on the official UNSW-NB15 training partition under a rule that
    keeps false alarms on live traffic within target (training run 12 raised
    recall but failed that rule).
-8. A launcher window for people who are not comfortable with the two .cmd
-   files: setup, settings, start, stop and "open in browser" as buttons.
 
 
 ==============================================================================

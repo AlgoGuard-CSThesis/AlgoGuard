@@ -20,7 +20,7 @@ The Live Monitor accepts three traffic sources through one pipeline: **live pack
 | Reading how the models are trained, evaluated and chosen, and what the measured results mean | [docs/MODEL_TRAINING.md](docs/MODEL_TRAINING.md); the test plans, logs and completion reports are in [docs/testing/](docs/testing/) |
 | Reviewing how and why it was built | [AlgoGuard Iterations (plan).md](<AlgoGuard Iterations (plan).md>), [the backlog](<AlgoGuard Migration (backlog).md>) and the stage records in [docs/migration/](docs/migration/) |
 
-**Analyst quick start.** Install Python 3.14.6, unzip the analyst package (or clone this repository), run `SETUP_ALGOGUARD.cmd` and enter the project URL and publishable key from your administrator, then run `START_ALGOGUARD.cmd` (as administrator for live capture), open `http://127.0.0.1:5000` and sign in. An administrator approves the computer once on the Nodes page.
+**Analyst quick start.** Install Python 3.14.6, unzip the analyst package (or clone this repository), double-click `ALGOGUARD.cmd`, press **Set up**, enter the project URL and publishable key from your administrator under **Settings**, press **Start** and sign in in the browser that opens (`SETUP_ALGOGUARD.cmd` and `START_ALGOGUARD.cmd` do the same by hand; live capture may need **Restart as administrator**). An administrator approves the computer once on the Nodes page.
 
 ## Runtime Architecture
 

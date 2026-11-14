@@ -57,7 +57,8 @@ def test_the_package_holds_the_analyst_application_only(built):
     for required in ("app.py", "cloud_app.py", "config.py", "services/capture_worker.py",
                      "services/inference_worker.py", "templates/monitor.html",
                      "static/css/style.css", "datasets/algoguard_big.csv", ".env.example",
-                     "SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd", "requirements.txt",
+                     "SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd", "ALGOGUARD.cmd",
+                     "launcher_core.py", "algoguard_launcher.pyw", "requirements.txt",
                      "requirements-model.lock", "docs/ANALYST_GUIDE.md",
                      "docs/MODEL_TRAINING.md", "ALGOGUARD_USER_MANUAL.txt", "BUILD"):
         assert required in names, required
@@ -66,9 +67,19 @@ def test_the_package_holds_the_analyst_application_only(built):
         ("tests/", "test-results/", "supabase/", "research/", "scripts/", "docs/migration/",
          "docs/testing/", "database/", "saved_models/", "reports/", ".github/"))]
     assert (folder / "BUILD").read_text().startswith("0.6.0+")
-    for script in ("SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd"):
+    for script in ("SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd", "ALGOGUARD.cmd"):
         content = (folder / script).read_bytes()
         assert b"\r\n" in content and b"\n" not in content.replace(b"\r\n", b"")
+
+
+def test_the_launcher_needs_nothing_but_the_standard_library(built):
+    folder, names = built
+    project = {name for name in names if name.endswith(".py")} - {"launcher_core.py"}
+    for name in ("launcher_core.py", "algoguard_launcher.pyw"):
+        source = (folder / name).read_text(encoding="utf-8")
+        imported = package._imports(source, name)
+        assert not [m for m in imported if package._module_path(m, project)], name
+        assert not imported & {"dotenv", "flask", "scapy", "psutil", "requests"}, name
 
 
 def test_the_package_starts_only_once_it_is_set_up(built, tmp_path):

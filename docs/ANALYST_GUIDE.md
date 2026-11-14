@@ -27,36 +27,45 @@ addresses, ports, sizes and timing. **Capture only on networks you are allowed t
 1. Unzip the AlgoGuard package to a folder you own, for example `C:\AlgoGuard`. Do not run it
    from a USB stick or a network drive. The zip holds one folder named `AlgoGuard`; the files
    named below are inside it.
-2. Double-click **`SETUP_ALGOGUARD.cmd`**. It:
-   - checks for Python 3.14.6 and tells you if it is missing;
-   - installs AlgoGuard's Python packages into the `venv` folder (2 to 10 minutes the first
-     time, depending on the connection);
-   - creates the settings file `.env` and opens it in Notepad.
-3. In Notepad, fill in the two lines and save:
+2. Double-click **`ALGOGUARD.cmd`**. The AlgoGuard window opens. If Python 3.14.6 is missing, it
+   says so and opens the download page instead; install it and double-click again.
+3. Press **Set up**. It installs AlgoGuard's Python packages into the `venv` folder (2 to 10
+   minutes the first time, depending on the connection); the progress shows in the window.
+4. Press **Settings**, enter the project **URL** and the **publishable key**, and press **Save**.
+   The window answers **Settings OK** when they are right. Never enter a password, a secret key
+   (`sb_secret_...`) or a service key; the window refuses a secret key.
 
-   ```ini
-   NEXT_PUBLIC_SUPABASE_URL=https://<your project>.supabase.co
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_<your key>
-   ```
+The window's five lines show what is ready: Python, Packages, Settings, Npcap and AlgoGuard.
 
-   Close Notepad. Setup checks the file and says **Settings OK** when it is right. Never put a
-   password, a secret key (`sb_secret_...`) or a service key in this file; AlgoGuard refuses to
-   start with one.
+**Doing it by hand instead:** double-click **`SETUP_ALGOGUARD.cmd`**. It installs the packages,
+creates the settings file `.env` and opens it in Notepad, where the same two values go:
+
+```ini
+NEXT_PUBLIC_SUPABASE_URL=https://<your project>.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_<your key>
+```
+
+Save and close Notepad; setup says **Settings OK** when the file is right.
 
 Setup never trains a model and never creates a database. You can run it again at any time, for
 example after an update.
 
 ## 3. Start AlgoGuard and sign in
 
-1. Double-click **`START_ALGOGUARD.cmd`**. Npcap installed with its default options lets
-   AlgoGuard capture without administrator rights; if the Live Monitor lists live capture as
-   unavailable, close the window and start it again with right-click, **Run as administrator**.
-2. Wait for `Running on http://127.0.0.1:5000`, then open that address in your browser.
-   AlgoGuard is only reachable from this computer. The first prediction or capture after each
-   start takes a few seconds longer while the model loads.
+1. In the AlgoGuard window, press **Start**. When AlgoGuard is ready, your browser opens at
+   `http://127.0.0.1:5000`; **Open AlgoGuard** opens it again. AlgoGuard is only reachable from
+   this computer. The first prediction or capture after each start takes a few seconds longer
+   while the model loads.
+2. Npcap installed with its default options lets AlgoGuard capture without administrator rights.
+   If the Live Monitor lists live capture as unavailable, press **Stop**, then **Restart as
+   administrator**, and start again.
 3. Sign in with your e-mail address and password.
 
-Keep the window open while you work; closing it stops AlgoGuard. **Every start needs an online
+By hand: **`START_ALGOGUARD.cmd`** starts AlgoGuard in its own window (right-click, **Run as
+administrator**, for live capture); wait for `Running on http://127.0.0.1:5000` and open that
+address.
+
+Keep the AlgoGuard window open while you work; **Stop**, or closing the window, stops AlgoGuard. **Every start needs an online
 sign-in.** AlgoGuard does not keep you signed in across restarts, and it cannot sign in while
 the internet is down.
 
@@ -89,7 +98,7 @@ Open **Live Monitor**, choose a source and how much to save, and press **Start M
 |---|---|
 | **Sample replay (labelled flows)** | Replays one of the bundled UNSW-NB15 samples (5,000, 10,000 or 20,000 flows). Each row keeps its true label, so the feed shows whether each verdict was right. Good for demonstrations. |
 | **Recorded packets (PCAP)** | Replays a `.pcap`, `.pcapng` or `.cap` file that you put in the `captures` folder. Packets are grouped into flows exactly as in live capture. There is no true label, so **Actual** shows a dash. |
-| **Live interface capture** | Watches the network card you select, in real time. Needs Npcap (and, if Npcap was installed for administrators only, AlgoGuard started as administrator). A flow is classified when its connection closes, after 15 seconds of silence, or every 120 seconds for long connections, so the first rows appear a few seconds after Start. Only IPv4 TCP and UDP traffic is watched: IPv6 traffic and pings are not. |
+| **Live interface capture** | Watches the network card you select, in real time. **Default interface** is the card that carries this computer's internet connection, named in the list. Needs Npcap (and, if Npcap was installed for administrators only, AlgoGuard started as administrator). A flow is classified when its connection closes, after 15 seconds of silence, or every 120 seconds for long connections, so the first rows appear a few seconds after Start. Only IPv4 TCP and UDP traffic is watched: IPv6 traffic and pings are not. |
 
 Replay speed and order apply to the two replay sources only. **Pause**, **Resume** and **Stop**
 control the session; reloading the page reconnects to a session that is still running. Only
@@ -221,7 +230,7 @@ Administrators also see:
 | `The model copy saved on this computer is corrupt.` | Close AlgoGuard, delete the folder named in the message, and start again; the model downloads afresh. |
 | `The published model does not match this version of AlgoGuard.` | Ask your administrator for the current AlgoGuard package (section 10). |
 | `The published model file is unavailable.` or another model message ending "tell your administrator" | Tell your administrator; this is fixed in the cloud, not on your computer. |
-| Live capture is listed as unavailable | Install Npcap (the message says if it is missing), or start AlgoGuard with **Run as administrator**, then reload the Live Monitor. |
+| Live capture is listed as unavailable | Install Npcap (the message says if it is missing), or press **Stop**, then **Restart as administrator** in the AlgoGuard window and start again, then reload the Live Monitor. |
 | A live session shows no rows | Pick the network card that carries your traffic. Rows appear when flows end, not on their first packet. |
 | Live Monitor's **Upload status** is empty | Nothing has been stored since this start; it fills in after the first stored record. |
 | Upload status **Blocked** | Uploads were refused: this installation is not approved for you, or your access was revoked. Once the administrator approves or restores it, uploads resume by themselves within a minute; **Retry uploads** on the Dashboard resumes them at once. |
