@@ -69,7 +69,7 @@
         <div id="monitorInterfaceField" hidden>
             <label class="form-label" for="monitorInterface">Network interface</label>
             <select class="form-select" id="monitorInterface">
-                <option value="">Default interface</option>
+                <option value="">Default interface{% if options.default_interface %} ({{ options.default_interface }}){% endif %}</option>
                 {% for item in options.interfaces %}
                 <option value="{{ item.value }}">{{ item.label }}</option>
                 {% endfor %}

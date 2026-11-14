@@ -397,6 +397,29 @@ def build_capture_filter(exclude_ports=None):
 CLOSE_POLL_SECONDS = 0.02
 
 
+def default_capture_interface():
+    """The adapter that carries the PC's route to the internet, or ``None`` (DEF-28).
+
+    Scapy's own default is its first working adapter, which on a PC with a VPN adapter
+    installed is often the VPN: a capture on it sees local discovery packets and none of
+    the PC's traffic. The route to 0.0.0.0 names the adapter the traffic really leaves by.
+    """
+    try:
+        # The web process never imports scapy.all, and scapy builds conf.route only when its
+        # route module is imported; without this the route table is None and the lookup fails.
+        import scapy.route  # noqa: F401
+        from scapy.config import conf
+
+        device = conf.route.route("0.0.0.0")[0]
+        iface = conf.ifaces.dev_from_networkname(device) if isinstance(device, str) else device
+        name = getattr(iface, "name", None)
+        if not name or getattr(iface, "ip", "") == "127.0.0.1":
+            return None
+        return str(name)
+    except Exception:
+        return None
+
+
 class LiveCaptureSource(TrafficSource):
     """Sniff data packets from a network interface and emit flows as they end.
 
@@ -426,7 +449,7 @@ class LiveCaptureSource(TrafficSource):
         exclude_ports=None,
         owned_connections=None,
     ):
-        self._interface = interface
+        self._interface = interface or default_capture_interface()
         self._owned = OWNED_CLOUD_CONNECTIONS if owned_connections is None else owned_connections
         self._maintenance = SharedConnections(get_config().state_dir)
         self.exclude_ports = (
@@ -672,7 +695,9 @@ def list_capture_interfaces():
             if ip:
                 label = f"{label} ({ip})"
             entries.append({"value": name, "label": label, "ip": ip})
-        entries.sort(key=lambda item: (item["ip"] in ("", "127.0.0.1"), item["label"]))
+        default = default_capture_interface()
+        entries.sort(key=lambda item: (item["value"] != default,
+                                       item["ip"] in ("", "127.0.0.1"), item["label"]))
         return [{"value": item["value"], "label": item["label"]} for item in entries]
     except Exception:
         from scapy.arch import get_if_list

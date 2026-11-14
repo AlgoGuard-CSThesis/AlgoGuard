@@ -50,6 +50,7 @@ from services.traffic_source_service import (
     PcapReplaySource,
     TrafficSourceCancelled,
     TrafficSourceError,
+    default_capture_interface,
     list_capture_files,
     list_capture_interfaces,
     live_capture_available,
@@ -772,7 +773,7 @@ def start_session(
         available, reason = live_capture_available()
         if not available:
             raise LiveMonitorError(reason)
-        source_name = str(interface).strip() if interface else None
+        source_name = str(interface).strip() if interface else default_capture_interface()
 
     with _LOCK:
         if (_THREAD and _THREAD.is_alive()) or (_SESSION and _SESSION["state"] in ACTIVE_STATES):
@@ -853,11 +854,16 @@ def get_status(since_seq=0, session_id=None):
 def get_options():
     """Return the control choices the monitor page renders."""
     live_ok, live_reason = live_capture_available()
+    interfaces = list_capture_interfaces() if live_ok else []
+    default_name = default_capture_interface() if live_ok else None
+    default_label = next((item["label"] for item in interfaces if item["value"] == default_name),
+                         default_name)
     return {
         "sources": [{"value": value, "label": label} for value, label in SOURCE_CHOICES.items()],
         "datasets": [{"value": value, "label": label} for value, label in DATASET_CHOICES.items()],
         "captures": list_capture_files(),
-        "interfaces": list_capture_interfaces() if live_ok else [],
+        "interfaces": interfaces,
+        "default_interface": default_label,
         "live_capture": {"available": live_ok, "reason": live_reason},
         "speeds": [
             {"value": "slow", "label": "Slow - 1 flow every 2s"},

@@ -623,3 +623,88 @@ def test_a_failing_flow_tracker_thread_is_reported(monkeypatch):
             source.next_event(timeout=0)
     finally:
         source.close()
+
+
+# --- DEF-28: "Default interface" follows the route to the internet -------------------------
+
+
+def _fake_route(monkeypatch, device, interfaces):
+    """Replace scapy's route to the internet and its interface table."""
+    from types import SimpleNamespace
+
+    from scapy.config import conf
+
+    table = {name: SimpleNamespace(name=name, description=description, ip=ip)
+             for name, description, ip in interfaces}
+    monkeypatch.setattr(conf.route, "route",
+                        lambda *args, **kwargs: (device, "192.0.2.5", "192.0.2.1"))
+    monkeypatch.setattr(conf.ifaces, "dev_from_networkname", lambda name: table[name])
+    monkeypatch.setattr(conf.ifaces, "values", lambda: list(table.values()))
+
+
+def test_default_capture_interface_follows_the_route_to_the_internet(monkeypatch):
+    _fake_route(monkeypatch, "Wi-Fi", [("VPN", "A VPN adapter", "198.51.100.7"),
+                                         ("Wi-Fi", "Wireless adapter", "192.0.2.5")])
+    assert traffic_sources.default_capture_interface() == "Wi-Fi"
+
+
+def test_default_capture_interface_is_none_when_it_cannot_be_resolved(monkeypatch):
+    from scapy.config import conf
+
+    def broken(*args, **kwargs):
+        raise OSError("no route table")
+
+    monkeypatch.setattr(conf.route, "route", broken)
+    assert traffic_sources.default_capture_interface() is None
+
+
+def test_default_capture_interface_ignores_the_loopback_adapter(monkeypatch):
+    _fake_route(monkeypatch, "Loopback", [("Loopback", "Software Loopback", "127.0.0.1")])
+    assert traffic_sources.default_capture_interface() is None
+
+
+def test_live_capture_without_a_choice_uses_the_default_adapter(monkeypatch):
+    monkeypatch.setattr(traffic_sources, "default_capture_interface", lambda: "Wi-Fi")
+    assert traffic_sources.LiveCaptureSource("")._interface == "Wi-Fi"
+    assert traffic_sources.LiveCaptureSource(None)._interface == "Wi-Fi"
+    assert traffic_sources.LiveCaptureSource("Ethernet")._interface == "Ethernet"
+
+
+def test_live_capture_keeps_no_interface_when_the_default_is_unknown(monkeypatch):
+    monkeypatch.setattr(traffic_sources, "default_capture_interface", lambda: None)
+    assert traffic_sources.LiveCaptureSource("")._interface is None
+
+
+def test_the_interface_list_puts_the_default_adapter_first(monkeypatch):
+    _fake_route(monkeypatch, "Wi-Fi", [("VPN", "A VPN adapter", "198.51.100.7"),
+                                         ("Wi-Fi", "Wireless adapter", "192.0.2.5")])
+    monkeypatch.setattr(traffic_sources, "live_capture_available", lambda: (True, None))
+    values = [item["value"] for item in traffic_sources.list_capture_interfaces()]
+    assert values == ["Wi-Fi", "VPN"]
+
+
+def test_default_capture_interface_loads_the_route_table_itself():
+    """The web process never imports scapy.all, so conf.route starts out empty (DEF-28)."""
+    import subprocess
+    import sys
+
+    script = ("from scapy.config import conf\n"
+              "assert conf.route is None\n"
+              "from services.traffic_source_service import default_capture_interface\n"
+              "default_capture_interface()\n"
+              "print(conf.route is not None)\n")
+    result = subprocess.run([sys.executable, "-c", script], cwd=Path(__file__).parents[1],
+                            capture_output=True, text=True, timeout=120)
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert result.stdout.strip().splitlines()[-1] == "True"
+
+
+def test_options_name_the_default_adapter(monkeypatch):
+    monkeypatch.setattr(monitor, "live_capture_available", lambda: (True, None))
+    monkeypatch.setattr(monitor, "list_capture_interfaces", lambda: [
+        {"value": "Wi-Fi", "label": "Wireless adapter"},
+        {"value": "VPN", "label": "A VPN adapter"}])
+    monkeypatch.setattr(monitor, "default_capture_interface", lambda: "Wi-Fi")
+    assert monitor.get_options()["default_interface"] == "Wireless adapter"
+    monkeypatch.setattr(monitor, "default_capture_interface", lambda: None)
+    assert monitor.get_options()["default_interface"] is None

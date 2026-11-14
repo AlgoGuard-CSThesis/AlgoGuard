@@ -35,6 +35,7 @@ from services.traffic_source_service import (
     LiveCaptureSource,
     TrafficSourceCancelled,
     TrafficSourceError,
+    default_capture_interface,
     live_capture_available,
 )
 
@@ -209,7 +210,7 @@ class CloudMonitor:
             available, reason = live_capture_available()
             if not available:
                 raise LiveMonitorError(reason)
-            source_name = str(interface).strip() if interface else None
+            source_name = str(interface).strip() if interface else default_capture_interface()
         if not identity.active or time.time() >= identity.expires_at:
             raise LiveMonitorError("Log in online before starting a capture.")
 
