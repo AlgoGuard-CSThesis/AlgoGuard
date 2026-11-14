@@ -42,7 +42,8 @@ from services.simulation_service import (
 )
 
 SETUP_HELP = (
-    "This installation is not set up yet. Run SETUP_ALGOGUARD.cmd, or copy .env.example to "
+    "This installation is not set up yet. Double-click ALGOGUARD.cmd and press Set up, then "
+    "Settings. By hand: run SETUP_ALGOGUARD.cmd, or copy .env.example to "
     ".env, then enter the project URL and publishable key your administrator gave you as "
     "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY "
     "(docs/ANALYST_GUIDE.md). An older installation that still keeps its records in the "

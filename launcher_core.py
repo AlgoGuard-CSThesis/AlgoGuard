@@ -155,7 +155,14 @@ def status(folder, *, current_version=None, system_root=None) -> Status:
     if installed == PYTHON_VERSION:
         packages = Check(True, "Installed")
         code, message = check_settings(folder)
-        settings = Check(code == 0, message)
+        # config.py's own wording points to the .env file, which is right for the manual route;
+        # in the window the place to fix the settings is the Settings button.
+        if code == 3:
+            settings = Check(False, "Not entered yet: press Settings")
+        elif code == 0:
+            settings = Check(True, message)
+        else:
+            settings = Check(False, f"{message} Press Settings to correct it.")
     elif installed:
         packages = Check(False, f"The venv folder was made with Python {installed}. Delete it, "
                                 "then press Set up")

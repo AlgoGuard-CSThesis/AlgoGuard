@@ -61,6 +61,7 @@ class LauncherWindow:
         self.buttons["admin"].grid(row=8, column=0, columnspan=3, sticky="w", pady=(4, 8))
         self.progress = ttk.Progressbar(frame, mode="indeterminate", length=520)
         self.progress.grid(row=9, column=0, columnspan=3, sticky="we")
+        self.progress.grid_remove()  # shown only while Set up works
         self.log = scrolledtext.ScrolledText(frame, width=74, height=12, state="disabled",
                                              font=("Consolas", 9))
         self.log.grid(row=10, column=0, columnspan=3, pady=(8, 0))
@@ -68,6 +69,15 @@ class LauncherWindow:
         root.after(200, self.pump)
 
     # -- display ---------------------------------------------------------------------
+    def show_progress(self, working):
+        """A moving bar while Set up works, nothing otherwise; a full bar left looks stuck."""
+        if working:
+            self.progress.grid()
+            self.progress.start(12)
+        else:
+            self.progress.stop()
+            self.progress.grid_remove()
+
     def say(self, text):
         self.log.configure(state="normal")
         self.log.insert("end", text.rstrip() + "\n")
@@ -108,7 +118,7 @@ class LauncherWindow:
                     self.refresh()
                 elif kind == "done":
                     self.busy = False
-                    self.progress.stop()
+                    self.show_progress(False)
                     self.refresh()
         except queue.Empty:
             pass
@@ -117,7 +127,7 @@ class LauncherWindow:
     # -- actions ---------------------------------------------------------------------
     def set_up(self):
         self.busy = True
-        self.progress.start(12)
+        self.show_progress(True)
         self.refresh()
         threading.Thread(target=self._run_setup, daemon=True).start()
 

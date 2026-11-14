@@ -218,10 +218,10 @@ Administrators also see:
 
 | What you see | What to do |
 |---|---|
-| `AlgoGuard cannot start. This installation is not set up yet.` | Run `SETUP_ALGOGUARD.cmd` and fill in the two cloud settings. |
-| `Settings problem: ...` | The message names the setting. Common causes: the URL is not `https://`, the key is not a `sb_publishable_` key, or `ALGOGUARD_HOST` is not `127.0.0.1`. |
-| `AlgoGuard needs Python 3.14.6` or `Models need Python 3.14.6` | Install Python 3.14.6, delete the `venv` folder, and run `SETUP_ALGOGUARD.cmd` again. |
-| `This installation's Python packages differ from the model's` | Run `SETUP_ALGOGUARD.cmd` again. |
+| `AlgoGuard cannot start. This installation is not set up yet.` | Double-click `ALGOGUARD.cmd`, press **Set up**, then **Settings**, and enter the two values. |
+| `Settings problem: ...` | Press **Settings** in the AlgoGuard window and correct the value; the message names it. Common causes: the URL is not `https://`, or the key is not a `sb_publishable_` key. A wrong `ALGOGUARD_HOST` (it must be `127.0.0.1`) is fixed in the `.env` file itself. |
+| `AlgoGuard needs Python 3.14.6` or `Models need Python 3.14.6` | Install Python 3.14.6, delete the `venv` folder, and press **Set up** in the AlgoGuard window again (or run `SETUP_ALGOGUARD.cmd`). |
+| `This installation's Python packages differ from the model's` | Press **Set up** in the AlgoGuard window again (or run `SETUP_ALGOGUARD.cmd`). |
 | Sign-in says the e-mail or password was not accepted | Check them, then check that Windows' clock is right: in an administrator Command Prompt run `w32tm /resync`. A clock more than 10 seconds off makes every sign-in fail. AlgoGuard has no page for changing or resetting a password: if you forgot yours, ask your administrator, and the maintainer sets a new one for you. |
 | `The cloud is unavailable.` | Check the internet connection. Records wait as Pending and upload later. |
 | `Your account or this installation needs administrator approval.` | Give your administrator the installation ID from the Dashboard (section 4). If you were approved before, your access may have been revoked. |
@@ -242,8 +242,9 @@ Administrators also see:
 ## 10. Updating and removing AlgoGuard
 
 **Update:** close AlgoGuard, unzip the new package over the same folder (replace files when
-asked), then run `SETUP_ALGOGUARD.cmd` again. Your `.env`, the `.algoguard` folder and any
-records waiting to upload are kept, so the computer stays approved.
+asked), then double-click `ALGOGUARD.cmd` and press **Set up** again (or run
+`SETUP_ALGOGUARD.cmd`). Your settings, the `.algoguard` folder and any records waiting to upload
+are kept, so the computer stays approved.
 
 **Remove:** first make sure the Dashboard shows nothing pending, or use **Export pending
 records**. Then close AlgoGuard and delete its folder. Ask your administrator to revoke the

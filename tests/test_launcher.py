@@ -124,6 +124,26 @@ def test_status_uses_the_settings_check_once_packages_exist(folder, monkeypatch)
     assert state.npcap.ok
 
 
+@pytest.mark.parametrize("code, message, ok, expected", [
+    (3, "Cloud settings missing: enter NEXT_PUBLIC_SUPABASE_URL and "
+        "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY in C:\\AlgoGuard\\.env.", False,
+     "Not entered yet: press Settings"),
+    (2, "Settings problem: the URL must start with https://.", False,
+     "Settings problem: the URL must start with https://. Press Settings to correct it."),
+    (0, "Settings OK. Cloud project: https://project.supabase.co.", True,
+     "Settings OK. Cloud project: https://project.supabase.co."),
+])
+def test_the_settings_line_points_to_the_settings_button_not_the_file(
+        folder, monkeypatch, code, message, ok, expected):
+    monkeypatch.setattr(core, "port_in_use", lambda port: False)
+    monkeypatch.setattr(core, "python_version_of", lambda executable: "3.14.6")
+    monkeypatch.setattr(core, "check_settings", lambda where: (code, message))
+    core.venv_python(folder).parent.mkdir(parents=True)
+    core.venv_python(folder).write_bytes(b"")
+    state = core.status(folder, current_version="3.14.6", system_root=str(folder))
+    assert state.settings == core.Check(ok, expected)
+
+
 def test_check_settings_without_packages_asks_for_setup(folder):
     assert core.check_settings(folder) == (None, "Run Set up first.")
 
@@ -188,5 +208,13 @@ def test_the_window_builds_shows_five_checks_and_closes(folder, monkeypatch):
             "Python", "Packages", "Settings", "Npcap (live capture)", "AlgoGuard"]
         assert set(window.buttons) == {"setup", "settings", "start", "stop", "open", "admin"}
         assert str(window.buttons["start"]["state"]) == "disabled"
+        # The progress bar shows only while Set up works; a full bar left behind looks stuck.
+        assert window.progress.grid_info() == {}
+        window.busy = True
+        window.show_progress(True)
+        assert window.progress.grid_info() != {}
+        window.messages.put(("done", None))
+        window.pump()
+        assert window.progress.grid_info() == {} and window.busy is False
     finally:
         root.destroy()

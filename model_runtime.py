@@ -50,7 +50,8 @@ def verify_runtime():
     if not matches:
         raise ModelDeliveryError(
             "This installation's Python packages differ from the model's "
-            "(requirements-model.lock). Run SETUP_ALGOGUARD.cmd again."
+            "(requirements-model.lock). Press Set up in the AlgoGuard window again "
+            "(or run SETUP_ALGOGUARD.cmd)."
         )
 
 
