@@ -44,6 +44,10 @@ SUMMARY_BYTES = 4096
 # Separate reserved capacity: capture summaries can never be crowded out by audit
 # entries, and neither can grow without bound during a prolonged outage.
 SUMMARY_LIMITS = {"capture": 32, "log": 96}
+# DEF-10: events waiting in the handoff are written in one transaction, so a burst costs one disk
+# flush per group instead of one per event (about 22 ms each on PC A, which capped the spool near
+# 45 events/s while a Save-every-flow burst produces 100-160).
+GROUP_LIMIT = 100
 RECOVERY_FRACTION = 0.8
 _TRACKED_OUTCOMES = 1000
 _TRACKED_SESSIONS = 256
@@ -222,13 +226,19 @@ class Outbox:
     def _writer(self):
         while not self.stop_event.is_set() or not self.queue.empty():
             try:
-                item = self.queue.get(timeout=0.2)
+                items = [self.queue.get(timeout=0.2)]
             except queue.Empty:
                 continue
+            while len(items) < GROUP_LIMIT:
+                try:
+                    items.append(self.queue.get_nowait())
+                except queue.Empty:
+                    break
             try:
-                self._persist(item)
+                self._persist(items)
             finally:
-                self.queue.task_done()
+                for _ in items:
+                    self.queue.task_done()
 
     def _directory_bytes(self):
         total = 0
@@ -248,7 +258,77 @@ class Outbox:
             - self.db.execute("pragma freelist_count").fetchone()[0]
         ) * 4096
 
-    def _persist(self, item):
+    def _persist(self, items):
+        """Write the waiting events in one transaction (DEF-10), each keeping its own outcome.
+
+        An event whose UUID is already stored with other content is refused alone. If the group
+        cannot be written (a full or failing disk), nothing of it was committed, and its events
+        are written one at a time as before, so the ones that still fit are kept and each of the
+        others is reported as not stored.
+        """
+        if len(items) > 1:
+            try:
+                outcomes = self._write_group(items)
+            except (sqlite3.Error, OSError):
+                outcomes = None
+            if outcomes is not None:
+                self._settle_group(items, outcomes)
+                return
+        for item in items:
+            self._persist_one(item)
+
+    def _write_group(self, items):
+        """Insert every new event of the group; returns 'stored', 'existing' or 'conflict' each."""
+        if self._directory_bytes() >= self.total_bytes:
+            raise OSError("Spool capacity reached.")
+        outcomes = []
+        with self.db_lock, self.db:
+            for (event_id, user_id, profile_id, node_id, session_id, deployment_id, created_at,
+                 payload, capped) in items:
+                existing = self.db.execute(
+                    "select * from event where event_uuid=?", (event_id,)
+                ).fetchone()
+                identity = (event_id, user_id, profile_id, node_id, session_id, deployment_id)
+                payload_hash = hashlib.sha256(payload.encode()).hexdigest()
+                if existing:
+                    same = tuple(existing[key] for key in (
+                        "event_uuid", "user_id", "profile_id", "node_id", "session_id",
+                        "deployment_id",
+                    )) == identity and existing["payload_hash"] == payload_hash
+                    outcomes.append("existing" if same else "conflict")
+                    continue
+                if self._used_bytes() + len(payload.encode()) * 2 + 1024 * 1024 > (
+                    self.flow_budget
+                ):
+                    raise OSError("Flow quota full; lifecycle reserve retained.")
+                self.db.execute(
+                    "insert into event values(?,?,?,?,?,?,?,?,'pending',null,null,?)",
+                    identity + (created_at, payload, payload_hash),
+                )
+                if capped:
+                    self.db.execute(
+                        "insert into reservation values(?,1,?) on conflict(session_id) "
+                        "do update set accepted=accepted+1",
+                        (session_id, created_at),
+                    )
+                outcomes.append("stored")
+        return outcomes
+
+    def _settle_group(self, items, outcomes):
+        with self.lock:
+            for item, outcome in zip(items, outcomes):
+                event_id, session_id, capped = item[0], item[4], item[8]
+                if capped and outcome != "stored":
+                    # Counted when first stored, or refused: either way it takes no new slot.
+                    self.reservations[session_id] = max(
+                        0, self.reservations.get(session_id, 1) - 1
+                    )
+                self.memory_status.pop(event_id, None)
+                if outcome == "conflict":
+                    self._drop_locked(event_id, session_id, "identity_conflict")
+            self.durable.notify_all()
+
+    def _persist_one(self, item):
         event_id, user_id, profile_id, node_id, session_id, deployment_id, created_at, payload, \
             capped = item
         reason = "disk"
