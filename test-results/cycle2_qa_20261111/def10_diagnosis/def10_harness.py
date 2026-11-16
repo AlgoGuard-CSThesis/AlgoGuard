@@ -17,7 +17,6 @@ from types import SimpleNamespace
 from uuid import UUID, uuid4
 
 sys.path.insert(0, ".")
-import cloud_outbox  # noqa: E402
 from cloud_outbox import Outbox  # noqa: E402
 from cloud_repository import FlowReceipt  # noqa: E402
 from cloud_sync import SyncWorker  # noqa: E402
@@ -68,7 +67,8 @@ def grouped_writer(self):
                 for item in items:
                     (event_id, user_id, profile_id, node_id, session_id, deployment_id, created_at,
                      payload, capped) = item
-                    self.db.execute("insert into event values(?,?,?,?,?,?,?,?,'pending',null,null,?)",
+                    self.db.execute("insert into event values"
+                                    "(?,?,?,?,?,?,?,?,'pending',null,null,?)",
                                     (event_id, user_id, profile_id, node_id, session_id,
                                      deployment_id, created_at, payload, "h"))
             with self.lock:

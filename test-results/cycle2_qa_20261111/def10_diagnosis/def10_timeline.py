@@ -37,5 +37,6 @@ with c.cursor() as cur:
             delays = [(received - t).total_seconds() for t in times]
             print(f"  arrive +{(received - origin).total_seconds():6.2f} s  n={len(times):3d}  "
                   f"events +{(min(times) - origin).total_seconds():5.2f}..+"
-                  f"{(max(times) - origin).total_seconds():5.2f}  delay {min(delays):.2f}-{max(delays):.2f}")
+                  f"{(max(times) - origin).total_seconds():5.2f}  "
+                  f"delay {min(delays):.2f}-{max(delays):.2f}")
 c.close()
