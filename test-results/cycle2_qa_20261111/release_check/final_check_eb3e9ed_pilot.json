@@ -1,0 +1,29 @@
+{
+ "about": "Final PC A session on build 0.6.0+eb3e9ed, 2026-11-16 (Asia/Manila). Read-only checks on the hosted pilot by the Lead Architect's QA pass; no IP addresses, e-mail addresses or keys.",
+ "installation": "d535e2fd (PC A, repository folder, started from ALGOGUARD.cmd)",
+ "node_health": {"app_version": "0.6.0+eb3e9ed", "capture_status": "idle", "pending_events": 0, "received_at_utc": "2026-11-16 07:54:44"},
+ "manual_predictions": {
+  "TC-01": {"event_uuid_prefix": "d1e4cd5e", "predicted_label": "Normal", "attack_probability": 0.005034, "band": "Low", "latency_ms_on_page": 5487.6, "note": "first prediction after start loads the model", "received_at_utc": "2026-11-16 07:22:57"},
+  "TC-02": {"event_uuid_prefix": "dcefed1e", "predicted_label": "Attack", "attack_probability": 0.993451, "band": "Very high", "latency_ms_on_page": 275.5, "received_at_utc": "2026-11-16 07:24:09", "alert": {"created_at_utc": "2026-11-16 07:24:09", "severity": "High", "status": "Open"}}
+ },
+ "TC-24_capture_62": {
+  "source": "Live interface capture, Network interface left on 'Default interface (Intel(R) Wi-Fi 6 AX203 ...)', Save every flow",
+  "system_log_start": "Live monitoring started on Live capture - Wi-Fi with pinned deployment #3.",
+  "system_log_stop": "Live monitoring stopped: 2,704 flows analysed, 156 attacks detected, 300 queued for upload, 2,404 not stored. Excluded own cloud packets: 4,100.",
+  "started_utc": "2026-11-16 07:28:28",
+  "closed_utc": "2026-11-16 07:51:54",
+  "packets_captured": 33401,
+  "packets_dropped": 0,
+  "flows": 2704,
+  "attacks": 156,
+  "attack_share_percent": 5.77,
+  "stored": 300,
+  "stored_distinct": 300,
+  "stored_labels": {"Normal": 268, "Attack": 32},
+  "fin_rst_detection_lag_ms_from_recorder": {"n": 238, "p50": 172.1, "p95": 407.3, "max": 3542.7},
+  "upload_delay_s": {"p50": 1.115, "p95": 1.894, "max": 2.156, "clock_offset_s_database_minus_pc": 0.006},
+  "recorder_note": "The page's event stream delivered 2,419 of the 2,704 flow events to the recorder (285 not seen by the browser); flow and attack counts come from the session's own totals."
+ },
+ "soak_during_capture": "soak_20261116_152521.json (CPU max 7.02% of the machine, RAM max 309.3 MB)",
+ "recorder_file": "algoguard_TC-24_PC-A_2026-11-16T07-51-52-159Z.json"
+}

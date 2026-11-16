@@ -1,0 +1,30 @@
+﻿received_at default: ('now()',)
+
+== capture 57: 300 events, 7 distinct received_at; events span 0.59 s
+  arrive +  0.25 s  n= 28  events + 0.00..+ 0.00  delay 0.25-0.25
+  arrive +  2.64 s  n= 50  events + 0.26..+ 0.41  delay 2.23-2.37
+  arrive +  2.65 s  n= 50  events + 0.26..+ 0.26  delay 2.39-2.39
+  arrive +  2.67 s  n= 50  events + 0.00..+ 0.15  delay 2.52-2.67
+  arrive +  2.68 s  n= 50  events + 0.15..+ 0.16  delay 2.53-2.54
+  arrive +  4.91 s  n= 22  events + 0.59..+ 0.59  delay 4.31-4.32
+  arrive +  4.96 s  n= 50  events + 0.42..+ 0.59  delay 4.37-4.55
+
+== capture 58: 300 events, 8 distinct received_at; events span 1.87 s
+  arrive + -0.35 s  n=  4  events + 0.00..+ 0.00  delay -0.35--0.35
+  arrive +  2.30 s  n= 37  events + 0.70..+ 0.99  delay 1.31-1.60
+  arrive +  2.40 s  n= 50  events + 0.00..+ 0.01  delay 2.39-2.40
+  arrive +  2.41 s  n= 50  events + 0.01..+ 0.70  delay 1.70-2.40
+  arrive +  5.79 s  n=  9  events + 1.87..+ 1.87  delay 3.92-3.92
+  arrive +  5.90 s  n= 50  events + 0.99..+ 1.00  delay 4.90-4.91
+  arrive +  5.91 s  n= 50  events + 1.00..+ 1.13  delay 4.78-4.90
+  arrive +  5.97 s  n= 50  events + 1.13..+ 1.87  delay 4.11-4.85
+
+== capture 60: 300 events, 8 distinct received_at; events span 3.01 s
+  arrive +  0.02 s  n=  4  events + 0.00..+ 0.07  delay -0.05-0.02
+  arrive +  2.35 s  n= 50  events + 0.08..+ 0.38  delay 1.97-2.27
+  arrive +  2.35 s  n= 50  events + 0.38..+ 0.88  delay 1.47-1.97
+  arrive +  2.40 s  n= 18  events + 0.88..+ 0.89  delay 1.51-1.52
+  arrive +  6.27 s  n= 28  events + 2.85..+ 3.01  delay 3.26-3.42
+  arrive +  6.33 s  n= 50  events + 1.68..+ 2.85  delay 3.48-4.65
+  arrive +  6.43 s  n= 50  events + 0.89..+ 1.53  delay 4.90-5.54
+  arrive +  6.57 s  n= 50  events + 1.53..+ 1.68  delay 4.88-5.04

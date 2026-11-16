@@ -1,0 +1,7 @@
+﻿pg_stat_statements: ('pg_stat_statements',)
+  calls 3552 mean ms 50.4 max ms 1883.6 sd 146.7 rows 3552 | WITH pgrst_source AS (SELECT pgrst_call.pgrst_scalar FROM (SELECT $1 AS json_data) pgrst_payload, LATERAL (SEL
+  calls 1 mean ms 1.1 max ms 1.1 sd 0.0 rows 0 | create function public.store_flow_batch(p_node_id uuid,p_profile_id bigint,p_events jsonb) returns jsonb langu
+  calls 1 mean ms 0.1 max ms 0.1 sd 0.0 rows 0 | grant execute on function public.store_flow_batch(uuid,bigint,jsonb) to authenticated
+  calls 1 mean ms 0.1 max ms 0.1 sd 0.0 rows 0 | revoke all on function public.store_flow_batch(uuid,bigint,jsonb) from public,anon
+  calls 1 mean ms 6.4 max ms 6.4 sd 0.0 rows 0 | create or replace function public.store_flow_batch(p_node_id uuid,p_profile_id bigint,p_events jsonb) returns 
+functions: [('store_flow_batch', False, 'plpgsql', 5213)]

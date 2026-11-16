@@ -1,0 +1,18 @@
+{
+  "applied": "2026-11-16 16:39",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "DEF-17",
+      "action": "rows updated: Re-test result; Done -> Done"
+    },
+    {
+      "card": "DEF-19",
+      "action": "rows updated: Status, Re-test result; Review -> Done"
+    },
+    {
+      "card": "DEF-28",
+      "action": "rows updated: Status, Fixed in commit, Re-test result; In Progress -> Done"
+    }
+  ]
+}

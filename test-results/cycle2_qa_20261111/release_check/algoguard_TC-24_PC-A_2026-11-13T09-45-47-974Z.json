@@ -1,0 +1,134 @@
+{
+  "summary": {
+    "label": "TC-24_PC-A",
+    "recorded_at_utc": "2026-11-13T09:45:47.974Z",
+    "session_id": "51b00d3e-c8d3-4e07-8dcf-994ff44e1767",
+    "capture_id": 61,
+    "state": "running",
+    "source_type": "live",
+    "persist": "all",
+    "started_at_utc": "2026-11-13 09:01:16",
+    "deployment_id": 3,
+    "flows": 7,
+    "attacks": 3,
+    "attack_share_percent": 42.86,
+    "alerts": 3,
+    "stored": 7,
+    "events_received": 7,
+    "events_missed": 0,
+    "fin_rst_lag_ms": {
+      "n": 0,
+      "p50": null,
+      "p95": null,
+      "max": null
+    },
+    "end_reasons": {
+      "idle_timeout": 7
+    },
+    "bands": {
+      "Low": 4,
+      "Medium": 1,
+      "Very high": 1,
+      "High": 1
+    },
+    "capture": {
+      "packets": 21,
+      "dropped": 0,
+      "excluded_cloud": 0,
+      "drop_percent": 0
+    }
+  },
+  "events": [
+    {
+      "seq": 1,
+      "prediction": "Normal",
+      "band": "Low",
+      "attack_probability": 0.041846,
+      "confidence": 95.82,
+      "detection_lag_ms": 16183.5,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 138
+    },
+    {
+      "seq": 2,
+      "prediction": "Attack",
+      "band": "Medium",
+      "attack_probability": 0.596027,
+      "confidence": 59.6,
+      "detection_lag_ms": 15385.7,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 5355
+    },
+    {
+      "seq": 3,
+      "prediction": "Normal",
+      "band": "Low",
+      "attack_probability": 0.156714,
+      "confidence": 84.33,
+      "detection_lag_ms": 15605,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 5355
+    },
+    {
+      "seq": 4,
+      "prediction": "Attack",
+      "band": "Very high",
+      "attack_probability": 0.932922,
+      "confidence": 93.29,
+      "detection_lag_ms": 16110.8,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 5353
+    },
+    {
+      "seq": 5,
+      "prediction": "Attack",
+      "band": "High",
+      "attack_probability": 0.807129,
+      "confidence": 80.71,
+      "detection_lag_ms": 15216,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 1900
+    },
+    {
+      "seq": 6,
+      "prediction": "Normal",
+      "band": "Low",
+      "attack_probability": 0.028668,
+      "confidence": 97.13,
+      "detection_lag_ms": 15229.8,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 138
+    },
+    {
+      "seq": 7,
+      "prediction": "Normal",
+      "band": "Low",
+      "attack_probability": 0.034171,
+      "confidence": 96.58,
+      "detection_lag_ms": 15062.1,
+      "end_reason": "idle_timeout",
+      "proto": "udp",
+      "service": "-",
+      "state": "INT",
+      "destination_port": 138
+    }
+  ]
+}
