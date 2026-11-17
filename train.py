@@ -27,6 +27,7 @@ from services.database_service import (
     update_training_run,
     utc_now,
 )
+from services.decision_line import DEFAULT_DECISION_LINE, validate_decision_line
 from services.deployment_service import (
     DeploymentError,
     deploy_model,
@@ -220,6 +221,13 @@ def _deploy_stacking(run_id, admin_id):
     return True
 
 
+def _decision_line_argument(text):
+    try:
+        return validate_decision_line(text)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
+
+
 def build_parser():
     parser = argparse.ArgumentParser(
         prog="train.py",
@@ -255,6 +263,16 @@ def build_parser():
         "--models-dir",
         default=str(get_config().saved_model_folder),
         help="Directory that receives the per-run model artifacts.",
+    )
+    parser.add_argument(
+        "--decision-line",
+        type=_decision_line_argument,
+        default=DEFAULT_DECISION_LINE,
+        metavar="X",
+        help=(
+            "Attack probability at which the Stacking Ensemble calls a flow an attack, set "
+            "inside the model so that a score of 0.50 means X (default 0.50: unchanged)."
+        ),
     )
     return parser
 
@@ -344,6 +362,7 @@ def main(argv=None):
             run_id,
             event_logger=event_logger,
             progress_callback=_console_progress,
+            decision_line=args.decision_line,
         )
     except Exception as error:
         update_training_run(
@@ -362,6 +381,8 @@ def main(argv=None):
     event_logger("Reports", "report_generated", "Success", message=f"Generated {report_name}.")
 
     _print_ranked_table(results["model_results"])
+    if args.decision_line != DEFAULT_DECISION_LINE:
+        print(f"Decision line {args.decision_line:.2f} is set inside the Stacking Ensemble.")
     if results["best_model"]:
         print(f"Top individual model: {results['best_model']['model_name']}")
     else:

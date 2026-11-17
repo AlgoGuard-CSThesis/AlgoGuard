@@ -6,6 +6,11 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 
 from model_runtime import training_runtime
+from services.decision_line import (
+    DEFAULT_DECISION_LINE,
+    apply_decision_line,
+    validate_decision_line,
+)
 from services.evaluation_service import (
     calculate_metrics,
     identify_best_model,
@@ -14,6 +19,7 @@ from services.evaluation_service import (
 )
 from services.model_registry import (
     MODEL_WORKFLOW_VERSION,
+    STACKING_MODEL_ID,
     build_model_candidates,
     safe_model_filename,
 )
@@ -59,8 +65,9 @@ def _artifact_payload(
     model_id,
     model_name,
     model_type,
+    decision_line=None,
 ):
-    return {
+    payload = {
         "artifact_version": 2,
         "training_runtime": training_runtime(),
         "workflow_version": MODEL_WORKFLOW_VERSION,
@@ -77,6 +84,9 @@ def _artifact_payload(
         "label_mapping": prepared_dataset.label_mapping,
         "trained_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
     }
+    if decision_line is not None:
+        payload["decision_line"] = decision_line
+    return payload
 
 
 def train_and_compare_models(
@@ -85,8 +95,14 @@ def train_and_compare_models(
     run_id,
     event_logger=None,
     progress_callback=None,
+    decision_line=DEFAULT_DECISION_LINE,
 ):
-    """Train exactly six independent candidates and isolate model failures."""
+    """Train exactly six independent candidates and isolate model failures.
+
+    ``decision_line`` is set inside the Stacking Ensemble (services/decision_line.py): its scores
+    and verdicts then treat that Attack probability as the line, 0.50 by default.
+    """
+    decision_line = validate_decision_line(decision_line)
     run_folder = os.path.join(saved_model_folder, f"run_{run_id}")
     os.makedirs(run_folder, exist_ok=True)
 
@@ -139,6 +155,18 @@ def train_and_compare_models(
                 ]
             )
             pipeline.fit(prepared_dataset.X_train, prepared_dataset.y_train)
+            is_stacking = model_id == STACKING_MODEL_ID
+            if is_stacking:
+                apply_decision_line(pipeline.named_steps["classifier"], decision_line)
+                if decision_line != DEFAULT_DECISION_LINE:
+                    _emit(
+                        event_logger,
+                        "decision_line_applied",
+                        "Success",
+                        model_name,
+                        f"Decision line {decision_line:.2f} set in the {model_name}: a score of "
+                        f"0.50 now means an Attack probability of {decision_line:.2f}.",
+                    )
             predictions = pipeline.predict(prepared_dataset.X_test)
             positive_probabilities = _positive_probabilities(
                 pipeline,
@@ -155,6 +183,7 @@ def train_and_compare_models(
                 model_id,
                 model_name,
                 model_type,
+                decision_line if is_stacking else None,
             )
             try:
                 # Compressed: a Stacking Ensemble trained on the full UNSW-NB15 training file is

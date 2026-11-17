@@ -97,3 +97,11 @@ def test_deploy_run_deploys_an_already_trained_run(trained_bundle, monkeypatch):
                         lambda *args: pytest.fail("--deploy-run must not train"))
     assert train.main(["--deploy-run", str(trained_bundle["run_id"])]) == 0
     assert deployed == [trained_bundle["run_id"]]
+
+
+def test_decision_line_flag_defaults_to_one_half_and_is_checked():
+    assert train.build_parser().parse_args(["data.csv"]).decision_line == 0.5
+    parsed = train.build_parser().parse_args(["data.csv", "--decision-line", "0.3"])
+    assert parsed.decision_line == 0.3
+    with pytest.raises(SystemExit):
+        train.build_parser().parse_args(["data.csv", "--decision-line", "1.5"])
