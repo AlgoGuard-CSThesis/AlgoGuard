@@ -1,13 +1,15 @@
 """AlgoGuard launcher window: set up, enter the settings, start and stop AlgoGuard.
 
-Opened by ALGOGUARD.cmd. Standard library only; all logic is in launcher_core.py.
+Opened by ALGOGUARD.cmd, with --set-up right after it installed Python. On a first run the window
+guides: it offers Set up, then opens Settings, then starts AlgoGuard. Standard library only; all
+logic is in launcher_core.py.
 """
-import ctypes
 import os
 import queue
 import subprocess
 import sys
 import threading
+import time
 import tkinter as tk
 import webbrowser
 from pathlib import Path
@@ -27,11 +29,12 @@ def _spawn(command, folder):
 
 
 class LauncherWindow:
-    def __init__(self, root, folder):
+    def __init__(self, root, folder, *, guide=False, set_up_now=False):
         self.root, self.folder = root, Path(folder)
         self.process = None
         self.url = None
         self.busy = False
+        self.guided = False  # True while a first run goes Set up -> Settings -> Start
         self.messages = queue.Queue()
         root.title("AlgoGuard")
         root.resizable(False, False)
@@ -56,9 +59,14 @@ class LauncherWindow:
         for column, (key, text, command) in enumerate(specs):
             self.buttons[key] = tk.Button(actions, text=text, width=14, command=command)
             self.buttons[key].grid(row=0, column=column, padx=(0, 6))
+        extra = ttk.Frame(frame)
+        extra.grid(row=8, column=0, columnspan=3, sticky="w", pady=(4, 8))
         self.buttons["admin"] = tk.Button(
-            frame, text="Restart as administrator (for live capture)", command=self.elevate)
-        self.buttons["admin"].grid(row=8, column=0, columnspan=3, sticky="w", pady=(4, 8))
+            extra, text="Restart as administrator (for live capture)", command=self.elevate)
+        self.buttons["admin"].grid(row=0, column=0, padx=(0, 6))
+        self.buttons["npcap"] = tk.Button(
+            extra, text="Install Npcap (for live capture)", command=self.install_npcap)
+        self.buttons["npcap"].grid(row=0, column=1)
         self.progress = ttk.Progressbar(frame, mode="indeterminate", length=520)
         self.progress.grid(row=9, column=0, columnspan=3, sticky="we")
         self.progress.grid_remove()  # shown only while Set up works
@@ -67,6 +75,8 @@ class LauncherWindow:
         self.log.grid(row=10, column=0, columnspan=3, pady=(8, 0))
         self.refresh()
         root.after(200, self.pump)
+        if guide:
+            root.after(300, self.begin_guide, set_up_now)
 
     # -- display ---------------------------------------------------------------------
     def show_progress(self, working):
@@ -97,6 +107,7 @@ class LauncherWindow:
             "stop": ours,
             "open": state.running.ok,
             "admin": not self.busy and not ours,
+            "npcap": not state.npcap.ok and not self.busy,
         }
         for key, on in enabled.items():
             self.buttons[key].configure(state="normal" if on else "disabled")
@@ -116,13 +127,45 @@ class LauncherWindow:
                     self.say("AlgoGuard is ready. Opening your browser...")
                     webbrowser.open(value)
                     self.refresh()
-                elif kind == "done":
+                elif kind in ("done", "set_up_done"):
                     self.busy = False
                     self.show_progress(False)
                     self.refresh()
+                    if kind == "set_up_done" and self.guided:
+                        if value:
+                            self.continue_guide()
+                        else:
+                            self.guided = False
+                elif kind == "npcap_ready":
+                    self.run_npcap_installer(value)
         except queue.Empty:
             pass
         self.root.after(200, self.pump)
+
+    # -- first run ---------------------------------------------------------------------
+    def begin_guide(self, set_up_now=False):
+        """When the window opens: offer what is missing. Daily use (all ready) is untouched."""
+        step = core.next_step(self.refresh())
+        if step == "set_up" and (set_up_now or messagebox.askyesno("AlgoGuard",
+                                                                   core.SET_UP_QUESTION)):
+            self.guided = True
+            self.set_up()
+        elif step == "settings":
+            self.guided = True
+            self.settings()
+
+    def continue_guide(self):
+        """After a guided Set up or Settings: go on to the next missing step."""
+        state = self.refresh()
+        step = core.next_step(state)
+        if not state.npcap.ok and step in ("settings", "start"):
+            self.say(core.NPCAP_HINT)
+        if step == "settings":
+            self.settings()
+            return
+        self.guided = False
+        if step == "start":
+            self.start()
 
     # -- actions ---------------------------------------------------------------------
     def set_up(self):
@@ -132,6 +175,7 @@ class LauncherWindow:
         threading.Thread(target=self._run_setup, daemon=True).start()
 
     def _run_setup(self):
+        finished = False
         try:
             for step in core.setup_steps(self.folder):
                 self.messages.put(("log", step.label + "..."))
@@ -142,11 +186,13 @@ class LauncherWindow:
                     self.messages.put(("log", "Setup did not finish. Check the internet "
                                               "connection and press Set up again."))
                     return
-            self.messages.put(("log", "Setup finished. Enter the settings, then press Start."))
+            finished = True
+            self.messages.put(("log", "Setup finished." if self.guided else
+                               "Setup finished. Enter the settings, then press Start."))
         except OSError as error:
             self.messages.put(("log", f"Setup could not run: {error}"))
         finally:
-            self.messages.put(("done", None))
+            self.messages.put(("set_up_done", finished))
 
     def settings(self):
         url, has_key = core.read_settings(self.folder)
@@ -171,10 +217,14 @@ class LauncherWindow:
         result = tk.Label(body, text="", anchor="w", justify="left", wraplength=420)
         result.grid(row=4, column=0, columnspan=2, sticky="w", pady=(8, 0))
 
+        def close():
+            self.guided = False  # closing the form without saving ends a first run here
+            dialog.destroy()
+
         def save():
             key = key_box.get().strip()
             if not key and has_key and url_box.get().strip() == url:
-                dialog.destroy()
+                close()
                 return
             if not key:
                 result.configure(text="Enter the publishable key as well.", fg=NOT_OK)
@@ -188,11 +238,15 @@ class LauncherWindow:
             result.configure(text="Saved. " + message, fg=OK if code in (0, None) else NOT_OK)
             self.say("Settings saved. " + message)
             self.refresh()
+            if code == 0 and self.guided:
+                dialog.destroy()
+                self.continue_guide()
 
         buttons = ttk.Frame(body)
         buttons.grid(row=5, column=0, columnspan=2, sticky="e", pady=(10, 0))
         ttk.Button(buttons, text="Save", command=save).grid(row=0, column=0, padx=(0, 6))
-        ttk.Button(buttons, text="Close", command=dialog.destroy).grid(row=0, column=1)
+        ttk.Button(buttons, text="Close", command=close).grid(row=0, column=1)
+        dialog.protocol("WM_DELETE_WINDOW", close)
         url_box.focus_set()
 
     def start(self):
@@ -230,12 +284,42 @@ class LauncherWindow:
 
     def elevate(self):
         script = str(Path(__file__).resolve())
-        result = ctypes.windll.shell32.ShellExecuteW(
-            None, "runas", sys.executable, f'"{script}"', str(self.folder), 1)
-        if result > 32:
+        if core.run_as_administrator(sys.executable, f'"{script}"', self.folder):
             self.root.destroy()
         else:
             self.say("Windows did not start AlgoGuard as administrator.")
+
+    def install_npcap(self):
+        self.busy = True
+        self.show_progress(True)
+        self.refresh()
+        self.say(f"Downloading Npcap {core.NPCAP_VERSION} from npcap.com...")
+        threading.Thread(target=self._get_npcap, daemon=True).start()
+
+    def _get_npcap(self):
+        try:
+            self.messages.put(("npcap_ready", str(core.download_npcap())))
+        except core.DownloadError as error:
+            self.messages.put(("log", str(error)))
+        finally:
+            self.messages.put(("done", None))
+
+    def run_npcap_installer(self, path):
+        """The download matched its fingerprint; Npcap's own installer does the rest."""
+        if core.run_as_administrator(path):
+            self.say("Npcap's installer is open. Keep its default options and follow its steps; "
+                     "the Npcap line turns green when it is done.")
+            self.root.after(3000, self.watch_npcap, time.monotonic() + 1800)
+        else:
+            self.say("Windows did not start Npcap's installer. Press Install Npcap to try again.")
+
+    def watch_npcap(self, deadline):
+        if core.npcap_found():
+            self.refresh()
+            self.say("Npcap is installed. If AlgoGuard is running, press Stop, then Start, to "
+                     "use live capture.")
+        elif time.monotonic() < deadline:
+            self.root.after(3000, self.watch_npcap, deadline)
 
     def close(self):
         if self.process is not None and self.process.poll() is None:
@@ -249,7 +333,8 @@ class LauncherWindow:
 
 def main():
     root = tk.Tk()
-    LauncherWindow(root, Path(__file__).resolve().parent)
+    LauncherWindow(root, Path(__file__).resolve().parent, guide=True,
+                   set_up_now="--set-up" in sys.argv[1:])
     root.mainloop()
 
 

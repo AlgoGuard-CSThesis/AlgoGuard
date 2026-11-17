@@ -10,19 +10,18 @@ REM ---------------------------------------------------------------------
 setlocal
 cd /d "%~dp0"
 title AlgoGuard setup
-set "PYTHON_VERSION=3.14.6"
+call "%~dp0find_python.cmd"
 set "CHECK_VERSION=import platform, sys; sys.exit(platform.python_version() != '%PYTHON_VERSION%')"
 
 if exist "venv\Scripts\python.exe" goto have_venv
-py -3.14 -c "%CHECK_VERSION%" >nul 2>&1
-if errorlevel 1 (
+if not defined PYTHON (
     echo AlgoGuard needs Python %PYTHON_VERSION% ^(64-bit^), which was not found.
-    echo Install it from https://www.python.org/downloads/release/python-3146/
-    echo then run this file again.
+    echo Double-click ALGOGUARD.cmd to install it, or install it from
+    echo https://www.python.org/downloads/release/python-3146/ and run this file again.
     goto failed
 )
 echo [1/3] Creating the Python environment in the venv folder...
-py -3.14 -m venv venv
+"%PYTHON%" -m venv venv
 if errorlevel 1 goto failed
 
 :have_venv

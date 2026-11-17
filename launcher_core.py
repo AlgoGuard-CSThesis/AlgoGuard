@@ -6,19 +6,39 @@ installation's own ``config.py``; this module only reads and writes its two clou
 """
 from __future__ import annotations
 
+import ctypes
+import hashlib
+import http.client
 import os
 import platform
 import re
 import socket
 import subprocess
 import sys
+import tempfile
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+# Also in find_python.cmd (PYTHON_VERSION), which ALGOGUARD.cmd and SETUP_ALGOGUARD.cmd use.
 PYTHON_VERSION = "3.14.6"
 URL_NAME = "NEXT_PUBLIC_SUPABASE_URL"
 KEY_NAME = "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
 DEFAULT_PORT = 5000
+
+# Npcap, for live capture: the version PC A and PC B run. npcap.com publishes no checksum, so this
+# is the SHA-256 of the installer downloaded on 2026-11-18, whose Windows signature was valid and
+# from Nmap Software LLC. The free edition cannot install silently: its own installer asks.
+NPCAP_VERSION = "1.88"
+NPCAP_URL = f"https://npcap.com/dist/npcap-{NPCAP_VERSION}.exe"
+NPCAP_SHA256 = "a2f4ec1e5ea353ff67efd24b2ebf081ba44532410fae8d5e146af0310aa4f56b"
+NPCAP_PAGE = "https://npcap.com"
+MAX_DOWNLOAD_BYTES = 64 * 1024 * 1024
+
+SET_UP_QUESTION = ("AlgoGuard is not set up on this computer yet.\n\nSet it up now? It downloads "
+                   "AlgoGuard's Python packages and takes 2 to 10 minutes.")
+NPCAP_HINT = ("Live capture needs Npcap: press Install Npcap. Replaying recorded files works "
+              "without it.")
 
 
 class SettingsError(ValueError):
@@ -172,10 +192,10 @@ def status(folder, *, current_version=None, system_root=None) -> Status:
         url, has_key = read_settings(folder)
         settings = Check(False, "Entered; checked after Set up" if url and has_key
                          else "Not entered yet: press Settings")
-    root = system_root or os.environ.get("SystemRoot", r"C:\Windows")
-    found = (Path(root) / "System32" / "Npcap" / "wpcap.dll").exists()
+    found = npcap_found(system_root)
     npcap = Check(found, "Found" if found
-                  else "Not found: live capture needs it; replays work without it")
+                  else "Not found: live capture needs it (press Install Npcap); replays work "
+                       "without it")
     port = configured_port(folder)
     listening = port_in_use(port)
     running = Check(listening,
@@ -203,3 +223,76 @@ def start_command(folder) -> list[str]:
 def running_url(line: str) -> str | None:
     match = re.search(r"Running on (http://[\w.\-:\[\]]+)", line)
     return match.group(1) if match else None
+
+
+def next_step(state: Status) -> str | None:
+    """The first run's next action: "set_up", "settings" or "start"; None when there is none."""
+    if not state.python.ok or state.running.ok:
+        return None
+    if not state.packages.ok:
+        return "set_up"
+    if not state.settings.ok:
+        return "settings"
+    return "start"
+
+
+def npcap_found(system_root=None) -> bool:
+    root = system_root or os.environ.get("SystemRoot", r"C:\Windows")
+    return (Path(root) / "System32" / "Npcap" / "wpcap.dll").exists()
+
+
+class DownloadError(Exception):
+    """A download that failed or was refused; the message is for the person at the window."""
+
+
+def download_verified(url: str, sha256: str, destination, *, opener=None,
+                      max_bytes: int = MAX_DOWNLOAD_BYTES) -> Path:
+    """Download ``url`` to ``destination``, keeping it only if its SHA-256 is ``sha256``.
+
+    Nothing is left behind when a download fails or differs, so a partial or different file can
+    never be run. Only https addresses are accepted.
+    """
+    if not url.startswith("https://"):
+        raise DownloadError("Only https downloads are allowed.")
+    destination = Path(destination)
+    partial = destination.with_name(destination.name + ".part")
+    digest, size = hashlib.sha256(), 0
+    try:
+        with ((opener or urllib.request.urlopen)(url, timeout=60) as response,
+              open(partial, "wb") as output):
+            while chunk := response.read(1 << 16):
+                size += len(chunk)
+                if size > max_bytes:
+                    raise DownloadError("The download is larger than expected, so it was "
+                                        "stopped.")
+                digest.update(chunk)
+                output.write(chunk)
+    except DownloadError:
+        partial.unlink(missing_ok=True)
+        raise
+    except (OSError, ValueError, http.client.HTTPException) as error:
+        partial.unlink(missing_ok=True)
+        raise DownloadError("The download did not finish. Check the internet connection and try "
+                            f"again ({error}).") from error
+    if digest.hexdigest() != sha256.lower():
+        partial.unlink(missing_ok=True)
+        raise DownloadError("The downloaded file is not the expected one, so it was deleted and "
+                            "nothing was run.")
+    os.replace(partial, destination)
+    return destination
+
+
+def download_npcap(folder=None, *, opener=None) -> Path:
+    """Npcap's official installer, checked against its pinned SHA-256, saved in ``folder``."""
+    target = Path(folder or tempfile.gettempdir()) / f"AlgoGuard-npcap-{NPCAP_VERSION}.exe"
+    try:
+        return download_verified(NPCAP_URL, NPCAP_SHA256, target, opener=opener)
+    except DownloadError as error:
+        raise DownloadError(f"{error} You can also install Npcap from {NPCAP_PAGE}.") from error
+
+
+def run_as_administrator(program, parameters: str = "", folder=None) -> bool:
+    """Start ``program`` with administrator rights. Windows asks the person first."""
+    result = ctypes.windll.shell32.ShellExecuteW(None, "runas", str(program), parameters or None,
+                                                 str(folder) if folder else None, 1)
+    return result > 32

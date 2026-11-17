@@ -42,6 +42,7 @@ SUPPORT_FILES = (
     "SETUP_ALGOGUARD.cmd",
     "START_ALGOGUARD.cmd",
     "ALGOGUARD.cmd",
+    "find_python.cmd",
     "launcher_core.py",
     "algoguard_launcher.pyw",
     "requirements.txt",
