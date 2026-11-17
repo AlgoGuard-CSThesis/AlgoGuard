@@ -17,6 +17,7 @@ from stack_support import connect_local_database, require_status
 from cloud_app import build_services, create_cloud_app
 from publish_model import publish
 from services import live_monitor_service
+from services.model_registry import MODEL_WORKFLOW_VERSION
 from tests.cloud_support import (
     attack_rows,
     csrf,
@@ -38,7 +39,7 @@ def published(cloud, local_stack, local_http, tmp_path_factory):
     path.write_bytes(train_stacking_artifact(folder))
     model = dict(
         model_name="Stacking Ensemble",
-        version="stacking-five-v3",
+        version=MODEL_WORKFLOW_VERSION,
         run_training_status="completed",
         evaluation_status="completed",
         accuracy=95.0,

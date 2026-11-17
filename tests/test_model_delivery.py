@@ -10,6 +10,7 @@ import pytest
 
 from model_delivery import ModelCache
 from model_runtime import (
+    WORKFLOW_VERSION,
     ModelDeliveryError,
     compatibility_metadata,
     training_runtime,
@@ -23,7 +24,7 @@ def delivery(tmp_path, monkeypatch):
     from services.flow_tracker_service import FLOW_FEATURE_COLUMNS
 
     artifact = {
-        "workflow_version": "stacking-five-v3",
+        "workflow_version": WORKFLOW_VERSION,
         "test": "verified bytes",
         "training_runtime": training_runtime(),
         "feature_columns": list(FLOW_FEATURE_COLUMNS),
@@ -160,7 +161,7 @@ def test_older_cached_releases_are_removed_once_a_new_one_verifies(delivery, mon
     loaded = []
     for number in range(3):
         buffer = io.BytesIO()
-        joblib.dump({"workflow_version": "stacking-five-v3", "test": f"release {number}",
+        joblib.dump({"workflow_version": WORKFLOW_VERSION, "test": f"release {number}",
                      "training_runtime": training_runtime(),
                      "feature_columns": list(FLOW_FEATURE_COLUMNS)}, buffer)
         content = buffer.getvalue()
@@ -176,6 +177,13 @@ def test_older_cached_releases_are_removed_once_a_new_one_verifies(delivery, mon
     assert sorted(cache.directory.glob("*.joblib")) == sorted(
         [loaded[1].cache_path, loaded[2].cache_path])
     assert loaded[0].artifact["test"] == "release 0"  # an object already loaded is unaffected
+
+
+def test_an_artifact_that_differs_from_its_manifest_is_refused(delivery):
+    cache, manifest, _, _, _ = delivery
+    manifest["workflow_version"] = "stacking-five-v3"  # the fixture's artifact is v4
+    with pytest.raises(ModelDeliveryError, match="does not match its manifest"):
+        cache.load_active()
 
 
 def test_runtime_mismatch_prevents_deserialization(delivery, monkeypatch):

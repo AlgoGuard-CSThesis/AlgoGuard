@@ -11,6 +11,7 @@ from pathlib import Path
 from uuid import UUID
 
 from model_runtime import (
+    ACCEPTED_WORKFLOW_VERSIONS,
     MAX_MODEL_BYTES,
     ModelDeliveryError,
     compatibility_metadata,
@@ -53,6 +54,22 @@ def _required_manifest(connection, publication_id):
     return manifest
 
 
+def publication_metadata(artifact, model):
+    """The manifest's compatibility fields, stamped with the artifact's own workflow version.
+
+    A v4 model (training run 13 onwards) or a v3 model (model 60, the way back) can be published;
+    the file must carry the same version as its local training record.
+    """
+    metadata = compatibility_metadata()
+    version = artifact.get("workflow_version")
+    if version not in ACCEPTED_WORKFLOW_VERSIONS:
+        raise ModelDeliveryError("This model's workflow version is not supported.")
+    if version != model.get("version"):
+        raise ModelDeliveryError("The model file does not match its training record.")
+    metadata["workflow_version"] = version
+    return metadata
+
+
 def stage_publication(connection, publication_id, model, artifact_path, created_by=None):
     """Quality check before any cloud write; durable intent precedes object upload."""
     import joblib
@@ -62,7 +79,6 @@ def stage_publication(connection, publication_id, model, artifact_path, created_
         stacking_deployment_eligibility,
     )
 
-    metadata = compatibility_metadata()
     eligible, reason = stacking_deployment_eligibility(model)
     if not eligible:
         raise ModelDeliveryError(reason)
@@ -77,6 +93,7 @@ def stage_publication(connection, publication_id, model, artifact_path, created_
     artifact = joblib.load(io.BytesIO(content))
     _validate_stacking_artifact(artifact)
     verify_artifact_contract(artifact)
+    metadata = publication_metadata(artifact, model)
     digest = hashlib.sha256(content).hexdigest()
     object_path = f"releases/{publication_id}/{digest}.joblib"
     with connection:

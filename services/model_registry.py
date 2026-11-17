@@ -5,6 +5,7 @@ from sklearn.base import BaseEstimator
 from sklearn.ensemble import (
     AdaBoostClassifier,
     GradientBoostingClassifier,
+    HistGradientBoostingClassifier,
     RandomForestClassifier,
     StackingClassifier,
 )
@@ -13,7 +14,14 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
 RANDOM_STATE = 42
-MODEL_WORKFLOW_VERSION = "stacking-five-v3"
+# v4 (training run 13, DEF-24): the Gradient Boosting member is scikit-learn's histogram-based
+# implementation. v3 models (model 60) stay loadable, so a PC can run either.
+MODEL_WORKFLOW_VERSION = "stacking-five-v4"
+# The Gradient Boosting member each accepted workflow version was trained with.
+GRADIENT_BOOSTING_TYPES: dict[str, type[BaseEstimator]] = {
+    "stacking-five-v3": GradientBoostingClassifier,
+    "stacking-five-v4": HistGradientBoostingClassifier,
+}
 
 
 class ModelSpecification(TypedDict):
@@ -47,7 +55,13 @@ def build_individual_estimators(n_neighbors: int = 5) -> OrderedDict[str, BaseEs
         random_state=RANDOM_STATE,
         n_jobs=1,
     )
-    estimators["gradient_boosting"] = GradientBoostingClassifier(random_state=RANDOM_STATE)
+    estimators["gradient_boosting"] = HistGradientBoostingClassifier(
+        max_iter=400,
+        learning_rate=0.1,
+        max_leaf_nodes=63,
+        class_weight="balanced",
+        random_state=RANDOM_STATE,
+    )
     estimators["adaboost"] = AdaBoostClassifier(
         n_estimators=100,
         random_state=RANDOM_STATE,

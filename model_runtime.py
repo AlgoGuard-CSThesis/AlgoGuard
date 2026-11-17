@@ -9,7 +9,9 @@ import platform
 import re
 from pathlib import Path
 
-WORKFLOW_VERSION = "stacking-five-v3"
+WORKFLOW_VERSION = "stacking-five-v4"
+# Workflow versions a published model may carry: v3 (model 60) and v4 (training run 13 onwards).
+ACCEPTED_WORKFLOW_VERSIONS = ("stacking-five-v3", "stacking-five-v4")
 FEATURE_SCHEMA_VERSION = "unsw-nb15-flow-window-v2"
 PYTHON_VERSION = "3.14.6"
 LOCK_PATH = Path(__file__).with_name("requirements-model.lock")
@@ -98,8 +100,10 @@ def verify_manifest(manifest):
         if any(
             manifest[key] != value
             for key, value in expected.items()
-            if key != "dependency_versions"
+            if key not in ("dependency_versions", "workflow_version")
         ):
+            raise ValueError
+        if manifest["workflow_version"] not in ACCEPTED_WORKFLOW_VERSIONS:
             raise ValueError
         if json.loads(manifest["dependency_versions"]) != locked_dependencies():
             raise ValueError

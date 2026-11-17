@@ -14,8 +14,8 @@ from sklearn.utils.validation import check_is_fitted
 from config import get_config
 from services.database_service import get_active_deployment, get_model_result, record_deployment
 from services.model_registry import (
+    GRADIENT_BOOSTING_TYPES,
     INDIVIDUAL_MODEL_IDS,
-    MODEL_WORKFLOW_VERSION,
     STACKING_MODEL_ID,
     STACKING_MODEL_NAME,
     build_individual_estimators,
@@ -50,7 +50,7 @@ def stacking_deployment_eligibility(model):
         return False, "The Stacking evaluation is unavailable."
     if model.get("model_name") != STACKING_MODEL_NAME:
         return False, "Only the evaluated Stacking Ensemble can be deployed."
-    if model.get("version") != MODEL_WORKFLOW_VERSION:
+    if model.get("version") not in GRADIENT_BOOSTING_TYPES:
         return False, "This Stacking result uses a legacy workflow. Train a new run first."
     if model.get("run_training_status") != "completed":
         return False, "The training run must complete successfully before deployment."
@@ -74,7 +74,7 @@ def stacking_deployment_eligibility(model):
 
 
 def _validate_stacking_artifact(artifact):
-    """Verify that an artifact implements the current five-model stack."""
+    """Verify that an artifact implements a five-model stack of an accepted workflow version."""
     if not isinstance(artifact, dict):
         raise DeploymentError("The Stacking artifact has an invalid format.")
     if (
@@ -82,7 +82,8 @@ def _validate_stacking_artifact(artifact):
         or artifact.get("model_name") != STACKING_MODEL_NAME
     ):
         raise DeploymentError("The artifact is not the current Stacking model.")
-    if artifact.get("workflow_version") != MODEL_WORKFLOW_VERSION:
+    version = artifact.get("workflow_version")
+    if version not in GRADIENT_BOOSTING_TYPES:
         raise DeploymentError("The Stacking artifact uses a legacy workflow version.")
 
     pipeline = artifact.get("pipeline")
@@ -100,12 +101,16 @@ def _validate_stacking_artifact(artifact):
         configured_estimators = dict(estimator_configuration)
     except (TypeError, ValueError) as error:
         raise DeploymentError("The Stacking base-model configuration is invalid.") from error
-    expected_estimators = build_individual_estimators()
+    expected_types = {
+        model_id: type(estimator) for model_id, estimator in build_individual_estimators().items()
+    }
+    # Each workflow version names the Gradient Boosting implementation it was trained with.
+    expected_types["gradient_boosting"] = GRADIENT_BOOSTING_TYPES[version]
     if tuple(configured_estimators) != INDIVIDUAL_MODEL_IDS:
         raise DeploymentError("The Stacking artifact does not contain all five base models.")
     if any(
-        not isinstance(configured_estimators[model_id], type(expected_estimator))
-        for model_id, expected_estimator in expected_estimators.items()
+        not isinstance(configured_estimators[model_id], expected_type)
+        for model_id, expected_type in expected_types.items()
     ):
         raise DeploymentError("The Stacking artifact contains an unexpected base model type.")
     if not isinstance(classifier_parameters.get("final_estimator"), LogisticRegression):

@@ -11,6 +11,7 @@ from cloud_repository import CloudRepository, UserNodeContext
 from model_delivery import ModelCache
 from model_runtime import ModelDeliveryError
 from publish_model import publish, stage_publication
+from services.model_registry import MODEL_WORKFLOW_VERSION
 
 pytestmark = pytest.mark.integration
 
@@ -45,7 +46,7 @@ def fitted_publication(tmp_path_factory, binary_dataframe):
     joblib.dump(artifact, path)
     model = dict(
         model_name="Stacking Ensemble",
-        version="stacking-five-v3",
+        version=MODEL_WORKFLOW_VERSION,
         run_training_status="completed",
         evaluation_status="completed",
         accuracy=95.0,

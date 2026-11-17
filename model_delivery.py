@@ -114,6 +114,10 @@ class ModelCache:
 
             _validate_stacking_artifact(artifact)
             verify_artifact_contract(artifact)
+            if artifact.get("workflow_version") != manifest["workflow_version"]:
+                raise ModelDeliveryError(
+                    "The published model does not match its manifest. Tell your administrator."
+                )
         except ModelDeliveryError:
             raise
         except Exception:

@@ -2,12 +2,19 @@ import joblib
 import pandas as pd
 import pytest
 from sklearn.base import clone
-from sklearn.ensemble import StackingClassifier
+from sklearn.ensemble import (
+    GradientBoostingClassifier,
+    HistGradientBoostingClassifier,
+    StackingClassifier,
+)
 from sklearn.linear_model import LogisticRegression
 
+import model_runtime
 from services.model_registry import (
+    GRADIENT_BOOSTING_TYPES,
     MODEL_IDS,
     MODEL_WORKFLOW_VERSION,
+    build_individual_estimators,
     build_model_candidates,
     safe_model_filename,
 )
@@ -48,6 +55,24 @@ def test_stacking_uses_five_models_and_logistic_regression():
     assert isinstance(parameters["final_estimator"], LogisticRegression)
     assert parameters["stack_method"] == "predict_proba"
     assert parameters["passthrough"] is False
+
+
+def test_gradient_boosting_member_is_histogram_based():
+    member = build_individual_estimators()["gradient_boosting"]
+    assert isinstance(member, HistGradientBoostingClassifier)
+    params = member.get_params()
+    assert params["max_iter"] == 400
+    assert params["learning_rate"] == 0.1
+    assert params["max_leaf_nodes"] == 63
+    assert params["class_weight"] == "balanced"
+    assert params["random_state"] == 42
+
+
+def test_workflow_versions_agree_across_training_and_delivery():
+    assert MODEL_WORKFLOW_VERSION == model_runtime.WORKFLOW_VERSION == "stacking-five-v4"
+    assert set(GRADIENT_BOOSTING_TYPES) == set(model_runtime.ACCEPTED_WORKFLOW_VERSIONS)
+    assert GRADIENT_BOOSTING_TYPES["stacking-five-v3"] is GradientBoostingClassifier
+    assert GRADIENT_BOOSTING_TYPES["stacking-five-v4"] is HistGradientBoostingClassifier
 
 
 def test_all_five_individual_models_train_successfully(trained_bundle):

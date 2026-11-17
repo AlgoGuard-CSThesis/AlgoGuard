@@ -12,6 +12,7 @@ import pytest
 from stack_support import connect_local_database, require_status
 
 from cloud_app import build_services, create_cloud_app
+from services.model_registry import MODEL_WORKFLOW_VERSION
 from tests.cloud_support import csrf
 
 
@@ -42,7 +43,7 @@ def publish_fixture_model(cloud, local_stack, folder, artifact_bytes):
 
     path = folder / f"stacking-{uuid.uuid4().hex[:8]}.joblib"
     path.write_bytes(artifact_bytes)
-    model = dict(model_name="Stacking Ensemble", version="stacking-five-v3",
+    model = dict(model_name="Stacking Ensemble", version=MODEL_WORKFLOW_VERSION,
                  run_training_status="completed", evaluation_status="completed",
                  accuracy=95.0, f1_score=95.0, roc_auc=95.0)
     cloud["sql"]("NOTIFY pgrst, 'reload schema'")
