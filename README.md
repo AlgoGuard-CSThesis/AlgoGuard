@@ -20,7 +20,7 @@ The Live Monitor accepts three traffic sources through one pipeline: **live pack
 | Reading how the models are trained, evaluated and chosen, and what the measured results mean | [docs/MODEL_TRAINING.md](docs/MODEL_TRAINING.md); the test plans, logs and completion reports are in [docs/testing/](docs/testing/) |
 | Reviewing how and why it was built | [AlgoGuard Iterations (plan).md](<AlgoGuard Iterations (plan).md>), [the backlog](<AlgoGuard Migration (backlog).md>) and the stage records in [docs/migration/](docs/migration/) |
 
-**Analyst quick start.** Install Python 3.14.6, unzip the analyst package (or clone this repository), double-click `ALGOGUARD.cmd`, press **Set up**, enter the project URL and publishable key from your administrator under **Settings**, press **Start** and sign in in the browser that opens (`SETUP_ALGOGUARD.cmd` and `START_ALGOGUARD.cmd` do the same by hand; live capture may need **Restart as administrator**). An administrator approves the computer once on the Nodes page.
+**Analyst quick start.** Unzip the analyst package (or clone this repository) and double-click `ALGOGUARD.cmd`. If Python 3.14.6 is missing it offers to install it (the official python.org installer, checked against its published SHA-256, for the current Windows account only). The window then sets AlgoGuard up, asks for the project URL and publishable key from your administrator, starts AlgoGuard and opens the browser to sign in. Later: double-click and press **Start**. For live capture, **Install Npcap** opens Npcap's own installer, and live capture may need **Restart as administrator** (`SETUP_ALGOGUARD.cmd` and `START_ALGOGUARD.cmd` do the setting up and starting by hand). An administrator approves the computer once on the Nodes page.
 
 ## Runtime Architecture
 
@@ -87,8 +87,11 @@ AlgoGuard/
 |-- cloud_*.py                 cloud application, sign-in, local queue, uploads, recovery
 |-- model_delivery.py          verified model download and cache
 |-- config.py                  settings (.env), checked with `python config.py`
-|-- SETUP_ALGOGUARD.cmd        analyst setup: packages and .env
-|-- START_ALGOGUARD.cmd        analyst start
+|-- ALGOGUARD.cmd              analyst entry: installs Python when missing, opens the window
+|-- algoguard_launcher.pyw, launcher_core.py   the AlgoGuard window (standard library only)
+|-- find_python.cmd            finds Python 3.14.6 for the .cmd files
+|-- SETUP_ALGOGUARD.cmd        analyst setup by hand: packages and .env
+|-- START_ALGOGUARD.cmd        analyst start by hand
 |-- train.py, publish_model.py, cloud_migrate.py, bootstrap_admin.py, reset_password.py,
 |   cleanup_model_objects.py, legacy_backup.py, legacy_import.py   maintainer tools
 |-- services/                  flow tracking, capture, scoring, legacy local services
@@ -107,7 +110,7 @@ AlgoGuard/
 
 ## Installation
 
-Analysts follow [the analyst guide](docs/ANALYST_GUIDE.md): Python 3.14.6, `SETUP_ALGOGUARD.cmd`, the two cloud settings, `START_ALGOGUARD.cmd`. Maintainers clone the repository and install the development and maintainer requirements as in [the maintainer guide](docs/MAINTAINER_GUIDE.md):
+Analysts follow [the analyst guide](docs/ANALYST_GUIDE.md): `ALGOGUARD.cmd` (it installs Python 3.14.6 when missing), the two cloud settings, then **Start** (or by hand: `SETUP_ALGOGUARD.cmd`, the settings, `START_ALGOGUARD.cmd`). Maintainers clone the repository and install the development and maintainer requirements as in [the maintainer guide](docs/MAINTAINER_GUIDE.md):
 
 ```bat
 git clone https://github.com/AlgoGuard-CSThesis/AlgoGuard.git

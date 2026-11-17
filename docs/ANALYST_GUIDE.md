@@ -13,11 +13,12 @@ addresses, ports, sizes and timing. **Capture only on networks you are allowed t
 ## 1. What you need
 
 - Windows 10 or 11, 64-bit, with an internet connection.
-- **Python 3.14.6 (64-bit).** The model only loads with this exact version. Download it from
-  <https://www.python.org/downloads/release/python-3146/> and install it with the default
-  options.
-- **Npcap**, only if you want to capture live traffic: <https://npcap.com>, installed with the
-  default options. Replaying recorded files and samples works without it.
+- **Python 3.14.6 (64-bit).** The model only loads with this exact version. You don't need to
+  install it yourself: if it is missing, `ALGOGUARD.cmd` offers to install it for you (section
+  2). To install it by hand instead, use the "Windows installer (64-bit)" from
+  <https://www.python.org/downloads/release/python-3146/> with the default options.
+- **Npcap**, only if you want to capture live traffic. The AlgoGuard window's **Install Npcap**
+  button gets it for you (section 2). Replaying recorded files and samples works without it.
 - From your administrator: your **e-mail address and password**, the project **URL** (starts
   with `https://`) and the **publishable key** (starts with `sb_publishable_`). The URL and key
   are public values; they are not passwords.
@@ -27,15 +28,30 @@ addresses, ports, sizes and timing. **Capture only on networks you are allowed t
 1. Unzip the AlgoGuard package to a folder you own, for example `C:\AlgoGuard`. Do not run it
    from a USB stick or a network drive. The zip holds one folder named `AlgoGuard`; the files
    named below are inside it.
-2. Double-click **`ALGOGUARD.cmd`**. The AlgoGuard window opens. If Python 3.14.6 is missing, it
-   says so and opens the download page instead; install it and double-click again.
-3. Press **Set up**. It installs AlgoGuard's Python packages into the `venv` folder (2 to 10
-   minutes the first time, depending on the connection); the progress shows in the window.
-4. Press **Settings**, enter the project **URL** and the **publishable key**, and press **Save**.
-   The window answers **Settings OK** when they are right. Never enter a password, a secret key
-   (`sb_secret_...`) or a service key; the window refuses a secret key.
+2. Double-click **`ALGOGUARD.cmd`**. If Python 3.14.6 is missing, it asks
+   `Install Python 3.14.6 and set up AlgoGuard now? [Y/N]`. Press **Y**:
+   - it downloads the official installer from python.org (about 30 MB);
+   - it checks that the file is exactly the one python.org publishes, and deletes it otherwise;
+   - it installs Python for your Windows account only, with a progress bar. No administrator
+     rights are needed, and a Python already on the computer is never changed.
 
-The window's five lines show what is ready: Python, Packages, Settings, Npcap and AlgoGuard.
+   Press **N** to install Python yourself instead: the download page opens.
+3. The AlgoGuard window opens and, the first time, offers to **set up** AlgoGuard (right after
+   installing Python it starts by itself). Setting up installs AlgoGuard's Python packages into
+   the `venv` folder: 2 to 10 minutes, depending on the connection, with the progress in the
+   window.
+4. The **Settings** form opens by itself. Enter the project **URL** and the **publishable key**
+   and press **Save**. Never enter a password, a secret key (`sb_secret_...`) or a service key;
+   the window refuses a secret key. When the settings are right, AlgoGuard starts and your
+   browser opens the sign-in page (section 3).
+5. For live capture, press **Install Npcap** (shown while Npcap is missing). The window
+   downloads Npcap 1.88 from npcap.com, checks it, and opens Npcap's own installer. Windows asks
+   for administrator rights; keep Npcap's default options and follow its steps. The Npcap line
+   turns green when it is done.
+
+The window's five lines show what is ready: Python, Packages, Settings, Npcap and AlgoGuard. Its
+buttons do each step again whenever you need to: **Set up**, **Settings...**, **Start**,
+**Stop**, **Open AlgoGuard**.
 
 **Doing it by hand instead:** double-click **`SETUP_ALGOGUARD.cmd`**. It installs the packages,
 creates the settings file `.env` and opens it in Notepad, where the same two values go:
@@ -220,7 +236,9 @@ Administrators also see:
 |---|---|
 | `AlgoGuard cannot start. This installation is not set up yet.` | Double-click `ALGOGUARD.cmd`, press **Set up**, then **Settings**, and enter the two values. |
 | `Settings problem: ...` | Press **Settings** in the AlgoGuard window and correct the value; the message names it. Common causes: the URL is not `https://`, or the key is not a `sb_publishable_` key. A wrong `ALGOGUARD_HOST` (it must be `127.0.0.1`) is fixed in the `.env` file itself. |
-| `AlgoGuard needs Python 3.14.6` or `Models need Python 3.14.6` | Install Python 3.14.6, delete the `venv` folder, and press **Set up** in the AlgoGuard window again (or run `SETUP_ALGOGUARD.cmd`). |
+| `AlgoGuard needs Python 3.14.6` or `Models need Python 3.14.6` | Delete the `venv` folder, then double-click `ALGOGUARD.cmd`: it offers to install Python 3.14.6 if it is missing, and the window sets AlgoGuard up again (or run `SETUP_ALGOGUARD.cmd`). |
+| `This computer has a Python 3.14 that AlgoGuard cannot use` | Another Python 3.14 is installed, which AlgoGuard does not change. Install Python 3.14.6 from the page that opens, then double-click `ALGOGUARD.cmd` again. |
+| `The downloaded file is not the one python.org publishes` | The download was damaged or replaced on the way, so it was deleted and nothing was installed. Try again later, or install Python by hand (section 1). |
 | `This installation's Python packages differ from the model's` | Press **Set up** in the AlgoGuard window again (or run `SETUP_ALGOGUARD.cmd`). |
 | Sign-in says the e-mail or password was not accepted | Check them, then check that Windows' clock is right: in an administrator Command Prompt run `w32tm /resync`. A clock more than 10 seconds off makes every sign-in fail. AlgoGuard has no page for changing or resetting a password: if you forgot yours, ask your administrator, and the maintainer sets a new one for you. |
 | `The cloud is unavailable.` | Check the internet connection. Records wait as Pending and upload later. |
@@ -230,7 +248,7 @@ Administrators also see:
 | `The model copy saved on this computer is corrupt.` | Close AlgoGuard, delete the folder named in the message, and start again; the model downloads afresh. |
 | `The published model does not match this version of AlgoGuard.` | Ask your administrator for the current AlgoGuard package (section 10). |
 | `The published model file is unavailable.` or another model message ending "tell your administrator" | Tell your administrator; this is fixed in the cloud, not on your computer. |
-| Live capture is listed as unavailable | Install Npcap (the message says if it is missing), or press **Stop**, then **Restart as administrator** in the AlgoGuard window and start again, then reload the Live Monitor. |
+| Live capture is listed as unavailable | Install Npcap with the window's **Install Npcap** button (the message says if it is missing), then press **Stop** and **Start**. Or press **Stop**, then **Restart as administrator** in the AlgoGuard window and start again, then reload the Live Monitor. |
 | A live session shows no rows | Pick the network card that carries your traffic. Rows appear when flows end, not on their first packet. |
 | Live Monitor's **Upload status** is empty | Nothing has been stored since this start; it fills in after the first stored record. |
 | Upload status **Blocked** | Uploads were refused: this installation is not approved for you, or your access was revoked. Once the administrator approves or restores it, uploads resume by themselves within a minute; **Retry uploads** on the Dashboard resumes them at once. |

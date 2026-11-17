@@ -168,15 +168,39 @@ It packages the last commit (commit your changes first) into
 `dist\AlgoGuard-analyst-<version>.zip`, with a `BUILD` file naming the commit, which each
 installation reports on the Computers page. The contents are chosen from an allow list: the
 analyst app and every project module it imports, its pages and styles, the sample datasets,
-the launcher window (`ALGOGUARD.cmd`, `algoguard_launcher.pyw`, `launcher_core.py`),
-`SETUP_ALGOGUARD.cmd`, `START_ALGOGUARD.cmd`, `.env.example`, the requirements files and the
-analyst guide. Training, publishing, migration, import and recovery tools, tests, test records,
+the launcher window (`ALGOGUARD.cmd`, `find_python.cmd`, `algoguard_launcher.pyw`,
+`launcher_core.py`), `SETUP_ALGOGUARD.cmd`, `START_ALGOGUARD.cmd`, `.env.example`, the
+requirements files and the analyst guide. Training, publishing, migration, import and recovery tools, tests, test records,
 research files, databases, models, captures and settings files cannot be included. The build
 refuses to write the zip if any file contains a secret key, a database password, a private key,
 a signed token or a real e-mail address, or if a packaged module imports one that is missing.
 
 Give analysts the zip together with the project URL and publishable key, and create their
 accounts on the Accounts page. Bump `RELEASE` in `app_version.py` for a new release.
+
+**Installers the package fetches.** The zip carries no installers; it downloads two, each
+pinned to one file:
+
+- **Python.** `ALGOGUARD.cmd` installs it when no usable Python is found, for the current
+  Windows account only (`/passive InstallAllUsers=0 Include_launcher=0 PrependPath=0`, so no
+  administrator rights and no PATH change). It refuses a file whose SHA-256 differs from
+  `PYTHON_SHA256`. It never changes a Python 3.14 that is already installed.
+  - The version is set in `find_python.cmd` (`PYTHON_VERSION`) and `launcher_core.py`
+    (`PYTHON_VERSION`).
+  - The download is set in `ALGOGUARD.cmd` (`PYTHON_URL`, `PYTHON_SHA256`): the "Windows
+    installer (64-bit)" and its SHA-256 from the release page on python.org.
+  - `tests/test_launcher.py` checks that these agree.
+- **Npcap.** The window's **Install Npcap** button downloads `NPCAP_URL` and starts it as
+  administrator only if its SHA-256 is `NPCAP_SHA256` (`launcher_core.py`).
+  - npcap.com publishes no checksums. To move to a new version, download the installer, check
+    that Windows reports a valid signature from Nmap Software LLC
+    (`Get-AuthenticodeSignature`), then pin its SHA-256 with `NPCAP_VERSION`.
+  - The free edition cannot install silently, so the person clicks through Npcap's own
+    installer.
+  - Its licence allows up to 5 computers outside Nmap and Wireshark use; more needs Npcap OEM.
+
+Change the pins only together with a release, and test the new installers on a Windows account
+that has neither installed, as in test cycle 2 (TC-17.W2).
 
 ## 7. Backups and recovery
 

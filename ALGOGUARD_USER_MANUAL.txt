@@ -123,15 +123,22 @@ authorized to monitor.
 
 The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
 
-1. Install Python 3.14.6 (and Npcap for live capture).
-2. Unzip the package. It holds one folder named AlgoGuard. Double-click
-   ALGOGUARD.cmd inside it: the AlgoGuard window opens. Press Set up (2 to 10
-   minutes the first time, depending on the connection), then Settings, and
-   enter the project URL and publishable key your administrator gave you.
-3. Press Start. Your browser opens when AlgoGuard is ready; keep the AlgoGuard
-   window open. If the Live Monitor lists live capture as unavailable, press
-   Stop, then "Restart as administrator". (By hand: SETUP_ALGOGUARD.cmd and
-   START_ALGOGUARD.cmd do the same steps with Notepad and a console window.)
+1. Unzip the package. It holds one folder named AlgoGuard. Double-click
+   ALGOGUARD.cmd inside it. If Python 3.14.6 is missing, it offers to install
+   it: press Y, and it downloads the official installer from python.org,
+   checks it is the genuine file and installs Python for your Windows account
+   only (no administrator rights; a Python already installed is never
+   changed).
+2. The AlgoGuard window opens and, the first time, sets AlgoGuard up (2 to 10
+   minutes, depending on the connection). The Settings form then opens: enter
+   the project URL and publishable key your administrator gave you and press
+   Save. AlgoGuard starts and your browser opens the sign-in page.
+3. Every later time: double-click ALGOGUARD.cmd and press Start. Keep the
+   AlgoGuard window open. For live capture, press "Install Npcap" once (it
+   opens Npcap's own installer; Windows asks for administrator rights). If the
+   Live Monitor lists live capture as unavailable, press Stop, then "Restart
+   as administrator". (By hand: SETUP_ALGOGUARD.cmd and START_ALGOGUARD.cmd do
+   the setting up and starting with Notepad and a console window.)
 4. Sign in at http://127.0.0.1:5000 with the e-mail address and
    password your administrator created. Every start needs an online sign-in.
    There is no page for changing a password: if you forget yours, ask your
@@ -228,9 +235,10 @@ Traffic source
         120 seconds for long connections, so the first verdicts appear a few
         seconds after Start, not instantly. Live mode runs at wire pace
         (speed and order do not apply) and shows detection lag plus captured
-        and dropped packet counts. Requirements on Windows: install Npcap
-        from https://npcap.com with its default "WinPcap API-compatible
-        mode", and start AlgoGuard from a terminal opened as Administrator.
+        and dropped packet counts. Requirements on Windows: Npcap with its
+        default "WinPcap API-compatible mode" (the AlgoGuard window's
+        "Install Npcap" button gets it from https://npcap.com), and, if
+        needed, "Restart as administrator" in the AlgoGuard window.
         If either is missing, the page says why live capture is unavailable
         and the replay sources keep working. AlgoGuard ignores its own web
         traffic so the feed does not fill with the browser polling the page.
@@ -576,8 +584,8 @@ it was trained on.
 Before presenting:
 
 1. Check the internet connection and that Windows' clock is right.
-2. Double-click ALGOGUARD.cmd and press Start (make sure Npcap is installed
-   if you plan to show live capture).
+2. Double-click ALGOGUARD.cmd and press Start (the window's Npcap line
+   should be green if you plan to show live capture).
 3. Sign in at http://127.0.0.1:5000 in the browser that opens.
 4. Confirm the Dashboard shows the Deployed Model card and "Node approved".
    If not, ask your administrator (see docs/ANALYST_GUIDE.md).

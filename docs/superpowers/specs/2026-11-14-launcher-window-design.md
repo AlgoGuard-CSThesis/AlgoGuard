@@ -127,7 +127,33 @@ not installed until Set up has run.
 
 ## Not included
 
-- Installing or bundling Python.
+- Installing or bundling Python (changed on 2026-11-18, see below).
 - Any change to sign-in, models, uploads or the pages other than the interface dropdown's first
   option.
 - A second PC check of the window; PC B is not needed.
+
+## Change, 2026-11-18: Python, the first run and Npcap
+
+Decision (Lead Architect, 2026-11-18): opening the window should be all a new analyst does to
+set AlgoGuard up. This reverses "Nothing is bundled or installed for them" above. Still nothing
+is bundled: the package downloads two installers, each pinned to one file.
+
+| Part | Decision |
+|---|---|
+| Python | `ALGOGUARD.cmd` offers to install Python 3.14.6 when no usable Python is found. It downloads `python-3.14.6-amd64.exe` from python.org with `curl.exe` and compares its SHA-256 (`certutil`) with the value python.org publishes. A different file is deleted and nothing runs. It installs with `/passive InstallAllUsers=0 Include_launcher=0 PrependPath=0`: for the current Windows account only, no administrator prompt, no PATH change, no Python launcher. |
+| Existing Python | Never changed. When only another Python 3.14 is installed, `ALGOGUARD.cmd` says so and opens the download page. |
+| Finding Python | `find_python.cmd`, shared by `ALGOGUARD.cmd` and `SETUP_ALGOGUARD.cmd`, tries `py -3.14`, then the per-user folder of that install (`%LocalAppData%\Programs\Python\Python314`), then the PEP 514 registry (`HKCU`, then `HKLM`). The launcher is not needed: the 3.14 installer's launcher option names the new install manager, and its behaviour without an administrator prompt is not documented. |
+| First run | The window offers Set up when packages are missing. After `ALGOGUARD.cmd` installed Python, it starts Set up without asking. Then the Settings form opens by itself, and a successful Save starts AlgoGuard and opens the browser. When everything is ready, the window does nothing by itself, as before. |
+| Npcap | An **Install Npcap** button, shown while Npcap is missing. It downloads Npcap 1.88 (the version on PC A and PC B) from npcap.com and checks its pinned SHA-256. npcap.com publishes none, so the pin was taken from a download whose Windows signature was valid and from Nmap Software LLC. The window then starts Npcap's own installer as administrator. The free edition has no silent install. |
+
+Testing:
+- Unit tests in `tests/test_launcher.py`:
+  - the first-run order;
+  - checked downloads (match, mismatch, http, size, network failure);
+  - the pins agreeing across files;
+  - the window's guided steps;
+  - `find_python.cmd` run for real on Windows, through a junction to a real Python under a path
+    with spaces, brackets and `&`, and through the registry and the launcher.
+- By hand (TC-17.W2): a temporary Windows account on PC A, which has no Python of its own, runs
+  the package from nothing to the sign-in page, without signing in. On the normal account,
+  **Install Npcap** is pressed and Npcap's installer cancelled at its first screen.
