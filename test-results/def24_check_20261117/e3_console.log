@@ -1,0 +1,62 @@
+﻿file-2 Fuzzers identical to a Normal row (16 features): 0.0005
+
+== rf (47s) S2 AUC 0.9834; lines meeting all: []
+  0.10 S2 acc 0.913 f1 0.924 rec 0.987 fpr 0.170 fuzz 0.961 | HO fpr 0.345 | browse max 0.390
+  0.20 S2 acc 0.921 f1 0.928 rec 0.962 fpr 0.126 fuzz 0.881 | HO fpr 0.250 | browse max 0.252
+  0.25 S2 acc 0.923 f1 0.929 rec 0.947 fpr 0.105 fuzz 0.830 | HO fpr 0.206 | browse max 0.223
+  0.30 S2 acc 0.923 f1 0.928 rec 0.932 fpr 0.087 fuzz 0.779 | HO fpr 0.171 | browse max 0.182
+  0.35 S2 acc 0.921 f1 0.925 rec 0.915 fpr 0.072 fuzz 0.724 | HO fpr 0.138 | browse max 0.157
+  0.40 S2 acc 0.919 f1 0.922 rec 0.899 fpr 0.059 fuzz 0.671 | HO fpr 0.113 | browse max 0.134
+  0.45 S2 acc 0.916 f1 0.918 rec 0.884 fpr 0.048 fuzz 0.621 | HO fpr 0.091 | browse max 0.103
+  0.50 S2 acc 0.913 f1 0.914 rec 0.870 fpr 0.038 fuzz 0.574 | HO fpr 0.073 | browse max 0.080
+  0.60 S2 acc 0.900 f1 0.899 rec 0.835 fpr 0.025 fuzz 0.477 | HO fpr 0.042 | browse max 0.052
+  0.70 S2 acc 0.886 f1 0.881 rec 0.798 fpr 0.015 fuzz 0.383 | HO fpr 0.023 | browse max 0.036
+
+== rf_local10 (46s) S2 AUC 0.9835; lines meeting all: []
+  0.10 S2 acc 0.911 f1 0.922 rec 0.992 fpr 0.181 fuzz 0.978 | HO fpr 0.371 | browse max 0.304
+  0.20 S2 acc 0.920 f1 0.928 rec 0.973 fpr 0.141 fuzz 0.919 | HO fpr 0.283 | browse max 0.199
+  0.25 S2 acc 0.923 f1 0.930 rec 0.961 fpr 0.120 fuzz 0.877 | HO fpr 0.240 | browse max 0.165
+  0.30 S2 acc 0.924 f1 0.930 rec 0.947 fpr 0.101 fuzz 0.828 | HO fpr 0.203 | browse max 0.140
+  0.35 S2 acc 0.924 f1 0.929 rec 0.932 fpr 0.085 fuzz 0.777 | HO fpr 0.167 | browse max 0.118
+  0.40 S2 acc 0.922 f1 0.926 rec 0.915 fpr 0.070 fuzz 0.723 | HO fpr 0.138 | browse max 0.098
+  0.45 S2 acc 0.919 f1 0.922 rec 0.899 fpr 0.058 fuzz 0.670 | HO fpr 0.110 | browse max 0.074
+  0.50 S2 acc 0.916 f1 0.918 rec 0.884 fpr 0.047 fuzz 0.621 | HO fpr 0.091 | browse max 0.058
+  0.60 S2 acc 0.906 f1 0.905 rec 0.849 fpr 0.030 fuzz 0.520 | HO fpr 0.054 | browse max 0.050
+  0.70 S2 acc 0.890 f1 0.887 rec 0.809 fpr 0.018 fuzz 0.419 | HO fpr 0.029 | browse max 0.031
+
+== rf_local10_fuzz2 (47s) S2 AUC 0.9832; lines meeting all: [np.float64(0.45)]
+  0.10 S2 acc 0.910 f1 0.921 rec 0.993 fpr 0.184 fuzz 0.984 | HO fpr 0.375 | browse max 0.309
+  0.20 S2 acc 0.919 f1 0.927 rec 0.977 fpr 0.148 fuzz 0.938 | HO fpr 0.298 | browse max 0.207
+  0.25 S2 acc 0.922 f1 0.929 rec 0.967 fpr 0.130 fuzz 0.904 | HO fpr 0.260 | browse max 0.162
+  0.30 S2 acc 0.924 f1 0.930 rec 0.956 fpr 0.112 fuzz 0.867 | HO fpr 0.226 | browse max 0.128
+  0.35 S2 acc 0.924 f1 0.930 rec 0.943 fpr 0.097 fuzz 0.824 | HO fpr 0.195 | browse max 0.112
+  0.40 S2 acc 0.923 f1 0.928 rec 0.928 fpr 0.083 fuzz 0.776 | HO fpr 0.164 | browse max 0.089
+  0.45 S2 acc 0.922 f1 0.926 rec 0.914 fpr 0.069 fuzz 0.729 | HO fpr 0.135 | browse max 0.073
+  0.50 S2 acc 0.919 f1 0.922 rec 0.897 fpr 0.056 fuzz 0.676 | HO fpr 0.111 | browse max 0.057
+  0.60 S2 acc 0.910 f1 0.911 rec 0.864 fpr 0.037 fuzz 0.577 | HO fpr 0.069 | browse max 0.048
+  0.70 S2 acc 0.895 f1 0.893 rec 0.824 fpr 0.024 fuzz 0.476 | HO fpr 0.037 | browse max 0.022
+
+== hgb_local10 (36s) S2 AUC 0.9855; lines meeting all: [np.float64(0.3), np.float64(0.35)]
+  0.10 S2 acc 0.916 f1 0.926 rec 0.990 fpr 0.168 fuzz 0.979 | HO fpr 0.356 | browse max 0.108
+  0.20 S2 acc 0.927 f1 0.933 rec 0.956 fpr 0.105 fuzz 0.862 | HO fpr 0.214 | browse max 0.087
+  0.25 S2 acc 0.927 f1 0.932 rec 0.936 fpr 0.084 fuzz 0.796 | HO fpr 0.169 | browse max 0.080
+  0.30 S2 acc 0.926 f1 0.929 rec 0.919 fpr 0.067 fuzz 0.740 | HO fpr 0.134 | browse max 0.073
+  0.35 S2 acc 0.924 f1 0.927 rec 0.904 fpr 0.054 fuzz 0.688 | HO fpr 0.105 | browse max 0.068
+  0.40 S2 acc 0.920 f1 0.922 rec 0.889 fpr 0.044 fuzz 0.637 | HO fpr 0.083 | browse max 0.063
+  0.45 S2 acc 0.916 f1 0.917 rec 0.874 fpr 0.035 fuzz 0.587 | HO fpr 0.065 | browse max 0.054
+  0.50 S2 acc 0.912 f1 0.912 rec 0.861 fpr 0.030 fuzz 0.544 | HO fpr 0.050 | browse max 0.050
+  0.60 S2 acc 0.902 f1 0.900 rec 0.834 fpr 0.021 fuzz 0.464 | HO fpr 0.033 | browse max 0.044
+  0.70 S2 acc 0.891 f1 0.887 rec 0.806 fpr 0.014 fuzz 0.384 | HO fpr 0.021 | browse max 0.035
+
+== hgb_local10_fuzz2 (35s) S2 AUC 0.9855; lines meeting all: [np.float64(0.4), np.float64(0.45)]
+  0.10 S2 acc 0.914 f1 0.925 rec 0.994 fpr 0.175 fuzz 0.993 | HO fpr 0.373 | browse max 0.100
+  0.20 S2 acc 0.921 f1 0.929 rec 0.977 fpr 0.143 fuzz 0.947 | HO fpr 0.298 | browse max 0.076
+  0.25 S2 acc 0.925 f1 0.932 rec 0.966 fpr 0.121 fuzz 0.911 | HO fpr 0.255 | browse max 0.068
+  0.30 S2 acc 0.927 f1 0.933 rec 0.952 fpr 0.102 fuzz 0.867 | HO fpr 0.209 | browse max 0.064
+  0.35 S2 acc 0.928 f1 0.933 rec 0.939 fpr 0.084 fuzz 0.824 | HO fpr 0.173 | browse max 0.060
+  0.40 S2 acc 0.927 f1 0.930 rec 0.924 fpr 0.071 fuzz 0.776 | HO fpr 0.141 | browse max 0.057
+  0.45 S2 acc 0.925 f1 0.928 rec 0.910 fpr 0.058 fuzz 0.728 | HO fpr 0.113 | browse max 0.050
+  0.50 S2 acc 0.923 f1 0.926 rec 0.897 fpr 0.047 fuzz 0.685 | HO fpr 0.089 | browse max 0.048
+  0.60 S2 acc 0.915 f1 0.915 rec 0.867 fpr 0.031 fuzz 0.586 | HO fpr 0.054 | browse max 0.041
+  0.70 S2 acc 0.902 f1 0.901 rec 0.836 fpr 0.022 fuzz 0.487 | HO fpr 0.032 | browse max 0.035
+done 217s

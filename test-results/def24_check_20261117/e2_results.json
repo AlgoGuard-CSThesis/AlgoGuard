@@ -1,0 +1,237 @@
+{
+  "smean_dmean_derived_share": {
+    "smean": 1.0,
+    "dmean": 1.0
+  },
+  "timing_quantiles": {
+    "synack": {
+      "live_benign": [
+        0.01246,
+        0.01777,
+        0.16933
+      ],
+      "dataset_normal": [
+        0.00048,
+        0.00059,
+        0.107
+      ],
+      "dataset_attack": [
+        0.01111,
+        0.0631,
+        0.11311
+      ]
+    },
+    "ackdat": {
+      "live_benign": [
+        5e-05,
+        9e-05,
+        0.00018
+      ],
+      "dataset_normal": [
+        0.00012,
+        0.00015,
+        0.09252
+      ],
+      "dataset_attack": [
+        0.03155,
+        0.0589,
+        0.10737
+      ]
+    },
+    "tcprtt": {
+      "live_benign": [
+        0.01257,
+        0.01783,
+        0.16933
+      ],
+      "dataset_normal": [
+        0.0006,
+        0.00074,
+        0.1991
+      ],
+      "dataset_attack": [
+        0.05388,
+        0.12354,
+        0.21344
+      ]
+    }
+  },
+  "e2": {
+    "v2": {
+      "anchor_no_file2_caps_attack_share": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0277,
+        "final_browser.pcap": 0.0239,
+        "final_unseen.pcap": 0.0611
+      },
+      "S2_withinfile_0.50": {
+        "acc": 0.912,
+        "f1": 0.9132,
+        "recall": 0.8701,
+        "fpr": 0.0404,
+        "auc": 0.9834,
+        "fuzzers_recall": 0.5774
+      },
+      "S2_withinfile_0.70": {
+        "acc": 0.8835,
+        "f1": 0.8789,
+        "recall": 0.7949,
+        "fpr": 0.0159,
+        "auc": 0.8895,
+        "fuzzers_recall": 0.3813
+      },
+      "HO_mean": {
+        "acc": 0.9336,
+        "f1": 0.9175,
+        "recall": 0.9538,
+        "fpr": 0.0792,
+        "auc": 0.9862,
+        "fuzzers_recall": 0.8684
+      },
+      "caps_attack_share_0.50": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0381,
+        "final_browser.pcap": 0.0378,
+        "final_unseen.pcap": 0.0883
+      },
+      "caps_attack_share_0.70": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0172,
+        "final_browser.pcap": 0.008,
+        "final_unseen.pcap": 0.0374
+      }
+    },
+    "v2+size_mean": {
+      "anchor_no_file2_caps_attack_share": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0295,
+        "final_browser.pcap": 0.0299,
+        "final_unseen.pcap": 0.0509
+      },
+      "S2_withinfile_0.50": {
+        "acc": 0.914,
+        "f1": 0.9153,
+        "recall": 0.8739,
+        "fpr": 0.0406,
+        "auc": 0.9842,
+        "fuzzers_recall": 0.5915
+      },
+      "S2_withinfile_0.70": {
+        "acc": 0.8898,
+        "f1": 0.8862,
+        "recall": 0.8066,
+        "fpr": 0.0157,
+        "auc": 0.8955,
+        "fuzzers_recall": 0.4026
+      },
+      "HO_mean": {
+        "acc": 0.9356,
+        "f1": 0.9199,
+        "recall": 0.9546,
+        "fpr": 0.0764,
+        "auc": 0.9869,
+        "fuzzers_recall": 0.8684
+      },
+      "caps_attack_share_0.50": {
+        "generator.pcap": 0.003,
+        "browser.pcap": 0.0357,
+        "final_browser.pcap": 0.0398,
+        "final_unseen.pcap": 0.0742
+      },
+      "caps_attack_share_0.70": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0141,
+        "final_browser.pcap": 0.0066,
+        "final_unseen.pcap": 0.0296
+      }
+    },
+    "v2+handshake": {
+      "anchor_no_file2_caps_attack_share": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0166,
+        "final_browser.pcap": 0.008,
+        "final_unseen.pcap": 0.0058
+      },
+      "S2_withinfile_0.50": {
+        "acc": 0.9124,
+        "f1": 0.9135,
+        "recall": 0.8703,
+        "fpr": 0.0399,
+        "auc": 0.9843,
+        "fuzzers_recall": 0.5741
+      },
+      "S2_withinfile_0.70": {
+        "acc": 0.8823,
+        "f1": 0.8773,
+        "recall": 0.7907,
+        "fpr": 0.0137,
+        "auc": 0.8885,
+        "fuzzers_recall": 0.3587
+      },
+      "HO_mean": {
+        "acc": 0.9342,
+        "f1": 0.9182,
+        "recall": 0.9536,
+        "fpr": 0.078,
+        "auc": 0.9872,
+        "fuzzers_recall": 0.8649
+      },
+      "caps_attack_share_0.50": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0185,
+        "final_browser.pcap": 0.0073,
+        "final_unseen.pcap": 0.015
+      },
+      "caps_attack_share_0.70": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.008,
+        "final_browser.pcap": 0.002,
+        "final_unseen.pcap": 0.0024
+      }
+    },
+    "v2+size+handshake": {
+      "anchor_no_file2_caps_attack_share": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0166,
+        "final_browser.pcap": 0.004,
+        "final_unseen.pcap": 0.0058
+      },
+      "S2_withinfile_0.50": {
+        "acc": 0.9158,
+        "f1": 0.9172,
+        "recall": 0.8766,
+        "fpr": 0.0396,
+        "auc": 0.9851,
+        "fuzzers_recall": 0.5927
+      },
+      "S2_withinfile_0.70": {
+        "acc": 0.8875,
+        "f1": 0.8833,
+        "recall": 0.8003,
+        "fpr": 0.0134,
+        "auc": 0.8934,
+        "fuzzers_recall": 0.3782
+      },
+      "HO_mean": {
+        "acc": 0.9376,
+        "f1": 0.9219,
+        "recall": 0.9516,
+        "fpr": 0.0713,
+        "auc": 0.988,
+        "fuzzers_recall": 0.8572
+      },
+      "caps_attack_share_0.50": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0197,
+        "final_browser.pcap": 0.0093,
+        "final_unseen.pcap": 0.015
+      },
+      "caps_attack_share_0.70": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0098,
+        "final_browser.pcap": 0.002,
+        "final_unseen.pcap": 0.0019
+      }
+    }
+  }
+}

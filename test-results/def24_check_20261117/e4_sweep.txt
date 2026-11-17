@@ -1,0 +1,27 @@
+﻿== hgb: held file-2 slice 25363 rows, AUC 0.9848; hold-out AUC 0.9902
+  0.20 F2 acc 0.923 f1 0.931 rec 0.966 fpr 0.125 fuzz 0.898 | HO fpr 0.250 rec 0.994 | comb acc 0.897 f1 0.902 rec 0.973 fpr 0.174 | browse max 0.073 
+  0.25 F2 acc 0.925 f1 0.931 rec 0.951 fpr 0.104 fuzz 0.846 | HO fpr 0.208 rec 0.989 | comb acc 0.906 f1 0.909 rec 0.961 fpr 0.145 | browse max 0.066 
+  0.30 F2 acc 0.926 f1 0.930 rec 0.936 fpr 0.087 fuzz 0.798 | HO fpr 0.173 rec 0.984 | comb acc 0.913 f1 0.914 rec 0.949 fpr 0.120 | browse max 0.060 
+  0.35 F2 acc 0.924 f1 0.928 rec 0.922 fpr 0.073 fuzz 0.748 | HO fpr 0.141 rec 0.979 | comb acc 0.918 f1 0.917 rec 0.937 fpr 0.099 | browse max 0.055 ALL F2+BROWSE MET
+  0.40 F2 acc 0.923 f1 0.926 rec 0.908 fpr 0.061 fuzz 0.700 | HO fpr 0.117 rec 0.975 | comb acc 0.921 f1 0.919 rec 0.926 fpr 0.083 | browse max 0.054 ALL F2+BROWSE MET
+  0.45 F2 acc 0.921 f1 0.923 rec 0.894 fpr 0.049 fuzz 0.656 | HO fpr 0.095 rec 0.971 | comb acc 0.924 f1 0.921 rec 0.914 fpr 0.067 | browse max 0.054 
+  0.50 F2 acc 0.918 f1 0.919 rec 0.882 fpr 0.042 fuzz 0.617 | HO fpr 0.076 rec 0.965 | comb acc 0.925 f1 0.921 rec 0.904 fpr 0.055 | browse max 0.049 
+  0.60 F2 acc 0.908 f1 0.908 rec 0.854 fpr 0.030 fuzz 0.527 | HO fpr 0.051 rec 0.951 | comb acc 0.922 f1 0.916 rec 0.880 fpr 0.038 | browse max 0.045 
+== stack_app: held file-2 slice 25363 rows, AUC 0.9830; hold-out AUC 0.9844
+  0.20 F2 acc 0.922 f1 0.928 rec 0.945 fpr 0.104 fuzz 0.818 | HO fpr 0.203 rec 0.987 | comb acc 0.905 f1 0.907 rec 0.956 fpr 0.143 | browse max 0.125 
+  0.25 F2 acc 0.922 f1 0.927 rec 0.931 fpr 0.089 fuzz 0.771 | HO fpr 0.171 rec 0.980 | comb acc 0.910 f1 0.911 rec 0.944 fpr 0.121 | browse max 0.111 
+  0.30 F2 acc 0.920 f1 0.924 rec 0.919 fpr 0.079 fuzz 0.731 | HO fpr 0.149 rec 0.975 | comb acc 0.913 f1 0.912 rec 0.934 fpr 0.106 | browse max 0.095 
+  0.35 F2 acc 0.919 f1 0.922 rec 0.908 fpr 0.069 fuzz 0.693 | HO fpr 0.130 rec 0.971 | comb acc 0.916 f1 0.914 rec 0.924 fpr 0.093 | browse max 0.079 ALL F2+BROWSE MET
+  0.40 F2 acc 0.917 f1 0.920 rec 0.898 fpr 0.061 fuzz 0.660 | HO fpr 0.114 rec 0.968 | comb acc 0.917 f1 0.915 rec 0.916 fpr 0.082 | browse max 0.066 
+  0.45 F2 acc 0.915 f1 0.917 rec 0.886 fpr 0.052 fuzz 0.625 | HO fpr 0.101 rec 0.963 | comb acc 0.918 f1 0.915 rec 0.906 fpr 0.071 | browse max 0.060 
+  0.50 F2 acc 0.914 f1 0.916 rec 0.875 fpr 0.041 fuzz 0.590 | HO fpr 0.088 rec 0.956 | comb acc 0.919 f1 0.915 rec 0.896 fpr 0.059 | browse max 0.051 
+  0.60 F2 acc 0.908 f1 0.908 rec 0.855 fpr 0.031 fuzz 0.530 | HO fpr 0.064 rec 0.941 | comb acc 0.918 f1 0.912 rec 0.878 fpr 0.044 | browse max 0.047 
+== stack_hgb: held file-2 slice 25364 rows, AUC 0.9849; hold-out AUC 0.9886
+  0.20 F2 acc 0.926 f1 0.931 rec 0.941 fpr 0.090 fuzz 0.807 | HO fpr 0.184 rec 0.985 | comb acc 0.912 f1 0.913 rec 0.953 fpr 0.127 | browse max 0.079 
+  0.25 F2 acc 0.926 f1 0.930 rec 0.929 fpr 0.078 fuzz 0.768 | HO fpr 0.154 rec 0.982 | comb acc 0.917 f1 0.917 rec 0.943 fpr 0.108 | browse max 0.070 ALL F2+BROWSE MET
+  0.30 F2 acc 0.926 f1 0.929 rec 0.917 fpr 0.064 fuzz 0.728 | HO fpr 0.133 rec 0.979 | comb acc 0.921 f1 0.920 rec 0.934 fpr 0.091 | browse max 0.066 ALL F2+BROWSE MET
+  0.35 F2 acc 0.925 f1 0.928 rec 0.908 fpr 0.056 fuzz 0.694 | HO fpr 0.115 rec 0.973 | comb acc 0.923 f1 0.921 rec 0.925 fpr 0.079 | browse max 0.057 ALL F2+BROWSE MET
+  0.40 F2 acc 0.922 f1 0.925 rec 0.897 fpr 0.049 fuzz 0.659 | HO fpr 0.100 rec 0.970 | comb acc 0.924 f1 0.921 rec 0.916 fpr 0.069 | browse max 0.057 
+  0.45 F2 acc 0.920 f1 0.922 rec 0.888 fpr 0.044 fuzz 0.627 | HO fpr 0.086 rec 0.964 | comb acc 0.924 f1 0.921 rec 0.907 fpr 0.060 | browse max 0.049 
+  0.50 F2 acc 0.916 f1 0.917 rec 0.877 fpr 0.040 fuzz 0.593 | HO fpr 0.075 rec 0.960 | comb acc 0.923 f1 0.919 rec 0.899 fpr 0.054 | browse max 0.045 
+  0.60 F2 acc 0.910 f1 0.910 rec 0.857 fpr 0.031 fuzz 0.530 | HO fpr 0.054 rec 0.951 | comb acc 0.922 f1 0.917 rec 0.882 fpr 0.040 | browse max 0.039 
