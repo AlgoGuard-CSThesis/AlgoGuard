@@ -36,7 +36,7 @@ The Live Monitor accepts three traffic sources through one pipeline: **live pack
 `train.py` trains these exact candidates:
 
 1. Random Forest
-2. Gradient Boosting
+2. Gradient Boosting (histogram-based from training run 13, workflow v4)
 3. AdaBoost
 4. K-Nearest Neighbors
 5. Naive Bayes
@@ -217,7 +217,7 @@ for models trained with custom fields.
 
 Then choose a storage mode and Start; Pause, Resume, and Stop control the session. The page polls for new classifications, so reloading the browser re-attaches to a session that is still running rather than orphaning it.
 
-Each feed row shows the verdict, its confidence and the **attack score**: the model's probability that the flow is an attack, as a band (Low below 50%, Medium from 50%, High from 70%, Very high from 90%) and a percentage. The band travels with the classification, so rows the session did not save show it too. See Accuracy, Scores and Their Limits before reading a score as a measured likelihood.
+Each feed row shows the verdict, its confidence and the model's **attack score** (50% is the line at which it calls a flow an attack), as a band (Low below 50%, Medium from 50%, High from 70%, Very high from 90%) and a percentage. The band travels with the classification, so rows the session did not save show it too. See Accuracy, Scores and Their Limits before reading a score as a measured likelihood.
 
 The feed reconnects automatically after temporary connection failures. Requests
 time out after ten seconds; if a control response is lost, the page checks the
@@ -255,9 +255,22 @@ features, `train.py` says so before training and again before `--deploy`: such a
 model still works for Manual Prediction and CSV replay with the same columns, but
 Live Monitor packet capture and cloud publishing refuse it.
 
-The deployed model is trained on the UNSW-NB15 rows outside an evaluation hold-out (the rows listed in
-`research/dataset/holdout_ids.csv`) plus benign flows recorded on a Windows PC, and is measured on that
-hold-out with `scripts/evaluate_model.py`. To rebuild the UNSW-NB15 part (about 20 minutes):
+`--decision-line X` (for example `--decision-line 0.30`) sets the line at which the Stacking
+Ensemble calls a flow an attack. The line is stored inside the model, so a score of 50% then
+means an Attack probability of X; the app, the bands and the cloud records are unchanged
+(`docs/MODEL_TRAINING.md`, section 5).
+
+The deployed model from release 0.6.1 is training run 13, with the decision line at 0.30. It is
+trained on:
+- the UNSW-NB15 rows outside an evaluation hold-out (the rows listed in
+  `research/dataset/holdout_ids.csv`);
+- 76,089 rows of the official UNSW-NB15 training partition;
+- benign flows recorded on a Windows PC.
+
+Its protocol, data and results are in `test-results/model_run13/`, and
+`docs/MODEL_TRAINING.md` (section 10) lists the commands that rebuild it. To rebuild the
+repository-file part and measure a model on the hold-out with `scripts/evaluate_model.py`
+(about 20 minutes):
 
 ```powershell
 python scripts\build_flow_datasets.py --evidence test-results\<folder>
@@ -266,23 +279,37 @@ python scripts\evaluate_model.py --model saved_models\run_<id>\stacking.joblib -
 ```
 
 The first command also rewrites the three bundled samples from the same data. To add benign traffic from your own network, record captures and append their flows as Normal rows with `test-results/iter6_6a/build_def19_training.py`, then train on the combined file. A run that was evaluated before deployment is deployed as it is, without training again, with `python train.py --deploy-run <run id>`. Saved models
-are compressed (about 12 MB for this Stacking Ensemble, under the cloud storage limit).
+are compressed (about 33 MB for run 13's Stacking Ensemble, under the cloud storage limit).
 
 Without `--deploy`, the run trains and ranks all six candidates, writes `reports/training_run_<id>_model_results.csv`, and prints the comparison table without touching the active model. With `--deploy`, the Stacking Ensemble is promoted only if it passes the quality gate; the five individual models are comparison results and can never be deployed. Each deployment saves the Stacking pipeline and its metadata to a separate `saved_models/deployed_model.<unique-id>.joblib` file, then switches the active file reference in one SQLite transaction. Previous files are retained for requests already in progress and deployment history. Existing installations that reference `deployed_model.joblib` continue to work. `ALGOGUARD_DEPLOYED_MODEL_PATH` sets the folder and base filename for new deployment files.
 
 The default minimums are Accuracy 70%, F1-score 70%, and ROC-AUC 70%. They can be configured before startup with `ALGOGUARD_MIN_STACKING_ACCURACY`, `ALGOGUARD_MIN_STACKING_F1`, and `ALGOGUARD_MIN_STACKING_ROC_AUC`. Values are percentages from 0 to 100.
 
-Artifacts from earlier deployment workflows are intentionally treated as legacy. After upgrading, run `train.py` on a dataset to create a `stacking-five-v3` artifact; an older individual or Stacking artifact cannot be reactivated under the current policy.
+Artifacts from earlier deployment workflows are intentionally treated as legacy. `train.py` creates `stacking-five-v4` artifacts, whose Gradient Boosting member is histogram-based; `stacking-five-v3` artifacts such as model 60 are still accepted. An older individual or Stacking artifact cannot be reactivated under the current policy.
 
 ## Accuracy, Scores and Their Limits
 
-Stage 6A measured the model on data it has never seen and checked live features against Argus. The deployed model is training run 10: run 8's UNSW-NB15 rows plus 2,460 benign flows recorded on a Windows PC (DEF-19). The evidence is in `docs/migration/06a-evidence.md` and `test-results/iter6_6a/`; the main limits are:
+Stage 6A measured the model on data it has never seen and checked live features against Argus.
+The deployed model from release 0.6.1 is training run 13 (DEF-24). Before it, the deployed model
+was training run 10 (model 60): run 8's UNSW-NB15 rows plus 2,460 benign flows recorded on a
+Windows PC (DEF-19). The evidence is in:
+- `docs/MODEL_TRAINING.md`;
+- `test-results/model_run13/`;
+- `docs/migration/06a-evidence.md`;
+- `test-results/iter6_6a/`.
+
+The main limits are:
 
 - **Replay accuracy is not an accuracy claim.** The bundled samples are drawn from the training rows, so the Live Monitor's match rate on them shows the model reproduces its training data, nothing more.
-- **Untouched evaluation.** On the official UNSW-NB15 training partition, minus every row already seen (108,739 rows), run 10 reaches accuracy 86.2%, F1 85.4%, recall 76.0%, false-positive rate 2.3% and ROC-AUC 0.970 (run 8: 86.0%, 85.2%, 75.9%, 2.5%, 0.969). Accuracy, F1 and recall miss the 90% targets, and Fuzzers attacks are caught only 22.8% of the time. The repository's file named `UNSW_NB15_training-set.csv` is in fact the official testing partition, which all models were trained on. Training on most of the official training partition as well (training run 12, 2026-11-11) raised hold-out recall from 91.6% to 96.0% but also the false-positive rate from 2.7% to 9.4%, and labelled 10.8% of benign flows to unseen sites Attack; it failed its predeclared gate and was not deployed (`test-results/model_run11/results_run11.md`).
-- **Calibration.** On the hold-out run 8's scores were well calibrated (expected calibration error 0.015), so no calibrator was added. On the untouched set they were not (0.112): 21.9% of the flows scored Low were attacks.
+- **Unseen evaluation.**
+  - **Run 13 on 32,610 unseen rows.** These rows of the official UNSW-NB15 training partition had been read by no model. Run 13 reaches accuracy 92.9%, F1 93.3%, recall 92.8%, false-positive rate 6.9% and ROC-AUC 0.986, meeting all five targets. Model 60 on the same rows reaches 86.0%, 85.3%, 76.0%, 2.6% and 0.968.
+  - **A same-file test.** Run 13 trained on other rows of that partition.
+  - **Its weak spots.** On the evaluation hold-out from the repository file it flags 15.1% of normal flows (model 60: 2.7%). It catches 76.1% of Fuzzers attacks (model 60: 23.0%).
+  - **Model 60's own figures.** The repository's file named `UNSW_NB15_training-set.csv` is in fact the official testing partition, and model 60 was trained on that file alone. On 108,700 unseen rows of the official training partition it reached accuracy 86.2%, F1 85.4% and recall 76.0%, below the 90% targets (DEF-24).
+  - **Run 12.** Training run 12 (2026-11-11) used both partitions without the histogram member, the weighting or the line. It failed its predeclared gate (`test-results/model_run11/results_run11.md`).
+- **Calibration.** On the hold-out run 8's scores were well calibrated (expected calibration error 0.015), so no calibrator was added. On the untouched set they were not (0.112): 21.9% of the flows scored Low were attacks. Run 13's scores on its final test are well calibrated (0.030; model 60 on the same rows: 0.112).
 - **Live features.** Live features follow UNSW-NB15's definitions. On a fresh capture, 15 of the 16 inputs matched Argus within the predeclared tolerances; the 16th, `sload`, matches only once Argus's Ethernet-header bytes are discounted (99% of flows). Evidence: one PC, one Wi-Fi adapter, generated web traffic.
-- **False alarms on live traffic (DEF-19).** UNSW-NB15 labels every HTTPS (`ssl`) row an attack, so HTTPS is reported as an unidentified service (`-`), and run 10 has seen modern benign traffic. On ordinary browsing it labels 3–7% of benign flows Attack (run 8 labelled 70–97%). That holds for the PC whose traffic it was trained with; other computers may see more, and attacks on live traffic remain untested.
+- **False alarms on live traffic (DEF-19).** UNSW-NB15 labels every HTTPS (`ssl`) row an attack, so HTTPS is reported as an unidentified service (`-`), and runs 10 and 13 have seen modern benign traffic. On ordinary browsing run 13 labels 4.1–4.4% of benign flows Attack (model 60: 3–7%; run 8 labelled 70–97%). That holds for the PC whose traffic it was trained with; other computers may see more, and attacks on live traffic remain untested.
 - **Latency.** Live sessions capture packets and score flows in two separate processes, so neither waits behind the other or behind the web pages. In the app, from a flow's last packet to its verdict took a median of 89–92 ms and a 95th percentile of 114–129 ms (two 90-second runs on 2026-10-26, about 90 packets/s), within the 500 ms budget; 50 ms of that is the hold for packets in flight. Upload to the cloud adds about 0.8–0.9 s (median).
 
 ## Manual Prediction

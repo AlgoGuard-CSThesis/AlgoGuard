@@ -122,13 +122,16 @@ after the attack-score change).
 ```bat
 venv\Scripts\python.exe train.py datasets\algoguard_big.csv
 venv\Scripts\python.exe train.py <training csv> --deploy
+venv\Scripts\python.exe train.py <training csv> --decision-line 0.30
 venv\Scripts\python.exe scripts\evaluate_model.py --model saved_models\run_<id>\stacking.joblib --data <held-out csv> --train-csv <training csv>
 ```
 
 `train.py` trains and ranks the six candidates and, with `--deploy`, makes the Stacking
-Ensemble the local active model if it passes the quality gate. The README's "Retrain and Deploy"
-section describes the datasets, the quality gate and how the current model (training run 10) was
-built; `docs/migration/06a-evidence.md` records its evaluation. `docs/MODEL_TRAINING.md`
+Ensemble the local active model if it passes the quality gate. `--decision-line X` stores, inside
+the model, the line at which the Stacking Ensemble calls a flow an attack; training run 13 uses
+0.30. The README's "Retrain and Deploy" section describes the datasets, the quality gate and how
+the current model (training run 13, from release 0.6.1) was built; `test-results/model_run13/`
+records its protocol and evaluation. `docs/MODEL_TRAINING.md`
 explains the whole method in one place (data, features, candidates, gate, measurement and the
 training-run history), for reports and the thesis. Training records live in the
 local SQLite file `database/algoguard.sqlite3`; keep a backup of it (section 7).
@@ -145,7 +148,17 @@ uploaded, uploads it under a new name that is never overwritten, verifies the up
 and then makes it the single active model. Success prints `"status": "active"`. If it fails,
 run the same command with the **same** ID: it continues where it stopped instead of starting a
 second publication. Running captures keep the model they started with; new sessions use the new
-one. To go back to an earlier model, publish that local model again with a new ID.
+one. To go back to an earlier model, publish that local model again with a new ID; for example
+model 60, which 0.6.1 still accepts.
+
+**Workflow versions.**
+- **Which release accepts what.** Release 0.6.1 accepts models of workflow v3 (model 60) and v4
+  (training run 13 onwards, with the histogram Gradient Boosting member). Release 0.6.0 accepts
+  v3 only.
+- **No fallback.** A computer that cannot load the active model stops detecting; it does not
+  fall back to an older one.
+- **So upgrade first.** Every analyst computer must run 0.6.1 or later before a v4 model is
+  published. The Computers page shows each computer's version.
 
 **Clean up** model uploads that nothing uses (failed or abandoned publications older than a
 day). It only lists them unless you add `--yes`; active, published and superseded models are

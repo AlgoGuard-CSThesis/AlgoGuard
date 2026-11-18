@@ -7,6 +7,7 @@ import zipfile
 
 import pytest
 
+import app_version
 import config
 from scripts import build_analyst_package as package
 
@@ -67,7 +68,7 @@ def test_the_package_holds_the_analyst_application_only(built):
     assert not [name for name in names if name.startswith(
         ("tests/", "test-results/", "supabase/", "research/", "scripts/", "docs/migration/",
          "docs/testing/", "database/", "saved_models/", "reports/", ".github/"))]
-    assert (folder / "BUILD").read_text().startswith("0.6.0+")
+    assert (folder / "BUILD").read_text().startswith(app_version.RELEASE + "+")
     for script in ("SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd", "ALGOGUARD.cmd",
                    "find_python.cmd"):
         content = (folder / script).read_bytes()

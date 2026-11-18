@@ -18,7 +18,9 @@ The thesis title says *network anomaly detection*; the application's verdicts ar
 - AlgoGuard learns by **supervised classification** from UNSW-NB15, a dataset in which every
   flow is labelled Normal or one of nine attack categories. The model learns what attack
   traffic looks like *compared with* normal traffic. Its output is the probability that a flow
-  belongs to the Attack class.
+  belongs to the Attack class. With a decision line X other than 0.50 (training run 13 onwards,
+  X = 0.30), the attack score is that probability rescaled so that 0.50 is the line X; the
+  verdict and the bands use the rescaled score (section 5).
 - An **anomaly**, in the wider sense, is a flow that does not look like normal traffic. In
   AlgoGuard, an anomaly is reported as an Attack verdict, because the only examples of
   abnormal traffic the model was trained on are attacks. The attack score says "this flow
@@ -44,9 +46,11 @@ Shellcode, Worms). It is published with two official CSV partitions: a **trainin
 One naming fact affects every result below. The file committed to this repository as
 `research/dataset/raw/UNSW_NB15_training-set.csv` is byte-for-byte the official **testing**
 partition (82,332 rows) [`research/README.md`; `docs/migration/06a-evidence.md`, 6A.2]. Every
-model up to the deployed one was therefore trained on rows of the official testing partition,
-and the official training partition (175,341 rows) was untouched until Stage 6A used it as the
-untouched evaluation set (section 6) and training run 12 trained on part of it (section 7).
+model up to training run 10 (model 60) was therefore trained on rows of the official testing
+partition only. The official training partition (175,341 rows) was untouched until Stage 6A
+used it as the untouched evaluation set (section 6). Training runs 12 and 13 trained on part of
+it (section 7). Below, the repository file is called *file 1* and the official training
+partition *file 2*.
 
 ### 2.2 The 16 features (feature schema v2)
 
@@ -83,10 +87,11 @@ never use the same rows:
 |---|---|---|---|
 | **Hold-out** | 15,939 (6,174 attack, 9,765 normal) | 30% of the per-flow feature groups that the cycle 1 model had never seen, drawn with seed 42; listed in `research/dataset/holdout_ids.csv`. No training row shares its per-flow features with a hold-out row [`test-results/sys01_holdout/holdout_manifest.json`] | Selecting between candidates (the *gate*), calibration checks |
 | **Training file (schema v2)** | 66,393 | Every other row of the repository file, with the 16 features and the label [`scripts/build_flow_datasets.py`] | Training runs 8 and 9 |
-| **Training file with local benign traffic** | 68,853 (56.9% attack) | The 66,393 rows plus 2,460 benign flows from two 10-minute captures on PC A, labelled Normal: 410 from a page generator and 2,050 from headless Chrome with the PC's background traffic [`test-results/iter6_6a/results_def19_part2.md`] | Training run 10, the **deployed model** |
-| **Untouched set** | 108,700 (57,798 attack, 50,902 normal) | The official training partition minus every row whose per-flow features appear in the training file [`test-results/cycle2_qa_20261111/tc03/summary.md`] | The final, once-only measurement of the deployed model (TC-03) |
-| **Run 11 training file** | 144,942 | The 68,853 rows plus 76,089 rows of the official training partition (7 of 10 grouped folds of the 108,699 rows not matching the repository file) [`test-results/model_run11/protocol_run11.md`] | Training run 12 (not deployed) |
-| **Run 11 final test** | 32,610 | The other 3 folds; no model has read it | Reserved for a future candidate |
+| **Training file with local benign traffic** | 68,853 (56.9% attack) | The 66,393 rows plus 2,460 benign flows from two 10-minute captures on PC A, labelled Normal: 410 from a page generator and 2,050 from headless Chrome with the PC's background traffic [`test-results/iter6_6a/results_def19_part2.md`] | Training run 10 (model 60, deployed until release 0.6.1) |
+| **Untouched set** | 108,700 (57,798 attack, 50,902 normal) | The official training partition minus every row whose per-flow features appear in the training file [`test-results/cycle2_qa_20261111/tc03/summary.md`] | The final, once-only measurement of model 60 (TC-03) |
+| **Run 11 training file** | 144,942 | The 68,853 rows plus 76,089 rows of the official training partition (7 of 10 grouped folds of the 108,699 rows not matching the repository file) [`test-results/model_run11/protocol_run11.md`] | Training run 12 (not deployed); the base of run 13's file |
+| **Run 11 final test** | 32,610 (17,339 attack, 15,271 normal) | The other 3 folds. No final-test row shares its per-flow features with a training row [`test-results/model_run11/run11_data_manifest.json`] | Read once, on 2026-11-18: the final test of training run 13, with model 60 scored on the same rows [`test-results/model_run13/final_run13.json`] |
+| **Run 13 training file** | 167,082 | Run 11's training file with PC A's 2,460 benign flows 10 times instead of once: 66,393 file-1 rows, 24,600 PC A rows and 76,089 file-2 rows [`test-results/model_run13/run13_data_manifest.json`] | Training run 13, the **deployed model** from release 0.6.1 |
 
 The three bundled samples (`datasets/algoguard_big.csv` 5,000 rows, `algoguard_bigger.csv`
 10,000, `algoguard_biggest.csv` 20,000) are seeded samples of the training file. They are for
@@ -119,7 +124,7 @@ Every training run trains the same six candidates from fresh, unfitted instances
 | Candidate | Settings |
 |---|---|
 | Random Forest | 100 trees, balanced class weights, fixed seed |
-| Gradient Boosting | scikit-learn defaults, fixed seed |
+| Gradient Boosting | Histogram-based (`HistGradientBoostingClassifier`): 400 iterations, learning rate 0.1, up to 63 leaves per tree, balanced class weights, fixed seed (workflow v4, from training run 13). Up to run 12: `GradientBoostingClassifier` with scikit-learn defaults (workflow v3) |
 | AdaBoost | 100 estimators, fixed seed |
 | K-Nearest Neighbors | k = 5 |
 | Naive Bayes | Gaussian |
@@ -152,7 +157,9 @@ Training run 10's comparison table (in-app check split, 25% of the 68,853 rows)
 
 K-Nearest Neighbors ranks first although Random Forest has the better accuracy, because the
 ranking also rewards small artifacts and low CPU and RAM use. These check-split figures are
-optimistic for the reason given in section 3; the figures that count are in section 6.
+optimistic for the reason given in section 3; the figures that count are in section 6. Run 13's
+comparison, with the histogram member, is in its training log
+[`test-results/model_run13/train_console_run13.log`]; there Random Forest ranks first.
 
 ## 5. Deployment gate and publication
 
@@ -161,12 +168,22 @@ least 70% accuracy, 70% F1 and 70% ROC-AUC on the check split, a completed run a
 evaluation [`services/deployment_service.py`; the minimums are settings]. A run that fails the
 gate leaves the previous model running. `train.py --deploy` promotes the model locally;
 `publish_model.py` uploads it to the cloud project after checking the quality gate again, the
-Python runtime (3.14.6), the 16 features and the file's SHA-256, and makes it the single active
-model that every analyst computer downloads and verifies [`docs/MAINTAINER_GUIDE.md`, 5].
+Python runtime (3.14.6), the workflow version, the 16 features and the file's SHA-256, and makes
+it the single active model that every analyst computer downloads and verifies
+[`docs/MAINTAINER_GUIDE.md`, 5].
 
 The artifact is one compressed joblib file holding the fitted pipeline and its metadata
-(feature columns, label mapping, training defaults, runtime): about 11.6 MB for the deployed
-model, 28.7 MB for run 12.
+(feature columns, label mapping, training defaults, runtime, workflow version and decision
+line): about 11.6 MB for model 60, 28.7 MB for run 12 and 33.1 MB for run 13. Release 0.6.1
+accepts workflow v3 (model 60) and v4 (run 13 onwards); 0.6.0 accepts v3 only.
+
+**Decision line.** AlgoGuard calls a flow an attack when its attack score is 0.50 or more.
+`train.py --decision-line X` keeps that rule and moves the line inside the model: the Logistic
+Regression that combines the five members has its intercept lowered by logit(X), so a score of
+0.50 now means an Attack probability of X. The order of the scores, and so the ROC-AUC, does not
+change, and the app, the bands and the cloud records need no change. The artifact records the
+line as `decision_line` (0.30 for run 13); models trained before run 13 carry no line and use
+0.50 [`services/decision_line.py`].
 
 ## 6. Measuring a model on data it has never seen
 
@@ -188,21 +205,23 @@ the training data and not beyond it [`docs/migration/06a-evidence.md`, 6A.2].
 
 ## 7. Training runs and what each one showed
 
-| Run | Date | Training rows | Features | Role | Hold-out: accuracy / F1 / recall / FPR / ROC-AUC | Untouched set |
+| Run | Date | Training rows | Features | Role | Hold-out: accuracy / F1 / recall / FPR / ROC-AUC | Unseen-data test |
 |---|---|---|---|---|---|---|
 | 3 | 2026-10-08 | 5,000 (bundled sample) | 15 (with TTLs) | Cycle 1 model A, deployment #1 | 81.7% accuracy, 24.9% FPR | 53,243-row independent set: 81.5% / 79.5% / 92.4% / 25.5% / 0.937 (DEF-04 to DEF-07) |
 | 6 | 2026-10-19 | 66,393 | 15 (with TTLs) | Cycle 1 model B, comparison only | 90.8% / 87.4% / 82.2% / 3.8% / 0.971 | – |
 | 8 | 2026-10-23 | 66,393 | 16 (schema v2) | Deployment #2 on the pilot | 95.2% / 93.7% / 91.8% / 2.7% / 0.989 | 108,739 rows: 86.0% / 85.2% / 75.9% / 2.5% / 0.969 |
 | 9 | 2026-10-23 | 66,393 | 16 | Run 8 repeated: reproducibility | 0 of 15,939 verdicts differ | – |
-| **10** | 2026-10-26 | 68,853 | 16 | **Deployed model** (local model 60, deployment #3 on the pilot) | 95.1% / 93.6% / 91.6% / 2.7% / 0.989 | 108,700 rows: **86.2% / 85.4% / 76.0% / 2.3% / 0.970** (TC-03, 2026-11-11) |
+| 10 | 2026-10-26 | 68,853 | 16 | Deployed model until release 0.6.1 (local model 60, deployment #3 on the pilot) | 95.1% / 93.6% / 91.6% / 2.7% / 0.989 | 108,700 rows: 86.2% / 85.4% / 76.0% / 2.3% / 0.970 (TC-03, 2026-11-11) |
 | 12 | 2026-11-11 | 144,942 | 16 | Candidate with the official training partition; **gate failed, not deployed** | 92.7% / 91.0% / 96.0% / 9.4% / 0.984 | not scored (protocol) |
+| **13** | 2026-11-18 | 167,082 | 16 | **Deployed model from release 0.6.1** (local model 72, deployment #4 on the pilot); workflow v4, decision line 0.30 | 90.1% / 88.5% / 98.2% / 15.1% / 0.988 (reported, not gated) | 32,610-row run 11 final test: **92.9% / 93.3% / 92.8% / 6.9% / 0.986**; model 60 on the same rows: 86.0% / 85.3% / 76.0% / 2.6% / 0.968 |
 
 Runs 1, 2 and 4 trained on the same 5,000-row sample during development and cycle 1. Run 5
 used all 44 columns of the raw file, including the attack name, by mistake (DEF-08) and is
 excluded. Run 7 was feature schema v2 with the TTLs still in (18 features) and was replaced by
 run 8 after the TTL finding. Run 11 was interrupted during the Stacking step and repeated
 unchanged as run 12. Row and feature counts per run are in the maintainer's training store. Sources: cycle 1 Test Completion Report v1.2,
-`test-results/iter6_6a/`, `test-results/model_run11/`, `test-results/cycle2_qa_20261111/tc03/`.
+`test-results/iter6_6a/`, `test-results/model_run11/`, `test-results/cycle2_qa_20261111/tc03/`,
+`test-results/model_run13/`.
 
 What the sequence shows:
 
@@ -218,24 +237,55 @@ What the sequence shows:
   Attack. For an analyst, false alarms on ordinary traffic are what is seen first, so the gate
   written in advance refused it. The two official UNSW-NB15 partitions are not drawn from one
   distribution, so rows from the second file move the decision boundary rather than sharpen it.
+- **Both files, a histogram member and a lower line reached the targets.** Run 13 (section 9.3)
+  trained on both files with PC A's benign flows counted ten times, used the histogram Gradient
+  Boosting member and set the line at 0.30, all fixed in a protocol before its data was built.
+  On 32,610 file-2 rows that no model had read, it met all five targets and caught 76.1% of
+  Fuzzers attacks (model 60: 23.0%). The price is paid on file 1: hold-out false alarms rose
+  from 2.7% to 15.1%. On PC A's ordinary browsing it labels 4.1–4.4% of flows Attack (model 60:
+  4.9–5.0%).
 
 ## 8. What the measured results mean
 
-The deployed model, on 108,700 flows it had never seen, catches **76.0%** of attacks and
-wrongly flags **2.3%** of normal flows; accuracy **86.2%**, F1 **85.4%**, ROC-AUC **0.970**.
-Three of the five targets (accuracy, F1, recall) are **not met**; FPR and ROC-AUC are met.
-This is recorded as DEF-24 (High) and AlgoGuard is presented as a **limited research pilot**.
+**Run 13, deployed from release 0.6.1.** On the 32,610 reserved rows of file 2, which no model
+had read, it catches **92.8%** of attacks and wrongly flags **6.9%** of normal flows; accuracy
+**92.9%**, F1 **93.3%**, ROC-AUC **0.986**. All five targets are met. It was scored once, under a
+protocol committed before its data was built [`test-results/model_run13/protocol_run13.md`,
+`final_run13.json`]. Its scores are also better calibrated on these rows: expected calibration
+error 0.030 and Brier score 0.049, against 0.112 and 0.117 for model 60.
 
-Where the misses are: of the 13,869 missed attacks, 11,113 (80%) are **Fuzzers**, caught only
-22.8% of the time on the untouched set (79% on the hold-out). Every other category is caught at
-54% (Analysis) to 98% (Backdoor); Exploits, DoS, Reconnaissance and Worms above 93%.
+Where its misses are: Fuzzers are caught **76.1%** of the time (model 60: 23.0%) and Analysis
+64.2% (model 60: 54.3%); every other category at least 97.5% of the time.
 
-On live traffic, the only evidence is benign: 3–7% of ordinary browsing flows on the PC the
-model was trained with are labelled Attack (DEF-19 target 8%, met), and real attacks on live
-traffic have not been tested. Test cycle 2 added a second PC's benign traffic to that
-evidence; its figures are in the cycle 2 Test Completion Report.
+**Model 60, deployed until 0.6.1**, on the same rows: accuracy 86.0%, F1 85.3%, recall 76.0%,
+FPR 2.6%, ROC-AUC 0.968. On the 108,700-row untouched set it reached 86.2% / 85.4% / 76.0% /
+2.3% / 0.970, and 11,113 of its 13,869 misses there (80%) were Fuzzers. Accuracy, F1 and recall
+missed their targets; this was recorded as DEF-24 (High), and run 13 was trained to close it.
 
-## 9. Decision line study (DEF-24, 2026-11-13)
+The limits were stated before the test [protocol, "Limits stated in advance"]:
+
+- **Same-file test.** The final test comes from file 2, which run 13 also trained on, although
+  no final-test row shares its per-flow features with a training row. On these rows model 60's
+  figure is a cross-file test, so the two are not like for like. Neither is comparable with
+  model 60's 108,700-row figure.
+- **More false alarms on file-1 traffic.** On the hold-out, drawn from file 1, run 13 flags
+  15.1% of normal flows (model 60: 2.7%; the protocol expected about 11–15%). Traffic that
+  resembles file 1 will see more false alarms than the final test suggests.
+- **Fuzzers recall is about 76%, not 90%.**
+- **Live evidence is benign traffic on one PC.**
+  - On two fresh 120-second browsing recordings on PC A, run 13 labels 4.4% and 4.1% of flows
+    Attack (model 60: 5.0% and 4.9%; DEF-19 target 8%) [`fresh_run13.json`].
+  - The selection recordings also chose the line. So only the fresh recordings and the live
+    check after publication (TC-24, in the cycle 2 Test Completion Report) are independent of
+    it.
+  - Real attacks on live traffic have not been tested.
+
+AlgoGuard therefore remains a research pilot: it meets the dataset targets on unseen rows of the
+file it learned from, within the limits above.
+
+## 9. DEF-24: decision line study, data check and training run 13
+
+### 9.1 Decision line study (2026-11-13)
 
 The verdict is Attack when the attack probability is 0.50 or more. Because the model ranks
 attacks above normal flows well (ROC-AUC 0.97) but is cautious (FPR 2.3% against the 8%
@@ -271,8 +321,52 @@ What it shows:
   alarms of model 60 at 0.40, it needs an app change (the verdict now always uses 0.50), and the
   only untouched data left for it comes from the partition it was trained on.
 
-Conclusion: DEF-24 stays a documented limit. Closing it needs better features for Fuzzers-like
-traffic, or a new, predeclared protocol around a candidate like run 12; both are future work.
+Conclusion on 2026-11-13: DEF-24 stays a documented limit. Closing it needs better features for
+Fuzzers-like traffic, or a new, predeclared protocol around a candidate like run 12. Sections
+9.2 and 9.3 took the second path.
+
+### 9.2 Feature and data check (2026-11-17)
+
+A check with throwaway scripts asked what could close DEF-24, without reading the reserved rows
+[`test-results/def24_check_20261117/summary.md`]:
+
+- **More measurements do not help** a model that never saw file 2's Fuzzers.
+  - Adding unused UNSW-NB15 columns to file-1 training moved Fuzzers recall on file-2 rows from
+    24.1% to at most 27.2%.
+  - `smean` and `dmean` are bytes divided by packets, so they add nothing new.
+  - Handshake timing (`ackdat`) depends on where the capture sits: PC A answers its own
+    handshakes in 0.09 ms. It would lower false alarms for the wrong reason, so it was not used.
+- **Training on both files** lifted file-2 recall to 87.0% and Fuzzers recall to 57.7% (Random
+  Forest, grouped folds). That is still short of 90%.
+- **A histogram Gradient Boosting member, PC A's flows weighted ten times and a line between
+  0.25 and 0.35:**
+  - met every target on held file-2 rows;
+  - kept every browsing recording at or under 8%;
+  - in the app's own Stacking Ensemble, widened the passing lines from 0.35 alone to 0.25–0.35.
+
+These choices became training run 13's protocol.
+
+### 9.3 Training run 13 (2026-11-17 to 18)
+
+The protocol was committed before any run 13 data was built or model trained
+[`test-results/model_run13/protocol_run13.md`, commit 3315c14]. It follows run 11's rules:
+- every choice is fixed in advance;
+- the final test is scored once;
+- misses are reported as they are.
+
+Release 0.6.1 carries the two code changes run 13 needed: the histogram member (workflow v4,
+accepted next to v3) and the decision line inside the model.
+
+| Step | Result [`test-results/model_run13/`] |
+|---|---|
+| 1. Line choice: out-of-fold scores on the 76,089 file-2 training rows (3 grouped folds), lines 0.20 to 0.50 | 0.25, 0.30 and 0.35 qualify. 0.30 has the largest smallest margin (+0.013): accuracy 92.6%, F1 92.9%, recall 91.7%, FPR 6.5%, worst selection recording 6.7% [`line_choice.json`] |
+| 2. Final model, trained once | Run 13, Stacking model 72, 9.5 minutes; workflow v4, line 0.30 [`train_console_run13.log`] |
+| 3. Gate | Passed: selection recordings 0.0–7.3% Attack, artifact 33.1 MB, quality gate, line and workflow in the artifact. Hold-out reported, not gated: FPR 15.1% [`gate_run13.json`] |
+| 4. Two fresh browsing recordings, made after the model existed | 4.4% and 4.1% Attack (limit 8%). A first pair, made from an administrator window, held no page loads; it was recorded again before anything was scored [`fresh_run13.json`, `fresh_recordings_note.md`] |
+| 5. Final test, once | All five targets met (section 8) [`final_run13.json`] |
+
+The finding of 2026-11-13 still holds: for model 60, no line reaches the targets. Run 13 changed
+the training data and one member as well as the line.
 
 ## 10. Reproducing the chain
 
@@ -295,6 +389,28 @@ python scripts\evaluate_model.py --model saved_models\run_<id>\stacking.joblib -
 
 # Share of benign captured flows labelled Attack
 python test-results\iter6_6a\benign_attack_share.py --pcap <capture.pcap> --model saved_models\run_<id>\stacking.joblib
+```
+
+Training run 13 follows its protocol. It takes about an hour, half of it the line choice:
+
+```powershell
+# Run 11's training file and reserved final test, then run 13's training file
+python test-results\model_run11\build_run11_data.py
+python test-results\model_run13\build_run13_data.py
+
+# Step 1: choose the line; step 2: train once with it; step 3: the gate
+python test-results\model_run13\choose_line.py
+python train.py research\dataset\processed\run13\training.csv --decision-line 0.30
+python test-results\model_run13\run_gate.py --run <id>
+
+# Step 4: two fresh recordings from a normal (not administrator) window, counted, then scored
+python test-results\iter6_6a\capture_browsing.py --seconds 120 --out research\dataset\processed\run13\fresh_generator.pcap
+python test-results\iter6_6a\capture_browsing.py --seconds 120 --sites unseen --out research\dataset\processed\run13\fresh_unseen.pcap
+python test-results\model_run13\check_recordings.py research\dataset\processed\run13\fresh_generator.pcap research\dataset\processed\run13\fresh_unseen.pcap
+python test-results\model_run13\score_fresh.py --run <id>
+
+# Step 5: the final test; final_run13.json blocks a second run
+python test-results\model_run13\final_eval_run13.py --run <id>
 ```
 
 The official UNSW-NB15 files are downloaded into `research/dataset/processed/official_unsw/`

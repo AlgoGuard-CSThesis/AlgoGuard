@@ -4,7 +4,7 @@ import subprocess
 from functools import lru_cache
 from pathlib import Path
 
-RELEASE = "0.6.0"
+RELEASE = "0.6.1"
 ROOT = Path(__file__).resolve().parent
 # Written by scripts/build_analyst_package.py into an analyst package, which has no git history.
 BUILD_FILE = ROOT / "BUILD"

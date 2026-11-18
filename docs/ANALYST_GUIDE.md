@@ -178,8 +178,9 @@ after you next sign in.
 
 ## 7. Reading verdicts and attack scores
 
-Each verdict shows its **confidence** (how sure the model is of *that* verdict) and an **attack
-score**: the model's probability that the flow is an attack, as a band and a percentage.
+Each verdict shows its **confidence** (how sure the model is of *that* verdict) and the model's
+**attack score** (50% is the line at which it calls a flow an attack), as a band and a
+percentage.
 
 | Band | Attack score |
 |---|---|
