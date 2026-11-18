@@ -225,6 +225,14 @@ def running_url(line: str) -> str | None:
     return match.group(1) if match else None
 
 
+def opening_browser(url: str, *, ready: bool = False) -> str:
+    """What the window says as it opens the browser. The address is spelled out because Windows
+    opens nothing on an account whose browser is not set up yet (TC-17.W2, 2026-11-19)."""
+    lead = "AlgoGuard is ready. Opening your browser..." if ready else (
+        "Opening AlgoGuard in your browser...")
+    return f"{lead} If its page does not appear, open your browser yourself and go to {url}"
+
+
 def next_step(state: Status) -> str | None:
     """The first run's next action: "set_up", "settings" or "start"; None when there is none."""
     if not state.python.ok or state.running.ok:

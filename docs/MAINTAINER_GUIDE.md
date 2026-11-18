@@ -196,8 +196,11 @@ pinned to one file:
 
 - **Python.** `ALGOGUARD.cmd` installs it when no usable Python is found, for the current
   Windows account only (`/passive InstallAllUsers=0 Include_launcher=0 PrependPath=0`, so no
-  administrator rights and no PATH change). It refuses a file whose SHA-256 differs from
-  `PYTHON_SHA256`. It never changes a Python 3.14 that is already installed.
+  PATH change). It refuses a file whose SHA-256 differs from `PYTHON_SHA256`. It never changes a
+  Python 3.14 that is already installed.
+  - Windows may still ask to allow the installer. It did on PC A's fresh test account in test
+    cycle 2 (DEF-30), although nothing was installed for the whole computer; the cause is not
+    known.
   - The version is set in `find_python.cmd` (`PYTHON_VERSION`) and `launcher_core.py`
     (`PYTHON_VERSION`).
   - The download is set in `ALGOGUARD.cmd` (`PYTHON_URL`, `PYTHON_SHA256`): the "Windows
@@ -213,7 +216,9 @@ pinned to one file:
   - Its licence allows up to 5 computers outside Nmap and Wireshark use; more needs Npcap OEM.
 
 Change the pins only together with a release, and test the new installers on a Windows account
-that has neither installed, as in test cycle 2 (TC-17.W2).
+that has neither installed, as in test cycle 2 (TC-17.W2). Copy Python's installer logs
+(`%TEMP%\Python 3.14.6*.log` on that account) before deleting the account: they show whether the
+installer asked Windows for administrator rights.
 
 ## 7. Backups and recovery
 

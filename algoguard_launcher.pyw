@@ -124,7 +124,7 @@ class LauncherWindow:
                     self.say(value)
                 elif kind == "ready":
                     self.url = value
-                    self.say("AlgoGuard is ready. Opening your browser...")
+                    self.say(core.opening_browser(value, ready=True))
                     webbrowser.open(value)
                     self.refresh()
                 elif kind in ("done", "set_up_done"):
@@ -280,7 +280,9 @@ class LauncherWindow:
         self.root.after(600, self.refresh)
 
     def open_browser(self):
-        webbrowser.open(self.url or f"http://127.0.0.1:{core.configured_port(self.folder)}")
+        url = self.url or f"http://127.0.0.1:{core.configured_port(self.folder)}"
+        self.say(core.opening_browser(url))
+        webbrowser.open(url)
 
     def elevate(self):
         script = str(Path(__file__).resolve())

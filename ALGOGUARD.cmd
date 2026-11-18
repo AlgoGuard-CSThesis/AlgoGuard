@@ -6,8 +6,8 @@ REM
 REM If Python 3.14.6 is missing, it offers to install it first: the
 REM official installer from python.org, checked against the SHA-256 that
 REM python.org publishes, installed for your Windows account only (no
-REM administrator rights, no change to PATH, no Python launcher). A Python
-REM that is already installed is never changed.
+REM change to PATH, no Python launcher; Windows may still ask to allow the
+REM installer). A Python that is already installed is never changed.
 REM SETUP_ALGOGUARD.cmd and START_ALGOGUARD.cmd do the rest by hand.
 REM ---------------------------------------------------------------------
 setlocal
@@ -25,7 +25,7 @@ if defined OTHER_PYTHON goto other_python
 echo AlgoGuard needs Python %PYTHON_VERSION% (64-bit), which is not on this computer yet.
 echo This window can download the official installer from python.org (about 30 MB),
 echo check that it is the genuine file, and install Python for your Windows account
-echo only. No administrator rights are needed.
+echo only. If Windows asks you to allow the installer, allow it.
 echo.
 choice /c YN /n /m "Install Python %PYTHON_VERSION% and set up AlgoGuard now? [Y/N] "
 if errorlevel 2 goto manual_install

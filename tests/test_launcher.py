@@ -318,6 +318,34 @@ def test_a_set_up_installation_opens_without_starting_by_itself(guided, monkeypa
     assert calls == ["settings"]
 
 
+@pytest.mark.parametrize("ready", [True, False])
+def test_the_browser_message_gives_the_address_to_type(ready):
+    # TC-17.W2: on a Windows account with no browser set up, Windows opened nothing.
+    message = core.opening_browser("http://127.0.0.1:5123", ready=ready)
+    assert message.endswith("open your browser yourself and go to http://127.0.0.1:5123")
+    assert message.startswith("AlgoGuard is ready." if ready else "Opening AlgoGuard")
+
+
+def test_when_ready_the_window_opens_the_browser_and_names_the_address(guided, monkeypatch):
+    module, window, _, _ = guided
+    opened = []
+    monkeypatch.setattr(module.webbrowser, "open", opened.append)
+    window.messages.put(("ready", "http://127.0.0.1:5123"))
+    window.pump()
+    assert opened == ["http://127.0.0.1:5123"]
+    assert core.opening_browser("http://127.0.0.1:5123", ready=True) in window.log.get("1.0", "end")
+
+
+def test_open_algoguard_names_the_address_too(guided, monkeypatch):
+    module, window, _, _ = guided
+    opened = []
+    monkeypatch.setattr(module.webbrowser, "open", opened.append)
+    window.url = "http://127.0.0.1:5123"
+    window.open_browser()
+    assert opened == ["http://127.0.0.1:5123"]
+    assert core.opening_browser("http://127.0.0.1:5123") in window.log.get("1.0", "end")
+
+
 def test_install_npcap_is_offered_only_while_npcap_is_missing(guided):
     _, window, current, _ = guided
     current["state"] = _state(npcap=False)
@@ -446,7 +474,7 @@ def test_python_is_pinned_once_and_installed_for_this_account_only():
     assert len(install) == 1
     for switch in ("InstallAllUsers=0", "Include_launcher=0", "PrependPath=0"):
         assert switch in install[0]
-    assert "runas" not in launcher.lower()  # never asks for administrator rights
+    assert "runas" not in launcher.lower()  # the batch file itself never asks for them
     for file in ("ALGOGUARD.cmd", "SETUP_ALGOGUARD.cmd"):
         text = (ROOT / file).read_text(encoding="ascii")
         assert 'call "%~dp0find_python.cmd"' in text, file

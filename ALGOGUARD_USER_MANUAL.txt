@@ -127,12 +127,13 @@ The full steps are in docs/ANALYST_GUIDE.md. In short, on each computer:
    ALGOGUARD.cmd inside it. If Python 3.14.6 is missing, it offers to install
    it: press Y, and it downloads the official installer from python.org,
    checks it is the genuine file and installs Python for your Windows account
-   only (no administrator rights; a Python already installed is never
-   changed).
+   only (a Python already installed is never changed). If Windows asks you to
+   allow the installer, allow it.
 2. The AlgoGuard window opens and, the first time, sets AlgoGuard up (2 to 10
    minutes, depending on the connection). The Settings form then opens: enter
    the project URL and publishable key your administrator gave you and press
-   Save. AlgoGuard starts and your browser opens the sign-in page.
+   Save. AlgoGuard starts and your browser opens the sign-in page. If it does
+   not, open your browser yourself and go to http://127.0.0.1:5000.
 3. Every later time: double-click ALGOGUARD.cmd and press Start. Keep the
    AlgoGuard window open. For live capture, press "Install Npcap" once (it
    opens Npcap's own installer; Windows asks for administrator rights). If the

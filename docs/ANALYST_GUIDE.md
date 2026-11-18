@@ -32,8 +32,9 @@ addresses, ports, sizes and timing. **Capture only on networks you are allowed t
    `Install Python 3.14.6 and set up AlgoGuard now? [Y/N]`. Press **Y**:
    - it downloads the official installer from python.org (about 30 MB);
    - it checks that the file is exactly the one python.org publishes, and deletes it otherwise;
-   - it installs Python for your Windows account only, with a progress bar. No administrator
-     rights are needed, and a Python already on the computer is never changed.
+   - it installs Python for your Windows account only, with a progress bar, and never changes a
+     Python already on the computer. If Windows asks you to allow the installer, allow it (on an
+     account without administrator rights, an administrator approves it).
 
    Press **N** to install Python yourself instead: the download page opens.
 3. The AlgoGuard window opens and, the first time, offers to **set up** AlgoGuard (right after
@@ -69,7 +70,9 @@ example after an update.
 ## 3. Start AlgoGuard and sign in
 
 1. In the AlgoGuard window, press **Start**. When AlgoGuard is ready, your browser opens at
-   `http://127.0.0.1:5000`; **Open AlgoGuard** opens it again. AlgoGuard is only reachable from
+   `http://127.0.0.1:5000`; **Open AlgoGuard** opens it again. If the page does not appear (a
+   Windows account whose browser has never been set up may open nothing), open your browser
+   yourself and go to that address; the window shows it too. AlgoGuard is only reachable from
    this computer. The first prediction or capture after each start takes a few seconds longer
    while the model loads.
 2. Npcap installed with its default options lets AlgoGuard capture without administrator rights.
@@ -256,6 +259,7 @@ Administrators also see:
 | Rows shown as **Not stored** | Expected after 300 records in a session. Otherwise the Dashboard names the cause: a full queue (wait for uploads) or a disk problem (free disk space; saving resumes by itself). |
 | Records shown as **Rejected** | Use **Export pending records** and give the file to your administrator. |
 | Older records have disappeared from Alerts or Logs | An administrator may have run a retention cleanup (section 8). |
+| The browser did not open AlgoGuard after **Start** | Open your browser yourself and go to `http://127.0.0.1:5000`; the window's AlgoGuard line shows the address. A Windows account whose browser has never been used may open nothing until the browser is set up once. |
 | `Address already in use` / port 5000 busy | Another AlgoGuard is already running; close it. Or set `ALGOGUARD_PORT=5001` in `.env` and open `http://127.0.0.1:5001`. |
 
 ## 10. Updating and removing AlgoGuard
