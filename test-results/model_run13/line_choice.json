@@ -1,0 +1,174 @@
+{
+  "protocol": "test-results/model_run13/protocol_run13.md",
+  "workflow_version": "stacking-five-v4",
+  "seed": 13,
+  "folds": 3,
+  "file2_rows": 76089,
+  "file2_auc_out_of_fold": 0.9853,
+  "sweep": [
+    {
+      "line": 0.2,
+      "accuracy": 0.9281,
+      "f1": 0.9331,
+      "recall": 0.9432,
+      "fpr": 0.0891,
+      "fuzzers_recall": 0.8155,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0406,
+        "final_browser.pcap": 0.0498,
+        "final_unseen.pcap": 0.0801
+      },
+      "browsing_max": 0.0801,
+      "holdout": {
+        "accuracy": 0.8767,
+        "f1": 0.8611,
+        "recall": 0.9862,
+        "fpr": 0.1925
+      },
+      "margin": -0.0091,
+      "qualifies": false
+    },
+    {
+      "line": 0.25,
+      "accuracy": 0.9273,
+      "f1": 0.9315,
+      "recall": 0.9291,
+      "fpr": 0.0747,
+      "fuzzers_recall": 0.7667,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0387,
+        "final_browser.pcap": 0.0418,
+        "final_unseen.pcap": 0.0699
+      },
+      "browsing_max": 0.0699,
+      "holdout": {
+        "accuracy": 0.896,
+        "f1": 0.8799,
+        "recall": 0.9835,
+        "fpr": 0.1592
+      },
+      "margin": 0.0053,
+      "qualifies": true
+    },
+    {
+      "line": 0.3,
+      "accuracy": 0.9256,
+      "f1": 0.9291,
+      "recall": 0.9172,
+      "fpr": 0.0649,
+      "fuzzers_recall": 0.725,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0314,
+        "final_browser.pcap": 0.0319,
+        "final_unseen.pcap": 0.067
+      },
+      "browsing_max": 0.067,
+      "holdout": {
+        "accuracy": 0.91,
+        "f1": 0.8942,
+        "recall": 0.9815,
+        "fpr": 0.1352
+      },
+      "margin": 0.013,
+      "qualifies": true
+    },
+    {
+      "line": 0.35,
+      "accuracy": 0.9244,
+      "f1": 0.9273,
+      "recall": 0.9064,
+      "fpr": 0.0551,
+      "fuzzers_recall": 0.6885,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.024,
+        "final_browser.pcap": 0.0279,
+        "final_unseen.pcap": 0.0597
+      },
+      "browsing_max": 0.0597,
+      "holdout": {
+        "accuracy": 0.9199,
+        "f1": 0.9043,
+        "recall": 0.9775,
+        "fpr": 0.1165
+      },
+      "margin": 0.0064,
+      "qualifies": true
+    },
+    {
+      "line": 0.4,
+      "accuracy": 0.9226,
+      "f1": 0.9249,
+      "recall": 0.8966,
+      "fpr": 0.048,
+      "fuzzers_recall": 0.6556,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0203,
+        "final_browser.pcap": 0.0239,
+        "final_unseen.pcap": 0.0582
+      },
+      "browsing_max": 0.0582,
+      "holdout": {
+        "accuracy": 0.9295,
+        "f1": 0.9144,
+        "recall": 0.9723,
+        "fpr": 0.0976
+      },
+      "margin": -0.0034,
+      "qualifies": false
+    },
+    {
+      "line": 0.45,
+      "accuracy": 0.9197,
+      "f1": 0.9215,
+      "recall": 0.8866,
+      "fpr": 0.0427,
+      "fuzzers_recall": 0.6231,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0185,
+        "final_browser.pcap": 0.0219,
+        "final_unseen.pcap": 0.0495
+      },
+      "browsing_max": 0.0495,
+      "holdout": {
+        "accuracy": 0.9373,
+        "f1": 0.9227,
+        "recall": 0.967,
+        "fpr": 0.0815
+      },
+      "margin": -0.0134,
+      "qualifies": false
+    },
+    {
+      "line": 0.5,
+      "accuracy": 0.916,
+      "f1": 0.9173,
+      "recall": 0.8754,
+      "fpr": 0.0378,
+      "fuzzers_recall": 0.5864,
+      "browsing": {
+        "generator.pcap": 0.0,
+        "browser.pcap": 0.0166,
+        "final_browser.pcap": 0.0159,
+        "final_unseen.pcap": 0.0466
+      },
+      "browsing_max": 0.0466,
+      "holdout": {
+        "accuracy": 0.9423,
+        "f1": 0.9281,
+        "recall": 0.9621,
+        "fpr": 0.0703
+      },
+      "margin": -0.0246,
+      "qualifies": false
+    }
+  ],
+  "chosen_line": 0.3,
+  "stop": false,
+  "minutes": 28.3
+}

@@ -8,6 +8,11 @@ git.
         [--sites unseen]
 
 `--sites unseen` loads a second list of public home pages that no training capture used.
+
+Run it from a normal PowerShell window, not an administrator one: on 2026-11-18 Chrome started
+from an administrator window ended at once without loading pages. Npcap on PC A lets any user
+capture. A page load counts only when Chrome returned the page; the last line also reports runs
+that returned no page.
 """
 import argparse
 import random
@@ -47,26 +52,35 @@ def main():
     sniffer = AsyncSniffer(iface=interface["value"], filter="ip", store=True)
     sniffer.start()
     time.sleep(1)
-    loads = failures = 0
+    loads = empty = failures = 0
     rng = random.Random(19)
     with tempfile.TemporaryDirectory() as profile:
         deadline = time.time() + args.seconds
         while time.time() < deadline:
             url = rng.choice(sites)
             try:
-                subprocess.run([str(CHROME), "--headless=new", f"--user-data-dir={profile}",
-                                "--disable-gpu", "--no-first-run", "--virtual-time-budget=3000",
-                                "--dump-dom", url],
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
-                loads += 1
+                result = subprocess.run([str(CHROME), "--headless=new",
+                                         f"--user-data-dir={profile}", "--disable-gpu",
+                                         "--no-first-run", "--virtual-time-budget=3000",
+                                         "--dump-dom", url],
+                                        capture_output=True, timeout=30)
             except subprocess.TimeoutExpired:
                 failures += 1
+            else:
+                if result.stdout.strip():
+                    loads += 1
+                else:
+                    empty += 1
             time.sleep(rng.uniform(1, 4))
     time.sleep(20)  # let idle flows end inside the capture
     packets = sniffer.stop()
     args.out.parent.mkdir(parents=True, exist_ok=True)
     wrpcap(str(args.out), packets)
-    print(f"{len(packets)} packets, {loads} page loads ({failures} timed out) -> {args.out}")
+    print(f"{len(packets)} packets, {loads} page loads ({empty} returned no page, "
+          f"{failures} timed out) -> {args.out}")
+    if empty:
+        print("Chrome ended without loading a page: this recording does not count. Record it "
+              "again from a normal (not administrator) PowerShell window.")
 
 
 if __name__ == "__main__":

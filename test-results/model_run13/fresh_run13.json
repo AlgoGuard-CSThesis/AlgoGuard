@@ -1,0 +1,17 @@
+{
+  "protocol": "test-results/model_run13/protocol_run13.md",
+  "run": 13,
+  "recordings": {
+    "fresh_generator.pcap": {
+      "flows": 482,
+      "run_13": 0.0436,
+      "model_60": 0.0498
+    },
+    "fresh_unseen.pcap": {
+      "flows": 655,
+      "run_13": 0.0412,
+      "model_60": 0.0489
+    }
+  },
+  "passed": true
+}

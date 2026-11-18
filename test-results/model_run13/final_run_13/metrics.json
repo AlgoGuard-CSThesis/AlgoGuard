@@ -1,0 +1,69 @@
+{
+  "context": {
+    "evaluated_at": "2026-11-18T16:19:48",
+    "git_commit": "644c4e7",
+    "python": "3.14.6",
+    "scikit_learn": "1.9.0",
+    "model_file": "C:\\Users\\sanmi\\AlgoGuard\\saved_models\\run_13\\stacking.joblib",
+    "model_sha256": "2a91716ee3c72f0134eb19068aff2c5a7170544c2791f9ae9e171ab47ab5baf3",
+    "model_name": "Stacking Ensemble",
+    "model_trained_at": "2026-11-17 19:02:31",
+    "data_file": "C:\\Users\\sanmi\\AlgoGuard\\research\\dataset\\processed\\run11\\final_test.csv",
+    "data_sha256": "6f7b41880163e424eeb5a1e39a807091e46d7045c4476a127799f6f10645b7da",
+    "training_csvs": [
+      "C:\\Users\\sanmi\\AlgoGuard\\research\\dataset\\processed\\run13\\training.csv"
+    ],
+    "rows_loaded": 32610,
+    "rows_removed_seen_in_training": 0
+  },
+  "metrics": {
+    "rows": 32610,
+    "attacks": 17339,
+    "normal": 15271,
+    "accuracy": 0.9293161606869058,
+    "precision": 0.93820683222572,
+    "recall": 0.928196551127516,
+    "f1": 0.9331748470704202,
+    "false_positive_rate": 0.06941261214065876,
+    "specificity": 0.9305873878593413,
+    "roc_auc": 0.9861889792840817,
+    "tp": 16094,
+    "fp": 1060,
+    "tn": 14211,
+    "fn": 1245,
+    "prediction_seconds_total": 14.236756200029049,
+    "prediction_ms_per_row": 0.436576393745141
+  },
+  "targets": [
+    {
+      "metric": "accuracy",
+      "target": ">= 0.9",
+      "measured": 0.9293,
+      "result": "Met"
+    },
+    {
+      "metric": "f1",
+      "target": ">= 0.9",
+      "measured": 0.9332,
+      "result": "Met"
+    },
+    {
+      "metric": "recall",
+      "target": ">= 0.9",
+      "measured": 0.9282,
+      "result": "Met"
+    },
+    {
+      "metric": "false_positive_rate",
+      "target": "<= 0.08",
+      "measured": 0.0694,
+      "result": "Met"
+    },
+    {
+      "metric": "roc_auc",
+      "target": ">= 0.95",
+      "measured": 0.9862,
+      "result": "Met"
+    }
+  ]
+}

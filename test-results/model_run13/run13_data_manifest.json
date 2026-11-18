@@ -1,0 +1,18 @@
+{
+  "protocol": "test-results/model_run13/protocol_run13.md",
+  "source": {
+    "file": "research/dataset/processed/run11/training.csv",
+    "rows": 144942,
+    "sha256": "bba1d4ad7003d4b923e24bf24235d6def0f04464f271bb7eda340cad30140b0a"
+  },
+  "pc_a_benign_rows": 2460,
+  "pc_a_benign_weight": 10,
+  "training": {
+    "file": "research/dataset/processed/run13/training.csv",
+    "rows": 167082,
+    "attack": 79616,
+    "normal": 87466,
+    "sha256": "fd3128e6b251a549b2af64273a9421663887fa4cd02ddc795e928f430e2879bd"
+  },
+  "final_test_read": false
+}

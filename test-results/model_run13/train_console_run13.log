@@ -1,0 +1,33 @@
+﻿Training run #13 created for training.csv.
+Validating and preprocessing the dataset ...
+Prepared 167,082 rows and 16 features.
+
+  [1/6] Training Random Forest ...
+  [1/6] Finished Random Forest
+  [2/6] Training Gradient Boosting ...
+  [2/6] Finished Gradient Boosting
+  [3/6] Training AdaBoost ...
+  [3/6] Finished AdaBoost
+  [4/6] Training K-Nearest Neighbors ...
+  [4/6] Finished K-Nearest Neighbors
+  [5/6] Training Naive Bayes ...
+  [5/6] Finished Naive Bayes
+  [6/6] Training Stacking Ensemble ...
+  [6/6] Finished Stacking Ensemble
+
+Model comparison
+------------------------------------------------------------------------------
+#   Model                    Accuracy         F1    ROC-AUC      Score
+------------------------------------------------------------------------------
+1   Random Forest              94.74%     94.48%     99.17%       0.77
+2   Gradient Boosting          95.07%     94.79%     99.27%       0.72
+3   K-Nearest Neighbors        92.59%     92.17%     97.60%       0.66
+4   AdaBoost                   87.35%     86.47%     95.24%       0.64
+5   Naive Bayes                62.22%     34.33%     62.13%       0.54
+-   Stacking Ensemble          94.80%     94.65%     99.27%          -
+------------------------------------------------------------------------------
+Decision line 0.30 is set inside the Stacking Ensemble.
+Top individual model: Random Forest
+Report: C:\Users\sanmi\AlgoGuard\reports\training_run_13_model_results.csv
+
+Run again with --deploy to promote the Stacking Ensemble.

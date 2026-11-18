@@ -1,0 +1,44 @@
+{
+  "protocol": "test-results/model_run13/protocol_run13.md",
+  "run": 13,
+  "model_id": 72,
+  "artifact": "saved_models/run_13/stacking.joblib",
+  "artifact_bytes": 33060140,
+  "sha256": "2a91716ee3c72f0134eb19068aff2c5a7170544c2791f9ae9e171ab47ab5baf3",
+  "decision_line": 0.3,
+  "quality_gate_reason": "Stacking passed every deployment quality requirement.",
+  "selection_recordings": {
+    "generator.pcap": {
+      "flows": 110,
+      "attack_share": 0.0
+    },
+    "browser.pcap": {
+      "flows": 542,
+      "attack_share": 0.0277
+    },
+    "final_browser.pcap": {
+      "flows": 502,
+      "attack_share": 0.0339
+    },
+    "final_unseen.pcap": {
+      "flows": 687,
+      "attack_share": 0.0728
+    }
+  },
+  "holdout_reported_not_gated": {
+    "accuracy": 0.9006,
+    "precision": 0.8044,
+    "recall": 0.9823,
+    "f1": 0.8845,
+    "false_positive_rate": 0.1511,
+    "roc_auc": 0.9878
+  },
+  "checks": {
+    "browsing_each_at_most_8pct": true,
+    "artifact_at_most_50_mib": true,
+    "quality_gate": true,
+    "line_matches_step_1": true,
+    "workflow_v4": true
+  },
+  "gate_passed": true
+}

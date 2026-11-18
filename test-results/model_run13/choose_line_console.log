@@ -1,0 +1,11 @@
+﻿fold 1/3 done after 548 s
+fold 2/3 done after 1143 s
+fold 3/3 done after 1696 s
+0.20 acc 0.9281 f1 0.9331 rec 0.9432 fpr 0.0891 browse 0.0801 ho-fpr 0.1925 margin -0.0091
+0.25 acc 0.9273 f1 0.9315 rec 0.9291 fpr 0.0747 browse 0.0699 ho-fpr 0.1592 margin +0.0053
+0.30 acc 0.9256 f1 0.9291 rec 0.9172 fpr 0.0649 browse 0.0670 ho-fpr 0.1352 margin +0.0130
+0.35 acc 0.9244 f1 0.9273 rec 0.9064 fpr 0.0551 browse 0.0597 ho-fpr 0.1165 margin +0.0064
+0.40 acc 0.9226 f1 0.9249 rec 0.8966 fpr 0.0480 browse 0.0582 ho-fpr 0.0976 margin -0.0034
+0.45 acc 0.9197 f1 0.9215 rec 0.8866 fpr 0.0427 browse 0.0495 ho-fpr 0.0815 margin -0.0134
+0.50 acc 0.9160 f1 0.9173 rec 0.8754 fpr 0.0378 browse 0.0466 ho-fpr 0.0703 margin -0.0246
+chosen line: 0.3
