@@ -1,5 +1,7 @@
 # AlgoGuard test cycle 2 — Test procedures (C2-DOC-04)
 
+> **Cycle 2 closed on 2026-11-19 as one QA pass** (Lead Architect decision, 2026-11-10), so these procedures were followed only in part. The final build is release 0.6.1 with training run 13 as deployment #4, not the release 0.6.0 and model 60 named below. What ran, what was dropped and why: [Test Completion Report v1.0](3%20-%20AlgoGuard%20Test%20Completion%20Report%20v1.0.docx).
+
 **Owner:** John Brian A. Tiopes (card C2-DOC-04) · **Plan:** Master Test Plan (cycle 2) v0.1 · **Build under test:** release 0.6.0, application code of `4740a43`, run from `8864f29` or a later commit that adds only test records · **Model:** model 60 (training run 10), deployment #3 on the hosted pilot
 
 These are the steps a tester follows on PC A and PC B. They add only what cycle 2 needs on top of the [analyst guide](../../ANALYST_GUIDE.md) (installing and using AlgoGuard), the [maintainer guide](../../MAINTAINER_GUIDE.md) (package, checks and test lanes) and the [two-computer runbook](../../migration/05f-two-computer-runbook.md) (Stage 5F pilot). Each test case (TC-xx) is defined in the plan's Test Case Specification.

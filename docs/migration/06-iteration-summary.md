@@ -101,3 +101,15 @@ problems, nothing wider than the screen). `ruff check .` passed; pyright 0 error
 
 Test cycle 2 on the hosted pilot: re-test DEF-10 and DEF-19, follow the analyst guide with a
 person who has not used AlgoGuard, and record the results in the cycle 2 test records.
+
+Done: test cycle 2 ran from 2026-11-10 to 2026-11-19 as one QA pass (Lead Architect decision,
+2026-11-10) and closed with tag `test-cycle-2-v1.0`. DEF-10 and DEF-19 are closed (PC A). DEF-24
+(model 60 below the 90% targets on unseen UNSW-NB15 data) is closed by training run 13, built
+under a protocol committed before its data and released as 0.6.1 (deployment #4 on the hosted
+pilot since 2026-11-19), within the limits stated in advance. The cycle changed the application
+several times: the "Default interface" fix (DEF-28, `347d83c`), a launcher window for analysts
+(`ALGOGUARD.cmd`, `81be28c` and `eb3e9ed`; it installs Python and guides the first run since
+`2d5c7d9`), the spool fix for burst uploads (DEF-10, `911f3f8`), support for run 13's model
+(`9bd15a5`, `cb13f3f`; release 0.6.1, `1fda877`), and the fixes of DEF-30 and DEF-31 (`ed4d774`)
+and DEF-32 (`bc89a0c`). Results, defects DEF-20 to DEF-33 and what was not tested are in
+`docs/testing/cycle-2/3 - AlgoGuard Test Completion Report v1.0.docx`.

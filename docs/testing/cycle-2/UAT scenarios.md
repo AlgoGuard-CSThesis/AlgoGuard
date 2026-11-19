@@ -1,5 +1,7 @@
 # AlgoGuard test cycle 2 — User acceptance scenarios (C2-UAT-01)
 
+> **Not run in cycle 2.** The cycle was reduced to one QA pass (Lead Architect decision, 2026-11-10); TC-15 and TC-18 are listed as not executed in the [Test Completion Report v1.0](3%20-%20AlgoGuard%20Test%20Completion%20Report%20v1.0.docx). The scenarios stay ready for a later cycle.
+
 **For:** Pauleen Joy O. Gomez, Product Owner (card C2-UAT-01, test cases TC-15 and TC-18)
 **Build:** release 0.6.0, commit `8864f29` (application code of `4740a43`), detection model 60 as deployment #3 · **Where:** PC A, AlgoGuard at http://127.0.0.1:5000, connected to the hosted pilot
 
