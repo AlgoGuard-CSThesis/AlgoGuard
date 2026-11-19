@@ -6,10 +6,10 @@
 {% block content %}
 <section class="login-page">
     <div class="login-identity">
-        <span class="brand-mark login-brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
+        <img class="brand-logo login-brand-logo" src="{{ url_for('static', filename='Algoguard_Logo.png') }}" alt="" width="64" height="64">
         <div>
             <p class="eyebrow">{{ 'Cloud Pilot Access' if config.CLOUD_MODE else 'Local Console Access' }}</p>
-            <h1>AlgoGuard</h1>
+            <h1>Algo<span class="brand-name-accent">Guard</span></h1>
             <p class="header-copy">Real-time network anomaly detection with a quality-gated Stacking Ensemble.</p>
         </div>
         <div class="login-signal-grid">

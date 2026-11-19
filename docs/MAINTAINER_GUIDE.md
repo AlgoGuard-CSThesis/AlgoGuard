@@ -191,6 +191,12 @@ a signed token or a real e-mail address, or if a packaged module imports one tha
 Give analysts the zip together with the project URL and publishable key, and create their
 accounts on the Accounts page. Bump `RELEASE` in `app_version.py` for a new release.
 
+**The logo.** `static/Algoguard_Logo.png` (512 x 512, transparent) is the logo in the pages'
+menu, on the sign-in page and in the browser tab. The launcher window uses two copies made from
+it, with the empty margin trimmed: `Algoguard_Logo.ico` (title bar and taskbar, 16 to 256 px) and
+`Algoguard_Logo_32.png` (beside the window's heading). To change the logo, replace all three
+together. The window still opens if they are missing.
+
 **Installers the package fetches.** The zip carries no installers; it downloads two, each
 pinned to one file:
 

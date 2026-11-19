@@ -245,6 +245,29 @@ def test_a_long_signed_in_name_is_cut_short_in_the_menu_with_the_full_name_on_ho
         assert declaration in rule.group(1), declaration
 
 
+LOGO = "/static/Algoguard_Logo.png"
+
+
+def test_the_menu_and_the_browser_tab_show_the_logo_and_the_name_in_two_colours(
+        authenticated_client, app_module):
+    from pathlib import Path
+
+    html = authenticated_client.get("/alerts").get_data(as_text=True)
+
+    assert f'<link rel="icon" type="image/png" href="{LOGO}">' in html
+    assert f'<img class="brand-logo" src="{LOGO}" alt="" width="34" height="34">' in html
+    assert '<span>Algo<span class="brand-name-accent">Guard</span></span>' in html
+    assert (Path(app_module.__file__).resolve().parent / LOGO.lstrip("/")).is_file()
+    assert authenticated_client.get(LOGO).status_code == 200
+
+
+def test_the_sign_in_page_shows_the_logo_and_the_name_in_two_colours(client):
+    html = client.get("/login").get_data(as_text=True)
+
+    assert f'<img class="brand-logo login-brand-logo" src="{LOGO}" alt=""' in html
+    assert '<h1>Algo<span class="brand-name-accent">Guard</span></h1>' in html
+
+
 def test_log_pagination_links_have_accessible_names(authenticated_client):
     from services import database_service as db
 

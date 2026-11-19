@@ -18,6 +18,10 @@ from tkinter import messagebox, scrolledtext, ttk
 import launcher_core as core
 
 OK, NOT_OK = "#1f9d55", "#c0392b"
+# The heading spells the name as the pages do, "Guard" in teal. This teal is a little deeper than
+# the pages' one so that it still reads well on the window's light grey.
+BRAND_TEAL = "#0c8a7d"
+TITLE_FONT = ("Segoe UI", 14, "bold")
 # Child output arrives line by line and as UTF-8, whatever the console's code page is.
 CHILD_ENV = {**os.environ, "PYTHONUNBUFFERED": "1", "PYTHONIOENCODING": "utf-8"}
 
@@ -39,10 +43,17 @@ class LauncherWindow:
         root.title("AlgoGuard")
         root.resizable(False, False)
         root.protocol("WM_DELETE_WINDOW", self.close)
+        self.logo = self._load_logo()  # kept here: Tk stops showing a picture nobody holds
         frame = ttk.Frame(root, padding=14)
         frame.grid()
-        ttk.Label(frame, text="AlgoGuard", font=("Segoe UI", 14, "bold")).grid(
-            row=0, column=0, columnspan=3, sticky="w", pady=(0, 8))
+        heading = ttk.Frame(frame)
+        heading.grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 8))
+        if self.logo is not None:
+            ttk.Label(heading, image=self.logo).pack(side="left", padx=(0, 8))
+        # Two labels with no padding or border, so the name reads as one word.
+        tk.Label(heading, text="Algo", font=TITLE_FONT, padx=0, bd=0).pack(side="left")
+        tk.Label(heading, text="Guard", font=TITLE_FONT, fg=BRAND_TEAL, padx=0, bd=0).pack(
+            side="left")
         self.status_labels = {}
         names = [name for name, _ in core.Status(*[core.Check(False, "")] * 5).rows()]
         for row, name in enumerate(names, start=1):
@@ -79,6 +90,22 @@ class LauncherWindow:
             root.after(300, self.begin_guide, set_up_now)
 
     # -- display ---------------------------------------------------------------------
+    def _load_logo(self):
+        """Put the AlgoGuard logo in the title bar and on the taskbar, and return the small one
+        for the heading. A missing or damaged file is skipped; the window works without it."""
+        icon, picture = self.folder / core.LOGO_ICON, self.folder / core.LOGO_PICTURE
+        if icon.is_file():
+            try:
+                self.root.iconbitmap(default=str(icon))  # this window and the Settings dialog
+            except tk.TclError:
+                pass
+        if not picture.is_file():
+            return None
+        try:
+            return tk.PhotoImage(master=self.root, file=str(picture))
+        except tk.TclError:
+            return None
+
     def show_progress(self, working):
         """A moving bar while Set up works, nothing otherwise; a full bar left looks stuck."""
         if working:
@@ -334,6 +361,7 @@ class LauncherWindow:
 
 
 def main():
+    core.own_taskbar_button()  # before the first window, so the taskbar shows the logo
     root = tk.Tk()
     LauncherWindow(root, Path(__file__).resolve().parent, guide=True,
                    set_up_now="--set-up" in sys.argv[1:])

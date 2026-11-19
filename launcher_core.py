@@ -40,6 +40,13 @@ SET_UP_QUESTION = ("AlgoGuard is not set up on this computer yet.\n\nSet it up n
 NPCAP_HINT = ("Live capture needs Npcap: press Install Npcap. Replaying recorded files works "
               "without it.")
 
+# The window's logo, made from static/Algoguard_Logo.png: the title bar and taskbar icon
+# (16 to 256 px) and the small picture beside the heading. Paths are inside the installation.
+LOGO_ICON = Path("static") / "Algoguard_Logo.ico"
+LOGO_PICTURE = Path("static") / "Algoguard_Logo_32.png"
+# The name the window's taskbar button is grouped under, instead of pythonw.exe.
+APP_ID = "AlgoGuard.Launcher"
+
 
 class SettingsError(ValueError):
     """A value the settings file must not hold; the message is for the person typing it."""
@@ -297,6 +304,16 @@ def download_npcap(folder=None, *, opener=None) -> Path:
         return download_verified(NPCAP_URL, NPCAP_SHA256, target, opener=opener)
     except DownloadError as error:
         raise DownloadError(f"{error} You can also install Npcap from {NPCAP_PAGE}.") from error
+
+
+def own_taskbar_button() -> bool:
+    """Give the window its own taskbar button, which shows the AlgoGuard logo. Without this,
+    Windows groups the window under pythonw.exe and shows Python's icon. Call it before the first
+    window opens. False where Windows offers no such call; the window works either way."""
+    try:
+        return ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(APP_ID) == 0
+    except (AttributeError, OSError):
+        return False
 
 
 def run_as_administrator(program, parameters: str = "", folder=None) -> bool:

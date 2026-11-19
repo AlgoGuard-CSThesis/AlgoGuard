@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}AlgoGuard{% endblock %}</title>
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='Algoguard_Logo.png') }}">
     <link href="{{ url_for('static', filename='vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.min.css') }}" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
@@ -14,8 +14,8 @@
     <nav class="navbar navbar-expand-xl navbar-dark app-nav">
         <div class="container-fluid px-3 px-lg-4">
             <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('dashboard') }}">
-                <span class="brand-mark"><i class="bi bi-shield-lock"></i></span>
-                <span>AlgoGuard</span>
+                <img class="brand-logo" src="{{ url_for('static', filename='Algoguard_Logo.png') }}" alt="" width="34" height="34">
+                <span>Algo<span class="brand-name-accent">Guard</span></span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

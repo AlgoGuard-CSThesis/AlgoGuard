@@ -8,6 +8,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import types
 import urllib.error
 from pathlib import Path
 
@@ -235,6 +236,42 @@ def test_the_window_builds_shows_five_checks_and_closes(folder, monkeypatch, tk_
     window.messages.put(("done", None))
     window.pump()
     assert window.progress.grid_info() == {} and window.busy is False
+
+
+def test_the_window_shows_the_logo_beside_its_heading(folder, monkeypatch, tk_root):
+    module = _window_module()
+    monkeypatch.setattr(core, "port_in_use", lambda port: False)
+    (folder / "static").mkdir()
+    for name in (core.LOGO_ICON, core.LOGO_PICTURE):
+        shutil.copyfile(ROOT / name, folder / name)
+    window = module.LauncherWindow(tk_root, folder)
+    assert window.logo is not None
+    assert (window.logo.width(), window.logo.height()) == (32, 32)
+
+
+@pytest.mark.parametrize("files", ["missing", "damaged"])
+def test_the_window_opens_without_a_usable_logo(folder, monkeypatch, tk_root, files):
+    module = _window_module()
+    monkeypatch.setattr(core, "port_in_use", lambda port: False)
+    if files == "damaged":
+        (folder / "static").mkdir()
+        for name in (core.LOGO_ICON, core.LOGO_PICTURE):
+            (folder / name).write_bytes(b"not a picture")
+    window = module.LauncherWindow(tk_root, folder)
+    assert window.logo is None
+    assert list(window.status_labels)  # the rest of the window is there
+
+
+def test_the_window_asks_windows_for_its_own_taskbar_button(monkeypatch):
+    asked = []
+    shell32 = types.SimpleNamespace(
+        SetCurrentProcessExplicitAppUserModelID=lambda app_id: asked.append(app_id) or 0)
+    monkeypatch.setattr(core, "ctypes", types.SimpleNamespace(
+        windll=types.SimpleNamespace(shell32=shell32)))
+    assert core.own_taskbar_button() is True
+    assert asked == ["AlgoGuard.Launcher"]
+    monkeypatch.setattr(core, "ctypes", types.SimpleNamespace())  # not Windows: no windll
+    assert core.own_taskbar_button() is False
 
 
 # --- the first run -----------------------------------------------------------------------------

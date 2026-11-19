@@ -57,7 +57,9 @@ def test_the_package_holds_the_analyst_application_only(built):
     folder, names = built
     for required in ("app.py", "cloud_app.py", "config.py", "services/capture_worker.py",
                      "services/inference_worker.py", "templates/monitor.html",
-                     "static/css/style.css", "datasets/algoguard_big.csv", ".env.example",
+                     "static/css/style.css", "static/Algoguard_Logo.png",
+                     "static/Algoguard_Logo.ico", "static/Algoguard_Logo_32.png",
+                     "datasets/algoguard_big.csv", ".env.example",
                      "SETUP_ALGOGUARD.cmd", "START_ALGOGUARD.cmd", "ALGOGUARD.cmd",
                      "find_python.cmd", "launcher_core.py", "algoguard_launcher.pyw",
                      "requirements.txt",

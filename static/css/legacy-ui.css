@@ -9,6 +9,7 @@
     --green: #37d67a;
     --amber: #f2b84b;
     --red: #ff5c72;
+    --brand-teal: #0f9e90; /* the teal of the AlgoGuard logo */
 }
 
 * {
@@ -39,15 +40,15 @@ body {
     font-weight: 800;
 }
 
-.brand-mark {
-    display: inline-grid;
+/* The logo (static/Algoguard_Logo.png) beside the name, whose "Guard" is in the logo's teal. */
+.brand-logo {
     width: 34px;
     height: 34px;
-    place-items: center;
-    border: 1px solid rgba(34, 211, 238, 0.45);
-    border-radius: 8px;
-    color: var(--cyan);
-    background: rgba(34, 211, 238, 0.08);
+    object-fit: contain;
+}
+
+.brand-name-accent {
+    color: var(--brand-teal);
 }
 
 .nav-link {
@@ -709,10 +710,9 @@ h2 {
     position: relative;
 }
 
-.login-brand-mark {
-    width: 48px;
-    height: 48px;
-    font-size: 1.25rem;
+.login-brand-logo {
+    width: 64px;
+    height: 64px;
 }
 
 .login-signal-grid {
