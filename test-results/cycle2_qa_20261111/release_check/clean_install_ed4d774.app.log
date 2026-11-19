@@ -1,0 +1,160 @@
+ * Serving Flask app 'cloud_app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5077
+Press CTRL+C to quit
+127.0.0.1 - - [19/Nov/2026 15:41:14] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:15] "POST /login HTTP/1.1" 302 -
+127.0.0.1 - - [19/Nov/2026 15:41:15] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:15] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:16] "POST /monitor/start HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:16] "GET /monitor/status HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:16] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:16] "POST /login HTTP/1.1" 302 -
+127.0.0.1 - - [19/Nov/2026 15:41:16] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:16] "GET /nodes HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:17] "POST /nodes HTTP/1.1" 302 -
+127.0.0.1 - - [19/Nov/2026 15:41:17] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:18] "GET /simulation HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:19] "POST /predict HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:19] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:20] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:20] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:21] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:22] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:22] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:23] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:23] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:24] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:24] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:25] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:25] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:26] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:27] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:27] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:28] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:28] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:29] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:29] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:30] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:30] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:31] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:31] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:32] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:33] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:33] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:34] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:34] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:35] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:35] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:36] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:37] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:37] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:38] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:38] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:39] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:39] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:40] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:40] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:41] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:42] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:42] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:43] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:43] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:44] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:44] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:45] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:46] "GET /api/events/89dffed6-31dc-4f39-a5a9-c01ab48b90c6 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:46] "POST /monitor/start HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:46] "GET /monitor/status?session_id=9df2a1a4-4bf8-4897-b99a-7a9f75de1dc7 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:47] "GET /monitor/status?session_id=9df2a1a4-4bf8-4897-b99a-7a9f75de1dc7 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:47] "POST /monitor/stop HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:47] "GET /monitor/status?session_id=9df2a1a4-4bf8-4897-b99a-7a9f75de1dc7 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:48] "GET /monitor/status?session_id=9df2a1a4-4bf8-4897-b99a-7a9f75de1dc7 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:48] "POST /monitor/start HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:48] "GET /monitor/status?session_id=a38aceaf-d381-44e3-a5ee-41646f84f9b5 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:49] "GET /monitor/status?session_id=a38aceaf-d381-44e3-a5ee-41646f84f9b5 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:49] "GET /monitor/status?session_id=a38aceaf-d381-44e3-a5ee-41646f84f9b5 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:49] "POST /monitor/start HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:51] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:52] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:53] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:54] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:55] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:56] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:57] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:58] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:41:59] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:00] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:01] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:02] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:03] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:04] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:05] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:06] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:07] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:09] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:10] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:11] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:12] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:13] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:14] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:15] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:16] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:17] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:18] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:19] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:20] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:21] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:22] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:24] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:25] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:26] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:27] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:28] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:29] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:30] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:30] "POST /monitor/stop HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:30] "GET /monitor/status?session_id=ba57d14c-36c7-4e39-a5ec-e1f106f48a3b HTTP/1.1" 200 -
+ * Serving Flask app 'cloud_app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5077
+Press CTRL+C to quit
+127.0.0.1 - - [19/Nov/2026 15:42:33] "GET / HTTP/1.1" 302 -
+127.0.0.1 - - [19/Nov/2026 15:42:33] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:34] "POST /login HTTP/1.1" 302 -
+127.0.0.1 - - [19/Nov/2026 15:42:34] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:34] "GET /simulation HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:42:34] "POST /monitor/start HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:05] "GET /monitor/status HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:05] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:06] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:07] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:08] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:09] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:10] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:11] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:12] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:13] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:15] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:16] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:17] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:18] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:19] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:20] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:20] "POST /monitor/stop HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:20] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:21] "GET /monitor/status?session_id=e7bf8020-4ed6-4e59-bedd-74b5ec8d0c91 HTTP/1.1" 200 -
+ * Serving Flask app 'cloud_app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:5077
+Press CTRL+C to quit
+127.0.0.1 - - [19/Nov/2026 15:43:26] "GET /login HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:27] "POST /login HTTP/1.1" 302 -
+127.0.0.1 - - [19/Nov/2026 15:43:27] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:27] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:27] "POST /monitor/start HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:27] "GET /monitor/status HTTP/1.1" 200 -
+127.0.0.1 - - [19/Nov/2026 15:43:28] "GET /monitor/status HTTP/1.1" 200 -

@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="166.420" timestamp="2026-11-17T15:08:38.392506+08:00" hostname="SanMiguel"><testcase classname="tests.integration.test_ui_walk" name="test_every_page_and_source_at_desktop_and_phone_widths" time="165.837" /></testsuite></testsuites>

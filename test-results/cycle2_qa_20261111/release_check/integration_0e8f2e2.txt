@@ -1,0 +1,187 @@
+﻿.....................................s...s.............................. [ 69%]
+.......s......................F                                          [100%]
+================================== FAILURES ===================================
+___________ test_every_page_and_source_at_desktop_and_phone_widths ____________
+
+cloud = {'users': [{'id': 'bec1c480-06eb-4c05-85db-8adcd47be1df', 'token': '[local test token removed] cloud.<locals>.rpc at 0x000001A45F040040>, 'admin': <function cloud.<locals>.admin at 0x000001A45F042610>, ...}
+local_stack = {'api_url': 'http://127.0.0.1:54321', 'rest_url': 'http://127.0.0.1:54321/rest/v1', 'functions_url': 'http://127.0.0.1:54321/functions/v1', 'db_url': 'postgresql://postgres:postgres@127.0.0.1:54322/postgres', ...}
+local_http = <stack_support.LocalStackHttp object at 0x000001A45646ECF0>
+tmp_path = WindowsPath('C:/Users/sanmi/AppData/Local/Temp/pytest-of-sanmi/pytest-403/test_every_page_and_source_at_0')
+stacking_artifact_bytes = b'x^\xe4]\x07xTE\xd7^J\xe8%**\xf6\xa8HS\x11T\x10\x01\x99\x05D\xcab@T\x04Q\x97\x94\x85MHY\x93\r\x1a?\xd1\x88\x88\xa0\xa...x80\xe1\xc9b\xba\xd1\x19\x1c\x01\xbf\xefD\xd3\x89\x93\x8d\'L0\x9e\xf0\xb3\xbe\xe9\xe4\xa9fS\xa6N0\x15pM\xfe\x0f\xe3(u1'
+
+    def test_every_page_and_source_at_desktop_and_phone_widths(
+            cloud, local_stack, local_http, tmp_path, stacking_artifact_bytes):
+        analyst = make_account(cloud, local_stack, local_http, "ui_analyst")
+        admin = make_account(cloud, local_stack, local_http, "ui_admin", role="administrator")
+        model_path = os.environ.get("CLEAN_INSTALL_MODEL")
+        artifact = Path(model_path).read_bytes() if model_path else stacking_artifact_bytes
+        manifest = publish_fixture_model(cloud, local_stack, tmp_path, artifact)
+        captures = config.get_config().capture_folder
+        captures.mkdir(parents=True, exist_ok=True)
+        write_sample_pcap(captures / "ui-walk.pcap", sessions=10)
+        running = start_app(cloud, local_stack, tmp_path / "state", [analyst, admin])
+        running.app.config["TESTING"] = False  # serve exactly as an installation does
+        server = make_server("127.0.0.1", PORT, running.app, threaded=True)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        output = Path(os.environ.get("UI_WALK_OUTPUT") or tmp_path / "ui")
+        settings = {
+            "base": f"http://127.0.0.1:{PORT}", "output": str(output), "pcap": "ui-walk.pcap",
+            "analyst": {"email": analyst.email, "password": analyst.password},
+            "admin": {"email": admin.email, "password": admin.password},
+            "new_account": {"email": f"{cloud['prefix']}_ui_new@algoguard.invalid",
+                            "username": f"{cloud['prefix']}_ui_new",
+                            "password": "Walk!Aa1" + uuid.uuid4().hex},
+        }
+        settings_file = tmp_path / "walk.json"
+        settings_file.write_text(json.dumps(settings), encoding="utf-8")
+        try:
+>           walked = subprocess.run(
+                [os.environ["UI_WALK_PYTHON"], str(Path(__file__).with_name("ui_walk_driver.py")),
+                 str(settings_file)], capture_output=True, text=True, timeout=1800)
+
+tests\integration\test_ui_walk.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\AppData\Roaming\uv\python\cpython-3.14.6-windows-x86_64-none\Lib\subprocess.py:555: in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+..\AppData\Roaming\uv\python\cpython-3.14.6-windows-x86_64-none\Lib\subprocess.py:1039: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <Popen: returncode: None args: ['C:\\Users\\sanmi\\AppData\\Local\\Temp\\cla...>
+args = 'C:\\Users\\sanmi\\AppData\\Local\\Temp\\claude\\795bb5f7ba42e240\\a435a6ae-9afb-4f68-8208-c2f7c2f2776e\\scratchpad\\u...ver.py C:\\Users\\sanmi\\AppData\\Local\\Temp\\pytest-of-sanmi\\pytest-403\\test_every_page_and_source_at_0\\walk.json'
+executable = None, preexec_fn = None, close_fds = False, pass_fds = ()
+cwd = None, env = None
+startupinfo = <subprocess.STARTUPINFO object at 0x000001A4588BC2D0>
+creationflags = 0, shell = False, p2cread = Handle(1584), p2cwrite = -1
+c2pread = 11, c2pwrite = Handle(2068), errread = 12, errwrite = Handle(2512)
+unused_restore_signals = True, unused_gid = None, unused_gids = None
+unused_uid = None, unused_umask = -1, unused_start_new_session = False
+unused_process_group = -1
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session, unused_process_group):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            if not executable:
+                # gh-101283: without a fully-qualified path, before Windows
+                # checks the system directories, it first looks in the
+                # application directory, and also the current directory if
+                # NeedCurrentDirectoryForExePathW(ExeName) is true, so try
+                # to avoid executing unqualified "cmd.exe".
+                comspec = os.environ.get('ComSpec')
+                if not comspec:
+                    system_root = os.environ.get('SystemRoot', '')
+                    comspec = os.path.join(system_root, 'System32', 'cmd.exe')
+                    if not os.path.isabs(comspec):
+                        raise FileNotFoundError('shell not found: neither %ComSpec% nor %SystemRoot% is set')
+                if os.path.isabs(comspec):
+                    executable = comspec
+            else:
+                comspec = executable
+    
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+>           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\AppData\Roaming\uv\python\cpython-3.14.6-windows-x86_64-none\Lib\subprocess.py:1553: FileNotFoundError
+============================== warnings summary ===============================
+tests/integration/test_model_recovery.py: 17 warnings
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle.py:207: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    array.shape = self.shape
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_capture_exclusion_reconnect.py:25: Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.
+SKIPPED [1] tests\integration\test_cloud_app_stack.py:273: Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.
+SKIPPED [1] tests\integration\test_maintenance_capture.py:20: Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.
+1 failed, 99 passed, 3 skipped, 722 deselected, 17 warnings in 594.71s (0:09:54)

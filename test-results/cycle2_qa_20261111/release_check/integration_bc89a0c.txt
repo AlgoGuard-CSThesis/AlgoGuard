@@ -1,0 +1,749 @@
+﻿.....................................s...s.............................. [ 69%]
+.......s......................F                                          [100%]
+================================== FAILURES ===================================
+___________ test_every_page_and_source_at_desktop_and_phone_widths ____________
+
+cloud = {'users': [{'id': 'f06a4556-730a-4452-b8de-540b5982260a', 'token': '[local test token removed]unction cloud.<locals>.rpc at 0x000001B3ED8175E0>, 'admin': <function cloud.<locals>.admin at 0x000001B3ED816FB0>, ...}
+local_stack = {'api_url': 'http://127.0.0.1:54321', 'rest_url': 'http://127.0.0.1:54321/rest/v1', 'functions_url': 'http://127.0.0.1:54321/functions/v1', 'db_url': 'postgresql://postgres:postgres@127.0.0.1:54322/postgres', ...}
+local_http = <stack_support.LocalStackHttp object at 0x000001B3EB35B770>
+tmp_path = WindowsPath('C:/Users/sanmi/AppData/Local/Temp/pytest-of-sanmi/pytest-443/test_every_page_and_source_at_0')
+stacking_artifact_bytes = b'x^\xe4]\x07xTE\xd7\x0e\xbdCTT\xecQ\x91\xa6FP@\x04d\x16\x10)\x8b\x01\xb1\x81\xa8K\xca\xc2nHY\x93\r\x1a>\xd1\x88\x88\x...L\xb6\xb3\x9bl\xe7`ig7\xd3\xce~\xe6?g`\xa8\x91?\x8f\x1b$\t\x12\t\xd9\x82 !\x0fs\x06U\x1d\x95\x93M\xf9\x0f\x97\xde\x12`'
+
+    def test_every_page_and_source_at_desktop_and_phone_widths(
+            cloud, local_stack, local_http, tmp_path, stacking_artifact_bytes):
+        analyst = make_account(cloud, local_stack, local_http, "ui_analyst")
+        admin = make_account(cloud, local_stack, local_http, "ui_admin", role="administrator")
+        model_path = os.environ.get("CLEAN_INSTALL_MODEL")
+        artifact = Path(model_path).read_bytes() if model_path else stacking_artifact_bytes
+        manifest = publish_fixture_model(cloud, local_stack, tmp_path, artifact)
+        captures = config.get_config().capture_folder
+        captures.mkdir(parents=True, exist_ok=True)
+        write_sample_pcap(captures / "ui-walk.pcap", sessions=10)
+        running = start_app(cloud, local_stack, tmp_path / "state", [analyst, admin])
+        running.app.config["TESTING"] = False  # serve exactly as an installation does
+        server = make_server("127.0.0.1", PORT, running.app, threaded=True)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        output = Path(os.environ.get("UI_WALK_OUTPUT") or tmp_path / "ui")
+        settings = {
+            "base": f"http://127.0.0.1:{PORT}", "output": str(output), "pcap": "ui-walk.pcap",
+            "analyst": {"email": analyst.email, "password": analyst.password},
+            "admin": {"email": admin.email, "password": admin.password},
+            "new_account": {"email": f"{cloud['prefix']}_ui_new@algoguard.invalid",
+                            "username": f"{cloud['prefix']}_ui_new",
+                            "password": "Walk!Aa1" + uuid.uuid4().hex},
+        }
+        settings_file = tmp_path / "walk.json"
+        settings_file.write_text(json.dumps(settings), encoding="utf-8")
+        try:
+            walked = subprocess.run(
+                [os.environ["UI_WALK_PYTHON"], str(Path(__file__).with_name("ui_walk_driver.py")),
+                 str(settings_file)], capture_output=True, text=True, timeout=1800)
+            assert walked.returncode == 0, walked.stderr[-4000:]
+            result = json.loads(walked.stdout.strip().splitlines()[-1])
+        finally:
+            server.shutdown()
+            running.services.close()
+            local_http.delete(local_stack["api_url"] + "/storage/v1/object/models/"
+                              + manifest["object_path"], headers=cloud["maintenance"])
+        # One pixel is sub-pixel rounding of fractional widths, not a scrollable page.
+        overflowing = [item for item in result["pages"] if item["overflow_px"] > 1]
+        summary = {
+            "pages_visited": len(result["pages"]),
+            "distinct_pages": sorted({(item["role"], item["page"]) for item in result["pages"]}),
+            "problems": result["problems"], "overflowing": overflowing,
+            "sessions": result["sessions"], "pages": result["pages"],
+        }
+        output.mkdir(parents=True, exist_ok=True)
+        (output / "ui_walk.json").write_text(json.dumps(summary, indent=2, default=list) + "\n",
+                                             encoding="utf-8")
+>       assert not result["problems"], result["problems"]
+E       AssertionError: [{'viewport': 'desktop', 'role': 'analyst', 'kind': 'HTTP 409', 'url': 'http://127.0.0.1:5078/monitor/start', ...}, {'...yst', 'kind': 'console', 'text': 'Failed to load resource: the server responded with a status of 409 (CONFLICT)', ...}]
+E       assert not [{'viewport': 'desktop', 'role': 'analyst', 'kind': 'HTTP 409', 'url': 'http://127.0.0.1:5078/monitor/start', ...}, {'...yst', 'kind': 'console', 'text': 'Failed to load resource: the server responded with a status of 409 (CONFLICT)', ...}]
+
+tests\integration\test_ui_walk.py:85: AssertionError
+------------------------------ Captured log call ------------------------------
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:11] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/css/legacy-ui.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "GET /static/favicon.svg HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "POST /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:12] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:13] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:15] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "GET /simulation HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:16] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "POST /simulation HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:17] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "GET /monitor HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:18] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:19] "GET /monitor/status?since=0&session_id= HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:19] "POST /monitor/start HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:20] "GET /monitor/status?since=0&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:20] "GET /monitor/status?since=0&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:21] "GET /monitor/status?since=0&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:22] "GET /monitor/status?since=256&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:23] "GET /monitor/status?since=320&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:23] "GET /monitor/status?since=704&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:24] "GET /monitor/status?since=960&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:25] "GET /monitor/status?since=1216&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:26] "GET /monitor/status?since=1472&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:26] "GET /monitor/status?since=1792&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:27] "GET /monitor/status?since=2048&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:27] "GET /monitor/status?since=2240&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:28] "GET /monitor/status?since=2496&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:29] "GET /monitor/status?since=2688&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:30] "GET /monitor/status?since=2944&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:30] "GET /monitor/status?since=3136&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:31] "GET /monitor/status?since=3328&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:32] "GET /monitor/status?since=3584&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:32] "POST /monitor/stop HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:33] "GET /monitor/status?since=3776&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:33] "[31m[1mPOST /monitor/start HTTP/1.1[0m" 409 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:33] "GET /monitor/status?since=3776&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:33] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:34] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:34] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:35] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:36] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:37] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:37] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:38] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:39] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:39] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:40] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:41] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:41] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:42] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:43] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:44] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:44] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:45] "GET /monitor/status?since=3840&session_id=7b7d53af-7ce9-430f-8044-92fb5761f063 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:45] "POST /monitor/start HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:46] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:46] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:47] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:48] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:49] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:49] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:50] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:51] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:51] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:52] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:53] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:53] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:54] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:55] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:56] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:56] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:57] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:58] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:59] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:29:59] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:00] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:00] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:02] "GET /monitor/status?since=0&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:03] "GET /monitor/status?since=1&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:03] "GET /monitor/status?since=1&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:04] "GET /monitor/status?since=1&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:05] "GET /monitor/status?since=1&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:05] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:06] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:07] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:07] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:08] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:09] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:10] "GET /monitor/status?since=2&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:10] "GET /monitor/status?since=3&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:11] "POST /monitor/stop HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:11] "GET /monitor/status?since=3&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "GET /monitor/status?since=3&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "GET /alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:12] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[32mPOST /reports HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "GET /reports/6508 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "GET /reports HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:14] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:15] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "GET /logs HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:16] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:17] "GET /nodes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:17] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:17] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:17] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:17] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:17] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:18] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:18] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[33mGET /no-such-page HTTP/1.1[0m" 404 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:19] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:20] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /login?logged_out=1 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /static/css/legacy-ui.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:22] "GET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "GET /static/favicon.svg HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "POST /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:23] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:24] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "GET /admins HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:25] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:27] "[32mPOST /admins HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:27] "GET /admins HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:27] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:27] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:27] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "GET /nodes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:28] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "GET /computers HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:30] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "GET /retention HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:31] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "GET /alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:33] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "GET /reports HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:34] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "GET /reports/6508 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "GET /logs HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:36] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "GET /monitor HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:38] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:39] "GET /monitor/status?since=0&session_id= HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:39] "GET /simulation HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:39] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:39] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:39] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:39] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:40] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:40] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:40] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[33mGET /no-such-page HTTP/1.1[0m" 404 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:41] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:42] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "GET /login?logged_out=1 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:44] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/css/legacy-ui.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "GET /static/favicon.svg HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "POST /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:45] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:46] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:46] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "GET /simulation HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:47] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "POST /simulation HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:49] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "GET /monitor HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:50] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:51] "GET /monitor/status?since=3&session_id=d2b116d5-7f0d-4ea7-bc7a-d1d553496094 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:51] "POST /monitor/start HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:52] "GET /monitor/status?since=0&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:52] "GET /monitor/status?since=0&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:53] "GET /monitor/status?since=0&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:54] "GET /monitor/status?since=128&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:54] "GET /monitor/status?since=384&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:55] "GET /monitor/status?since=640&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:56] "GET /monitor/status?since=960&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:57] "GET /monitor/status?since=1252&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:57] "GET /monitor/status?since=1600&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:58] "GET /monitor/status?since=1728&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:59] "GET /monitor/status?since=2048&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:30:59] "GET /monitor/status?since=2320&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:00] "GET /monitor/status?since=2560&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:01] "GET /monitor/status?since=2880&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:01] "GET /monitor/status?since=3136&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:02] "GET /monitor/status?since=3392&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:03] "GET /monitor/status?since=3584&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:04] "POST /monitor/stop HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:04] "GET /monitor/status?since=3904&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:04] "GET /monitor/status?since=4096&session_id=d6f193cd-5d74-4e51-939c-41d8ee026280 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:04] "POST /monitor/start HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:05] "GET /monitor/status?since=0&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:06] "GET /monitor/status?since=0&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:06] "GET /monitor/status?since=1&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:07] "GET /monitor/status?since=2&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:08] "GET /monitor/status?since=3&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:08] "GET /monitor/status?since=4&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:09] "GET /monitor/status?since=5&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:10] "GET /monitor/status?since=6&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:10] "GET /monitor/status?since=7&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:11] "GET /monitor/status?since=8&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:12] "GET /monitor/status?since=10&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:13] "GET /monitor/status?since=11&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:13] "GET /monitor/status?since=11&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:14] "GET /monitor/status?since=11&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:15] "GET /monitor/status?since=11&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:15] "GET /monitor/status?since=11&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:16] "GET /monitor/status?since=11&session_id=84c680de-935f-463b-91ab-fba8946f13bc HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:16] "POST /monitor/start HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:17] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:17] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:18] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:19] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:20] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:20] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:21] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:22] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:22] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:23] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:24] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:24] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:25] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:26] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:27] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:27] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:28] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:29] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:29] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:30] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:31] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:31] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:32] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:33] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:34] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:34] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:35] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:36] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:36] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:37] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:38] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:39] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:39] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:40] "GET /monitor/status?since=0&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:41] "GET /monitor/status?since=3&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:41] "GET /monitor/status?since=4&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "POST /monitor/stop HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "GET /monitor/status?since=4&session_id=0a8e3acc-2c24-4fdb-9c2b-2d400a354f2f HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "GET /alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:42] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:43] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "[32mPOST /reports HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "GET /reports/6509 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:44] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "GET /reports HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:45] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "GET /logs HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:46] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:47] "GET /nodes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:47] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:47] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:47] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:47] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:47] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[33mGET /no-such-page HTTP/1.1[0m" 404 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:48] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:49] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:49] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:49] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:50] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /login?logged_out=1 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:53] "GET /static/css/legacy-ui.css HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "GET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "GET /static/favicon.svg HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "POST /login HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:54] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:55] "[32mPOST /login HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "GET /admins HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:56] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:57] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:57] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:57] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:57] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:57] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:57] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "GET /nodes HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:58] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:31:59] "GET /computers HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:00] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:01] "GET /retention HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:02] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "GET /alerts HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:03] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "GET /reports HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:04] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:05] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "GET /reports/6509 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "GET /logs HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:06] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "GET /monitor HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:08] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:09] "GET /monitor/status?since=0&session_id= HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:09] "GET /simulation HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:09] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:09] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:09] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:09] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:10] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:10] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:10] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[33mGET /no-such-page HTTP/1.1[0m" 404 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:11] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "GET / HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:12] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[32mPOST /logout HTTP/1.1[0m" 302 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "GET /login?logged_out=1 HTTP/1.1" 200 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/vendor/bootstrap/bootstrap.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/vendor/bootstrap-icons/bootstrap-icons.min.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/vendor/bootstrap/bootstrap.bundle.min.js HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/css/legacy-ui.css HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/vendor/bootstrap-icons/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6 HTTP/1.1[0m" 304 -
+INFO     werkzeug:_internal.py:97 127.0.0.1 - - [19/Nov/2026 19:32:14] "[36mGET /static/favicon.svg HTTP/1.1[0m" 304 -
+============================== warnings summary ===============================
+tests/integration/test_legacy_transfer.py: 1528 warnings
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\sklearn\utils\parallel.py:144: UserWarning: `sklearn.utils.parallel.delayed` should be used with `sklearn.utils.parallel.Parallel` to make it possible to propagate the scikit-learn configuration of the current thread to the joblib workers.
+    warnings.warn(
+
+tests/integration/test_legacy_transfer.py: 1 warning
+tests/integration/test_model_recovery.py: 19 warnings
+  C:\Users\sanmi\AlgoGuard\venv\Lib\site-packages\joblib\numpy_pickle.py:207: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    array.shape = self.shape
+
+tests/integration/test_legacy_transfer.py::test_post_cutover_forward_recovery_retains_new_writes_artifacts_and_pending_events
+  C:\Users\sanmi\AppData\Roaming\uv\python\cpython-3.14.6-windows-x86_64-none\Lib\_py_warnings.py:576: ResourceWarning: unclosed database in <sqlite3.Connection object at 0x000001B3F40C1F30>
+    def __init__(self, message, category, filename, lineno, file=None,
+  Enable tracemalloc to get traceback where the object was allocated.
+  See https://docs.pytest.org/en/stable/how-to/capture-warnings.html#resource-warnings for more info.
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+SKIPPED [1] tests\integration\test_capture_exclusion_reconnect.py:25: Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.
+SKIPPED [1] tests\integration\test_cloud_app_stack.py:274: Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.
+SKIPPED [1] tests\integration\test_maintenance_capture.py:20: Set RUN_WINDOWS_CAPTURE_TESTS=1 on Windows with Npcap.
+1 failed, 99 passed, 3 skipped, 779 deselected, 1549 warnings in 1031.89s (0:17:11)

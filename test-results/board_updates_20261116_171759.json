@@ -1,0 +1,10 @@
+{
+  "applied": "2026-11-16 17:17",
+  "board": "users/bry22191919-hash/projects/4",
+  "actions": [
+    {
+      "card": "DEF-10",
+      "action": "rows updated: Status, Fixed in commit, Re-test result; Review -> In Progress"
+    }
+  ]
+}
