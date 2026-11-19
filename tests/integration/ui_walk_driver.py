@@ -71,7 +71,7 @@ def main():
                         ("live", {"#monitorPersist": "attacks"}),
                     ):
                         sessions.append(run_source(page, viewport, source, options, output,
-                                                   pages))
+                                                   pages, problems))
                     visit("/alerts", "alerts")
                     boxes = page.locator("input[name=alert_id]")
                     for index in range(min(2, boxes.count())):
@@ -183,19 +183,46 @@ def wait_state(page, accept, seconds):
     return None
 
 
-def run_source(page, viewport, source, options, output, pages):
+RELEASING = "Try again shortly"
+
+
+def press_start(page, problems, seconds=30):
+    """Press Start until AlgoGuard accepts the session; return the status of its last answer.
+
+    Right after a stop the previous capture may still be releasing its resources. AlgoGuard
+    then answers 409 and asks to try again shortly (test_model_recovery waits the same way).
+    Those designed refusals are retried and not counted as problems (DEF-33); any other
+    answer, or a refusal that outlasts ``seconds``, is returned and stays recorded.
+    """
+    deadline = time.monotonic() + seconds
+    while True:
+        before = len(problems)
+        with page.expect_response(
+                lambda reply: reply.url.split("?")[0].endswith("/monitor/start")) as answer:
+            page.click("#monitorStart")
+        reply = answer.value
+        if reply.status != 409 or RELEASING not in reply.text() or time.monotonic() > deadline:
+            return reply.status
+        page.wait_for_timeout(500)  # the browser logs the refusal too; let it arrive first
+        problems[before:] = [item for item in problems[before:] if not (
+            (item["kind"] == "HTTP 409" and item["url"].split("?")[0].endswith("/monitor/start"))
+            or (item["kind"] == "console" and "409" in item["text"]))]
+
+
+def run_source(page, viewport, source, options, output, pages, problems):
     page.select_option("#monitorSource", source)
     for selector, value in options.items():
         page.select_option(selector, value)
-    page.click("#monitorStart")
+    status = press_start(page, problems)
     began = time.monotonic()
     # Polled from here: the page's Content Security Policy rightly refuses the string
-    # evaluation that Playwright's wait_for_function relies on.
-    if wait_state(page, lambda state: state != "idle", 30) is None:
+    # evaluation that Playwright's wait_for_function relies on. A refused start leaves the
+    # previous session's state on the page, so the answer to Start is checked first.
+    if status != 200 or wait_state(page, lambda state: state != "idle", 30) is None:
         record(page, viewport, "analyst", f"monitor-{source}-not-started", None, output, pages)
         return {"viewport": viewport, "source": source, "feed_rows": 0, "state": "not started",
-                "message": page.locator("#monitorMessage").inner_text(), "seconds": 30.0,
-                "score_band_shown": False}
+                "message": page.locator("#monitorMessage").inner_text(),
+                "seconds": round(time.monotonic() - began, 1), "score_band_shown": False}
     seconds = 25 if source == "live" else 12
     time.sleep(seconds)
     rows = page.locator("#feedBody tr").count()
