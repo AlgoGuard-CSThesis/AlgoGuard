@@ -64,6 +64,17 @@ body {
     font-weight: 700;
 }
 
+/* A long signed-in name ends in "..." (full name on hover), so the administrator menu still fits
+   a 1366 px screen (DEF-32). */
+.nav-admin-name {
+    display: inline-block;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
 .page-shell {
     min-height: calc(100vh - 62px);
 }

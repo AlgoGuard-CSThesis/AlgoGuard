@@ -224,6 +224,27 @@ def test_navigation_marks_the_current_page_and_confirms_destructive_forms(authen
     assert 'event.target.getAttribute("data-confirm")' in html
 
 
+def test_a_long_signed_in_name_is_cut_short_in_the_menu_with_the_full_name_on_hover(
+        authenticated_client, app_module):
+    """DEF-32: a 38-character name made each administrator page 3 px wider than a 1366 px screen."""
+    import re
+    from pathlib import Path
+
+    long_name = "zz_migration_smoke_1eb71debb5_ui_admin"
+    with authenticated_client.session_transaction() as test_session:
+        test_session["admin_username"] = long_name
+    html = authenticated_client.get("/alerts").get_data(as_text=True)
+
+    assert f'<span class="nav-admin-name" title="{long_name}">{long_name}</span>' in html
+    css = (Path(app_module.__file__).resolve().parent / "static/css/legacy-ui.css").read_text(
+        encoding="utf-8")
+    rule = re.search(r"\.nav-admin-name \{(.*?)\}", css, re.S)
+    assert rule, "no .nav-admin-name rule"
+    for declaration in ("max-width: 14rem", "overflow: hidden", "text-overflow: ellipsis",
+                        "white-space: nowrap"):
+        assert declaration in rule.group(1), declaration
+
+
 def test_log_pagination_links_have_accessible_names(authenticated_client):
     from services import database_service as db
 

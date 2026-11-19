@@ -38,7 +38,7 @@
                     {% if config.CLOUD_MODE %}{{ nav_link(request.endpoint, ('computers',), 'computers', 'bi-pc-display', 'Computers') }}{{ nav_link(request.endpoint, ('retention',), 'retention', 'bi-archive', 'Retention') }}{% endif %}
                     {{ nav_link(request.endpoint, ('manage_admins',), 'manage_admins', 'bi-people-fill', 'Accounts' if config.CLOUD_MODE else 'Admins') }}
                     {% endif %}
-                    <li class="nav-item nav-admin"><span class="nav-link"><i class="bi bi-person-badge"></i> {{ session.get("admin_username", "Admin") }}{% if config.CLOUD_MODE %} <span class="status-badge cloud-badge" title="Cloud pilot mode: records are uploaded to the shared project">Cloud</span>{% endif %}</span></li>
+                    <li class="nav-item nav-admin"><span class="nav-link"><i class="bi bi-person-badge"></i> <span class="nav-admin-name" title="{{ session.get("admin_username", "Admin") }}">{{ session.get("admin_username", "Admin") }}</span>{% if config.CLOUD_MODE %} <span class="status-badge cloud-badge" title="Cloud pilot mode: records are uploaded to the shared project">Cloud</span>{% endif %}</span></li>
                     <li class="nav-item">
                         <button class="nav-link nav-logout-button" type="button" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal" aria-haspopup="dialog">
                             <i class="bi bi-box-arrow-right"></i> Logout
